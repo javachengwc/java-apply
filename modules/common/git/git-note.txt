@@ -1,0 +1,193 @@
+------------------git代码冲突-------------------------
+冲突异常:
+
+error: Your local changes to the following files would be overwritten by merge:
+        protected/config/main.php
+Please, commit your changes or stash them before you can merge.
+
+如果保留生产服务器上所做的改动,仅仅并入新配置项, 处理方法如下:
+-------------
+git stash
+git pull
+git stash pop
+
+
+然后可以使用git diff -w +文件名 来确认代码自动合并的情况.
+----------------
+
+如果用代码库中的文件完全覆盖本地工作版本. 方法如下:
+
+git reset --hard
+git pull
+
+--------------------------------------------------------
+git clone  git@git.xx.com:xx/xx.git     --->克隆某git工程资源
+git branch                              --->查看当前分支
+git branch aa                           --->创建本地分支aa(当用这种方式创建分支的时候,分支是基于你的上一次提交建立的)
+git checkout -b local_path origin/remote_path
+                                        --->创建并切换到本地分支local_path，并且该分支对应的远程分支是remote_path。
+                                            此种方式创建的分支是一个干净的分支，拉下代码后完全稳合对应的远程分支。
+git checkout aa                         --->将本地当前分支切换到aa
+git pull origin cheng                   --->拉去cheng的分支到当前分支aa
+git push origin aa:remoteaa             --->推送本地aa分支到远程remoteaa分支s
+git config --list                       --->查看git配置
+
+-----------------------------------------------------------------------
+
+git status   查看当前项目下所有文的状态
+
+git branch 不带参数：列出本地已经存在的分支，并且在当前分支的前面加“*”号标记
+git branch -r 列出远程分支
+git branch -a 列出本地分支和远程分支
+
+git branch 创建一个新的本地分支，需要注意，此处只是创建分支，不进行分支切换
+ eg:#git branch newbranch2
+    #git branch
+    * master
+    newbranch
+    newbranch2
+
+    当前的分支依然是master，不进行切换
+
+git branch -m | -M oldbranch newbranch 重命名分支，如果newbranch名字分支已经存在，则需要使用-M强制重命名，否则，使用-m进行重命名
+git branch -d | -D branchname 删除branchname分支
+git branch -d -r branchname   删除远程branchname分支
+
+   eg:
+   $ git clone git://git.kernel.org/pub/scm/.../linux-2.6 my2.6
+   $ cd my2.6
+   $ git branch my2.6.14 v2.6.14
+   $ git checkout my2.6.14      ----实际上就是切换分支到my2.6.14
+   第三行符合git branch <branchname> [<start-point>]的格式，即以v2.6.14为start-point，创建新的本地分支branchname
+
+------------------------------------------------------------
+
+git remote 不带参数，列出已经存在的远程分支，
+    eg:
+    #git remote
+    origin_apps
+
+git remote -v | --verbose 列出详细信息，在每一个名字后面列出其远程url，查看当前项目远程连接的是哪个仓库地址
+    eg:
+    #git remote -v
+    origin_apps     gitolite@scm:apps/Welcome.git (fetch)
+    origin_apps     gitolite@scm:apps/Welcome.git (push)
+    需要注意的是，如果有子命令，-v | --verbose需要放在git remote与子命令中间
+
+git remote add origin git@github.com:defnngj/hibernate-demo.git
+    将本地创建的新项目与新仓库建立连接
+
+git remote show name 必须要带name，否则git remote show的作用就是git remote，给出remote name的信息
+
+------------------------------------------------------------
+
+git push origin master  推送到master分支
+git push <远程主机名> <本地分支名>:<远程分支名>
+   eg:git push origin locala:remoteb  推送本地locala分支到远程remoteb分支
+
+git fetch origin           取得远程更新，这里可以看做是准备要取了
+git fetch <远程主机名>     将某个远程主机的更新，全部取回本地
+git fetch <远程主机名> <分支名>  取回o远程主机的某个分支
+
+git merge origin/master    把更新的内容合并到本地分支/master
+
+git pull                   取回远程主机某个分支的更新，再与本地的指定分支合并
+git pull <远程主机名> <远程分支名>:<本地分支名>
+   eg:git pull origin next:master  取回origin主机的next分支，与本地的master分支合并
+      git pull origin next         取回origin/next分支，再与当前分支合并。实质上，这等同于先做git fetch，再做git merge
+
+git checkout -b newBrach origin/master 在origin/master的基础上，创建一个新分支
+
+-------------------------------------------------------------
+
+git log -p filename              查看某文件的历史版本信息
+git log --pretty=oneline         显示每个版本都修改了那些文件
+git reset --hard commit_id  filename    将文件恢复到某历史版本
+git reset --hard origin/master   将工程恢复成指定远程分支最新版本内容
+
+reset命令有3种方式：
+git reset –mixed：此为默认方式，不带任何参数的git reset，即时这种方式，它回退到某个版本，只保留源码，回退commit和index信息
+git reset –soft：回退到某个版本，只回退了commit的信息，不会恢复到index file一级。如果还要提交，直接commit即可
+git reset –hard：彻底回退到某个版本，本地的源码也会变为上一个版本的内容
+
+-------------------------------------------------------------
+
+创建新仓库
+
+    创建新文件夹，打开，然后执行
+    git init
+    以创建新的 git 仓库
+
+创建一个本地仓库的克隆版本
+    git clone /path/to/repository
+    如果是远端服务器上的仓库，你的命令会是这个样子：
+    git clone username@host:/path/to/repository
+
+工作流
+
+本地仓库由 git 维护的三棵“树”组成。
+    第一个是工作目录，它持有实际文件；
+    第二个是 缓存区（Index），它像个缓存区域，临时保存你的改动；
+    最后是 HEAD，指向你最近一次提交后的结果。
+
+添加与提交
+
+    你可以计划改动（把它们添加到缓存区），使用如下命令：
+    git add <filename>
+    git add *
+    git add .   //（.）点表示当前目录下的所有内容
+    git rm 删除内容
+    这是 git 基本工作流程的第一步；
+    使用如下命令以实际提交改动：
+    git commit -m "代码提交信息"
+    现在，你的改动已经提交到了 HEAD，但是还没到你的远端仓库。
+    推送改动
+
+    你的改动现在已经在本地仓库的 HEAD 中了。
+    执行如下命令以将这些改动提交到远端仓库：
+    git push origin master
+    可以把 master 换成你想要推送的任何分支。
+
+    如果你还没有克隆现有仓库，并欲将你的仓库连接到某个远程服务器，你可以使用如下命令添加：
+    git remote add origin <server>
+    如此你就能够将你的改动推送到所添加的服务器上去了。
+
+分支
+
+    分支是用来将特性开发绝缘开来的。
+    在你创建仓库的时候，master 是“默认的”。
+    在其他分支上进行开发，完成后再将它们合并到主分支上。
+
+    创建一个叫做“feature_x”的分支，并切换过去：
+    git checkout -b feature_x
+    切换回主分支：
+    git checkout master
+    再把新建的分支删掉：
+    git branch -d feature_x
+    除非你将分支推送到远端仓库，不然该分支就是 不为他人所见的：
+    git push origin <branch>
+
+更新与合并
+
+    要更新你的本地仓库至最新改动，执行：
+    git pull
+    以在你的工作目录中 获取（fetch） 并 合并（merge） 远端的改动。
+    要合并其他分支到你的当前分支（例如 master），执行：
+    git merge <branch>
+    两种情况下，git 都会尝试去自动合并改动。
+    不幸的是，自动合并并非次次都能成功，并可能导致 冲突（conflicts）。
+    这时候就需要你修改这些文件来人肉合并这些 冲突（conflicts） 了。
+    改完之后，你需要执行如下命令以将它们标记为合并成功：
+    git add <filename>
+    在合并改动之前，也可以使用如下命令查看：
+    git diff <source_branch> <target_branch>
+
+假如做错事（自然，这是不可能的），可以使用如下命令替换掉本地改动：
+git checkout -- <filename>
+此命令会使用 HEAD 中的最新内容替换掉工作目录中的文件。已添加到缓存区的改动，以及新文件，都不受影响
+
+假如你想要丢弃你所有的本地改动与提交，可以到服务器上获取最新的版本并将你本地主分支指向到它：
+git fetch origin
+git reset --hard origin/master
+
+-------------------------------------------------------------

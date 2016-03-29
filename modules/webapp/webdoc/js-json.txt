@@ -1,0 +1,52 @@
+JSON对象包含了两个主要方法，一个方法用来将JavaScript值转换为json格式的字符串，另外一个方法用来将JSON字符串转换为JavaScript值。
+
+JSON.parse() 方法可以将一个 JSON 字符串解析成为一个 JavaScript 值。在解析过程中，还可以选择性的篡改某些属性的原始解析值。
+JSON.parse(text[, reviver])
+
+JSON.stringify() 方法可以将任意的 JavaScript 值序列化成 JSON 字符串。
+JSON.stringify(value[, replacer [, space]])
+ep:JSON.stringify(obj, null, 4);
+
+--------------------------------------------------------------------
+JSON 对象不被旧版本浏览器支持。可以把下面代码放到脚本的开始位置，这样就可以在那些没有原生支持 JSON 对象的浏览器（比如IE6）中使用 JSON 对象
+
+if (!window.JSON) {
+  window.JSON = {
+    parse: function(sJSON) { return eval('(' + sJSON + ')'); },
+    stringify: (function () {
+      var toString = Object.prototype.toString;
+      var isArray = Array.isArray || function (a) { return toString.call(a) === '[object Array]'; };
+      var escMap = {'"': '\\"', '\\': '\\\\', '\b': '\\b', '\f': '\\f', '\n': '\\n', '\r': '\\r', '\t': '\\t'};
+      var escFunc = function (m) { return escMap[m] || '\\u' + (m.charCodeAt(0) + 0x10000).toString(16).substr(1); };
+      var escRE = /[\\"\u0000-\u001F\u2028\u2029]/g;
+      return function stringify(value) {
+        if (value == null) {
+          return 'null';
+        } else if (typeof value === 'number') {
+          return isFinite(value) ? value.toString() : 'null';
+        } else if (typeof value === 'boolean') {
+          return value.toString();
+        } else if (typeof value === 'object') {
+          if (typeof value.toJSON === 'function') {
+            return stringify(value.toJSON());
+          } else if (isArray(value)) {
+            var res = '[';
+            for (var i = 0; i < value.length; i++)
+              res += (i ? ', ' : '') + stringify(value[i]);
+            return res + ']';
+          } else if (toString.call(value) === '[object Object]') {
+            var tmp = [];
+            for (var k in value) {
+              if (value.hasOwnProperty(k))
+                tmp.push(stringify(k) + ': ' + stringify(value[k]));
+            }
+            return '{' + tmp.join(', ') + '}';
+          }
+        }
+        return '"' + value.toString().replace(escRE, escFunc) + '"';
+      };
+    })()
+  };
+}
+
+-------------------------------------------------------------------------

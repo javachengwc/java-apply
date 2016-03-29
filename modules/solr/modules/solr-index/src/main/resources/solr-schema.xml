@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<schema name="example" version="1.5">
+
+  <fields>
+   <field name="id" type="string" indexed="true" stored="true" required="true"/> 
+   <field name="goods_name" type="textSimple" indexed="true" stored="true"/>	
+   <field name="goods_keywords" type="textSimple" indexed="true" stored="true"/>
+   <field name="goods_sn" type="textSimpleSmart" indexed="true" stored="true"/>
+   <field name="goods_thumb" type="string" indexed="true" stored="true"/>
+   <field name="brand_id" type="int" indexed="true" stored="true"/>
+   <field name="brand_name" type="textSimple" indexed="true" stored="true"/>
+   <field name="cat_id" type="int" indexed="true" stored="true"/>
+   <field name="cat_name" type="string" indexed="true" stored="true"/>	
+   <field name="pinyin" type="string" indexed="true" stored="true"/>
+   <field name="style_id" type="int" indexed="true" stored="true"/>
+   <field name="style_name" type="textSimple" indexed="true" stored="true"/>
+   <field name="material_id" type="int" indexed="true" stored="true"/>
+   <field name="material_name" type="textSimple" indexed="true" stored="true" />
+   <field name="click_count" type="int" indexed="true" stored="true"/>
+   <field name="is_on_sale" type="boolean" indexed="true" stored="true"/>
+   <field name="is_real" type="boolean" indexed="true" stored="true"/>
+   <field name="parent_id" type="string" indexed="true" stored="true"/>
+   <field name="sort_order" type="float" indexed="true" stored="true"/>
+   <field name="special_price" type="float" indexed="true" stored="true"/>
+   <field name="shop_price" type="float" indexed="true" stored="true"/>
+   <field name="effect_price" type="float" indexed="true" stored="true"/>
+   <field name="show_type" type="int" indexed="true" stored="true"/>
+   <field name="add_time" type="long" indexed="true" stored="true" />
+   <field name="shop_id" type="int" indexed="true" stored="true" />
+   <field name="goods_comment" type="string" indexed="true" stored="true" />
+   <field name="goods_url" type="string" indexed="true" stored="true"/>
+   <field name="imgs" type="string" indexed="true" stored="true"/>
+   <field name="cdname" type="string" indexed="true" stored="true"/>
+   <field name="sdname" type="string" indexed="true" stored="true"/>
+   <field name="bdname" type="string" indexed="true" stored="true"/>
+   <field name="mdname" type="string" indexed="true" stored="true"/>
+   <field name="parent_name" type="string" indexed="true" stored="true"/>
+   <field name="desc" type="string" indexed="true" stored="true"/>
+   <field name="text" type="textSimple" indexed="true" stored="false" multiValued="true" />
+
+   <field name="_version_" type="long" indexed="true" stored="true"/>
+
+   <dynamicField name="ar_*" type="string" indexed="true" stored="true"/>
+   <dynamicField name="order_*" type="int" indexed="true" stored="true"/>
+   <dynamicField name="*_i" type="int" indexed="true" stored="true"/>
+   <dynamicField name="*_s" type="string" indexed="true" stored="true"/>
+   <dynamicField name="*_l" type="long" indexed="true" stored="true"/>
+   <dynamicField name="*_t" type="textSimple" indexed="true" stored="true"/>
+   <dynamicField name="*_b" type="boolean" indexed="true" stored="true"/>
+   <dynamicField name="*_f" type="float" indexed="true" stored="true"/>
+   <dynamicField name="*_d" type="double" indexed="true" stored="true"/>
+   <dynamicField name="*_dt" type="date" indexed="true" stored="true"/>
+
+   <dynamicField name="*_ti" type="tint" indexed="true" stored="true"/>
+   <dynamicField name="*_tl" type="tlong" indexed="true" stored="true"/>
+   <dynamicField name="*_tf" type="tfloat" indexed="true" stored="true"/>
+   <dynamicField name="*_td" type="tdouble" indexed="true" stored="true"/>
+   <dynamicField name="*_tdt" type="tdate" indexed="true" stored="true"/>
+   <dynamicField name="*_pi" type="pint" indexed="true" stored="true"/>
+   <dynamicField name="ignored_*" type="ignored" multiValued="true"/>
+   <dynamicField name="attr_*" type="textSimple" indexed="true" stored="true" multiValued="true"/>
+   <dynamicField name="random_*" type="random"/>
+
+ </fields>
+
+<uniqueKey>id</uniqueKey>
+
+ <defaultSearchField>text</defaultSearchField>
+
+   <copyField source="goods_name" dest="text"/>
+   <copyField source="goods_keywords" dest="text"/>
+   <copyField source="brand_name" dest="text"/>
+   <copyField source="cat_name" dest="text"/>
+   <copyField source="style_name" dest="text"/>
+   <copyField source="material_name" dest="text"/>
+   <copyField source="parent_name" dest="text"/>
+   <copyField source="goods_sn" dest="text"/>
+
+  <types>
+
+    <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
+    <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
+
+    <fieldType name="int" class="solr.TrieIntField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="float" class="solr.TrieFloatField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="double" class="solr.TrieDoubleField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="tint" class="solr.TrieIntField" precisionStep="8" positionIncrementGap="0"/>
+    <fieldType name="tfloat" class="solr.TrieFloatField" precisionStep="8" positionIncrementGap="0"/>
+    <fieldType name="tlong" class="solr.TrieLongField" precisionStep="8" positionIncrementGap="0"/>
+    <fieldType name="tdouble" class="solr.TrieDoubleField" precisionStep="8" positionIncrementGap="0"/>
+    <fieldType name="date" class="solr.TrieDateField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="tdate" class="solr.TrieDateField" precisionStep="6" positionIncrementGap="0"/>
+    <fieldtype name="binary" class="solr.BinaryField"/>
+    <fieldType name="pint" class="solr.IntField"/>
+    <fieldType name="plong" class="solr.LongField"/>
+    <fieldType name="pfloat" class="solr.FloatField"/>
+    <fieldType name="pdouble" class="solr.DoubleField"/>
+    <fieldType name="pdate" class="solr.DateField" sortMissingLast="true"/>
+    <fieldType name="random" class="solr.RandomSortField" indexed="true" />
+
+    <fieldtype name="phonetic" stored="false" indexed="true" class="solr.TextField" >
+      <analyzer>
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.DoubleMetaphoneFilterFactory" inject="false"/>
+      </analyzer>
+    </fieldtype>
+
+    <fieldType name="lowercase" class="solr.TextField" positionIncrementGap="100">
+      <analyzer>
+        <tokenizer class="solr.KeywordTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory" />
+      </analyzer>
+    </fieldType>
+    <fieldtype name="ignored" stored="false" indexed="false" multiValued="true" class="solr.StrField" />
+    <fieldType name="point" class="solr.PointType" dimension="2" subFieldSuffix="_d"/>
+    <fieldType name="location" class="solr.LatLonType" subFieldSuffix="_coordinate"/>
+    <fieldType name="location_rpt" class="solr.SpatialRecursivePrefixTreeFieldType"
+        geo="true" distErrPct="0.025" maxDistErr="0.000009" units="degrees" />
+    <fieldType name="currency" class="solr.CurrencyField" precisionStep="8" defaultCurrency="USD" currencyConfig="currency.xml" />
+             
+    <fieldType name="text_ar" class="solr.TextField" positionIncrementGap="100">
+      <analyzer> 
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <!-- for any non-arabic -->
+        <filter class="solr.LowerCaseFilterFactory"/>
+        <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_ar.txt" enablePositionIncrements="true"/>
+        <!-- normalizes ﻯ to ﻱ, etc -->
+        <filter class="solr.ArabicNormalizationFilterFactory"/>
+        <filter class="solr.ArabicStemFilterFactory"/>
+      </analyzer>
+    </fieldType>
+
+    <!-- Bulgarian -->
+    <fieldType name="text_bg" class="solr.TextField" positionIncrementGap="100">
+      <analyzer> 
+        <tokenizer class="solr.StandardTokenizerFactory"/> 
+        <filter class="solr.LowerCaseFilterFactory"/>
+        <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_bg.txt" enablePositionIncrements="true"/>
+        <filter class="solr.BulgarianStemFilterFactory"/>       
+      </analyzer>
+    </fieldType>
+    
+    <!-- Catalan -->
+    <fieldType name="text_ca" class="solr.TextField" positionIncrementGap="100">
+      <analyzer> 
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <!-- removes l', etc -->
+        <filter class="solr.ElisionFilterFactory" ignoreCase="true" articles="lang/contractions_ca.txt"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+        <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_ca.txt" enablePositionIncrements="true"/>
+        <filter class="solr.SnowballPorterFilterFactory" language="Catalan"/>       
+      </analyzer>
+    </fieldType>
+
+	<fieldtype name="textComplex" class="solr.TextField" positionIncrementGap="100">
+		<analyzer type="index">
+			<tokenizer class="org.wltea.analyzer.henry.IKTokenizerFactory" useSmart="true"/>
+		</analyzer>
+		<analyzer type="query">
+			<tokenizer class="org.wltea.analyzer.henry.IKTokenizerFactory" useSmart="true"/>
+		</analyzer>
+	</fieldtype>
+
+	<fieldtype name="textMaxWord" class="solr.TextField" positionIncrementGap="100">
+		<analyzer type="index">
+			<tokenizer class="org.wltea.analyzer.henry.IKTokenizerFactory" useSmart="false"/>
+		</analyzer>
+		<analyzer type="query">
+			<tokenizer class="org.wltea.analyzer.henry.IKTokenizerFactory" useSmart="true"/>
+		</analyzer>
+	</fieldtype>
+
+	<fieldtype name="textSimple" class="solr.TextField" positionIncrementGap="100">
+		<analyzer type="index">
+			<tokenizer class="org.wltea.analyzer.henry.IKTokenizerFactory" useSmart="true"/>
+		</analyzer>
+		<analyzer type="query">
+			<tokenizer class="org.wltea.analyzer.henry.IKTokenizerFactory" useSmart="true"/>
+		</analyzer>
+	</fieldtype>
+	<fieldtype name="textSimpleSmart" class="solr.TextField" positionIncrementGap="100">
+		<analyzer type="index">
+			<tokenizer class="org.wltea.analyzer.henry.IKTokenizerFactory" useSmart="false"/>
+		</analyzer>
+		<analyzer type="query">
+			<tokenizer class="org.wltea.analyzer.henry.IKTokenizerFactory" useSmart="true"/>
+		</analyzer>
+	</fieldtype>
+
+ </types>
+</schema>

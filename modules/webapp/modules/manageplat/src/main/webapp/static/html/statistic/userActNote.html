@@ -1,0 +1,249 @@
+
+<style>
+    .tempTable .evenrowcolor{background-color:#FFFFFF;}
+    .tempTable .oddrowcolor{background-color:#FFFFFF;}
+    .tempTable tbody .currentline{background-color:#D1D0CE;}
+</style>
+
+<script type="text/javascript">
+
+    var notePageToolBar;
+    var noteSearcher;
+
+    $(document).ready(function(){
+
+        $("#batchDelButton").click(function(){
+            batchDel();
+        });
+
+           noteSearcher={
+                isFirstLoad:1,
+                pageNo:1,
+                pageSize:20
+            };
+
+           listNote();
+    });
+
+    function listNote(){
+        var params = "page=" + noteSearcher.pageNo + "&rows=" + noteSearcher.pageSize;
+        $.ajax({
+            url: '/statistic/userActNoteList.do',
+            type: 'post',
+            dataType: 'json',
+            data: params,
+            success: function(json){
+                if(!json.rows || json.rows.length==0 ){
+                    $("#noteList_tbody").html("");
+                    if(!json.total)
+                    {
+                        $("#notePageToolBar").html("");
+                    }
+                    return;;
+                }
+                if(noteSearcher.isFirstLoad == 1){
+                    notePageToolBarRegist(json);
+                }else{
+                    renderNoteTable(json);
+                }
+            }
+        });
+    }
+
+    function renderNoteTable(json){
+        var html = '';
+        for(var i = 0; i < json.rows.length; i ++){
+            var n = json.rows[i];
+            html += '<tr id="note_'+n.id+'">'
+                    +   '<td><input type="checkbox" value="'+ n.id+'"/></td>'
+                    +	'<td>' + n.name + '</td>'
+                    +	'<td>' + n.nameCh + '</td>'
+                    +   '<td>'
+                    +     '<a href="javascript:void(0);" onclick="deleteNote(this,'+n.id+');">删除</a>'
+                    +   '</td>'
+                    +	'</tr>';
+        }
+        $("#noteList_tbody").html(html);
+        altRows("noteList_tbody");
+    }
+
+    //给表格的每行增加鼠标移入移出不同的颜色效果
+    function altRows(id){
+
+        var tbody = document.getElementById(id);
+        var rows = tbody.getElementsByTagName("tr");
+        for(var i = 0; i < rows.length; i++){
+            rows[i].className = "evenrowcolor";
+//            if(i % 2 == 0){
+//                rows[i].className = "evenrowcolor";
+//            }else{
+//                rows[i].className = "oddrowcolor";
+//            }
+            rows[i].onmouseover = function(){
+                this.className = "currentline";
+            }
+            rows[i].onmouseout = function(){
+                this.className = "evenrowcolor";
+            }
+        }
+    }
+
+    function notePageToolBarRegist(json){
+
+        notePageToolBar = $('#notePageToolBar').pageBar({
+            params: {}//相关查询参数
+            ,totalCount: json.total
+            ,pageSize: noteSearcher.pageSize//每页显示记录条数
+            ,limitPageCount:20
+            ,pageNo: noteSearcher.pageNo
+            ,changePage: function(t){//换页的回调方法
+                noteSearcher.pageNo = t.pageNo;
+                if (t.getLastPage() < t.pageNo && t.totalCount > 0) {
+                    t.getPreEl().click();
+                    return;
+                }
+                if(noteSearcher.isFirstLoad == 1){
+                    noteSearcher.isFirstLoad = 0;
+                    renderNoteTable(json);
+                }else{
+                    listNote();
+                }
+            }
+        });
+    }
+
+    function refreshData()
+    {
+        noteSearcher.isFirstLoad = 1;
+        listNote();
+    }
+
+    //添加
+    function addNote() {
+        var name = $("#name").val().trim();
+        var nameCh = $("#nameCh").val().trim();
+
+        if (name == null || name == "" || nameCh==null || nameCh=="" ) {
+            alert("动作名称,中文名称不能为空!");
+        } else {
+            var da = {
+                "name": name,
+                "nameCh":nameCh
+            };
+            $.ajax({
+                type: "POST",
+                url: "/statistic/addUserActNote.do",
+                data: da,
+                success: function (msg) {
+                    var res = msg.result;
+                    if (res == "success") {
+                        $("#name").val("");
+                        $("#nameCh").val("");
+                        alert("操作成功");
+                        refreshData();
+
+                    } else {
+                        alert("操作失败");
+                    }
+
+                }
+            });
+        }
+    }
+
+    //删除
+    function deleteNote(ele,id) {
+        var da = {
+            "id": id
+        };
+        $.ajax({
+            type: "POST",
+            url: "/statistic/deleteUserActNote.do",
+            data: da,
+            success: function (msg) {
+                var res = msg.result;
+                if (res == "success") {
+                    alert("操作成功");
+                    refreshData();
+                } else {
+                    alert("操作失败");
+                }
+            }
+        });
+    }
+
+    //选择所有
+    function checkAll(allButton){
+        if($(allButton).attr("checked")){
+            $("#noteList_tbody input[type=checkbox]").attr("checked",true);
+        }else{
+            $("#noteList_tbody input[type=checkbox]").attr("checked",false);
+        }
+    }
+
+    //批量删除
+    function batchDel(){
+        var delIds = [];
+        $("#noteList_tbody input[type=checkbox]:checked").each(function(){
+            delIds.push($(this).val());
+        });
+        if(delIds.length>0){
+            batchDelNotes(delIds.join(","));
+        }else{
+            alert("请选择要删除的记录!");
+        }
+    }
+
+    //删除
+    function batchDelNotes(ids){
+        var deleteNotesConfirm = function (){
+            $.ajax({
+                url: '/statistic/batchDelNotes.do',
+                type: 'post',
+                dataType: 'json',
+                data:"ids="+ids,
+                success: function(json){
+                    alert("删除成功！");
+                    $('#checkAll').attr("checked",false);
+                    refreshData();
+                }
+                ,eventTarget:'batchDelButton'
+            });
+        };
+        if (confirm('是否要删除这些记录?')) {
+            deleteNotesConfirm();
+        }
+//        top.$.messagebox({
+//            type: 'ask',
+//            msg: '是否要删除这些记录?',
+//            fn: function(obj, msg){
+//                if (obj.index == 0) {
+//                    deleteNotesConfirm();
+//                }
+//            }
+//        });
+    }
+</script>
+<div class="template_con">
+    <div class="search_con">
+        <span style="color: red">*</span>动作名称:<input id="name" name="name" style="width:150px;" maxlength="50"/>&nbsp;&nbsp;&nbsp;&nbsp;
+        <span style="color: red">*</span>中文名称:<input id="nameCh" name="nameCh" style="width:150px;" maxlength="50"/>&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="button" value="配置" onclick="addNote()" style="width:60px;"/>
+    </div>
+
+    <div class="noteDiv" style="width:1000px">
+        <table id="noteTable" class="tempTable" border="0" cellspacing="1" cellpadding="1" >
+            <thead>
+            <tr>
+                <th><input type="checkbox" name="checkAll" id="checkAll" onclick="checkAll(this)"/> 全选</th>
+                <th>动作名称</th>
+                <th>中文名称</th>
+                <th>操作[<input type="button" id="batchDelButton" value="删除" />]</th>
+            </tr>
+            </thead>
+            <tbody id="noteList_tbody">
+            </tbody>
+        </table>
+        <div id="notePageToolBar" class="page-bar-con"></div>
+    </div>
+</div>

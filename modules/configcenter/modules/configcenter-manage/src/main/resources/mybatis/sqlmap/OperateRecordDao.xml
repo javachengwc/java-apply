@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.configcenter.dao.global.OperateRecordDao" >
+
+    <resultMap id="BaseResultMap" type="com.configcenter.model.OperateRecord" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="operate_time" property="operateTime" jdbcType="TIMESTAMP" />
+        <result column="operator_id" property="operatorId" jdbcType="INTEGER" />
+        <result column="operator_name" property="operatorName" jdbcType="VARCHAR" />
+        <result column="operation" property="operation" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <select id="countAll"  resultType="java.lang.Integer">
+        select count(1) as count  from cc_operate_record
+    </select>
+
+    <insert id="add" parameterType="com.configcenter.model.OperateRecord">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into cc_operate_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="operateTime != null">
+                operate_time,
+            </if>
+            <if test="operatorId != null">
+                operator_id,
+            </if>
+            <if test="operatorName != null">
+                operator_name,
+            </if>
+            <if test="operation != null">
+                operation,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="operateTime != null">
+                #{operateTime},
+            </if>
+            <if test="operatorId != null">
+                #{operatorId},
+            </if>
+            <if test="operatorName != null">
+                #{operatorName},
+            </if>
+            <if test="operation != null">
+                #{operation},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="queryList" resultMap="BaseResultMap" parameterType="com.configcenter.vo.CommonQueryVo">
+        select * from cc_operate_record
+        <where>
+            <if test="value!=null and value!=''">
+                operation like '%${value}%'
+            </if>
+        </where>
+        order by operate_time desc
+        <if test="start != null and rows != null">
+            LIMIT ${start},${rows}
+        </if>
+    </select>
+
+    <select id="count"  resultType="java.lang.Integer" parameterType="com.configcenter.vo.CommonQueryVo">
+        select count(1) as count
+        from cc_operate_record
+        <where>
+            <if test="value!=null and value!=''">
+                operation like '%${value}%'
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,206 @@
+﻿----------yum介绍-----------
+yum是一个软件包管理器。用python写成，基於RPM包管理，能够从指定的服务器自动下载RPM包并且安装，
+可以自动处理依赖性关系，并且一次安装所有依赖的软体包，无须繁琐地一次次下载、安装。
+
+yum 的理念是使用一个中心仓库(repository)管理一部分甚至一个 distribution 的应用程序相互关系，
+根据计算出来的软件依赖关系进行相关的升级、安装、删除等等操作，减少了 Linux 用户一直头痛的 dependencies 的问题。
+
+yum提供了查找、安装、删除某一个、一组甚至全部软件包的命令，而且命令简洁而又好记。
+yum的关键之处是要有可靠的repository，顾名思义，这是软件的仓库，它可以是http或ftp站点， 
+也可以是本地软件池，但必须包含rpm的header， header包括了rpm包的各种信息，包括描述，功能，提供的文件，依赖性等。
+正是收集了这些 header并加以分析，才能自动化地完成余下的任务。
+
+yum的命令形式一般是如下：yum [options] [command] [package ...]
+[options]是可选的，选项包括-h（帮助），-y（当安装过程提示选择全部为"yes"），-q（不显示安装的过程）
+[command]为所要进行的操作，
+[package ...]是操作的对象。
+
+----------yum自身的安装-----
+rpm -qa|grep yum                         ---查看yum包
+rpm -qa|grep yum|xargs rpm -e --nodeps   ---卸载之
+wget http://centos.ustc.edu.cn/centos/5/os/x86_64/CentOS/yum-3.2.22-40.el5.centos.noarch.rpm
+wget http://centos.ustc.edu.cn/centos/5/os/x86_64/CentOS/yum-fastestmirror-1.1.16-21.el5.centos.noarch.rpm
+wget http://centos.ustc.edu.cn/centos/5/os/x86_64/CentOS/yum-metadata-parser-1.1.2-4.el5.x86_64.rpm
+                                         ---下载新的yum包 64位linux系统下载安装包
+wget http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/yum-3.2.22-40.el5.centos.noarch.rpm
+wget http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/yum-fastestmirror-1.1.16-21.el5.centos.noarch.rpm
+wget http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/yum-metadata-parser-1.1.2-4.el5.i386.rpm
+                                         ---下载新的yum包 32位linux系统下载安装包
+rpm -ivh yum-*                           ---安装yum,注意：yum和yum-fastestmirror相互依赖，所以同时安装即可。有可能先装python。
+yum install yumex yum-presto yum-fastestmirror yum-security yum-allowdowngrade
+                                         ---安装常用插件
+wget http://docs.linuxtone.org/soft/lemp/CentOS-Base.repo -o /etc/yum.repos.d/
+                                         ---下载repo到/etc/yum.repos.d/目录下面,软件包仓库源配置
+yum makecache                            ---生成源数据缓存 ，yum从这三个站点（或者说仓库）下载索引文件，对比更新  
+----------yum配置-----------
+配置文件/etc/yum.conf,可修改配置文件设定仓库
+cachedir=/var/cache/yum                  ---yum缓存的目录，yum在此存储下载的rpm包和数据库，一般是/var/cache/yum
+keepcache=0
+debuglevel=2                             ---除错级别，0──10,默认是2
+logfile=/var/log/yum.log
+exactarch=1                              ---有两个选项1和0,代表是否只升级和你安装软件包cpu体系一致的包，
+                                            如果设为1，则如你安装了一个i386的rpm，则yum不会用686的包来升级
+obsoletes=1
+gpgcheck=1                               ---有1和0两个选择，分别代表是否是否进行gpg校验，如果没有这一项，默认好像也是检查的
+plugins=1
+metadata_expire=1800
+仓库配置目录/etc/yum.repos.d/,配置软件包获取的仓库地址
+----------安装--------------
+#使用yum安装和卸载软件，有个前提是yum安装的软件包都是rpm格式的
+yum install                        ---全部安装
+yum install file.rpm/pkg           ---安装指定的安装包file.rpm/pkg
+         ep:yum --nogpgcheck install ccc.rpm  //安装一个没有签名的软件包
+yum reinstall file.rpm/pkg         ---重新安装软件包file.rpm/pkg
+yum localinstall file.rpm          ---本地安装file.rpm
+yum groupinsall group1             ---安装程序组group1
+         ep:yum groupinstall 'Development Tools' //安装yum软件集合
+----------更新和升级--------
+yum makecache                      ---生成源数据缓存 ，yum从这三个站点（或者说仓库）下载索引文件，对比更新
+yum update                         ---全部更新
+yum update package1                ---更新指定程序包package1
+        ep:yum update kernel    //用yum升级内核
+yum update --exclude=package       ---全部更新时候排除package软件  
+yum localupdate file.rpm            ---本地更新file.rpm
+yum check-update                   ---检查可更新的程序，列出所有可更新的软件清单
+yum upgrade                        ---升级整个系统，一般在系统版本升级的时候用,与yum update不同的是,连旧的淘汰的包也升级
+yum upgrade package1               ---升级指定程序包package1
+yum groupupdate group1             ---升级程序组group1
+       ep:yum groupupdate 'Development Tools'  //升级yum软件集合
+yum downgrade pkg                  ---降级一个软件包
+yum update-minimal                 ---只升级安装最新的包，系统补丁
+----------查找和显示--------
+yum provides package               ---查看软件的主要功能
+yum deplist package                ---查看package依赖情况         
+yum info package1                  ---显示安装包信息package1
+yum info updates                   ---列出资源库中所有可以更新的rpm包的信息
+yum info installed                 ---列出已经安装的所有的rpm包的信息
+yum info extras                    ---列出已经安装的但是不包含在资源库中的rpm包的信息
+yum list                           ---显示所有已经安装和可以安装的程序包
+yum list package1                  ---显示指定程序包安装情况package1
+yum list updates                   ---列出所有可更新的软件包
+yum list installed                 ---列出所有已安装的软件包
+yum list available                 ---列出升级源上所有可以安装的包
+yum list extras                    ---列出所有已安装但不在 Yum Repository 內的软件包
+yum groupinfo group1               ---显示程序组group1信息
+       ep:yum groupinfo 'Development Tools'  //查看yum软件集合信息
+yum grouplist                      ---查看有哪些软件集合
+yum search  keyword                ---搜索关键字keyword相关的安装包
+yum repolist                       ---显示软件仓库的配置
+yum resolvedep pkg                 ---决定哪个包提供了给定的依赖
+yum shell                          ---运行交互式的yum shell
+----------卸载--------------
+yum remove package1                ---删除程序包package1
+yum groupremove group1             ---删除程序组group1
+       ep:yum groupremove 'Development Tools'  //卸载yum软件集合
+----------清除缓存----
+#yum会把下载的软件包和header存储在cache中，而不会自动删除。
+#如果觉得它们占用了磁盘空间，可以使用yum clean指令进行清除
+yum clean packages                 ---清除缓存目录(/var/cache/yum)下的软件包
+yum clean headers                  ---清除缓存目录下的 headers
+yum clean oldheaders               ---清除缓存目录下旧的 headers
+yum clean, yum clean all           ---(= yum clean packages; yum clean oldheaders) 清除缓存目录下的软件包及旧的headers
+----------yum仓库----------
+rpm --import url                   ---导入url授权的RPM-GPG-KEY
+         ep:rpm --import http://freshrpms.net/packages/RPM-GPG-KEY.txt //安装freshrpms.net的GPG key
+yum makecache                      ---生成源数据缓存 ，yum从这三个站点（或者说仓库）下载索引文件，对比更新 
+#如果安装了第三方的仓库源，需要先启用该仓库才能从其安装软件，
+yum --enablerepo=[repo]            ---启用仓库
+         ep: yum --enablerepo=epel install rsnapshot  //启用EPEL软件源
+#如果安装了第三方仓库但不想从其安装软件
+yum --disablerepo=[repo]           ---禁用软件源
+         ep: yum --enablerepo=epel install rsnapshot  //禁用EPEL软件源
+yum --disableexcludes=[repo]       ---禁掉出了这个之外的别的仓库 
+--------常用参数-------------------------------------------------------
+--version                              版本显示
+-t,--tolerant                          忍受发生的错误
+-d                                     调试级别输出
+-e[error level]                        错误级别输出
+-q, --quiet                            安静的操作
+-y                                     回答所有的问题为是
+--installroot=[path]                   设置为root安装
+--noplugins                            禁掉yum插件
+--nogpgcheck                           禁掉GPG验证检查，没有签名的软件安装加这个参数
+--disableplugin=[plugin]               用名称禁掉插件
+--enableplugin=[plugin]                用名称启用插件
+--skip-broken                          忽略包的依赖问题
+--allow-downgrade                      允许软件包降级
+--disablepresto                        禁用Presto插件并且不下载任何增量包 
+---------yum常用插件-----------------------------------------------------
+yum install yumex yum-presto yum-fastestmirror yum-security yum-allowdowngrade
+yumex                                  yum的扩展，图形前端
+yum-presto                             增量包应用插件，有增量包的时候优先下载增量包，可以大大减少下载量
+yum-fastestmirror                      可以让yum选择速度最快的源（软件仓库）
+yum-security                           安全插件
+yum-allowdowngrade                     允许软件降级的插件
+----------yum私服仓库创建----------------------------------
+1. 创建挂载点
+mkdir /yum
+2. 挂载安装介质盘
+mount /dev/cdrom /mnt
+3. 复制光盘内容到/yum目录中
+cp /mnt/* /yum
+4. 安装创建repository的软件包
+rpm -ivh createrepo-0.4.4-2.fc6.noarch.rpm
+5. 把/yum/repodate目录下的所有内容移动到指定的位置/home/repodate
+mv /yum/Server/repodata/*把系统原有的存放repository内容的目录改名
+6. 创建自己的repository(给yum创建软件库)
+createrepo –g /home/repodate/comps-rhel5-server-core.xml /yum/Server/ repodate
+7. 修改yum的repository配置文件,指定baseurl路径为本地file。
+cd /etc/yum.repos.d
+vi rhel51-server.repo，修改的内容如下
+[rhel51-server]
+name=Red Hat Enterprise Linux $releasever - $basearch
+baseurl=file:///yum/Server 
+enable=1
+gpgcheck=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+8. 如果还想实现更新库的功能，只需要把从RHN下载的新的软件包copy到Server目录下，再运行createrepo命令更新库内容就可以了
+9. 测试：安装安装vsftp软件包  yum install vsftpd 
+10. 测试：卸载vsftpd          yum remove vsftpd 
+----------yum额外资料---------------------------------------
+安装第三方仓库 rpmfusion
+
+rpm -ivh http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-stable.noarch.rpm
+rpm -ivh http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-stable.noarch.rpm
+上面得命令有两个作用：
+1.在/etc/yum.repo.d/目录下面创建了rpm fusion的源描述文件
+2.在/etc/pki/rpm-gpg/目录下面安装了安装rpm fusion
+
+安装第三方仓库 rpm.livna.org
+rpm -ivh http://livna-dl.reloumirrors.net … ease-7-2.noarch.rpm   //rpm.livna.org 的软件包仓库
+
+安装第三方仓库 freshrpms.net
+rpm –ivh http://ftp.freshrpms.net/pub/fre … 1.1-1.fc.noarch.rpm  //freshrpms.net 的软件包仓库
+
+在/etc/yum.repo.d/目录下创建一个.repo文件，编辑内容如下:
+[freshrpms]
+name=Fedora Linux $releasever - $basearch - freshrpms
+baseurl=http://ayo.freshrpms.net/fedora/linux/$releasever/$basearch/freshrpms
+gpgcheck=1
+
+rpm --import http://freshrpms.net/packages/RPM-GPG-KEY.txt  ---安装freshrpms.net的GPG key
+
+替换仓库地址为最近最快的
+网址为：ftp://ftp.sjtu.edu.cn/资源真的是非常丰富，从Centos到Ubuntu，ISO镜像、升级包，应有尽有 
+
+1，加入相应的yum的repo配置
+在/etc/yum.repo.d/目录下创建一个.repo文件，编辑内容如下:
+[updates]
+name=Fedora updates
+baseurl=ftp://ftp.sjtu.edu.cn/fedora/linux/updates/$releasever/$basearch/
+enabled=1
+gpgcheck=0
+在/etc/yum.repo.d/目录下再创建一个.repo文件，编辑内容如下:
+[fedora]
+name=Fedora $releasever - $basearch
+baseurl=ftp://ftp.sjtu.edu.cn/fedora/linux/releases/$releasever/Everything/$basearch/os/
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora file:///etc/pki/rpm-gpg/RPM-GPG-KEY
+
+2，导入授权的RPM-GPG-KEY
+rpm --import http://ftp.sjtu.edu.cn/packages/RPM-GPG-KEY.txt   //只是个例子
+
+3，从新仓库下载索引文件，对比更新
+yum makecache 
+-----------------------------------------------------------------------

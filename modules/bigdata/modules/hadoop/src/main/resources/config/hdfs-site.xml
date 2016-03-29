@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+
+    <property>
+        <name>dfs.replication</name>
+        <value>1</value>
+    </property>
+
+    <property>
+        <name>dfs.permissions</name>
+        <value>false</value>
+    </property>
+
+    <property>
+        <name>dfs.nameservices</name>
+        <value>ns1</value>
+    </property>
+
+    <property>
+        <name>dfs.ha.namenodes.ns1</name>
+        <value>site21,site22</value>
+    </property>
+
+    <property>
+        <name>dfs.namenode.rpc-address.ns1.site21</name>
+        <value>site21:9000</value>
+    </property>
+
+    <property>
+        <name>dfs.namenode.http-address.ns1.site21</name>
+        <value>0.0.0.0:50070</value>
+    </property>
+
+    <property>
+        <name>dfs.namenode.rpc-address.ns1.site22</name>
+        <value>site22:9000</value>
+    </property>
+
+    <property>
+        <name>dfs.client.failover.proxy.provider.ns1</name>
+        <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider</value>
+    </property>
+
+</configuration>
+

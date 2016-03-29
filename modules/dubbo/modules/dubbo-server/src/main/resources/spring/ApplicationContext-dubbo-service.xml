@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+         http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <util:properties id="dubbo" location="classpath:dubbo.properties"/>
+
+    <!-- 提供方应用信息，用于计算依赖关系 -->
+    <dubbo:application name="dubbo-demo-server"  />
+
+    <dubbo:consumer timeout="#{dubbo['consumer.timeout']}" />
+
+    <dubbo:annotation id="demo" package="com.dubbo.service" />
+
+    <dubbo:registry protocol="zookeeper" address="#{dubbo['zookeeper.address']}"  />
+
+    <!--暴露端口-->
+    <dubbo:protocol name="dubbo" port="#{dubbo['dubbo.port']}" accepts="#{dubbo['dubbo.accepts']}" />
+
+    <dubbo:provider timeout="#{dubbo['provider.timeout']}" />
+
+    <dubbo:service interface="com.dubbo.service.DemoService" ref="demoService"/>
+</beans>

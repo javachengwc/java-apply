@@ -1,0 +1,34 @@
+--------------------------------------------
+ep:<select class="selector"></select>
+
+1、设置value为pxx的项选中
+
+     $(".selector").val("pxx");
+
+2、设置text为pxx的项选中
+
+    $(".selector").find("option[text='pxx']").attr("selected",true);
+
+3、获取当前选中项的value
+
+    $(".selector").val();
+
+4、获取当前选中项的text
+
+    $(".selector").find("option:selected").text();
+
+很多时候用到select的级联，即第二个select的值随着第一个select选中的值变化。
+
+如：$(".selector1").change(function(){
+
+     // 先清空第二个
+
+      $(".selector2").empty();
+
+     // 实际的应用中，这里的option一般都是用循环生成多个了
+
+      var option = $("<option>").val(1).text("pxx");
+
+      $(".selector2").append(option);
+});
+--------------------------------------------------

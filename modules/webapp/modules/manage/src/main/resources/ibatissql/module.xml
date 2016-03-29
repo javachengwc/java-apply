@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.com//DTD SQL Map 2.0//EN" 
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="Module">
+    <typeAlias alias="Module" type="com.manage.model.rbac.Module" />
+    <typeAlias alias="ModuleQuery" type="com.manage.model.rbac.query.ModuleQuery" />
+    
+    <resultMap id="moduleNoRela" class="Module">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="url" column="url"/>
+        <result property="sort" column="sort"/>
+    </resultMap>
+    
+    <resultMap id="moduleConParent" class="Module" extends="moduleNoRela">
+        <result property="parent" column="parentid" select="getParentById"/>
+    </resultMap>
+    
+    <resultMap id="moduleConChilds" class="Module" extends="moduleNoRela">
+        <result property="childs" select="getChildsById" column="id"/>
+    </resultMap>
+    
+    <resultMap id="moduleAll" class="Module" extends="moduleNoRela">
+        <result property="parent" column="parentid" select="getParentById"/>
+        <result property="childs" select="getChildsById" column="id"/>
+    </resultMap>
+    
+    
+    <select id="getModuleById" resultMap="moduleConParent">
+         select * from admin_module where id=#id#
+    </select>
+    <select id="getParentById" resultMap="moduleConParent">
+         select * from admin_module where id=#id#
+    </select>
+    
+    <select id="getModuleAll" resultMap="moduleConParent">
+        select * from admin_module
+    </select>
+    
+    <select id="getChildsById" resultMap="moduleConParent">
+        select * from admin_module 
+         <dynamic prepend="WHERE"> 
+             <isGreaterThan prepend="AND" property="id" compareValue="0">
+              parentid=#id# 
+             </isGreaterThan>
+             <isEqual prepend="AND" property="id" compareValue="0">
+              parentid is null
+             </isEqual>
+         </dynamic>  
+    </select>
+    
+    <select id="findModule" resultMap="moduleConParent" parameterClass="Module">
+        select * from admin_module 
+        <dynamic prepend="WHERE">   
+           <isNotEmpty prepend="AND" property="name">
+                name like concat(concat("%",#name#),"%") 
+           </isNotEmpty>
+           <isNotEmpty prepend="AND" property="url">
+                url like concat(concat("%",#url#),"%") 
+           </isNotEmpty>
+        </dynamic>       
+    </select>    
+    
+    <select id="findPageModuleTotalCount" resultClass="int" parameterClass="ModuleQuery">
+        select count(1) from admin_module
+        <dynamic prepend="WHERE">   
+           <isNotEmpty prepend="AND" property="name">
+                name like concat(concat("%",#name#),"%") 
+           </isNotEmpty>
+           <isNotEmpty prepend="AND" property="url">
+                url like concat(concat("%",#url#),"%") 
+           </isNotEmpty>
+        </dynamic>
+    </select>
+
+    <select id="findPageModule" resultMap="moduleConParent" parameterClass="ModuleQuery">
+        select * from admin_module 
+        <dynamic prepend="WHERE">   
+           <isNotEmpty prepend="AND" property="name">
+                name like concat(concat("%",#name#),"%") 
+           </isNotEmpty>
+           <isNotEmpty prepend="AND" property="url">
+                url like concat(concat("%",#url#),"%") 
+           </isNotEmpty>
+        </dynamic>
+         limit #start#,#pageSize#
+    </select>
+    
+    <select id="findPageHiModuleTotalCount" resultClass="int" parameterClass="ModuleQuery">
+        select count(1) from admin_module
+        <dynamic prepend="WHERE">   
+           <isNotEmpty prepend="AND" property="name">
+                name like concat(concat("%",#name#),"%") 
+           </isNotEmpty>
+           <isNotEmpty prepend="AND" property="url">
+                url like concat(concat("%",#url#),"%") 
+           </isNotEmpty>
+           <isEmpty prepend="AND" property="parentid">
+               parentid is null
+           </isEmpty>
+           <isNotEmpty property="parentid">
+             <isGreaterThan prepend="AND" property="parentid" compareValue="0">
+              parentid=#parentid# 
+             </isGreaterThan>
+             <isEqual prepend="AND" property="parentid" compareValue="0">
+              parentid is null
+             </isEqual>
+           </isNotEmpty>
+        </dynamic>
+    </select>
+
+    <select id="findPageHiModule" resultMap="moduleConParent" parameterClass="ModuleQuery">
+        select * from admin_module 
+        <dynamic prepend="WHERE">   
+           <isNotEmpty prepend="AND" property="name">
+                name like concat(concat("%",#name#),"%") 
+           </isNotEmpty>
+           <isNotEmpty prepend="AND" property="url">
+                url like concat(concat("%",#url#),"%") 
+           </isNotEmpty>
+           <isEmpty prepend="AND" property="parentid">
+               parentid is null
+           </isEmpty>
+           <isNotEmpty property="parentid">
+             <isGreaterThan prepend="AND" property="parentid" compareValue="0">
+              parentid=#parentid# 
+             </isGreaterThan>
+             <isEqual prepend="AND" property="parentid" compareValue="0">
+              parentid is null
+             </isEqual>
+           </isNotEmpty>
+        </dynamic>
+         limit #start#,#pageSize#
+    </select>
+    
+    
+    <update id="updateModule" parameterClass="Module">
+        update admin_module set name=#name#, url=#url#,sort=#sort# where id=#id#
+    </update>
+
+    <update id="updateModuleName" parameterClass="Module">
+        update admin_module set name=#name# where id=#id#
+    </update>
+
+    <update id="updateModuleNameMap" parameterClass="map">
+        update admin_module set name=#name# where id=#id#
+    </update>
+
+    <delete id="deleteModuleById" parameterClass="int">
+        delete from admin_module where id=#id#
+    </delete>
+
+    <insert id="insertModule" parameterClass="Module">
+        insert into admin_module (name, url, parentid,sort) values (#name#,#url#,#parentid#,#sort#)
+        <selectKey keyProperty="id" resultClass="int">
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+    
+</sqlMap>

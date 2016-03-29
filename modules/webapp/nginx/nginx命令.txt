@@ -1,0 +1,24 @@
+-----------------------nginx常用命令--------------------
+
+nginx                              ---启动nginx
+    eg: nginx -c /usr/nginx/conf/nginx.conf              ---指定配置文件启动nginx
+
+nginx -t                           ---测试配置文件是否正常
+
+nginx -s reload                    ---重启nginx
+
+kill -HUP  nginx.pid               ---平滑重启nginx进程
+
+nginx -s stop                      ---停止nginx
+
+nginx -v                           ---查看版本号
+
+-----------平滑升级nginx
+
+1,用新程序替换旧程序文件，编译安装的话新程序直接编译到nginx安装目录中
+
+2,kill -USR2 旧版程序nginx主进程号
+
+3,kill -WINCH `cat /var/run/nginx.pid`    旧版程序nginx主进程号
+
+--------------------------------------------------------

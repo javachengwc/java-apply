@@ -1,0 +1,10 @@
+<config>
+    <ip>10.10.1.1</ip>
+    <account>jini</account>
+    <password>jakarta99</password>
+    <roles>
+        <role>admin</role>
+        <role>manager</role>
+        <role>user</role>
+    </roles>
+</config>

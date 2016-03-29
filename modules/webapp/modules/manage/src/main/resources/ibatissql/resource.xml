@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.com//DTD SQL Map 2.0//EN" 
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="Resource">
+    <typeAlias alias="Resource" type="com.manage.model.rbac.Resource" />
+    <typeAlias alias="ResourceQuery" type="com.manage.model.rbac.query.ResourceQuery" />
+    
+    <resultMap id="resourceResult" class="Resource">
+        <result property="id" column="id"/>
+        <result property="value" column="value"/>
+        <result property="introduct" column="introduct"/>
+        <result property="moduleid" column="moduleid"/>
+    </resultMap>
+    
+    <select id="getResourceById" resultMap="resourceResult">
+         select * from admin_resource where id=#id#
+    </select>
+    
+    <select id="getResourceAll" resultMap="resourceResult">
+        select * from admin_resource
+    </select>
+    
+    <select id="findListByMd" resultMap="resourceResult" >
+        select * from admin_resource where moduleid=#value#
+    </select>
+    
+    <select id="getResourcesRelaAdminor" resultMap="resourceResult" >
+        select a.* from admin_resource a,admin_resource_permission b,admin_user_role c where a.id=b.resourceid and b.roleid=c.role_id and c.user_id=#value#
+    </select>
+    
+    <select id="findPageResourceTotalCount" resultClass="int" parameterClass="ResourceQuery">
+        select count(1) from admin_resource
+        <dynamic prepend="WHERE">   
+           <isNotEmpty prepend="AND" property="value">
+                value like concat(concat("%",#value#),"%") 
+           </isNotEmpty>
+           <isNotEmpty prepend="AND" property="moduleid">
+               moduleid=#moduleid#  
+           </isNotEmpty>
+        </dynamic>
+    </select>
+
+    <select id="findPageResource" resultMap="resourceResult" parameterClass="ResourceQuery">
+        select * from admin_resource 
+        <dynamic prepend="WHERE">   
+           <isNotEmpty prepend="AND" property="value">
+                value like concat(concat("%",#value#),"%") 
+           </isNotEmpty>
+           <isNotEmpty prepend="AND" property="moduleid">
+               moduleid=#moduleid#  
+           </isNotEmpty>
+        </dynamic>
+         limit #start#,#pageSize#
+    </select>
+    
+    
+    <update id="updateResource" parameterClass="Resource">
+        update admin_resource set value=#value#, introduct=#introduct# where id=#id#
+    </update>
+
+   <delete id="deleteResourceById" parameterClass="int">
+        delete from admin_resource where id=#id#
+    </delete>
+
+    <insert id="insertResource" parameterClass="Resource">
+        insert into admin_resource (value,introduct,moduleid) values (#value#,#introduct#,#moduleid#)
+        <selectKey keyProperty="id" resultClass="int">
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+</sqlMap>

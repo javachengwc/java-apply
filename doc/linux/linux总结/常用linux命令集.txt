@@ -1,0 +1,185 @@
+﻿free /free -g --内存情况
+     Mem：表示物理内存统计 -/+ buffers/cached：表示物理内存的缓存统计 Swap：表示硬盘上交换分区的使用情况，
+     第1行  Mem：total：表示物理内存总量。 used：表示总计分配给缓存（包含buffers 与cache ）使用的数量，但其中可能部分缓存并未实际使用。 free：未被分配的内存。
+                 shared：共享内存，一般系统不会用到。 buffers：系统分配但未被使用的buffers 数量。 cached：系统分配但未被使用的cache 数量。buffer 与cache 的区别见后面。 total = used + free   
+     第2行   -/+ buffers/cached：used：也就是第一行中的used - buffers-cached   也是实际使用的内存总量。 free：未被使用的buffers 与cache 和未被分配的内存之和，这就是系统当前实际可用内存。
+----------------------------
+top /top -d 2/top -b -n 2 --当前进程信息
+    参数： 
+	-d ：后面可以接秒数，就是整个程序画面更新的秒数。预设是 5 秒； 
+	-b ：以批次的方式执行 top ，还有更多的参数可以使用喔！ 
+	通常会搭配数据流重导向来将批次的结果输出成为档案。 
+	-n ：与 -b 搭配，意义是，需要进行几次 top 的输出结果。 
+	-p ：指定某些个 PID 来进行观察监测而已。 
+	在 top 执行过程当中可以使用的按键指令： 
+	? ：显示在 top 当中可以输入的按键指令； 
+	P ：以 CPU 的使用资源排序显示； 
+	M ：以 Memory 的使用资源排序显示； 
+	N ：以 PID 来排序喔！ 
+	T ：由该 Process 使用的 CPU 时间累积 (TIME+) 排序。 
+	k ：给予某个 PID 一个讯号 (signal) 
+	r ：给予某个 PID 重新制订一个 nice 值。 
+    ------------
+	top命令是Linux下常用的性能分析工具，能够实时显示系统中各个进程的资源占用状况，类似于Windows的任务管理器。下面详细介绍它的使用方法。 
+	top - 01:06:48 up 1:22, 1 user, load average: 0.06, 0.60, 0.48 
+	Tasks: 29 total, 1 running, 28 sleeping, 0 stopped, 0 zombie 
+	Cpu(s): 0.3% us, 1.0% sy, 0.0% ni, 98.7% id, 0.0% wa, 0.0% hi, 0.0% si 
+	Mem: 191272k total, 173656k used, 17616k free, 22052k buffers 
+	Swap: 192772k total, 0k used, 192772k free, 123988k cached 
+
+	PID USER PR NI VIRT RES SHR S %CPU %MEM TIME+ COMMAND 
+	1379 root 16 0 7976 2456 1980 S 0.7 1.3 0:11.03 sshd 
+	14704 root 16 0 2128 980 796 R 0.7 0.5 0:02.72 top 
+	1 root 16 0 1992 632 544 S 0.0 0.3 0:00.90 init 
+	2 root 34 19 0 0 0 S 0.0 0.0 0:00.00 ksoftirqd/0 
+	3 root RT 0 0 0 0 S 0.0 0.0 0:00.00 watchdog/0 
+
+
+	统计信息区 
+	前五行是系统整体的统计信息。第一行是任务队列信息，同 uptime 命令的执行结果。其内容如下： 
+
+	01:06:48 当前时间 
+	up 1:22 系统运行时间，格式为时:分 
+	1 user 当前登录用户数 
+	load average: 0.06, 0.60, 0.48 系统负载，即任务队列的平均长度。 
+	三个数值分别为 1分钟、5分钟、15分钟前到现在的平均值。 
+
+	第二、三行为进程和CPU的信息。当有多个CPU时，这些内容可能会超过两行。内容如下： 
+
+	Tasks: 29 total 进程总数 
+	1 running 正在运行的进程数 
+	28 sleeping 睡眠的进程数 
+	0 stopped 停止的进程数 
+	0 zombie 僵尸进程数 
+	Cpu(s): 0.3% us 用户空间占用CPU百分比 
+	1.0% sy 内核空间占用CPU百分比 
+	0.0% ni 用户进程空间内改变过优先级的进程占用CPU百分比 
+	98.7% id 空闲CPU百分比 
+	0.0% wa 等待输入输出的CPU时间百分比 
+	0.0% hi 
+	0.0% si 
+
+	最后两行为内存信息。内容如下： 
+
+	Mem: 191272k total 物理内存总量 
+	173656k used 使用的物理内存总量 
+	17616k free 空闲内存总量 
+	22052k buffers 用作内核缓存的内存量 
+	Swap: 192772k total 交换区总量 
+	0k used 使用的交换区总量 
+	192772k free 空闲交换区总量 
+	123988k cached 缓冲的交换区总量。 
+	内存中的内容被换出到交换区，而后又被换入到内存，但使用过的交换区尚未被覆盖， 
+	该数值即为这些内容已存在于内存中的交换区的大小。 
+	相应的内存再次被换出时可不必再对交换区写入。 
+
+	进程信息区 
+	统计信息区域的下方显示了各个进程的详细信息。首先来认识一下各列的含义。 
+
+	序号 列名 含义 
+	a PID 进程id 
+	b PPID 父进程id 
+	c RUSER Real user name 
+	d UID 进程所有者的用户id 
+	e USER 进程所有者的用户名 
+	f GROUP 进程所有者的组名 
+	g TTY 启动进程的终端名。不是从终端启动的进程则显示为 ? 
+	h PR 优先级 
+	i NI nice值。负值表示高优先级，正值表示低优先级 
+	j P 最后使用的CPU，仅在多CPU环境下有意义 
+	k %CPU 上次更新到现在的CPU时间占用百分比 
+	l TIME 进程使用的CPU时间总计，单位秒 
+	m TIME+ 进程使用的CPU时间总计，单位1/100秒 
+	n %MEM 进程使用的物理内存百分比 
+	o VIRT 进程使用的虚拟内存总量，单位kb。VIRT=SWAP+RES 
+	p SWAP 进程使用的虚拟内存中，被换出的大小，单位kb。 
+	q RES 进程使用的、未被换出的物理内存大小，单位kb。RES=CODE+DATA 
+	r CODE 可执行代码占用的物理内存大小，单位kb 
+	s DATA 可执行代码以外的部分(数据段+栈)占用的物理内存大小，单位kb 
+	t SHR 共享内存大小，单位kb 
+	u nFLT 页面错误次数 
+	v nDRT 最后一次写入到现在，被修改过的页面数。 
+	w S 进程状态。 
+	D=不可中断的睡眠状态 
+	R=运行 
+	S=睡眠 
+	T=跟踪/停止 
+	Z=僵尸进程 
+	x COMMAND 命令名/命令行 
+	y WCHAN 若该进程在睡眠，则显示睡眠中的系统函数名 
+	z Flags 任务标志，
+	
+	默认情况下仅显示比较重要的 PID、USER、PR、NI、VIRT、RES、SHR、S、%CPU、%MEM、TIME+、COMMAND 列。可以通过下面的快捷键来更改显示内容。 
+	更改显示内容 
+	通过 f 键可以选择显示的内容。按 f 键之后会显示列的列表，按 a-z 即可显示或隐藏对应的列，最后按回车键确定。 
+	按 o 键可以改变列的显示顺序。按小写的 a-z 可以将相应的列向右移动，而大写的 A-Z 可以将相应的列向左移动。最后按回车键确定。 
+	按大写的 F 或 O 键，然后按 a-z 可以将进程按照相应的列进行排序。而大写的 R 键可以将当前的排序倒转。
+----------------------------
+df /df -h  --磁盘挂在及容量,使用量,信息	
+----------------------------
+du /du -sh --当前目录下个文件及文件夹大小信息
+----------------------------
+ps -aux    --查看进程
+----------------------------
+ps -mp pid -o THREAD,tid,time|sort -rn ---查看进程pid最耗cpu的线程   
+---------------------------
+jstat -gcutil pid  ---查看java进程垃圾回收状况
+-------------------
+jstack pid ---dump java进程的线程状态
+-----------------
+jmap -heap pid   ---查看java 堆（heap）使用情况
+jmap -histo pid  ---查看堆内存(histogram)中的对象数量，大小
+jmap -dump:format=b,file=m.dat pid   ----打印java进程内存快照
+--------------------
+jhat -port 5000 m.dat   ----在浏览器中访问：http://localhost:5000/  查看进程内存详细信息
+---------------------
+strace -p pid   ---追踪进程pid系统调用或信号产生情况 
+strace -cf -p pid -o strace.log  ---dump系统调用统计信息
+strace -rtf -p pid -o strace1.log  ---dump系统调用详细信息
+truss  -p pid   ---追踪进程pid系统调用或信号产生情况
+ltrace -p pid   ---追踪进程pid调用库函数的情况
+-------------
+top -Hp pid  ----查看进程pid相关线程
+-----------------
+printf "%x\n" 30834   ----10进制转16进制
+----------------
+vmstat 2 2000   ----查看服务器状态，cpu使用率，内存，swap,io读写情况
+-------------------
+mpstat -P ALL 2 2000   ---判断I/O瓶颈.   %iowait列，CPU等待I/O操作所花费的时间,这个值持续很高通常可能是I/O瓶颈所导致的
+--------------------
+iostat -m -x 2 2000   ---判断I/O瓶颈 
+---------------------
+sar -x pid 2 2000   ----查看进程状态
+---------------------
+lsof -p pid  ----查找对应pid的文件句柄
+lsof -i:80   ----查找对应端口被哪个进程占用
+lsof  /tmp/1.txt -----查找对应文件被哪个进程占用
+-----------------------------
+netstat -anp ---查看端口
+--------------------------------
+netstat -n | awk '/^tcp/ {++S[$NF]} END {for(a in S) print a, S[a]}'   ---查看tcp连接
+----------------------
+telnet 0 89  ---判断89端口是否开启
+-----------
+ping ip      ---结果可查看到ip的发包丢包
+----------
+mtr ip      ------可路由追踪到ip的发包丢包
+---------
+traceroute ip ----跟踪数据包到达网络主机所经过的路由,相当与window下的trancert
+----------------------------
+netstat -su  ---查看网卡收包情况
+-----------------------------
+service iptables start/stop  ---开/关防火墙
+chkconfig iptables on/off
+-----------------
+tail –f /var/log/messages   ----linux net相关日志
+-----------------------------
+rm -fr xx  ---移除某个目录
+cp -r xx . ---复制某个目录
+unzip xx.zip -d /home  ---解压xx.zip到/home目录下
+tar -zxvf  /aa.tar.gz  ---解压tar.gz文件
+ln -s /home/.../  aa   ---建软连接aa 连向/home/..
+----------------------------
+
+
+

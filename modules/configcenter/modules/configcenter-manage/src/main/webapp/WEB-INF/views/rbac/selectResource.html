@@ -1,0 +1,30 @@
+<div class="select_rs_div">
+    <ul id="resource_tree" checkbox="true"></ul>
+ </div>
+<script type="text/javascript">
+
+    //关于easyui的窗口和tab页面不执行js说明
+    //在使用easyui中没嵌入iframe的话，除了index界面会有完整的html结构，其他的所有界面都以html片段的形式存在。
+    //easyui的window,tab引入外部界面，其实是jq通过ajax请求过来内容，在append到目标区域。
+    //而通过ajax请求方法的responseText只会抓去完整html片段中<body>里面的内容。如果正好js写在了body外面，那引入页面后js是不执行的。
+    //正确的写法是在引入的界面当中不要出现<html><head><body>三个标签或则把js写在body标签中。
+    //引入外部界面引入的只是一个片段，加载这一个片段只是为了动态嵌入到主界面当中某一个部分显示出来，而不是一个完整的页面。
+    //所以如果页面用了easyui中加载外部界面的组件，例如：panel,window，dailog,tabs等。请确保引入的界面是一个html片段。
+    //html片段正确的写法再次提醒不要出现<html><head><body>三个标签。
+
+    $(function () {
+
+        $('#resource_tree').tree({
+            url: '/rbac/getRoleSelectTreeNode.do?roleId='+selectRoleId,
+            loadFilter: function(data){
+                if (data.result==0){
+                    return data.list;
+                } else {
+                    tipMsg("错误", data.msg);
+                    return;
+                }
+            }
+        });
+    });
+</script>
+

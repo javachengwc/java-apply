@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>门户网站-栏目页</title>
+<script type="text/javascript" src="js/flash.js"></script>
+<link href="css/style.css" type="text/css" rel="stylesheet" />
+<style type="text/css">
+#content{height:600px;}
+#content #left{width:520px;
+               height:580px;
+			   float:left;
+			   margin:10px;
+               background:#fff;}
+#content #left .pro{width:500px;
+                    height:180px;
+					margin-right:10px;
+					margin-top:10px;
+					float:left;
+					background:#fff;}
+#content #left .pro .tt{width:40%;  
+                        height:22px;
+						color:#fff;
+						padding-bottom:2px;
+						text-align:center;
+						font-size:14px;
+						font-weight:bold;
+						padding-top:5px;
+                        background:#000 url(img/pro_bg.gif);}
+*+html #content #left .pro .tt{height:16px;
+                               padding-top:5px;} 
+#content #left li ul{background:#eee;
+                     margin-top:-5px;
+					 width:100%;
+					 border-top:1px solid #000;
+                     line-height:2.2em;}
+#content #left .gray{background:#ccc;}					
+#content #right{width:250px;
+                height:580px;
+				float:right;
+				margin-right:10px;
+				margin-top:10px;
+				background:#fff;}
+#content #right ul{width:55%;
+                   height:200px;
+				   margin:0px auto;
+				   margin-bottom:10px;
+				   padding-top:2px;
+				   text-align:center;
+				   background:url(img/li_bg.gif);}
+#content #right ul li#msg_top{height:20px;
+                              width:96%;
+							  color:#fff;
+							  padding-top:5px;
+							  margin:0px auto;
+							  font-weight:bold;
+							  border:1px solid #fff;
+                              background:#000 url(img/top_bg.gif);} 
+#content #right ul ul{color:#fff;
+                      width:100%;
+                      height:160px;}			   	
+#content #right ul ul li{margin-top:12px;}
+#content #right div{width:100%; 
+                    height:250px;
+					text-align:center;}	
+h4{color:#d00;
+   font-size:14px;
+   border-bottom:1px solid #d00;
+   margin-bottom:10px;}
+#content #right div img{display:block;  
+                        width:100px;
+						height:100px;
+						margin:0px auto;
+						margin-bottom:10px;
+						border:1px solid #000;}	
+</style>
+</head>
+<body>
+<div id="top">
+ <div>
+   用户名
+   <input type="text" size="10" value="" />
+   密码
+   <input type="password" size="10" value="" />
+   <select>
+      <option selected="selected">不保存</option>
+	  <option>保存一周</option>
+	  <option>永久保存</option>
+   </select>
+   <input type="submit" value="登录" class="btn" />
+   <input type="button" value="注册" class="btn" />
+</div>
+</div>
+<div id="ad">
+  <div id="logo"><img src="img/logo.gif" /></div>
+  <div id="swf">
+     <script type="text/javascript">
+	   setFlash("swf/swf.swf","630","55");   
+	 </script>
+  </div>
+</div>
+<div id="nav">
+  <a href="#" id="index">首页</a>
+  <a href="#">社会</a>
+  <a href="#">财经</a>
+  <a href="#">体育</a>
+  <a href="#">娱乐</a>
+  <a href="#">女人</a>
+  <a href="#">博客</a>
+  <a href="#">社区</a>
+  <a href="#">主题</a>
+  <a href="#">IT</a>
+  <a href="#">美食</a>
+  <div id="search"><input type="text" size="20" value="" /><input type="button" value="搜索" class="btn" /></div>
+</div>
+<div id="content">
+  <div id="left">
+    <ul class="pro">
+	    <li class="tt">栏目名称</li>
+	   <li>
+	      <ul>
+		   <li class="gray">·栏目新闻1</li>
+		   <li>·栏目新闻2</li>
+		   <li class="gray">·栏目新闻3</li>
+		   <li>·栏目新闻4</li>
+		   <li class="gray">·栏目新闻5</li>
+		   <li>·栏目新闻6</li>
+		   <li class="gray">·栏目新闻7</li>
+		   <li>·栏目新闻8</li>
+		   <li class="gray">·栏目新闻9</li>
+		   <li>·栏目新闻10</li>
+		   <li class="gray">·栏目新闻11</li>
+		   <li>·栏目新闻12</li>
+		   <li class="gray">·栏目新闻13</li>
+		   <li>·栏目新闻14</li>
+		   <li class="gray">·栏目新闻15</li>
+		   <li>·栏目新闻16</li>
+		   <li class="gray">·栏目新闻17</li>
+		   <li>·栏目新闻18</li>
+		   <li class="gray">·栏目新闻19</li>
+		   <li>·栏目新闻20</li>
+		  </ul>
+	   </li>
+	</ul>    
+  </div>
+  <div id="right">
+    <ul>
+	  <li id="msg_top">便民信息</li>
+	  <li>
+	  <ul>
+	    <li>天气预报|交通违章</li>
+	     <li>列车查询|国家代码</li>
+	     <li>手机归属|体育彩票</li>
+	     <li>身份号码|电视节目</li>
+	     <li>固话区号|邮政编码</li>
+	     <li>电话查询|短信服务</li>
+	  </ul>
+	 </li>
+	</ul>
+	<h4>热点人物</h4>
+	<div>
+	  <img src="img/doga.jpg" />
+	  <img src="img/dogb.jpg"  />
+	 </div>
+  </div>
+</div>
+<div id="bottom">
+  <h5>公司地址：湖南省XX大厦xx楼<br />
+服务热线：0731-4100000转000 传真：0731-4310000 E-mail：admin@menhu.com<br />
+版权所有@2005-2010 门户传媒 <br />
+湘ICP备0000000号</h5>
+</div>
+</body>
+</html>

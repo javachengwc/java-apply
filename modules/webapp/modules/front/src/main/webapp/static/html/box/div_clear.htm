@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>div的清除属性</title>
+<style type="text/css">
+*{margin:0px;
+  padding:0px;
+  }
+.all{width:400px;
+     height:120px;
+	 background-color:#600;
+	 margin:0px auto;
+	 }
+#h-all{width:400px;
+     height:170px;
+	 background-color:#600;
+	 margin:0px auto;
+	 }
+.one,.two,#three_1,#three_2,#three_3,#three_4{width:120px;
+     height:50px;
+	 background-color:#eee;
+	 border:1px solid #000;
+	 }
+.one{float:left;}
+.two{float:right;}
+#three_1{clear:none;}
+#three_2{clear:both;}
+#three_3{clear:right;}
+#three_4{clear:left;}
+</style></head>
+<body>
+<div class="all">
+  <div class="one">第1个div</div>
+  <div class="two">第2个div</div>
+  <div id="three_1">第3个div（clear:none;）</div>
+</div>
+<div class="all">
+  <div class="one">第1个div</div>
+  <div class="two">第2个div</div>
+  <div id="three_2">第3个div（clear:both;）</div>
+</div>
+<div class="all">
+  <div class="one">第1个div</div>
+  <div id="three_3">第2个div（clear:right;）</div>
+  <div class="two">第3个div</div>
+</div>
+<div id="h-all">
+  <div class="one">第1个div</div>
+  <div id="three_4">第2个div（clear:left;）</div>
+  <div class="two">第3个div</div>
+</div>
+</body>
+</html>

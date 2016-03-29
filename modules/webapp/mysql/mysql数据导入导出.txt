@@ -1,0 +1,67 @@
+---------------mysql导出---------------------
+
+-----导出MySQL数据库
+mysqldump -hhostname -uusername -ppassword -R databasename > backupfile.sql
+     -h与hostname，-u与username之间可以有空格，但-p与password之间不能有空格，故一般均无需空格，-R表示同时导出存储过程和函数
+
+mysqldump -hhostname -uusername -ppassword databasename | gzip > backupfile.sql.gz
+
+-----导出MySQL数据库某个(些)表
+mysqldump -hhostname -uusername -ppassword --skip-lock-tables databasename table1 table2 > backupfile.sql
+
+-----同时备份多个MySQL数据库
+mysqldump -hhostname -uusername -ppassword –-databases databasename1 databasename2 databasename3 > multibackupfile.sql
+
+-----备份数据库结构
+mysqldump -hhostname -uusername -ppassword --no-data --databases databasename1 databasename2 databasename3 > structurebackupfile.sql
+
+ep:mysqldump  --default-character-set utf8 -h127.0.0.1 -uroot -proot --no-data --databases databasename1 databasename2 databasename3 > structurebackupfile.sql
+
+-----备份服务器上所有数据库
+mysqldump  --default-character-set utf8 -hhostname -uusername -ppassword -all-databases > allbackupfile.sql
+
+ep: mysqldump  --default-character-set utf8  -h127.0.0.1 -uroot -proot -all-databases > allbackupfile.sql
+
+-----导出数据库表部分数据 -w "sql条件"
+mysqldump --lock-tables=FALSE --default-character-set utf8 -uusername -ppassword -hhost -Pport databasename -w "date>='2015-08-01'" table1> backupfile.sql
+
+ep:mysqldump --lock-tables=FALSE --default-character-set utf8 -uroot -proot -h127.0.0.1 -P3306 testdb -w "date>='2015-08-01'" table1> backupfile.sql
+
+-----导出数据库表部分字段部分数据，导出的是具体数据，而非sql语句
+mysql --default-character-set utf8  -h127.0.0.1 -uroot -proot databasename -e "select id,name from person where create_time >='2015-09-20 00:00:00'" > part.txt
+
+-----导出表部分字段数据，导出的是具体数据，而非sql语句
+select id,name from person where create_time >='2015-09-20 00:00:00' into outfile '/tmp/info.data';
+注:此语句导出的文件是在mysql服务端的服务器上，而非客户端服务器
+
+ep:
+mysql> select id,name from dx_tt into outfile '/tmp/data.txt'
+
+    -> fields terminated by ','  --字段的结束符
+
+    -> optionally enclosed by '"' --字符串的结束符
+
+    -> lines terminated by '\r\n';  --行的结束符
+
+--------------mysql导入-------------------
+
+-----导入MySQL数据库
+mysql -hhostname -uusername -ppassword databasename < backupfile.sql
+
+ep:mysql --default-character-set utf8 -h127.0.0.1 -uroot -proot databasename < backupfile.sql
+
+-----导入数据(数据是通过mysql导出的或者是通过select ... into outfile导出的)
+load data local infile '../part.sql' into table tmp_data;
+注:导入的语句是 local infile表示是本机的文件，如果是infile,则文件是mysql服务端的服务器上面的文件
+ep:
+   load data local infile 'E:\tags.txt' into table tags fields terminated by '\t' optionally enclosed by '"' lines terminated by '\r\n';
+
+-----还原压缩的MySQL数据库
+gzip -d < backupfile.sql.gz | mysql -hhostname -uusername -ppassword databasename
+
+-----将数据库转移到新服务器(|后面的hostname为目标机器)
+mysqldump -hhostname -uusername -ppassword databasename | mysql -hhostname -C databasename
+
+-----导入本地脚本
+source /tmp/import.sql
+-------------------------------------------

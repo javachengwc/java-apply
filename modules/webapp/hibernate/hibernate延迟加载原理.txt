@@ -1,0 +1,97 @@
+--------------------------hibernate延迟加载的原理与实现------------------------
+
+原理：在hibernate中，如果使用了延迟加载（比如常见的load方法），那么除访问主键以外的其它属性时，就会去访问数据库（假设不考虑hibernate的一级缓存），此时session是不允许被关闭。
+
+代码片段：
+
+    public void testLazy() {
+        SessionFactory<User, String> sessionFactory = new SessionFactoryImpl<User, String>( User.class);
+        Session<User, String> session = sessionFactory.openSession();
+        User u = session.load("1");
+        // 这一句不会触发数据库查询操作
+        assertEquals("1", u.getId());
+        // 访问的是非主键属性，开始查询数据库
+        assertNotSame("11", u.getName());
+        session.close();
+    }
+
+hibernate方法实现:
+    public T load(PK id) {
+        // annotationParas利用反射解析被标注为@Entity的type类型(比如说上面提到的User.class)，
+        // 然后将标注为@Id和@Column的属性存入FieldClass对象，供下面进一步使用
+        final FieldClass fieldClass = annotationParas.generatorSQL(type);
+        T obj = null;
+        // 因为是load方法，默认给它加一个基于CGLib的拦截器，该拦截器是实现延迟加载的关键
+        LazyInitializer<T, PK> interceptor = new LazyInitializerImpl<T, PK>();
+        // 将当前的session对象设置给该拦截器，以便在取非主键属性时，能够正常查询数据库
+        // 从而将对象初始化
+        interceptor.setSession(this);
+
+        // 默认生成的是一个基于CGLib的代理，并非真实的对象
+        // User=User$$EnhancerByCGLib$$...
+        Enhancer enhancer = new Enhancer();
+        enhancer.setSuperclass(type);
+        // 注意别忘记将刚才生成的拦截器注入到代理中去
+        enhancer.setCallback(interceptor);
+        obj = (T) enhancer.create();
+
+        try {
+            // 因为通过CGLib生成的User对象，主键属性id=null
+            // 所以还得执行主键的set方法(比如说setId)，d="1"是有值的
+            // 到此，load方法执行完毕，始终没有查询数据库
+            Method method = type.getMethod(getMethodFromField(fieldClass
+                    .getKey()),
+                    new Class<?>[] { fieldClass.getKey().getType() });
+            method.invoke(obj, new Object[] { id });
+            return obj;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        throw new RuntimeException("找不到主键为：[" + id + "]的实体");
+    }
+
+接下来是LazyInitializer，先看它的实现：
+
+    public class LazyInitializerImpl<T, PK extends Serializable> implements
+            LazyInitializer<T, PK>, MethodInterceptor {
+
+        private Session<T, PK> session; // 绑定的session对象
+        private boolean isAlreadyInit = false; // 是否已经查询过数据库
+        private T targetObject; // 目标对象
+
+        // 通CGLib生成的对象，如果设置了此拦截器，那么其方法每次调用时，都会触发此方法
+        public Object intercept(Object obj, Method method, Object[] args,
+                MethodProxy proxy) throws Throwable {
+            // 继续利用反射得到代理对象的标有@Id的主键属性
+            Class<?> clas = obj.getClass();
+            Field field = getPrimaryKey(clas);
+
+            assert (field != null);
+            // 如果当前调用的方法是标注为@Id的话，那么就不从数据库里取，直接返回代理
+            // 即如果是getId()的话，直接用代理调用；如果是getName()的话，那就必须查询数据库，取出实际对象，并进行相应的调用了
+            if (method.getName().toLowerCase().indexOf(field.getName()) > -1) {
+                return proxy.invokeSuper(obj, args);
+            } else {
+                if (!isAlreadyInit) {
+                    field.setAccessible(true);
+                    // session.get方法直接查询数据库，并将ResultSet结果组将成User对象
+                    targetObject = session.get((PK) field.get(obj));
+                    isAlreadyInit = true;
+                }
+                return method.invoke(targetObject, args);
+
+            }
+
+        }
+
+            ..............省略其它辅助方法
+
+    }
+
+当执行User u = session.load("1")后，
+调用u.getId()时，会立即转入LazyInitializer的intercept()方法，然后按照上面的逻辑，自然是直接返回getId()的值，根本不会与数据库打交道。
+当调用u.getName()时，也会先立即转入LazyInitializer的intercept()方法，然后发现"getName()".indexOf("id")>-1==false，于是立即利用已经绑定的session对象去用主键ID往数据库里查询。
+这也是为什么在hibernate中，如果使用了延迟加载使得一个代理没有被初始化，而你又关闭了session，再次去取除主键外的其它属性时，常常出现session close异常。
+
+--------------------------------------------------------------------------------

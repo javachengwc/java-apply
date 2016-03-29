@@ -1,0 +1,469 @@
+<style>
+    .query_tip_div{font-size: 14px;}
+    .query_tip_div p{font-weight:bold;}
+    .query_data_div{margin-top: 10px;margin-bottom: 10px;}
+    .query_btn_div{text-align: center;}
+    .per_condidion_div{margin-bottom: 5px;}
+    .condidion_example{margin-bottom: 0px;}
+    .condition_add_div{text-align: center;margin-top: 5px;}
+    .condition_text_left,.example_text_left{width:100px;text-align:right;margin-right: 5px;}
+    .condition_text_right,.example_text_right{width:100px;margin-left: 5px;margin-right: 5px;}
+    .text-overflow{
+        display:block;/*内联对象需加*/
+        width:300px;
+        word-break:keep-all;/* 不换行 */
+        white-space:nowrap;/* 不换行 */
+        overflow:hidden;/* 内容超出宽度时隐藏超出部分的内容 */
+        text-overflow:ellipsis;
+    }
+    .query_content_div{padding-left: 10px;}
+
+
+    /*.query_content_div {
+        background: none repeat scroll 0 0 #fff;
+        display: none;
+        position: absolute;
+        width: 500px;
+        height:500px;
+        z-index: 999;
+    }*/
+    .modal-header{border-bottom: 1px solid #ccc;}
+    .modal-header h3{float: left;display: block;}
+    .modal-header button{float: right;display: block;}
+    .clear_float {clear: both;}
+</style>
+
+<h2 class="template_title">查询</h2>
+<div class="template_con">
+    <div class="search_con">
+        <a href="#" onclick="showQueryDiv()" style="text-decoration:underline;">查询条件</a>
+    </div>
+    <div class="dataDiv">
+        <table id="resultTable" cellspacing="1" cellpadding="1" border="0" class="tempTable" >
+            <thead>
+            <tr>
+                <th>生成时间</th>
+                <th>创建人</th>
+                <th>下载报告</th>
+                <th>查询条件</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div id="queryDiv" class ="query_content_div" style="display: none;">
+    <!--
+    <div class="modal-header">
+        <h3>配置条件</h3>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="$.uiwidget.popupHide({id:'queryDiv'});">×</button>
+        <div class="clear_float"></div>
+    </div>
+    -->
+    <div class="modal-body">
+        <div class="query_tip_div">
+            <p>请配置查询条件</p>
+            <span>请按样例输入查询条件</span>
+            <br/>
+
+        </div>
+        <div class="query_data_div">
+            <span>日期范围: <input id="beginDate" name="beginDate" type="text" style="width:100px" />&nbsp;&nbsp;<input id="endDate" name="endDate"  type="text" style="width:100px"/></span>
+            <br/>
+            <span>条件样例：</span>
+            <br/>
+            <div class="condidion_example">
+                <input type="text" class="example_text_left" value="0<=" readonly />
+                <select>
+                    <option value="0" selected="true">访问天数</option>
+                </select>
+                <input type="text" class="example_text_right" value="<10" readonly />
+            </div>
+            <br/>
+            <span>查询条件：</span>
+            <br/>
+            <div class="custom_condition_div">
+                <div class="per_condidion_div">
+                    <input type="text" class="condition_text_left" value="<=" />
+                    <select>
+                        <option value="a" selected="true">访问天数</option>
+                        <option value="b" >out数</option>
+                    </select>
+                    <input type="text" class="condition_text_right" value="<"/>
+                    <a href="#" onclick="delPerCondition(this);">删除</a>
+                </div>
+            </div>
+            <div class="condition_add_div">
+                <a href="#" onclick="addCondition();">新增条件</a>
+            </div>
+            <br/>
+            <div class="query_btn_div">
+                <span><input type="button" onclick="queryData();" id="queryButton" name="queryButton" value="开始生成查询报告" /></span>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer"></div>
+</div>
+<script type="text/javascript">
+
+    //比较的符号
+    var compareFlags=['<','<=','>','>=','='];
+    var numbers=['0','1','2','3','4','5','6','7','8','9'];
+
+    var freshTask;
+
+    $(function () {
+
+        $('#beginDate').datebox();
+        $('#endDate').datebox();
+        freshData();
+        freshTask=setTimeout("freshResult()",1000*10);//1000为1秒钟,设置为3秒。
+    });
+
+    function freshResult()
+    {
+        //是否有等待中的记录
+        var hasWait=0;
+        $("#resultTable tbody tr").each(function(){
+
+            var stat =$(this).children("td").eq(2).text();
+            if(stat!=null &&  stat!=undefined && stat.indexOf("等待中")!=-1)
+            {
+                hasWait=1;
+            }
+        });
+        if(hasWait==1)
+        {
+            freshData();
+            freshTask=setTimeout("freshResult()",1000*10);
+        }
+
+    }
+
+    function freshData(){
+
+        $.ajax({
+            url: "/statistic/refreshReport.do",
+            success: function(data){
+                if(data.list!=null && data.list!=undefined) {
+                    $("#resultTable tbody").remove();
+                    $("#resultTable tfoot").remove();
+                    renderData(data.list);
+                }
+            }
+        });
+    }
+
+    function queryData()
+    {
+
+        var beginDate = $("#beginDate").datebox("getValue");
+        var endDate = $("#endDate").datebox("getValue");
+
+        var nowTime = new Date();
+        if( (beginDate!=null && beginDate!=undefined && beginDate!="") && (endDate==null || endDate==undefined ||endDate==""))
+        {
+
+            endDate =nowTime.format('yyyy-MM-dd');
+            //$("#endDate").datebox('setValue', endDate);
+        }
+
+        if(beginDate==null || beginDate==undefined || beginDate=="")
+        {
+            alert("查询开始时间不能为空!")
+            return;
+        }
+
+        var dateCheck=checkQueryDate(beginDate,endDate);
+        if(dateCheck==0)
+        {
+            alert("查询时间不能为空!")
+            return;
+        }
+        if(dateCheck==2)
+        {
+            alert("查询开始时间、结束时间的范围不得超过100天");
+            return;
+        }
+
+        var conditions = [];
+        var hasError=0;
+        var errorTip='';
+        $(".custom_condition_div .per_condidion_div").each(function(){
+
+            var leftValue =$(this).children(".condition_text_left").val();
+            if(leftValue==null || leftValue==undefined || leftValue=="")
+            {
+                leftValue=="";
+            }else
+            {
+
+                var f=checkConditionValue(leftValue);
+                if(f==0)
+                {
+                    //输入不合要求
+                    hasError=1;
+                    errorTip=errorTip+leftValue+",";
+                }
+            }
+            var selectValue =$(this).children("select").val();
+
+            var rightValue =$(this).children(".condition_text_right").val();
+            if(rightValue==null || rightValue==undefined || rightValue=="")
+            {
+                rightValue=="";
+            }else
+            {
+
+                var f=checkConditionValue(rightValue);
+                if(f==0)
+                {
+                    //输入不合要求
+                    hasError=1;
+                    errorTip=errorTip+rightValue+",";
+                }
+            }
+
+            if(hasError==0 && ( hasData(leftValue) || hasData(rightValue) )) {
+                var perCdn = leftValue + selectValue + rightValue;
+                conditions.push(perCdn);
+            }
+
+        });
+        if(hasError==1)
+        {
+            alert("以下输入条件不符合要求:\n"+errorTip);
+            return;
+        }
+        if(conditions.length<=0){
+
+            alert("请输入查询条件!");
+            return;
+        }
+
+        var queryParams ={
+            beginDate:beginDate,
+            endDate:endDate,
+            conditions:conditions.join(",")
+        };
+
+        $.ajax({
+            url: "/statistic/queryUserDistribute.do",
+            data: queryParams,
+            success: function(data){
+
+                if(data==null || data==undefined)
+                {
+                    alert("处理返回异常");
+                    return;
+                }
+                if(data.error!=null && data.error!=undefined) {
+
+                    if(data.error==1)
+                    {
+                        alert(data.msg);
+                    }
+                    if(data.list!=null && data.list!=undefined) {
+                        $("#resultTable tbody").remove();
+                        $("#resultTable tfoot").remove();
+                        renderData(data.list);
+
+                        clearTimeout(freshTask);
+                        freshResult();
+
+                        $('#queryDiv').dialog('close');
+                    }
+                }
+            }
+    });
+
+    }
+
+    function renderData(data){
+
+        var html = '';
+        for(var i = 0; i < data.length; i ++){
+            var n = data[i];
+            var createDate= n.createDate;
+            createDate = new Date(createDate);
+            createDate =createDate.format("yyyy-MM-dd hh:mm:ss");
+            var downData= n.note;
+            if(n.note!=null && '下载'== n.note)
+            {
+                downData='<a href="javascript:downloadUserDistributeData('+ n.id+');">'+ n.note+'</a>';
+            }
+            var condit = n.condit;
+            if(condit==null ||condit==undefined)
+            {
+                condit="";
+            }
+
+            html += '<tr>'
+                    +   '<td style="width:20%">'+createDate+'</td>'
+                    +	'<td style="width:15%">' + n.creatorName + '</td>'
+                    +	'<td style="width:15%">' + downData + '</td>'
+                    +   '<td style="width:50%"><span class="text-overflow">'+ condit+'</span></td>'
+                    +	'</tr>';
+        }
+        html='<tbody>'+html+'</tbody>';
+
+        $("#resultTable").append(html);
+    }
+
+    function checkConditionValue(cdnValue)
+    {
+        var f =0;
+        for(var i=0;i<compareFlags.length;i++)
+        {
+            if(cdnValue.indexOf(compareFlags[i])>=0)
+            {
+                f=1;
+                break;
+            }
+        }
+        return f;
+    }
+
+    function hasData(cdnValue)
+    {
+
+        var h =false;
+        for(var i=0;i<numbers.length;i++)
+        {
+            if(cdnValue.indexOf(numbers[i])>=0)
+            {
+                h=true;
+                break;
+            }
+        }
+        return h;
+    }
+
+    function addCondition()
+    {
+        var newEleContent='<div class="per_condidion_div">\n'+
+                   '<input type="text" class="condition_text_left" value="<=" />\n'+
+                   '<select>'+
+                   '<option value="a" selected="true">访问天数</option>'+
+                   '<option value="b" >out数</option>'+
+                   '</select>\n'+
+                   '<input type="text" class="condition_text_right" value="<"/>\n'+
+                   '<a href="#" onclick="delPerCondition(this);">删除</a>\n'+
+                   '</div>';
+        $(".custom_condition_div").append(newEleContent);
+    }
+
+    function delPerCondition(ele)
+    {
+        $(ele).parent(".per_condidion_div").remove();
+    }
+
+    function downloadUserDistributeData(id){
+        location.href = "/statistic/downloadUserDistributeData.do?recordId=" +id;
+    }
+
+    function cleanCondition()
+    {
+
+        var beginDate = $("#beginDate").datebox("getValue");
+        var endDate = $("#endDate").datebox("getValue");
+
+        if(beginDate!=null && beginDate!=undefined) {
+            $("#beginDate").datebox("setValue", "");
+        }
+
+        if(endDate!=null && endDate!=undefined) {
+            $("#endDate").datebox("setValue", "");
+        }
+
+        var allCondition =$(".custom_condition_div .per_condidion_div");
+        allCondition.remove();
+        addCondition();
+
+//        if(allCondition.length>1)
+//        {
+//            allCondition.first().siblings().remove();
+//
+//        }else if(allCondition.length<=0)
+//        {
+//            addCondition();
+//        }
+    }
+
+    //打开新增用户DIV
+    function showQueryDiv() {
+
+        cleanCondition();
+
+        $("#queryDiv").css("display", "block");
+
+        $("#queryDiv").dialog({
+            autoOpen: false, // 是否自动弹出窗口
+            modal: true, // 设置为模态对话框
+            resizable: true,
+            width: 500, // 弹出框宽度
+            height: 550, // 弹出框高度
+            title: "查询报告", // 弹出框标题
+            position: "center", // 窗口显示的位置
+            buttons: [
+                {
+                    text: '取消',
+                    iconCls: 'icon-undo',
+                    handler: function () {
+                        $('#queryDiv').dialog('close');
+                    }
+                }
+            ]
+        });
+
+//        $.uiwidget.popupShow({id:'queryDiv'});
+
+//        layer.open({
+//            type: 1, //page层
+//            area: ['500px', '500px'],
+//            title: '条件配置',
+//            shade: 0.6, //遮罩透明度
+//            shift: 1, //0-6的动画形式，-1不开启
+//            content: $(".query_div")
+//        });
+
+    }
+
+    function checkQueryDate(startTime,endTime)
+    {
+        if(startTime || endTime){
+            if(startTime==null || startTime== undefined || startTime =="")
+            {
+                return 0;//莫开始时间
+            }
+            if(endTime==null ||endTime ==undefined || endTime=="")
+            {
+                endTime =new Date().format("yyyy-MM-dd");
+            }
+            startTime = startTime.split(" ")[0];
+            endTime = endTime.split(" ")[0];
+            var days = DateDiff(endTime, startTime);
+            if(days>100)
+            {
+                return 2;
+            }
+            return 1;
+        }
+        return 0;
+    }
+
+    function DateDiff(sDate1, sDate2){
+        var aDate, oDate1, oDate2, iDays;
+        aDate = sDate1.split("-");
+        oDate1 = new Date(aDate[0],aDate[1]-1,aDate[2]);
+        aDate = sDate2.split("-");
+        oDate2 = new Date(aDate[0],aDate[1]-1,aDate[2]);
+
+        iDays = parseInt(Math.abs(oDate1 - oDate2) / 1000 / 60 / 60 /24);
+        if((oDate1 - oDate2)<0){
+            return -iDays;
+        }
+        return iDays;
+    }
+
+</script>

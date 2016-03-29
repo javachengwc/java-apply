@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>日志列表</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <link rel="stylesheet" type="text/css" href="/thirdpart/jquery-easyui/themes/default/easyui.css" />
+
+    <script type="text/javascript" src="/js/jquery-1.8.0.js"></script>
+    <script type="text/javascript" src="/js/base/date-util.js"></script>
+    <script type="text/javascript" src="/js/base/string-util.js"></script>
+
+    <script type="text/javascript" src="/thirdpart/jquery-easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/thirdpart/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+
+    <script type="text/javascript" >
+        $(function () {
+
+            $('#tbLog').datagrid({
+                pageSize:20,
+                rownumbers:true,
+                fitColumns:true,
+                collapsible:true,
+                singleSelect:true,
+                showFooter:true,
+                pagination:true,
+                toolbar:'#toolbar',
+                url:'/queryOperatePage.do'
+            });
+
+        });
+
+        function doSearch(value) {
+
+            if(value==null || value.trim()=="" )
+            {
+                value="";
+            }
+            var data ={value:value};
+            $('#tbLog').datagrid('reload',data);
+        }
+
+        function formatDateTime(value, row, index) {
+            if(value==null||value==''){
+                return "";
+            }
+            return new Date(value).format('yyyy-MM-dd hh:mm:ss');
+        }
+
+    </script>
+</head>
+<body>
+    <div id="toolbar">
+        <div style="text-align: right;">
+            <input class="easyui-searchbox" data-options="searcher:doSearch" style="width:100px" />
+        </div>
+    </div>
+    <table id="tbLog" style="width:100%;">
+        <thead>
+        <tr>
+            <th data-options="field:'operatorName',align:'left'" width="15%">操作人</th>
+            <th data-options="field:'operation',align:'left'" width="70%">操作内容</th>
+            <th data-options="field:'operateTime',align:'left',formatter:formatDateTime" width="15%" >操作时间</th>
+        </tr>
+        </thead>
+    </table>
+</body>
+</html>

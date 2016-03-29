@@ -1,0 +1,100 @@
+-------------------redis常用操作--------------------
+
+redis-cli -h 127.0.0.1            ---登陆redis
+
+select num                        ---选择reids上存储数据的dbindex
+
+set mykey2 "hello"                ---设置mykey2值为hello
+
+keys my*                          ---根据参数中的模式，获取符合该模式的所有key
+
+del mykey mykey2                  ---删除 mykey,mykey2
+
+exists mykey                      ---查看key是否还存在
+
+move mysetkey 1                   ---将当前数据库中的mysetkey键移入到ID为1的数据库中
+
+rename mykey mykey1               ---将mykey改名为mykey1
+
+expire mykey 100                  ---将该键的超时设置为100秒
+
+ttl mykey                         ---查看还剩多少秒
+
+persist mykey                     ---持久化key
+
+type key                          ---查看key类型
+
+randomkey                         ---返回数据库中的任意key键
+
+flushdb                           ---清空当前数据库
+
+llen key                          ---查看为key的list的长度
+
+rpush key value                   ---从右给key对应的list添加一个value
+
+lpop key                          ---从左移出key对应list的头元素，并返回它
+
+lrange key  0 -1                  ---查看key对应的list所有元素，注:lrange key start end 是包含end下标元素的
+
+sadd key value                    ---给key对应的set添加一个value
+
+sinter key                        ---返回key对应的set的全部成员,不存在的key被视为空集
+
+smembers key                      ---返回key对应的set的全部成员,不存在的key被视为空集
+
+spop key                          ---移除并返回key对应的set中的一个随机元素
+
+srandmember key                   ---返回key对应的set中的一个随机元素
+
+srem key member [member ...]      ---移除key对应的set中的一个或多个member元素，不存在的member元素会被忽略
+
+smove source destination member   ---将member元素从source集合移动到destination 集合
+
+zadd key score value              ---将key对应的sorted set添加一个元素value 及其值score,如果value存在,只是score改变，将更新value对应的score值
+
+zrange key 0 -1 withscores        ---列出key对应的sorted set的集合所有元素，同时列出元素的score值
+
+zrange key start stop             ---列出key对应的sorted set的子集，注:zrange key start end 是包含end下标元素的
+
+zcount key min max                ---返回key对应的sorted set中, score 值在 min 和 max 之间(默认包括 score 值等于 min 或 max )的成员的数量
+
+zrank key member                  ---返回key对应的sorted set中, member对应的排名,按 score 值递增(从小到大)顺序排列,排名以 0 为底,返回的是排序位置下标
+
+zrevrank key member               ---返回key对应的sorted set中, member对应的排名,按 score 值递减(从大到小)顺序排列,排名以 0 为底,返回的是排序位置下标
+
+zscore key member                 ---返回key对应的sorted set中成员 member 的 score 值
+
+zrem key member                   ---删除key对应的sorted set中的成员member
+
+zrangebyscore key min max [withscores] [LIMIT offset count]
+                                  ---返回key对应的sorted set中,所有 score 值介于 min 和 max 之间(包括等于 min 或 max )的成员,有序集成员按 score 值递增(从小到大)次序排列。
+     eg:zrangebyscore page_rank -inf +inf                ---显示整个集合
+        zrangebyscore page_rank (5 (10                   ---显示5<score<10的集合
+        zrangebyscore page_rank -inf 10 withscores       ---显示score<=10的集合,并带上score值
+
+hget key field                    ---返回key对应的hash表(map)中给定域field的值,当给定域不存在或是给定 key 不存在时，返回 nil
+
+hset key field value              ---将key对应的hash表中的域 field 的值设为 value,如果域 field 已经存在于哈希表中，旧值将被覆盖
+
+hmset key field1 value1 f2 v2     ---批量添加field-value到key对应的hash表中
+
+hkeys key                         ---返回key对应的hash表(map)中所有域
+
+hexists key field                 ---查看key对应的hash表中,给定域 field 是否存在
+
+hlen key                          ---返回key对应的hash表中域的数量
+
+hdel key field [field ...]        ---删除key对应的hash表中的一个或多个指定域，不存在的域将被忽略
+
+hincrby key field increment       ---为key对应的hash表中的域 field 的值加上增量 increment, 增量也可以为负数，相当于对给定域进行减法操作
+
+参考命令在线文档:http://redisdoc.com/
+---------------------------------------------------
+
+redis-cli -h 127.0.0.1 -n 1 keys "cat_20150901_2_*" | xargs redis-cli -h 127.0.0.1 -n 1  del
+---批量删除host为127.0.0.1 数据库为1的redis里面以cat_20150901_2_开头的所有key
+
+redis-cli -h 127.0.0.1 -p 6381  -a redispass info replication
+---查看redis主从情况
+
+-----------------------------------------------------------------------------------------------

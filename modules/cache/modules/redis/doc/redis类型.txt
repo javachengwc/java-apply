@@ -1,0 +1,35 @@
+---------------------redis类型------------------------
+
+String 类型
+    String是redis最基本的类型，而且String类型是二进制安全的。
+    意思是redis的String可以包含任何数据。比如jpg图片或者序列化的对象。
+    从内部实现来看String可以看作byte数组，最大上限是1G字节。
+
+List 类型
+    redis的list类型其实就是一个每个子元素都是String类型的双向链表。
+    另外list会记录链表的长度。链表的最大长度是(2的32次方-1)。
+    可以通过push,pop操作从链表的头部或者尾部添加删除元素。
+    这使得list既可以用作栈，也可以用作队列。
+
+Set 类型
+    redis的set是string类型的无序集合。set元素最大可以包含(2的32次方-1)个元素。
+    set的是通过hash table实现的，所以添加，删除，查找的复杂度都是O。hash table会随着添加或者删除自动的调整大小。
+
+Sorted Set 类型
+    和set一样sorted set也是string类型元素的集合，不同的是每个元素都会关联一个double类型的score。
+    sorted set的实现是skip list和hash table的混合体
+    sorted set最经常的使用方式应该是作为索引来使用.可以把要排序的字段作为score存储，对象的id当元素存储
+
+Hash Set 类型
+    redis hash是一个string类型的field和value的映射表.它的添加，删除操作都是O.hash特别适合用于存储对象。
+    相较于将对象的每个字段存成单个string类型。将一个对象存储在hash类型中会占用更少的内存，并且可以更方便的存取整个对象。
+    省内存的原因是新建一个hash对象时开始是用zipmap（又称为small hash）来存储的。
+    这个zipmap其实并不是hash table，但是zipmap相比正常的hash实现可以节省不少hash本身需要的一些元数据存储开销。
+    尽管zipmap的添加，删除，查找都是O(n)，但是由于一般对象的field数量都不太多。
+    所以使用zipmap也是很快的,也就是说添加删除平均还是O(1)。
+    如果field或者value的大小超出一定限制后，redis会在内部自动将zipmap替换成正常的hash实现.
+    这个限制可以在配置文件中指定
+    hash-max-zipmap-entries 64 #配置字段最多64个
+    hash-max-zipmap-value 512 #配置value最大为512字节
+
+------------------------------------------------------------

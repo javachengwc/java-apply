@@ -1,0 +1,13 @@
+jquery.form.js 需要从github上获取
+
+因为低版本的jquery.form.js做附件上传时，可能会遇到两个问题
+1:$.handleError is not a function
+2:$.httpData is not a function
+报错的原因是：
+附件上传的方法里面缺少了$.handleError以及$.httpData这两方法，(只要是jquery1.4以上的版本都没有这个两个方法了)
+
+本项目中如果是需要mybatis支持的数据访问接口类，需配相应的mybitis的查询语句配置文件
+但如果是不用mybatis实现的数据访问接口，其实现是自己写得实现类来实现此接口，那这个接口对应的数据访问对象
+需要由spring显示配置到配置文件中，不能用注解来配置，比如在ApplicationContext-dao.xml中显示配置bean
+<bean id="scoreDao" class="com.xy.dao.impl.ScoreDaoImpl" />，否则会报错
+org.apache.ibatis.binding.BindingException: Invalid bound statement (not found)

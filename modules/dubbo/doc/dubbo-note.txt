@@ -1,0 +1,6 @@
+--------------------dubbo笔记------------------
+
+dubbo的连接数据量限制上限为8m左右，超过这样的数据量会报错
+java.io.IOException: Data length too large: 15144823, max payload: 8388608, channel: NettyChannel
+
+-----------------------------------------------

@@ -1,0 +1,163 @@
+<style>
+    .tempTable .evenrowcolor{background-color:#FFFFFF;}
+    .tempTable .oddrowcolor{background-color:#FFFFFF;}
+    .tempTable tbody .currentline{background-color:#D1D0CE;}
+</style>
+
+<script type="text/javascript">
+
+    //分页对象
+    var entityItemPageToolBar;
+    //查询对象
+    var entityItemSearcher;
+
+    $(document).ready(function(){
+
+        entityItemSearcher={
+            isFirstLoad:1,
+            pageNo:1,
+            pageSize:20
+        };
+
+        listEntityItem();
+    });
+
+    //查询列表
+    function listEntityItem(){
+
+        var params = "pageNo=" + entityItemSearcher.pageNo + "&pageSize=" + entityItemSearcher.pageSize;
+        var queryParams=getQueryParams();
+        if(queryParams!=null)
+        {
+            params = params+"&"+queryParams;
+        }
+
+        $.ajax({
+            url: '/tongyong/queryItemPage.do',
+            type: 'get',
+            dataType: 'json',
+            data: params,
+            success: function(json){
+                if(!json.list || json.list.length==0 ){
+
+                    $("#entityItemList_tbody").html("");
+                    if(!json.count)
+                    {
+                        $("#entityItemPageToolBar").html("");
+                    }
+                    return;
+                }
+                if(entityItemSearcher.isFirstLoad == 1){
+
+                    entityItemPageToolBarRegist(json)
+
+                }else{
+                    renderEntityItemTable(json);
+                }
+            }
+        });
+    }
+
+    //渲染数据
+    function renderEntityItemTable(json){
+        var html = '';
+        for(var i = 0; i < json.list.length; i ++){
+            var n = json.list[i];
+            html += '<tr id="item_'+n.id+'">'
+                    +   '<td>'+ n.id+'</td>'
+                    +	'<td>' + n.entityId + '</td>'
+                    +	'<td>' + n.itemName + '</td>'
+                    +	'<td>' + n.itemCol + '</td>'
+                    +	'<td>' + n.sort + '</td>'
+                    +	'<td>' + n.format + '</td>'
+                    +   '<td>'
+                    +     '<a href="javascript:void(0);" onclick="uptEntityItem(this,'+n.id+');">修改</a> &nbsp;&nbsp;'
+                    +     '<a href="javascript:void(0);" onclick="delEntityItem(this,'+n.id+');">删除</a> &nbsp;&nbsp;'
+                    +   '</td>'
+                    +	'</tr>';
+        }
+        $("#entityItemList_tbody").html(html);
+        altRows("entityItemList_tbody");
+    }
+
+    //给表格的每行增加鼠标移入移出不同的颜色效果
+    function altRows(id){
+
+        var tbody = document.getElementById(id);
+        var rows = tbody.getElementsByTagName("tr");
+        for(var i = 0; i < rows.length; i++){
+            rows[i].className = "evenrowcolor";
+            rows[i].onmouseover = function(){
+                this.className = "currentline";
+            }
+            rows[i].onmouseout = function(){
+                this.className = "evenrowcolor";
+            }
+        }
+    }
+
+    //初始化分页
+    function entityItemPageToolBarRegist(json){
+
+        entityItemPageToolBar = $('#entityItemPageToolBar').pageBar({
+            params: {}//相关查询参数
+            ,totalCount: json.count
+            ,pageSize: entityItemSearcher.pageSize//每页显示记录条数
+            ,limitPageCount:20
+            ,pageNo: entityItemSearcher.pageNo
+            ,changePage: function(t){//换页的回调方法
+                entityItemSearcher.pageNo = t.pageNo;
+                if (t.getLastPage() < t.pageNo && t.totalCount > 0) {
+                    t.getPreEl().click();
+                    return;
+                }
+                if(entityItemSearcher.isFirstLoad == 1){
+                    entityItemSearcher.isFirstLoad = 0;
+                    renderEntityItemTable(json);
+                }else{
+                    listEntityItem();
+                }
+            }
+        });
+    }
+
+    //查询参数
+    function getQueryParams(){
+        var entityId = $('#entityId').val();
+        var itemName = $('#itemName').val();
+        var itemCol = $('#itemCol').val();
+        return 'entityId=' +entityId + '&itemName=' + itemName + '&itemCol=' + itemCol;
+    }
+
+
+</script>
+
+<div class="template_con">
+    <div class="search_con">
+
+        实例Id:<input id="entityId" name="entityId" style="width:150px;" maxlength="50"/>&nbsp;&nbsp;&nbsp;&nbsp;
+        列项名:<input id="itemName" name="itemName" style="width:150px;" maxlength="50"/>&nbsp;&nbsp;&nbsp;&nbsp;
+        列项:<input id="itemCol" name="itemCol" style="width:150px;" maxlength="50"/>&nbsp;&nbsp;&nbsp;&nbsp;
+
+        <input type="button" value="查询" onclick="listEntityItem()" style="width:60px;"/>
+    </div>
+
+    <div class="entityItemDiv" style="width:1000px">
+        <table id="entityItemTable" class="tempTable" border="0" cellspacing="1" cellpadding="1" >
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>实例Id</th>
+                <th>列项名</th>
+                <th>列项</th>
+                <th>序号</th>
+                <th>格式化</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody id="entityItemList_tbody">
+            </tbody>
+        </table>
+        <div id="entityItemPageToolBar" class="page-bar-con"></div>
+    </div>
+</div>

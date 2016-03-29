@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="defaultSql">
+    
+    <typeAlias alias="MaterialExtQuery" type="com.manage.model.main.query.MaterialExtQuery" />
+    <typeAlias alias="MaterialExt" type="com.manage.model.main.MaterialExt" />
+    <typeAlias alias="UserMaterialQuery" type="com.manage.model.main.query.UserMaterialQuery" />
+    <typeAlias alias="UserMaterial" type="com.manage.model.main.UserMaterial" />
+
+    <select id="findPageMaterialExtTotalCount" resultClass="int" parameterClass="MaterialExtQuery">
+      select ( select count(1) from tdgame_card_template 
+        <dynamic prepend="WHERE">   
+           <isNotEmpty prepend="AND" property="name">
+                name like concat(concat("%",#name#),"%") 
+           </isNotEmpty>
+        </dynamic>
+        ) + ( select count(1) from tdgame_item_equip_template 
+        <dynamic prepend="WHERE">   
+           <isNotEmpty prepend="AND" property="name">
+                name like concat(concat("%",#name#),"%") 
+           </isNotEmpty>
+        </dynamic>
+        ) as a
+    </select>
+
+    <select id="findPageMaterialExt" resultClass="MaterialExt" parameterClass="MaterialExtQuery">
+        select * from ( select id,name,logo icon,`desc`,0 as matelType from tdgame_card_template 
+        <dynamic prepend="WHERE">   
+           <isNotEmpty prepend="AND" property="name">
+                name like concat(concat("%",#name#),"%") 
+           </isNotEmpty>
+        </dynamic>
+        union all select code id,name,icon,null,2 as matelType from tdgame_item_equip_template 
+        <dynamic prepend="WHERE">   
+           <isNotEmpty prepend="AND" property="name">
+                name like concat(concat("%",#name#),"%") 
+           </isNotEmpty>
+        </dynamic>
+        ) a limit #start#,#pageSize#
+    </select>
+    
+    <select id="findPageUserMaterialTotalCount" resultClass="int" parameterClass="UserMaterialQuery">
+      select ( select count(1) from tdgame_card b, tdgame_card_template c, tdgame_users f where b.cardId=c.id and b.owner=f.id  
+          <isNotEmpty prepend="AND" property="name">
+                c.name like concat(concat("%",#name#),"%") 
+           </isNotEmpty>
+           <isNotEmpty prepend="AND" property="owner">
+                b.owner= #owner#
+           </isNotEmpty>
+           <isNotEmpty property="matelType">
+               <isGreaterThan prepend="AND" property="matelType" compareValue="-1">
+                #matelType#=0
+               </isGreaterThan>
+           </isNotEmpty>
+           <isNotEmpty prepend="AND" property="createTimeFromLong">
+                b.createTime &gt;= #createTimeFromLong#
+           </isNotEmpty>
+           <isNotEmpty prepend="AND" property="createTimeToLong">
+                b.createTime &lt;= #createTimeToLong#
+           </isNotEmpty>
+        ) + ( select count(1) from tdgame_item d, tdgame_item_equip_template e, tdgame_users g where d.itemCode=e.code and d.owner=g.id  
+           <isNotEmpty prepend="AND" property="name">
+                e.name like concat(concat("%",#name#),"%") 
+           </isNotEmpty>
+           <isNotEmpty prepend="AND" property="owner">
+                d.owner= #owner#
+           </isNotEmpty>
+           <isNotEmpty property="matelType">
+               <isGreaterThan prepend="AND" property="matelType" compareValue="-1">
+                #matelType#=2
+               </isGreaterThan>
+           </isNotEmpty>
+           <isNotEmpty prepend="AND" property="createTimeFromLong">
+                d.createTime &gt;= #createTimeFromLong#
+           </isNotEmpty>
+           <isNotEmpty prepend="AND" property="createTimeToLong">
+                d.createTime &lt;= #createTimeToLong#
+           </isNotEmpty>
+        ) as a
+    </select>
+
+    <select id="findPageUserMaterial" resultClass="UserMaterial" parameterClass="UserMaterialQuery">
+        select * from ( select a.id ,a.owner,a.cardId materialid,a.createTime,a.count,a.state,b.playerName,c.name,0 as place, null as memo,0 as matelType 
+          from tdgame_card a, tdgame_users b, tdgame_card_template c where a.owner=b.id and a.cardId=c.id 
+           <isNotEmpty prepend="AND" property="name">
+                c.name like concat(concat("%",#name#),"%") 
+           </isNotEmpty>
+           <isNotEmpty prepend="AND" property="owner">
+                a.owner= #owner#
+           </isNotEmpty>
+           <isNotEmpty property="matelType">
+               <isGreaterThan prepend="AND" property="matelType" compareValue="-1">
+                #matelType#=0
+               </isGreaterThan>
+           </isNotEmpty>
+           <isNotEmpty prepend="AND" property="createTimeFromLong">
+                a.createTime &gt;= #createTimeFromLong#
+           </isNotEmpty>
+           <isNotEmpty prepend="AND" property="createTimeToLong">
+                a.createTime &lt;= #createTimeToLong#
+           </isNotEmpty>
+        union all select d.id,d.owner,d.itemCode materialid,d.createTime,1 as count,0 as state,e.playerName,f.name,d.place,d.memo,2 as matelType  
+          from tdgame_item d,tdgame_users e,tdgame_item_equip_template f where d.owner=e.id and d.itemCode=f.code
+          <isNotEmpty prepend="AND" property="name">
+                f.name like concat(concat("%",#name#),"%") 
+           </isNotEmpty>
+           <isNotEmpty prepend="AND" property="owner">
+                d.owner= #owner#
+           </isNotEmpty>
+           <isNotEmpty property="matelType">
+               <isGreaterThan prepend="AND" property="matelType" compareValue="-1">
+                #matelType#=2
+               </isGreaterThan>
+           </isNotEmpty>
+           <isNotEmpty prepend="AND" property="createTimeFromLong">
+                d.createTime &gt;= #createTimeFromLong#
+           </isNotEmpty>
+           <isNotEmpty prepend="AND" property="createTimeToLong">
+                d.createTime &lt;= #createTimeToLong#
+           </isNotEmpty>
+          ) g limit #start#,#pageSize#
+    </select>
+
+</sqlMap>

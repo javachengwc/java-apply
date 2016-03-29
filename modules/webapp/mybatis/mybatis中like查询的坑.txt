@@ -1,0 +1,22 @@
+Mybatis like大致有三种可用的写法：
+select * from person where name  like "%"#{name}"%"
+select * from person where name  like '%'||#{name}||'%'
+select * from person where name  like '%${name}%'
+第一种属于预编译SQL，后两种都不是
+当like中的参数变量是name的时候 ，最好用第一种写话，避免出现mybatis乱填充值的情况
+
+ep:
+<select id="count"  resultType="java.lang.Integer" parameterType="com.configcenter.vo.CommonQueryVo">
+    select count(1) as count
+    from simple_user
+    where 1=1
+    <if test="name!=null and name!=''">
+        and name like "%"#{name}"%"
+    </if>
+    <if test="nameCh!=null and nameCh!=''">
+        and account like "%"#{nameCh}"%"
+    </if>
+</select>
+此例中，不要用<where>标签自动根据条件去判断条件前是否加连接符and ,因为对于预编译sql,mybatis中的<where>标签处理是无效的
+如果此例中 条件为and name like '%${name}%'，很可能在sql执行的时候赋给此变量的值是不确定的值，比如项目名称等，此中情况只
+有在mybatis like操作切变量是name的时候出现，不知道是为什么，应该是mybatis中的一个bug。

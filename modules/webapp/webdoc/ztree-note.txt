@@ -1,0 +1,100 @@
+---------------------------ztree----------------------------
+
+    var zTreeMenu = null;
+
+    var setting = {
+        view: {
+            showLine: false,
+            showIcon: false,
+            selectedMulti: false,
+            dblClickExpand: false
+        },
+        data: {
+            simpleData: {
+                enable: true,
+                idKey: "id",
+                pIdKey: "pid"
+            },
+            key: {
+                name: "name"
+            }
+        },
+        callback: {
+            beforeClick: beforeClick,
+            onClick: function (event, treeId, treeNode) {
+                if (!treeNode.isParent) {
+                    addTab(treeNode.id, treeNode.name, treeNode.url);
+                }
+            }
+        }
+    };
+
+    function beforeClick(treeId, treeNode) {
+        if (treeNode.isParent) {
+            var zTree = $.fn.zTree.getZTreeObj("ztree_menu");
+            zTree.expandNode(treeNode);
+            return false;
+        }
+        return true;
+    }
+
+    $(function () {
+        $.ajax({
+            type: "get",
+            url: "/menuList.json",
+            success: function (data) {
+                var treeObj = $("#ztree_menu");
+
+                zTreeMenu  = $.fn.zTree.init(treeObj, setting, data.list);
+                var curMenu = zTree_Menu.getNodes()[0];
+                zTreeMenu.selectNode(curMenu);
+
+                treeObj.hover(function () {
+                    if (!treeObj.hasClass("show")) {
+                        treeObj.addClass("show");
+                    }
+                }, function () {
+                    treeObj.removeClass("show");
+                });
+            }
+        });
+    });
+
+
+    function addTab(tabId, title, url) {
+
+        //当选项卡不存在的时候，即第一次打开选项卡
+        var e = $('#centerTab').tabs('exists', title);
+        if (e == true) {
+            $('#centerTab').tabs("select", title);
+            return;
+        }
+
+        if (url != null && url.trim() != '') {
+            var name = 'iframe_' + tabId;
+            var content = "<iframe width='100%' height='100%' frameborder='0' scrolling='auto' name='" + name + "' id='" + tabId + "' src='" + url + "'></iframe>";
+            $('#centerTab').tabs('add', {
+                title: title,
+                closable: true,
+                cache: false,
+                content: content
+            });
+        } else {
+            alert("未配页面地址");
+        }
+    }
+
+-----------------------------------------------------------
+
+    var zTnode = zTreeMenu.getNodeByParam("name", "菜单名称", null);
+
+    //alert(zTnode.id+" "+ zTnode.name+" "+ zTnode.showUrl);
+    zTreeMenu.selectNode(zTnode);//选择点
+    zTreeMenu.setting.callback.onClick(null, zTnode.pid, zTnode);//触发点击
+
+    setTimeout(function () {
+         parent.frames["iframe_"+zTnode.id].$("#tipId").val("2");
+         parent.frames["iframe_"+zTnode.id].$("#searchBtn").click();
+    }, 3000);
+
+--------------------------------------------------------------

@@ -1,0 +1,40 @@
+-----------------zookeeper配置安装---------------
+
+安装配置过程:
+
+1,下载解压zookeeper
+2,复制一份zoo_sample.cfg，命名为zoo.cfg。编辑zoo.cfg，
+  ep:准备部署3个节点，配置如下:
+
+  #客户端和服务端或者服务端多个节点之间维持心跳的时间间隔，单位毫秒
+  tickTime=2000
+
+  #服务端节点初始化时，相互通信的等待时间。一个单位就是tickTime的值
+  initLimit=5
+
+  #服务端节点之间同步数据的间隔时间。一个单位就是tickTime的值
+  syncLimit=2
+
+  #数据文件存放目录
+  dataDir=/data/zookeeper/data/data0
+
+  #用来重做数据的事务日志文件存放目录
+  dataLogDir=/data/zookeeper/log/log0
+
+  #客户端连接的端口
+  clientPort=2180
+
+  #server.0，server.1，server.2表示节点编号，
+  #后边用冒号隔开的三个数字，分别表示节点的ip，交换数据的端口号，某个节点挂掉之后专门用来选举的端口号
+  server.0=127.0.0.1:2888:3888
+
+  server.1=127.0.0.1:2889:3889
+
+  server.2=127.0.0.1:2890:3890
+  注：initLimit，syncLimit在单节点部署模式下，不需要配置。
+
+3,在dataDir目录下创建myid文件，写入该节点的编号 0 。这样一个节点就配置完成了,照此配置相应的其他2个节点
+
+4,分别进入三个节点的bin目录，启动zookeeper，运行./zkServer.sh start
+可用自带的工具./zkCli.sh -server 127.0.0.1:2180进行测试
+交互命令有ls, get,set,create,delete等，path参数必须以/开头

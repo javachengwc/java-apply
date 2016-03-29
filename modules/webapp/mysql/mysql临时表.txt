@@ -1,0 +1,23 @@
+----------------------mysql临时表----------------------
+临时表只在当前连接可见，当这个连接关闭的时候，会自动drop。
+这就意味着可以在两个不同的连接里使用相同的临时表名，并且相互不会冲突。
+
+ep:
+create temporary table tmp_table
+(    name varchar(10) not null,
+     passwd char(6) not null
+);
+
+DROP TEMPORARY TABLE IF EXISTS tmp_table;
+ ---------------------------------------------
+
+ 临时表的限制：
+
+ 1、临时表只能用在 memory,myisam,merge,或者innodb
+ 2、临时表不支持mysql cluster(簇)
+ 3、在同一个query语句中，你只能查找一次临时表。ep:
+     mysql> SELECT * FROM temp_table, temp_table AS t2;
+     ERROR 1137: Can't reopen table: 'temp_table'
+ 4、show tables 语句不会列举临时表
+
+ ------------------------------------------------------

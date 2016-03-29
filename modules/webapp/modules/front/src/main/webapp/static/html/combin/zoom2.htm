@@ -1,0 +1,52 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<title>伸缩菜单组</title>
+<script language=JavaScript>
+function Set(ct)
+{
+ if (ct.style.display=="none"){
+   var divs=document.getElementsByTagName("div");
+   for(var i=0;i<divs.length;i++){
+ 	divs[i].style.display="none";	
+	}
+	ct.style.display="block"; 
+  }else{	
+    ct.style.display="none";
+  }
+}
+</script>
+<style type="text/css">
+a{display:block;
+  width:200px;
+  height:20px;
+  text-decoration:none;
+  text-align:center;
+  margin-top:5px;
+  border:1px solid #ccc;
+  color:fff;
+  font-weight:bold;
+  outline:none;
+  background:url(zoom_img/bg2.gif);}
+a:visited{color:fff;}
+a:hover{background:url(zoom_img/bg3.gif);
+        color:#333;}
+#ct1,#ct2,#ct3,#ct4,#ct5{border:1px solid #ccc;
+                         border-top:none;
+						 width:200px;
+						 height:30px;
+						 background:url(zoom_img/bg4.gif) repeat-x bottom;}
+</style>
+</head>
+<body>
+<a href="javascript:Set(ct1);" hidefocus="true">公司介绍</a>
+<div id="ct1" style="display:none" >公司介绍内容区</div>
+<a href="javascript:Set(ct2);"  hidefocus="true">产品介绍</a>
+<div id="ct2" style="display:none" >产品介绍内容区</div>
+<a href="javascript:Set(ct3);"  hidefocus="true">公司文化</a>
+<div id="ct3" style="display:none" >公司文化内容区</div>
+<a href="javascript:Set(ct4);"  hidefocus="true">公司活动</a>
+<div id="ct4" style="display:none" >公司活动内容区</div>
+<a href="javascript:Set(ct5);"  hidefocus="true">留言内容</a>
+<div id="ct5" style="display:none" >留言内容内容区</div>
+</html>

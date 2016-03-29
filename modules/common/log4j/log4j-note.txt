@@ -1,0 +1,17 @@
+------------------------------------log4j note--------------------------
+对于申明了appender的日志，rootLogger的级别设置无用；rootLogger里面日志级别只对没有申明appender的包日志才起作用。
+对于指定了日志级别但没制定appender的日志，rootLogger的级别才生效，依rootLogger的级别为准。
+
+log4j.rootLogger=error, stdout
+log4j.logger.com.test=info,outfile1
+log4j.logger.com.test.tool=info,outfile2
+
+类Test1在com.test包下面，
+类Test2在com.test.tool包下面
+
+日志输出:
+
+Test1将输出到stdout,outfile1
+Test2将输出到stdout,outfile1,outfile2
+
+------------------------------------------------------------------------

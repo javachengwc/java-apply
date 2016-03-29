@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.configcenter.dao.rbac.TagRelaUserOrRoleDao" >
+
+    <insert id="add" parameterType="com.configcenter.model.rbac.TagRelaUserOrRole">
+        insert into simple_tag_user_or_role(tag,rela_id,belong) values(${tag},${relaId},${belong})
+    </insert>
+
+    <delete id="delete" parameterType="com.configcenter.model.rbac.TagRelaUserOrRole">
+        delete from simple_tag_user_or_role
+        <where>
+            <choose>
+                <when  test="id != null ">
+                    id = #{id}
+                </when>
+                <otherwise>
+                    <if test="tag != null and tag!= '' ">
+                         AND tag = ${tag}
+                    </if>
+                    <if test="relaId != null ">
+                        AND rela_id = ${relaId}
+                    </if>
+                    <if test="belong != null ">
+                        AND belong = ${belong}
+                    </if>
+                </otherwise>
+            </choose>
+        </where>
+    </delete>
+
+    <delete id="deleteByUser" parameterType="com.configcenter.model.rbac.User">
+        delete from simple_tag_user_or_role
+        where rela_id =#{id} and belong=0
+    </delete>
+
+    <delete id="deleteByRole" parameterType="com.configcenter.model.rbac.Role">
+        delete from simple_tag_user_or_role
+        where rela_id =#{id} and belong=1
+    </delete>
+
+</mapper>

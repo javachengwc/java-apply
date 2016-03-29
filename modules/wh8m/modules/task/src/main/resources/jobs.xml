@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quartz xmlns="http://www.opensymphony.com/quartz/JobSchedulingData"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.opensymphony.com/quartz/JobSchedulingData
+  http://www.opensymphony.com/quartz/xml/job_scheduling_data_1_5.xsd"
+	version="1.5">
+	<job>
+		<job-detail>
+			<name>ServerHealthJob</name>
+			<group>DEFAULT</group>
+			<job-class>
+				com.task.jobs.ServerHealthJob
+			</job-class>
+		</job-detail>
+		<trigger>
+			<cron>
+				<name>Trigger_ServerHealthJob</name>
+				<group>DEFAULT</group>
+				<job-name>ServerHealthJob</job-name>
+				<job-group>DEFAULT</job-group>
+				<cron-expression>0 0 0/1 * * ?</cron-expression>
+			</cron>
+		</trigger>
+	</job>
+</quartz>

@@ -1,0 +1,15 @@
+---------------------activemq安装,配置,管理-----------------------
+1、 下载ActiveMQ，下载地址 http://activemq.apache.org/
+2、 解压apache-activemq-5.8.0.zip即可完成ActiveMQ的安装
+3、 在bin目录下，双击activemq.bat启动
+4、 运行demo示例，在dos控制台输入activemq.bat xbean:../conf/activemq-demo.xml 即可启动demo示例
+    通过http://localhost:8161/demo/ 就可以访问示例了
+
+activemq默认管理后台:http://localhost:8161/admin/ 默认用户名和密码admin/admin
+修改用户名和密码的话，在conf/jetty-realm.properties中修改
+
+在管理后台展示中
+Number Of Consumers               消费者端的消费者数量
+Number Of Pending Messages        等待消费的消息 这个是当前未出队列的数量
+Messages Enqueued                 进入队列的消息  进入队列的总数量,包括出队列的。这个数量只增不减
+Messages Dequeued                 出了队列的消息  是消费者消费掉的数量

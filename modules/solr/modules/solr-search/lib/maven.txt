@@ -1,0 +1,1 @@
+mvn install:install-file -Dfile=IKAnalyzer2012FF_SELF.jar -DgroupId=org.wltea.analyzer -DartifactId=IKAnalyzer -Dversion=4.0 -Dpackaging=jar

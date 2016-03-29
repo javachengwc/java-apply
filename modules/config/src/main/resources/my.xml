@@ -1,0 +1,10 @@
+<config>
+    <disks>
+        <u-disk>user-disk</u-disk>
+        <soft-disk>soft-disk</soft-disk>
+    </disks>
+    <raid name="raid-name">
+       <r>r1</r>
+       <r>r2</r>
+    </raid>
+</config>

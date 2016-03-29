@@ -1,0 +1,58 @@
+------------------supervisor简介------------------------
+supervisor，简单来说，就是一个Python写的进程管理器。不仅仅可以用来监控进程，还可以用来做开机启动。
+
+------------------supervisor安装启动---------------------
+yum install python 或 apt-get install python
+yum install python-setuptools                            ---装python
+
+easy_install supervisor                                  ---装supervisor
+
+echo_supervisord_conf                                    ---显示一个superviscord_conf的配置模板
+echo_supervisord_conf >/etc/supervisord.conf             ---生成一个supervisord的配置文件到/etc/supervisord.conf
+
+supervisord                                              ---启动supersord服务程序
+
+supervisorctl                                            ---进入supervisor的命令控制模式
+
+-------------------supervisor配置--------------------------
+
+配置文件:/etc/supervisord.conf
+
+片段:
+     [program:demoservice]
+     directory=/home/fw/demoservice/shell/
+     command=sh start.sh
+     pidfile=/tmp/demoservice.pid
+     user=fw
+     autostart=true                      //是否随supervisord进程启动而启动
+     autorestart=true                    //被监控程序异常中断是否自动重启
+     startsecs=3                         //被监控程序启动时持续时间
+     startretries=1                      //被监控程序启动失败重试的次数
+     redirect_stderr=true                //是否重定向std err
+     logfile=/tmp/log/demoservice/demoserivce.log
+
+     如果command的栏运行的是shell脚本，那么在shell 脚本启动被监控程序时要用exec修饰。
+     ep：
+     #!/bin/bash
+     exec /home/fw/storm/bin/stormnimbus
+     否则，supervisord停止不了启动的进程.除此之外，shell脚本里不能出现&之类的后台运行符号。
+
+-------------------supervisor命令----------------------------
+
+supervisorctl reload                                      ---立即生效修改了的supervisord.conf
+
+supervisorctl start xxx                                   ---启动已配置的xxx这个program
+
+supervisorctl stop xxx                                    ---停止xxx这个program
+
+supervisorctl restart xxx                                 ---重启xxx这个program
+
+supervisorctl status                                      ---查看监控程序状态
+
+-------------------------------------------------------------
+
+不带参数运行supervisord是以daemon方式运行。
+当supervisord以非daemon方式运行时，杀掉supervisord后，被监控的进程也退出了。
+而以daemon方式运行，杀掉supervisord对被监控进程无影响
+
+-------------------------------------------------------------

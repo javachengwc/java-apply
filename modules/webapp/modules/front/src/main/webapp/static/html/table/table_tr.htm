@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>表格的行设置</title>
+</head>
+<body>
+设置表格边框为0、黑色背景色、单元格外边距为1像素，然后设置每个单元格为白色背景色。这样，表格就有了黑色细线边框的感觉：
+<table width="400" height="60" align="center" border="0" cellspacing="1" cellpadding="0" bgcolor="#000000">
+    <tr align="center"  height="45">
+       <th bgcolor="#ffffff">电脑组成</th>
+       <td bgcolor="#ffffff">中央处理器</td>
+	   <td bgcolor="#ffffff">水平居中对齐</td>
+  </tr>
+  <tr height="45" align="right">
+       <th bgcolor="#ffffff">知名品牌</th>
+       <td bgcolor="#ffffff">英特尔</td>
+	   <td bgcolor="#ffffff">水平右对齐</td>
+    </tr>
+    <tr height="45" valign="top">
+       <th bgcolor="#ffffff">知名品牌</th>
+       <td bgcolor="#ffffff">英特尔</td>
+	   <td bgcolor="#ffffff">垂直顶端对齐</td>
+    </tr>	
+	<tr height="45" valign="bottom">
+       <th bgcolor="#ffffff">知名品牌</th>
+       <td bgcolor="#ffffff">英特尔</td>
+	   <td bgcolor="#ffffff">垂直底部对齐</td>
+    </tr>
+	<tr height="60" valign="bottom" align="center">
+       <th bgcolor="#ffffff">知名品牌</th>
+       <td bgcolor="#ffffff">英特尔</td>
+	   <td bgcolor="#ffffff">水平居中<br />垂直底部对齐</td>
+    </tr>
+</table>
+</body>
+</html>

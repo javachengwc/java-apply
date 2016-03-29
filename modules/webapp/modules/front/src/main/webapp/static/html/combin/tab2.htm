@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>美化版选项卡切换块</title>
+<script type="text/javascript">
+  function over(x){
+    if(x.className=="up"){
+	   x.className="roll";
+	 }
+	}
+  function out(x){
+    if(x.className=="roll"){
+	   x.className="up";
+	 }
+	} 
+  function Click(x){
+    var grid = x.parentNode.getElementsByTagName("td");
+	var ct = document.getElementsByTagName("div");
+	for(i=0;i<grid.length;i++){
+		if(x==grid[i]){
+          grid[i].className = "down";
+         ct[i].className = "dis";
+		 }else{
+		  grid[i].className = "up";
+		  ct[i].className = "undis";
+		}
+	 }
+  } 
+</script>
+<style type="text/css">
+body{font-size:12px;}
+a{display:block;
+  width:100%;
+  height:100%;
+  text-decoration:none;
+  text-align:center;
+  outline:none;
+  color:#333;
+  font-weight:bold;}
+a:visited{color:#333;}
+#nav{border:1px solid #333;
+     border-bottom:none;}
+.down{background:url(tab_img/down.gif) repeat-x;}
+.roll{background:url(tab_img/roll.gif) repeat-x;}
+.roll a:hover{color:#fff;}
+.up{background:url(tab_img/up.gif) repeat-x;}
+.up a{color:#fff;}
+.dis{display:block;}
+.undis{display:none;}
+.content{border:1px solid #333;
+            border-top:none;
+			background:url(tab_img/bottom.gif) repeat-x bottom;}
+</style>
+</head>
+<body>
+<table width="300" align="center" cellpadding="0" cellspacing="1" id="nav">
+ <tr>
+   <td width="100"   onmouseover="over(this);" onmouseout="out(this);" onclick="Click(this);" class="down"><a href="#" hidefocus="true">IT资讯</a></td>
+   <td width="100"   onmouseover="over(this);" onmouseout="out(this);" onclick="Click(this);" class="up"><a href="#" hidefocus="true">新闻</a></td>
+   <td width="100"   onmouseover="over(this);" onmouseout="out(this);" onclick="Click(this);" class="up"><a href="#" hidefocus="true">汽车</a></td>
+ </tr>
+</table>
+<div class="dis">
+<table width="300" height="150" align="center" cellpadding="0" cellspacing="0" class="content" >
+ <tr>
+   <td rowspan="3"  width="50%" align="center">
+      <img src="tab_img/img_a.gif" border="1" />
+   </td>
+   <td>影响互联网未来的趋势</td>
+ </tr>
+  <tr>
+   <td>08年最热门七大技术</td>
+ </tr>
+  <tr>
+   <td>知识产权国家战略今年出台</td>
+ </tr>
+</table>
+</div>
+<div class="undis">
+<table width="300" height="150" align="center" cellpadding="0" cellspacing="0" class="content">
+ <tr>
+   <td rowspan="3"  width="50%" align="center">
+      <img src="tab_img/img_b.gif" border="1" />
+   </td>
+   <td>年轻的创业者过于急功近利</td>
+ </tr>
+  <tr>
+   <td>07十大流行语发布</td>
+ </tr>
+  <tr>
+   <td>琼斯因撒谎被判入狱</td>
+ </tr>
+</table>
+</div>
+<div  class="undis">
+<table width="300" height="150" align="center" cellpadding="0" cellspacing="0" class="content">
+ <tr>
+   <td rowspan="3"  width="50%" align="center">
+      <img src="tab_img/img_c.gif" border="1" />
+   </td>
+   <td>全球最便宜车诞生</td>
+ </tr>
+  <tr>
+   <td>08车友抢鲜试08雅阁</td>
+ </tr>
+  <tr>
+   <td>中国家用轿车路在何方</td>
+ </tr>
+</table>
+</div>
+</body>
+</html>

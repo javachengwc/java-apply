@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.com//DTD SQL Map 2.0//EN" 
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="ResourcePermission">
+    <typeAlias alias="ResourcePermission" type="com.manage.model.rbac.ResourcePermission" />
+    <typeAlias alias="ResourcePermissionDto" type="com.manage.model.dto.ResourcePermissionDto" />
+    
+    <resultMap id="rpResult" class="ResourcePermission">
+        <result property="id" column="id"/>
+        <result property="roleid" column="roleid"/>
+        <result property="resourceid" column="resourceid"/>
+        <result property="flag" column="flag"/>
+    </resultMap>
+    
+    <resultMap id="rpFullResult" class="ResourcePermission" extends="rpResult">
+        <result property="resource" column="resourceid" select="getResourceById"/>
+        <result property="role" column="roleid" select="getRoleById"/>
+    </resultMap>
+    
+    <select id="getResourcePermissionById" resultClass="ResourcePermission">
+         select * from admin_resource_permission where id=#id#
+    </select>
+    
+    <select id="getResourcePermissionByRR" resultClass="ResourcePermission">
+         select * from admin_resource_permission where roleid=#roleid# and resourceid=#resourceid#
+    </select>
+    
+    <select id="getResourcePermissionAll" resultClass="ResourcePermission">
+        select * from admin_resource_permission
+    </select>
+    
+    <select id="getResourcePermissionDtoAll" resultClass="ResourcePermissionDto">
+        select a.*,b.value as resourceValue, b.introduct as resourceIntroduct from admin_resource_permission a,admin_resource b where a.resourceid=b.id;
+    </select>
+    
+    <select id="findByRp" resultClass="ResourcePermission" parameterClass="ResourcePermission">
+        select * from admin_resource_permission 
+        <dynamic prepend="WHERE">   
+           <isNotEmpty prepend="AND" property="roleid">
+               roleid=#roleid#  
+           </isNotEmpty>
+           <isNotEmpty prepend="AND" property="resourceid">
+               resourceid=#resourceid#  
+           </isNotEmpty>
+        </dynamic>
+    </select>
+    
+    <update id="updateResourcePermission" parameterClass="ResourcePermission">
+        update admin_resource_permission set flag=#flag# where id=#id#
+    </update>
+
+   <delete id="deleteResourcePermissionById" parameterClass="int">
+        delete from admin_resource_permission where id=#id#
+    </delete>
+
+    <insert id="insertResourcePermission" parameterClass="ResourcePermission">
+        insert into admin_resource_permission (roleid,resourceId,flag) values (#roleid#,#resourceid#,#flag#)
+        <selectKey keyProperty="id" resultClass="int">
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+    
+    
+    
+    <delete id="cleanRp" parameterClass="ResourcePermission">
+        delete from admin_resource_permission  
+        <dynamic prepend="WHERE">   
+           <isNotEmpty prepend="AND" property="roleid">
+               roleid=#roleid#  
+           </isNotEmpty>
+           <isNotEmpty prepend="AND" property="resourceid">
+               resourceid=#resourceid#  
+           </isNotEmpty>
+        </dynamic>
+    </delete>
+    
+</sqlMap>

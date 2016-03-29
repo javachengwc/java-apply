@@ -1,0 +1,29 @@
+---------------------------redis主从-------------------------------
+#从服务器上
+vim /etc/redis.conf
+#做如下修改，其他配置保持默认即可
+slaveof 172.17.16.7 6379
+masterauth redispass
+requirepass redispass
+
+
+#主服务器上
+vim /etc/redis.conf
+#做如下修改，其他配置保持默认即可
+masterauth redispass
+requirepass redispass
+
+
+redis-cli -h 127.0.0.1 -p 6381  -a redispass info replication
+---查看redis主从情况
+
+#主从备份
+在从服务器上执行下列命令：
+#备份
+redis-cli save
+
+#关闭redis服务器
+redis-cli shutdown
+
+然后，拷贝数据目录下的rdb文件
+-------------------------------------------------------------------

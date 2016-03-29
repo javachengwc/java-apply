@@ -1,0 +1,55 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<title>动画进度条</title>
+<style type="text/css">
+h4{text-align:center;}
+#main{width:400px;
+      height:20px;
+	  margin-left:auto;
+	  margin-right:auto;
+      background:#eee;
+	  border:1px solid #333;}	  
+#bar{width:0px;	
+     height:20px;  
+	 background:#eee url(zoom_img/bg.gif);}
+button{width:100px;
+       height:18px;
+	   margin:10px;
+	   background:#eee;
+	   border:1px solid #333;}
+</style>
+<script language="JavaScript">
+var act;
+function over(){
+  var w=document.getElementById("bar").style.pixelWidth;
+  if (w < 400){
+    document.getElementById("bar").style.pixelWidth= w + 2;
+	document.getElementById("txt").innerText="Loading..."+Math.floor((w/400)*100)+"%";
+    clearTimeout(act);
+    act = setTimeout(over, 10);
+  }else{
+    document.getElementById("txt").innerText="载入完成100%";
+  }
+}
+function out(){
+   var w = parseInt(document.getElementById("bar").style.pixelWidth);
+   if (w > 0){
+      document.getElementById("bar").style.pixelWidth = w - 2;
+	  document.getElementById("txt").innerText="Loading..."+Math.floor((w/400)*100)+"%";
+      clearTimeout(act);
+      act = setTimeout(out,10);
+   }else{
+    document.getElementById("txt").innerText="等待载入0%";
+  }
+}
+</script>
+</head>
+<body>
+<h4 id="txt">等待载入0%</h4>
+<div id="main"  onmouseover="over();" onMouseOut="out();">
+    <div id="bar"></div>
+</div>
+<button onClick="over();">开始载入</button><button onClick="out();">开始卸载</button>
+</body>
+</html>

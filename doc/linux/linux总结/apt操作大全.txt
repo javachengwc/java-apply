@@ -1,0 +1,159 @@
+﻿----------apt介绍-----------
+apt-get是一条linux命令，适用于deb包管理式（sudo dpkg -i *.deb）的操作系统，主要用于自动从互联网的软件仓库中搜索、安装、升级、卸载软件或操作系统。
+是debian，ubuntu发行版的包管理工具，与红帽中的yum工具非常类似。
+
+apt-get命令一般需要root权限执行，所以一般跟着sudo命令
+
+----------apt自身的安装-----
+rpm -ivh http://ftp.freshrpms.net/pub/fedora/linux/extras/4/i386/apt-0.5.15cnc7-6.fc4.i386.rpm
+#导入GPG签名
+rpm --import http://svn.rpmforge.net/svn/branches/rpms/matthias/apt/RPM-GPG-KEY.freshrpms   
+rpm --import http://rpm.livna.org/RPM-LIVNA-GPG-KEY
+#加Fedora core 4.0的源
+在/etc/apt/目录中找到 sources.list，在里面加如下的两行；
+rpm http://ayo.freshrpms.net fedora/linux/4/i386 core extras updates freshrpms
+rpm http://rpm.livna.org/ fedora/4/i386 lvn
+apt-get update                        ---从apt源中取回软件包的列表
+----------apt配置-----------
+#apt-config 是一个用于读取 APT 配置文件的简单工具
+/etc/apt/sources.list                 ---配置可用软件的下载地址
+/etc/apt/preferences
+/var/cache/apt/archives               ---被下载的软件包的缓存目录
+apt-config shell                      ---shell模式显示配置文件
+apt-config dump                       ---显示配置文件
+----------安装--------------
+apt-get install package               ---安装包
+          ep: apt-get --reinstall install package    //重新安装包
+apt-get -f install                    ---修复安装"-f =--fix-missing", 修复被破坏的依赖性
+                                         等同于新立得软件包管理器中的“编辑->修正（依赖关系）损毁的软件包”再点击“应用。
+                                         如果提示“unmet dependencies”的时候，可执行这行命令
+apt-get install build-essential pkg   ---???
+apt-get build-dep package             ---安装包相关的编译环境
+apt-get source package                ---下载该包的源代码
+          ep:apt-get source --compile zhcon    //抓回 source rpm 编译为二进制的rpm。--compile参数功能等同于rpm -ba
+----------更新和升级--------
+apt-get update                        ---更新源,从默认服务器下载软件包数据库
+                                         更改了/etc/apt/sources.list 或 /etc/apt/preferences 后，需要运行这个命令以令改动生效
+apt-get check                         ---检查本地软件依赖关系合法性，验证本地系统的完整性和一致性，判断本地系统的软件包依赖性是否一致
+apt-get upgrade                       ---更新已安装的包
+apt-get upgrade packege                ---升级指定的软件包，并升级其依赖的软件包
+apt-get dist-upgrade                  ---将系统升级到新版本，全面升级,比upgrade更加智能化的升级，同时解决升级时的一些依赖关系
+apt-get dselect-upgrade               ---使用 dselect 升级
+apt-get source package                ---下载源码包文件
+apt-get build-dep  package            ---为源码包配置所需的构建依赖关系
+
+----------查找和显示--------
+apt-cache search string               ---在软件包列表中搜索字符串
+dpkg -l *package-name-pattern*        ---列出任何和模式相匹配的软件包,会显示每个包是安装了还是没安装
+apt-cache show package                ---获取包的相关信息，如说明、大小、版本、依赖以及冲突等
+dpkg --print-avail package            ---获取包的相关信息，如说明、大小、版本、依赖以及冲突等
+apt-cache showpkg package             ---显示软件包的一些常规信息
+apt-cache depends package             ---查询包的使用依赖
+apt-cache rdepends package            ---查看该包被哪些包依赖
+apt-cache dumpavail                   ---打印可用软件包列表，以及它们各自的详细信息
+apt-cache package                     ---打印软件包列表中任何软件包的名称
+apt-cache showsrc package             ---显示源文件的各项记录
+apt-cache stats                       ---显示相关的统计信息示
+apt-cache dump                        ---显示缓存中的每个软件包的简要描述信息，配置信息
+apt-cache unmet                       ---显示不符合一致性的依赖关系
+apt-cache pkgnames  package           ---列出package开头所有的软件包
+apt-cache pkgnames                    ---快速列出已安装的软件包名称
+apt-cache policy                      ---显示软件包的安装设置状态
+aptitude                              ---周详查看已安装或可用的软件包
+dpkg -S file                          ---显示这个文档属于哪个已安装软件包
+dpkg -L package                       ---列出软件包中的任何文档,都安装了哪些文件以及它们的路径
+apt-file search file                  ---类似dlocate和dpkg -S，但搜索所有有效软件包，不单单只是你系统上的已安装的软件包。
+                                         它所回答的问题是“哪些软件包提供这些文件”。
+                                         必须安装有apt-file软件包，并且确保apt-file数据库是最新的（apt-file update）
+pkg -c file.deb                       ---显示file.deb包含有哪些文件,这个是针对自己下载的.deb包
+apt-get install apt-show-versions     ---apt-show-versions工具可以告诉你系统中哪些包可以更新
+                                         以及其它一些有用的信息。-u选项可以显示可更新软件包列表
+          ep:apt-show-versions -u 
+apt-get install apt-listchanges       ---在每个软件包被安装以后，都会在文档目录(/usr/share/doc/packagename)
+                                         生成一个changelog.Debian.gz的文件，这个文件记录了该软件包最后一
+                                         次更新对系统做了哪些修改，你可以用zless阅读这些信息。不过当你对
+                                         整个系统进行升级以后，逐个查看软件包的更新信息可不是件容易事。
+                                         有一个工具能帮你完成这项任务，它就是apt-listchanges,
+                                         安装了apt-listchanges后，每当apt下载软件包之后(不论来源是Internet、光盘
+                                         或是硬盘)都会显示这些软件包的系统更新信息
+----------卸载--------------
+apt-get remove package                ---删除包
+         ep: apt-get --purge remove package     //删除包，包括删除配置文件等
+dpkg --force-all --purge package      ---强制卸载包，有些软件很难卸载，而且还阻止了别的软件的应用，就能够用这个
+apt-get autoremove                    ---删除为了满足其他软件包的依赖而安装的，但现在不再需要的软件包
+----------缓存-------------
+apt-cache  add                        ---往源缓存加入一个软件包文件
+apt-get clean                         ---清理无用的包
+apt-get autoclean                     ---清理无用的包,apt会把已装或已卸的软件的安装包都备份在硬盘上，需清理可用这个,
+                                         删除保存在缓存目录下(/var/cache/apt/archives)的被下载的软件包
+----------apt仓库----------
+apt-cdrom                             ---用apt-cdrom把安装光盘的软件加入到apt 的 sources.list 中
+apt-cdrom add                         ---加载安装光盘软件信息
+                                         运行apt-cdrom add命令加载安装光盘后，在/etc/apt/sources.list中就应该会包含如下类似内容：
+                                         rpm cdrom:[Gaga V1.1 disc3]/ RedHat gaga
+                                         rpm cdrom:[Gaga V1.1 disc2]/ RedHat gaga
+                                         rpm cdrom:[Gaga V1.1 disc1]/ RedHat gaga
+                                         以后就可以使用apt-get来安装以前未安装的安装光盘上的软件了
+
+#apt-key   Usage: apt-key [command] [arguments]
+apt-key add                           ---add the key contained in ('-' for stdin)
+apt-key del                           ---remove the key
+apt-key export                        ---output the key
+apt-key exportall                     ---output all trusted keys
+apt-key update                        ---update keys using the keyring package
+apt-key list                          ---list keys
+
+----------常用参数-------------------------------------------------------
+apt-cache
+
+     -p=?                            软件包的缓存
+
+     -s=?                            源代码包的缓存
+
+     -q                              关闭进度显示
+
+     -i                              仅为 unmet 命令显示重要的依赖关系
+
+     -c=?                            读取指定配置文件
+
+     -o=?                            设置任意指定的配置选项，例如 -o dir::cache=/tmp
+apt-get 
+
+     -q                              让输出可作为日志 - 不显示进度
+
+     -qq                             除了错误外，什么都不输出
+
+     -d                              仅仅下载，不安装或解开包文件
+
+     -s                              不作实际操作。只是依次模拟执行命令
+
+     -y                               对所有询问都作肯定的回答，同时不作任何提示
+
+     -f                               当没有通过完整性测试时，程序仍试图继续执行
+
+     -m                               当有包文件无法找到时，程序仍试图继续执行
+
+     -u                               显示已升级的软件包列表
+
+     -b                               在下载完源码包后，编译生成相应的软件包
+
+     -V                               显示详尽的版本号
+
+     -c=?                             读取指定配置文件
+
+     -o=?                             设置任意指定的配置选项，例如 -o dir::cache=/tmp
+
+----------apt私服仓库创建-----------------------------------
+
+----------apt额外资料---------------------------------------
+apt-get install alien                 ---安装一个rpm转deb的软件alien
+alien -d *.rpm                        ---将*.rpm转成deb包
+alien -i *.rpm                        ---直接安装rpm包
+
+#auto-apt 正在编译某段程序，突然，停住了！一条错误信息报告说你没有它需要的.h头文件。
+          让auto-apt来处理，它问你是否要安装需要的软件包，然后挂起编译进程，安装好软件包后再恢复编译进程
+auto-apt run command   这里“command”指在运行过程中可能出现“需求文件不存在”问题的命令
+          ep:auto-apt run ./configure
+#为了提高效率auto-apt所用的数据库需要实时更新。可调用 auto-apt update，auto-apt updatedb和 auto-apt update-local来完成更新
+
+-----------------------------------------------------------------------

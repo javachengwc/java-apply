@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>资源管理</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <link rel="stylesheet" type="text/css" href="/thirdpart/jquery-easyui/themes/default/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="/thirdpart/jquery-easyui/themes/icon.css" />
+    <style>
+        #tbResource{width:100%;}
+        #rs_add{width:400px;padding:10px 20px;}
+        #rs_add label{ display: inline-block;width: 80px;}
+        #rs_add input{ width: 200px;}
+        #rs_add select{ width: 100px;}
+        #rs_add .fitem { margin-bottom: 5px;}
+        #add_button a{width:70px;}
+    </style>
+
+    <script type="text/javascript" src="/js/jquery-1.8.0.js"></script>
+    <script type="text/javascript" src="/js/jquery.form.js"></script>
+    <script type="text/javascript" src="/js/base/date-util.js"></script>
+    <script type="text/javascript" src="/js/base/string-util.js"></script>
+    <script type="text/javascript" src="/js/base/popups-util.js"></script>
+
+    <script type="text/javascript" src="/thirdpart/jquery-easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/thirdpart/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="/js/resource.js"></script>
+
+</head>
+<body>
+    <div id="toolbar">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="openRsDlg()">添加</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editRs()">编辑</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-undo" plain="true" onclick="cancelRs()">取消编辑</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="uptRs()">保存</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="delRs()">删除</a>
+    </div>
+
+    <table id="tbResource" fit="true" >
+        <thead>
+        <tr>
+            <th data-options="field:'name',width:120,align:'left',editor:'text'" >名称</th>
+            <th data-options="field:'path',width:180,align:'left',editor:'text'">路径</th>
+            <th data-options="field:'isMenu',width:80,align:'middle',editor:{
+                type:'combobox',
+                options:{
+                    panelHeight:'auto',
+                    valueField:'key',
+                    textField:'value',
+                    method:'get',
+                    data:[{key:'1',value:'是'},{key:'0',value:'否'}]
+                }
+            }"  formatter="formatIsMenu"  >是否菜单</th>
+            <th data-options="field:'isShow',width:80,align:'middle',editor:{
+                type:'combobox',
+                options:{
+                    panelHeight:'auto',
+                    valueField:'key',
+                    textField:'value',
+                    method:'get',
+                    data:[{key:'1',value:'显示'},{key:'0',value:'不显示'}]
+                }
+            }"  formatter="formatIsShow"  >是否显示</th>
+            <th data-options="field:'tag',align:'left',width:100,editor:'text'">标签</th>
+        </tr>
+        </thead>
+    </table>
+
+    <div id="rs_add" class="easyui-dialog" closed="true" buttons="#add_button">
+
+        <form id="rs_form" method="post">
+            <div class="fitem">
+                <label>父节点:</label>
+                <input name="parentId"  id="rsParentId" class="easyui-textbox" required="true" />
+            </div>
+            <div class="fitem">
+                <label>名称:</label>
+                <input name="name" class="easyui-textbox" required="true" />
+            </div>
+            <div class="fitem">
+                <label>路径:</label>
+                <input name="path" class="easyui-textbox" />
+            </div>
+            <div class="fitem">
+                <label>是否菜单:</label>
+                <select  name="isMenu" panelHeight="auto" class="easyui-combobox" required="true">
+                    <option value="1">是</option>
+                    <option value="0">否</option>
+                </select>
+            </div>
+            <div class="fitem">
+                <label>是否显示:</label>
+                <select  name="isShow" panelHeight="auto" class="easyui-combobox" required="true" missingMessage="请选择显示状态">
+                    <option value="1">显示</option>
+                    <option value="0">不显示</option>
+                </select>
+            </div>
+            <div class="fitem">
+                <label>权限标签:</label>
+                <input name="tag" class="easyui-textbox" />
+            </div>
+        </form>
+    </div>
+    <div id="add_button">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" onclick="addRs()" >保存</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#rs_add').dialog('close');">取消</a>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,1 @@
+eofexception  tomcat问题，删除tomcat下work目录中的内容，删除webapp下对应的工程，重部署

@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>个人网站-日志</title>
+<link href="css/style.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="js/main.js"></script>
+<script type="text/javascript">
+ function closeContent(x){
+     x.parentNode.style.display="none";
+	 }
+ function openContent(x){
+     var t=document.getElementById("right");
+     document.getElementById("content").style.display="block";
+	 document.getElementById("content_h5").innerHTML=t.getElementsByTagName("h5")[x].innerHTML;
+	 document.getElementById("content_span").innerHTML=t.getElementsByTagName("span")[x].innerHTML;
+	 document.getElementById("content_p").innerHTML=t.getElementsByTagName("p")[x].innerHTML;
+	 } 
+</script>
+<style type="text/css">
+h4{letter-spacing:1em;
+   font-size:15px;
+   background:#e6e4db url(img/h4_bg.jpg);
+   height:24px;
+   border-bottom:1px solid #d9d7cb;
+   padding-top:5px;
+   margin-top:2px;
+   padding-left:10px;}
+#right{width:754px;
+       height:538px;
+	   border:1px solid #d9d7cb;
+	   margin:10px;
+	   float:left;}
+#right h4{width:744px;}
+#right h5,#right .date,#right p{margin-left:30px;}
+#right h5{margin-top:10px;
+          font-size:13px;}
+.date{font-style:italic;}
+#right a{color:#333;}
+#right a:visited{color:#333;}
+#right a:hover{color:#d9d7cb;}
+#right p{width:700px;
+         height:20px;
+		 background:#f4f4f0;
+		 border:1px solid #999;		 
+		 text-indent:2em;
+		 line-height:1.5em;
+		 white-space:nowrap;
+         overflow:hidden;
+         text-overflow:ellipsis;}
+hr{margin-top:20px;}
+#content{position:absolute;
+         top:195px;
+		 left:5px;
+		 display:none;
+		 width:99%;
+		 height:440px;
+		 background:#f4f4f0;
+		 border:1px solid #999;
+		 text-align:center;	}
+#content h5{text-align:center;
+            font-size:16px;
+			margin:10px;}
+#content p{width:700px;
+           height:300px;
+		   margin:10px auto;
+		   background:#fff;
+		   border:1px solid #999;	
+		   text-align:left;	 
+		   text-indent:2em;
+		   line-height:1.8em;
+		   overflow:auto;}
+#content button{width:100px;
+                height:18px;
+				border:1px solid #999;}
+</style>
+</head>
+<body>
+<div id="top">
+   <div id="top_txt"><a href="javascript:addFav('个人网站示例');" title="添加本页到收藏夹">收藏本页</a>|<a href="mailto:zhanzhang@qq.com" title="给站长发邮件">联系站长</a></div>
+</div>
+<div id="vi">
+   <div id="tt">成功没有早晚<br />
+   努力就有收获</div>
+</div>
+<div id="nav">
+   <ul>
+      <li><a href="index.htm" target="_self">首页</a></li>
+      <li class="bar">|</li>
+      <li><a href="article.htm" target="_self">日志</a></li>
+      <li class="bar">|</li>
+      <li><a href="photo.htm" target="_self">相册</a></li>
+      <li class="bar">|</li>
+      <li><a href="msg.htm" target="_self">留言</a></li>
+   </ul>
+</div>
+<div id="main">
+  <div id="right">
+     <h4>|日志列表</h4>
+	 <h5><a href="javascript:openContent(0);">Internet技术的应用</a></h5>
+	 <span class="date">2011/01/25</span>
+	 <br />
+	 <p>在信息技术发达的今天，读者每天都可以感受到Internet技术在生活中的巨大作用。通过Internet，读者可以每天浏览到最新的新闻，可以参与论坛各种话题火热的讨论，可以和世界各地的朋友一起玩游戏等。</p>
+	 <hr />
+	 <h5><a href="javascript:openContent(1);">网页技术学前班</a></h5>
+	 <span class="date">2011/01/23</span>
+	 <br />
+	 <p>Internet，中文称为国际互联网。众所周知，Internet起源于1969年，由美国国防部授权ARPANET（高级研究规划署）进行的互联网的试验。当初没有人会预料到，在几十年后的今天，互联网成了全球互通的主要方式。网页是Internet最主要的组成部分，在本章读者可以学到很多Internet及网页制作方面的基础知识。TCP/IP协议使用客户端/服务器模式进行通信。TCP/IP通信是点对点的，即通信是网络中的一台主机与另一台主机之间的。读者要了解是，当前Internet上数据都是通过TCP/IP在网络上进行控制、转发的。
+</p>
+  <hr />
+	 <h5><a href="javascript:openContent(2);">CSS技术的应用</a></h5>
+	 <span class="date">2011/01/20</span>
+	 <br />
+	 <p>CSS技术的应用的具体内容。</p>
+	 <hr />
+	 <h5><a href="javascript:openContent(3);">HTML技术的应用</a></h5>
+	 <span class="date">2011/01/10</span>
+	 <br />
+	 <p>HTML技术的应用的具体内容。</p>
+	 <hr />
+	 <h5><a href="javascript:openContent(4);">JavaScript技术的应用</a></h5>
+	 <span class="date">2011/01/05</span>
+	 <br />
+	 <p>JavaScript技术的应用的具体内容</p>
+	 <hr /><a href="#">下一页</a>
+  </div>
+</div>
+<div id="bt">本网站版权为YEQING所有<br /><span id="sysmsg"></span></div>
+<div id="content">
+  <h5 id="content_h5"></h5>
+  <span class="date" id="content_span"></span><br />
+  <p id="content_p"></p>
+  <button onclick="closeContent(this);">关闭窗口</button>
+</div>
+</body>
+</html>

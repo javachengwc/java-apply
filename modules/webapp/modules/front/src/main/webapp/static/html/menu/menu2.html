@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+    下拉导航菜单
+</title>
+<style type="text/css">
+    *
+    {
+        margin: 0;
+        padding: 0;
+        font-style: normal;
+        font-family: 宋体;
+    }
+    body
+    {
+        text-align: center;
+        font-size: 14px;
+    }
+    #content
+    {
+        margin: 0 auto;
+        width: 600px;
+    }
+    #content #nav
+    {
+        background: #006400;
+        height: 32px;
+        margin-top: 60px;
+    }
+    #content #nav ul
+    {
+        list-style: none;
+    }
+    #content #nav ul li
+    {
+        float: left;
+        width: 100px;
+        line-height: 32px;
+        position: relative;
+    }
+    #nav div
+    {
+        width: 100px;
+        position: absolute;
+        left: 0px;
+        padding-bottom: 0px;
+        background: #006400;
+        float: left;
+        height: 0;
+        overflow: hidden;
+    }
+    #content #nav li .a
+    {
+        text-decoration: none;
+        color: #00CD00;
+        line-height: 32px;
+        display: block;
+        border-right: 1px solid #009800;
+    }
+    #nav div a
+    {
+        text-decoration: none;
+        color: #00CD00;
+        line-height: 26px;
+        display: block;
+    }
+    #nav div a:hover
+    {
+        background: #005400;
+    }
+</style>
+</head>
+<body>
+<div id="content">
+    <div id="nav">
+        <ul id="supnav">
+            <li>
+                <a class="a" href="#">产品介绍</a>
+                <div>
+                    <a href="#">产品一</a>
+                    <a href="#">产品二</a>
+                    <a href="#">产品三</a>
+                </div>
+            </li>
+            <li>
+                <a class="a" href="#">服务介绍</a>
+                <div>
+                    <a href="#">服务一</a>
+                    <a href="#">服务二</a>
+                    <a href="#">服务三</a>
+                    <a href="#">服务四</a>
+                    <a href="#">服务五六七八</a>
+                </div>
+            </li>
+            <li>
+                <a class="a" href="#">成功案例</a>
+                <div>
+                    <a href="#">案例一</a>
+                    <a href="#">案例二</a>
+                </div>
+            </li>
+            <li>
+                <a class="a" href="#">关于我们</a>
+                <div>
+                    <a href="#">我们</a>
+                </div>
+            </li>
+            <li>
+                <a class="a" href="#">在线演示</a>
+                <div>
+                    <a href="#">演示一</a>
+                    <a href="#">演示二</a>
+                    <a href="#">演示三四五</a>
+                    <a href="#">演示六七八</a>
+                    <a href="#">演示九</a>
+                </div>
+            </li>
+            <li>
+                <a class="a" href="#">联系我们</a>
+                <div>
+                    <a href="#">联系</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>
+
+<script type="text/javascript">
+    var supnav = document.getElementById("supnav");
+    var nav = document.getElementById("nav");
+    var btns = document.getElementsByTagName("li");
+    var subnavs = nav.getElementsByTagName("div");
+    var paddingbottom = 20;
+    var defaultHeight = 0;
+    function drop(obj, ivalue) {
+        var a = obj.offsetHeight;
+        var speed = (ivalue - obj.offsetHeight) / 8;
+        a += Math.floor(speed);
+        obj.style.height = a + "px";
+    }
+    window.onload = function () {
+        for (var i = 0; i < btns.length; i++) {
+            btns[i].index = i;
+            btns[i].onmouseover = function () {
+                var osubnav = subnavs[this.index];
+                var sublinks = osubnav.getElementsByTagName("a");
+                if (osubnav.firstChild.tagName == undefined) {
+                    var itarheight =
+                            parseInt(osubnav.childNodes[1].offsetHeight) * sublinks.length +
+                            paddingbottom;
+                }
+                else {
+                    var itarheight =
+                            parseInt(osubnav.firstChild.offsetHeight) * sublinks.length +
+                            paddingbottom;
+                }
+                clearInterval(this.itimer);
+                this.itimer = setInterval(function () {
+                    drop(osubnav, itarheight); }, 30);
+            }
+            btns[i].onmouseout = function () {
+                var osubnav = subnavs[this.index];
+                clearInterval(this.itimer);
+                this.itimer = setInterval(function () {
+                    drop(osubnav, defaultHeight); }, 30);
+            }
+        }
+    }
+</script>

@@ -1,0 +1,35 @@
+jqzoom是一款基于jQuery的图片方法插件。
+
+使用方法：1.引入jQuery与jqzoom,jqzoom.css
+
+　　　　　2.准备两张一大一小大小相同的图片，小图片放在<img>标签的"src"属性里，给img标签加个<a>标签，<a>标签的"href"属性链向大图片
+
+参数说明：zoomWidht:　　小图片所选区域的宽度。
+
+　　　　　zoomHeight:　  小图片所选区域的高度。
+
+　　　　　zoomType:　　 默认值为standard。如果设为reverse，在小图片仲，移入鼠标时，所选区域高亮，非选中区域淡灰色。
+
+　　　　　xOffset:　　　　放大后的图片与小图片间的X(横坐标)距离。
+
+　　　　　yOffset:　　　　放大后的图片与小图片间的Y(纵坐标)距离。
+
+　　　　　position:　　　  放大后的图片相对原图片的位置，默认为"right",还可设置为"left","top","bottom"。
+
+　　　　　lens:　　　　　　布尔值，表示是否显示小图片中的选中区域，默认值为"true",如果设为"false"，则放大后的图片上面不会出现主题字样。
+
+　　　　　imageOpacity:　当zoomType的值为"reverse"时，用来设置非选中区域透明度的值。取值范围在(0.0-1.0)间。
+
+　　　　　preloadImages：布尔值，表示是否重新加载大图像。
+
+　　　　　preloadText：　 重新加载大图像时，小图像显示的文本说明。
+
+　　　　   title：　　　　　 大图像顶部是否显示<a>标签里的title。
+
+　　　　　showEffect:　　 大图像加载时的特效，可选值:"show"表示直接显示，"fadein"由透明度渐变载入效果。
+
+　　　　　hideEffect：　　 大图像隐藏特效，可选值："hide"表示直接隐藏，"fadeout"透明度渐变隐藏。　　
+
+　　　　　fadeinSpeed:　　当大图像的载入特效设为"fadein"时，此属性可设置特效的时间，可选值为'fast','slow',number分别代表，快慢，毫秒数。
+
+　　　　　fadtoutSpeed:　 当大图像的隐藏特效设为"fadeout"时，此属性可设置特效载的时间，可选值为'fast','slow',number分别代表，快慢，毫秒数。

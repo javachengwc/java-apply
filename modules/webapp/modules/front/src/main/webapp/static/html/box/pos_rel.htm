@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>CSS相对定位</title>
+<style type="text/css">
+*{margin: 0px;
+  padding:0px;}
+#all{width:400px;
+     height:400px;
+     background-color:#ccc;}
+#fixed{width:100px;
+       height:80px;
+	   border:15px ridge #f00;
+	   background-color:#9c9;
+	   position:relative;
+	   top:20px;
+	   left:20px;}
+#a,#b{width:200px;
+   height:120px;  
+   background-color:#eee;
+   border:2px outset #000;}
+</style></head>
+
+<body>
+<div id="all">
+   <div id="a">第1个无定位的div容器</div>
+   <div id="fixed">相对定位的容器</div>
+   <div id="b">第2个无定位的div容器</div>
+</div>
+</body>
+</html>

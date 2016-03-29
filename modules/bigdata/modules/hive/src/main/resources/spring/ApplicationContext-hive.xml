@@ -1,0 +1,19 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <bean id="hive-driver" class="org.apache.hadoop.hive.jdbc.HiveDriver"/>
+
+    <bean id="hive-ds" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+        <property name="driver" ref="hive-driver"/>
+        <property name="url" value="#{hiveProps['hive.url']}"/>
+        <property name="username" value="#{hiveProps['hive.username']}"/>
+    </bean>
+
+    <bean id="jdbcTemplateHive" class="org.springframework.jdbc.core.JdbcTemplate">
+        <constructor-arg name="dataSource" ref="hive-ds"/>
+    </bean>
+
+</beans>

@@ -1,0 +1,60 @@
+﻿-----------crontab简介-----------
+crontab命令用于设置周期性被执行的指令。该命令从标准输入设备读取指令，并将其存放于“crontab”文件中，以供之后读取和执行。
+通常，crontab储存的指令被守护进程激活， crond常常在后台运行，每一分钟检查是否有预定的作业需要执行。
+crontab文件包含送交cron守护进程的一系列作业和指令。每个用户可以拥有自己的crontab文件；
+同时，操作系统保存一个针对整个系统的crontab文件，这个文件只能由系统管理员来修改。
+
+-----------crontab配置文件-------
+/ect/crontab                   ---系统的定时任务配置文件
+/var/spool/cron/*              ---每个用户的定时任务配置文件
+/etc/cron.d/                   ---任何要执行的crontab文件或脚本
+#如果是系统任务或非用户任务，可直接修改/etc/crontab文件或cron.d下面的任务脚本文件
+
+-----------crontab执行权限-------
+crontab权限问题到/etc/下一看，文件cron.allow和cron.deny是否存在
+1、如果两个文件都不存在，则只有root用户才能使用crontab命令。 
+2、如果cron.allow存在但cron.deny不存在，则只有列在cron.allow文件里的用户才能使用crontab命令，如果root用户也不在里面，则root用户也不能使用crontab。 
+3、如果cron.allow不存在, cron.deny存在，则只有列在cron.deny文件里面的用户不能使用crontab命令，其它用户都能使用。 
+4、如果两个文件都存在，则列在cron.allow文件中而且没有列在cron.deny中的用户可以使用crontab，如果两个文件中都有同一个用户，
+以cron.allow文件里面是否有该用户为准，如果cron.allow中有该用户，则可以使用crontab命令
+
+-----------crontab服务启动停止------
+/sbin/service crond start      ---启动服务
+/sbin/service crond stop       ---关闭服务
+/sbin/service crond restart    ---重启服务
+/sbin/service crond reload     ---重新载入配置
+/sbin/service crond status     ---查看服务状态
+
+-----------crontab命令及选项-----
+
+crontab  -e                    ---编辑当前用户的crontab定时任务文件
+crontab  -l                    ---查看当前用户的crontab定时任务配置信息
+crontab  -u                    ---指定某个用户的crontab定时任务
+crontab  -r                    ---删除当前用户的crontab定时任务，谨慎使用，删就把该用户所有的定时任务删了
+
+-----------crontab时间表达式-----
+
+ 分     小时    日       月       星期
+---------------------------------------
+0-59    0-23    1-31     1-12     0-6   (取值范围,0表示周日)
+
+几个特殊符号的含义:
+
+“*”代表取值范围内的数字,
+“/”代表”每”,
+“-”代表从某个数字到某个数字,
+“,”分开几个离散的数字
+
+-----------crontab例子-----------
+50 7 * * * root run-parts /etc/cron.daily
+         ---每天7:50以root身份执行/etc/cron.daily目录中的所有可执行文件
+0 */1 * * * root run-parts /etc/cron.hourly 
+         ---每小时执行/etc/cron.hourly内的脚本
+0 24 * * * root run-parts /etc/cron.daily 
+         ---每天执行/etc/cron.daily内的脚本
+0 */1 * * * root /etc/selfcron
+         ---每小时执行selfcron文件里的脚本 
+0 15 * * 1，3，5 shutdown -r +5
+         ---每周一，三，五的下午3：00系统进入维护状态，重新启动系统
+
+---------------------------------------

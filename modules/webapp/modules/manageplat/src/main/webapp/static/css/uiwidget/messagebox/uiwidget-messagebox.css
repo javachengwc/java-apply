@@ -1,0 +1,71 @@
+
+ul,li,p,span,td{font-size:12px;margin:0;padding:0;}
+ul,li{list-style-type:none;}
+.msg-window-wrap{width:345px;height:170px;display:block;position:absolute;text-align:center;overflow:hidden;}
+/*header*/
+.msg-window-header{width:100%;height:21px;}
+.msg-window-header-left, .msg-window-header-right{width:6px;height:21px;float:left;background: url(../../../img/uiwidget/messagebox/bg-msg/bg-window-leftcorners.gif) no-repeat 0 0;}
+.msg-window-header-right{background: url(../../../img/uiwidget/messagebox/bg-msg/bg-window-rightcorners.gif) no-repeat 0 0;float:right;}
+.msg-window-header-content{width:333px;height:21px;background: url(../../../img/uiwidget/messagebox/bg-msg/bg-window-topbottom.gif) repeat-x top;float:left;}
+.msg-window-header-content span{text-size:left;font-weight:bold;line-height:21px;float:left;}
+
+.btn-msg-window-close-noraml, .btn-msg-window-close-over{width:19px;height:20px;position:absolute;right:5px;top:-1px;display:block;cursor:pointer;background: url(../../../img/uiwidget/messagebox/ico-msg/ico-msg-window-close.gif) no-repeat 0 2px;}
+.btn-msg-window-close-over{background: url(../../../img/uiwidget/messagebox/ico-msg/ico-msg-window-close.gif) no-repeat -19px 2px;} 
+
+/*content*/
+.msg-window-container{width:100%;background-color:#f2f2f2;overflow:hidden;text-align:center;display:block;}
+.msg-window-body-left, .msg-window-body-right, .msg-window-body-center{height:139px;}
+.msg-window-body-left{width:6px;background: url(../../../img/uiwidget/messagebox/bg-msg/bg-window-leftright.gif) repeat-y 0 0;float:left;}
+.msg-window-body-right{width:6px;background: url(../../../img/uiwidget/messagebox/bg-msg/bg-window-leftright.gif) repeat-y -6px 0;float:right;}
+.msg-window-body-center{width:333px;float:left;}
+.msg-window-msg-content{width:auto;height:60px;margin-top:0px;overflow-y:auto;overflow-x:hidden;}
+.msg-window-msg-content table {float:left;}
+.msg-window-msg-content table td{height:60px;text-align:left;}
+/*maessage icon*/
+.msg-window-ico-prompt, .msg-window-ico-error, .msg-window-ico-success, .msg-window-ico-warning{width:48px;height:48px;background: url(../../../img/uiwidget/messagebox/ico-msg/ico-prompt.gif) no-repeat center center;float:left;margin:5px 10px 0 40px; display:inline;}
+.msg-window-ico-error{background: url(../../../img/uiwidget/messagebox/ico-msg/ico-error.gif) no-repeat center center;}
+.msg-window-ico-success{background: url(../../../img/uiwidget/messagebox/ico-msg/ico-success.gif) no-repeat center center;}
+.msg-window-ico-warning{background: url(../../../img/uiwidget/messagebox/ico-msg/ico-warning.gif) no-repeat center center;}
+/*button*/
+.msg-window-button {width:100%;display:block;text-align:center; margin-top:10px;*width:auto;*left:auto;_margin:10px auto 0;}
+.msg-window-button div{display:inline-block; margin-right:15px; *position:relative;*float:left;*left:30%;}
+
+/*.msg-window-button div input{width:16px;height:16px;border:0;vertical-align:middle;margin-right:5px;cursor:pointer;}*/
+/*button icon*/
+/*.ico-btn-order-ok{background: url(../../../img/uiwidget/messagebox/ico-msg/ico-ok.gif) no-repeat center center;}
+.ico-btn-order-close{background: url(../../../img/uiwidget/messagebox/ico-msg/ico-cancel.gif) no-repeat center center;}*/
+
+
+/*命令按钮*/
+.btn-order{cursor:pointer;margin-right:4px;}
+.btn-order ul,.btn-order li{float:left;}
+.btn-order .left-normal, .btn-order .right-normal, .btn-order .left-over, .btn-order .right-over{width:3px;height:22px;}
+.btn-order .middle-normal, .btn-order .middle-over{height:22px;_height:18px;line-height:22px;text-align:center;padding-left:8px;padding-right:8px;_padding-top:4px;white-space:nowrap;display:block;}
+.btn-order .middle-over a{text-decoration: none;}
+.btn-order .middle-normal img, .btn-order .middle-over img{margin-right:5px;} 
+/*命令按钮正常状态*/
+.btn-order .left-normal{background:url(../../../img/uiwidget/messagebox/bg-msg/bg-btn-lr.gif) no-repeat 0 0;}
+.btn-order .middle-normal{background:url(../../../img/uiwidget/messagebox/bg-msg/bg-btn-middle.gif) repeat-x 0 0;}
+.btn-order .right-normal{background:url(../../../img/uiwidget/messagebox/bg-msg/bg-btn-lr.gif) no-repeat 0 -22px;}
+.btn-order .left-over{background:url(../../../img/uiwidget/messagebox/bg-msg/bg-btn-lr.gif) no-repeat 0 -44px;}
+.btn-order .middle-over{background: url(../../../img/uiwidget/messagebox/bg-msg/bg-btn-middle.gif) repeat-x 0 -22px;}
+.btn-order .right-over{background:url(../../../img/uiwidget/messagebox/bg-msg/bg-btn-lr.gif) no-repeat 0 -66px;}
+/*mark*/
+.mask{z-index:998;position:absolute;top:0;left:0;-moz-opacity:0.5;opacity:.50;filter:alpha(opacity=50);background-color:#CCC;width:100%;height:100%;zoom:1;}
+.mask iframe{position:absolute; z-index: -1; }
+
+/* 弹出框start */
+.pop_box{ width:426px;height:auto;display:block;position:absolute;text-align:center;overflow:hidden; z-index:999;}
+
+.pop_box li,.pop_small li,.pop_special li,.pop_long li,.pop_508 li,.pop_show_box li,.pop_card_box li,.pop_sign_box li{ font-size:12px;}
+
+.pop_title{ width:100%; height:33px;}
+.pop_title_left{ background:url(../../../img/uiwidget/messagebox/pop_left.gif) no-repeat scroll left center; height:33px;}
+.pop_title_right{ background:url(../../../img/uiwidget/messagebox/pop_right.gif) no-repeat scroll right center; height:33px; margin:0 0 0 3px;}
+.pop_title_midle{ background:url(../../../img/uiwidget/messagebox/pop_mid.gif) repeat-x; height:33px; line-height:33px; margin:0 3px 0 0; font-size:14px; color:#fff; padding:0 0 0 10px; font-weight:bold; position:relative; text-align:left;}
+
+.pop_close{ position:absolute; right:10px; top:2px; background:url(../../../img/uiwidget/messagebox/pop_close.jpg) no-repeat; width:45px; height:23px; cursor:pointer;}
+.pop_content{ width:424px; height:120px; border:1px #71bbf0 solid; border-top:none; text-align:left;  font-size:14px; color:#666666;background:#fff; padding:10px 0;}
+
+.pop_content p{ height:20px; line-height:20px;}
+.pop_btn{ background:url(../../../img/uiwidget/messagebox/btn_bg.jpg) no-repeat scroll 0 0; height:25px; width:78px; overflow:hidden; cursor:pointer; line-height:25px; text-align:center; color:#fff; border:none;}

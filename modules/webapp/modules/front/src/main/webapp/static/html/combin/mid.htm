@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>控制伸缩</title>
+<script type="text/javascript">
+ var dis=true;
+ function Click(){
+   if(dis){
+    document.getElementById("arrow").src="frame_img/dis.gif";
+	document.getElementById("arrow").title="显示帖子标题列表";
+	}else{
+	document.getElementById("arrow").src="frame_img/hide.gif";
+	document.getElementById("arrow").title="隐藏帖子标题列表";
+	}
+	dis=!dis;
+	parent.Set();	
+ }
+</script>
+<style type="text/css">
+*{margin:0px;
+  padding:0px;}
+html,body{height:100%;}
+table{height:100%;}
+td{background:url(frame_img/mid_bg.gif);}
+a{outline:none;}
+img{border:none;}
+</style>
+</head>
+
+<body>
+<TABLE cellSpacing="0" cellPadding="0" width="12" border="0">
+			<tr>
+				<td width="12" height="30%"></td>
+			</tr>
+			<tr>
+				<td height="122" width="12">
+				  <a href="javascript:Click();" hidefocus="true">
+				     <img src="frame_img/hide.gif" id="arrow" name="arrow" title="隐藏帖子标题列表">
+				  </a>
+			    </td>
+			</tr>
+			<tr>
+				<td width="12" height="30%"></td>
+			</tr>
+		</TABLE>
+</body>
+</html>

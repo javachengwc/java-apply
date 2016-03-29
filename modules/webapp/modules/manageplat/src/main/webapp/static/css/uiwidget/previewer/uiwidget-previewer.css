@@ -1,0 +1,57 @@
+@charset "utf-8";
+/**
+图片预览组件
+*/
+.previewer-container {
+	text-Align: center;
+}
+.previewer-image {
+	border: 0px solid #F00;
+}
+.previewer-zoom {
+	font: 12px/ 16px Arial, Helvetica, sans-serif;
+	position: absolute;
+	z-index: 100;
+	border: 1px solid #000;
+	padding: 2px;
+	cursor: pointer;
+	background-color: #fff;
+	font FILTER: alpha(opacity = 50);
+	-moz-opacity: 0.50;
+	height: 15px;
+}
+
+/* left arrow*/
+.previewer-pre {
+	background: url(../../../img/uiwidget/previewer/images/0.gif) no-repeat;
+	cursor: url(../../../img/uiwidget/previewer/images/left.cur), auto;
+	outline: none;
+	width: 50%;
+	height: 100%;
+	position: absolute;
+	left: 0;
+	top: 0;
+	z-index: 2;
+	overflow: hidden;
+}
+
+.previewer-pre-dis {
+	cursor: url(../../../img/uiwidget/previewer/images/left-dis.cur), auto;
+}
+
+/* right arrow*/
+.previewer-next {
+	background: url(../../../img/uiwidget/previewer/images/0.gif) no-repeat;
+	cursor: url(../../../img/uiwidget/previewer/images/right.cur),auto;
+	outline: none;
+	width: 50%;
+	height: 100%;
+	position: absolute;
+	right: 0;
+	top: 0;
+	z-index: 2;
+}
+
+.previewer-next-dis {
+	cursor: url(../../../img/uiwidget/previewer/images/right-dis.cur),auto;
+}

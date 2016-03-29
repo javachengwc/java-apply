@@ -1,0 +1,157 @@
+<h2 class="template_title">公告</h2>
+<div class="template_con">
+    <div>
+        <a href="javascript:void(0)" id="newNotice" onclick="showNewNotice()"><b>发布新公告</b></a>
+        &nbsp;&nbsp;&nbsp;&nbsp;<b>|</b>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="javascript:void(0)" id="manageNotice" onclick="showManageNotice()"><b>管理已有公告</b></a>
+        <br/><br/>
+    </div>
+
+    <div class="noticeSide">
+        <div class="inputContent">
+            公告名：<input type="text" id="noticeName" style="height:25px;width:300px"/>&nbsp;&nbsp;&nbsp;&nbsp;
+            操作人：<input type="text" id="operator" style="height:25px;" readonly="true" />&nbsp;&nbsp;&nbsp;&nbsp;
+        </div>
+        <br/>
+        <div id="editor">
+        </div>
+        <br/>
+        <div>
+            <span class="tips"></span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="button" value="提交" onclick="addNotice()" style="width:60px;margin-right:200px;">
+        </div>
+    </div>
+
+    <div class="manageSide" style="width:1000px">
+        <table class="tempTable" border="0" cellspacing="1" cellpadding="1" >
+            <thead  style="width:1000px">
+            <td width="25%">公告名</td>
+            <td width="10%">发布时间</td>
+            <td width="10%">操作人</td>
+            <td width="10%">操作</td>
+            </thead>
+            <tbody class="tbody" style="width:1000px;"></tbody>
+        </table><br/><br/><br/>
+        <span class="manageTips"></span>
+    </div>
+
+</div>
+
+
+<script>
+
+var editor = '';
+$(document).ready(function(){
+    editor = CKEDITOR.appendTo( 'editor', {}, '' );
+    showNewNotice();
+});
+
+//显示发布公告的页面
+function showNewNotice(){
+    $(".manageTips").empty();
+    $(".tips").empty();
+
+    var operatorName = $('div.navi').find('span#userName').text();
+
+    $("#noticeName").attr('value' ,'');
+    $("#operator").val(operatorName);
+
+    $(".noticeSide").show();
+    $(".manageSide").hide();
+
+    editor.setData();
+}
+
+//发布公告
+function addNotice(){
+    var url = '/addNewNotice.do';
+    var text = editor.document.getBody().getText();
+    var noticeName = $("#noticeName").val();
+    var operator = $("#operator").val();
+    var b = !(text == '' || operator =='' || noticeName =='') ;
+
+    $(".tips").empty();
+    var data = editor.getData();
+    if(b){
+        $.ajax({
+            url: url,
+            type: 'post',
+            dataType: 'json',
+            data: {
+                'data': data ,
+                'operator' : operator,
+                'noticeName' : noticeName
+            },
+            success: function(json){
+                if(json.result == 0){
+                    $(".tips").html('<font size="3" color="blue"><b>发布公告成功！<b></font>');
+                    editor.setData();
+                    $("#noticeName").val('');
+                }else{
+                    $(".tips").html('<font size="3" color="red"><b>服务器错误</b></font>')
+
+                }
+            }
+        });
+    }else{
+        $(".tips").html('<font size="3" color="red"><b>内容不能为空，请重新输入！</b></font>')
+    }
+}
+
+//显示公告管理页面
+function showManageNotice(){
+    $(".manageSide").show();
+    $(".noticeSide").hide();
+
+    $(".tips").empty();
+    $(".manageTips").empty();
+
+    $.ajax({
+        url: "/getNoticeList.do",
+        type: 'get',
+        dataType: 'json',
+        success: function(json){
+            $('.tbody').empty();// 清空 列表
+            var html = '';
+            $.each(json, function(i, n){
+                var single = json[i];
+
+                var noticeName = single['noticeName'];
+                var time = single.time;
+                var operator = single.operator;
+                var url = single.url;
+                html += '<tr height="50">';
+                html +='<td  class="noticeName" width="25%">'+ noticeName+ '</td>';
+                html +='<td class="time" width="10%">'+ time +'</td>';
+                html +='<td class="operator" width="10%">'+ operator +'</td>';
+                html +='<td width="10%">'+'<a onclick="deleteNotice(this)"  href="javascript:void(0)"><font color="blue">删除</font></a>' + '</td>';
+                html +='<td  class="id" style="display: none;">'+ i+ '</td>';
+                html += '</tr>';
+            });
+
+            $(".tbody").append(html);
+        }
+    });
+}
+
+//删除某个公告
+function deleteNotice(obj){
+
+    var id = $(obj).parent().parent().find("td.id").text().trim();
+
+    $.ajax({
+        url: "/deleteNotice.do",
+        type: 'post',
+        data :{'id' : id},
+        dataType: 'json',
+        success: function(json){
+            if(json.result == 0){
+                $(".manageTips").html('<font size="3" color="blue"><b>删除成功</b></font>');
+                showManageNotice();
+            }else{
+                $(".manageTips").html('<font size="3" color="red"><b>错误：服务器错误</b></font>');
+            }
+        }
+    });
+}
+</script>

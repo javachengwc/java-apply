@@ -1,0 +1,156 @@
+.popHint {
+	position: absolute;
+	line-height: normal;
+	cursor: default;
+	filter: alpha(opacity = 80);
+	opacity: 0.50;
+}
+
+.popHint .popLeft,.popHint .popRight,.popHint .popAngle span,.popHintText,.popHint .popIcon
+	{
+	background-image: url(../images/validate/PopHint.gif);
+	font-size: 12px;
+	color: red
+}
+
+.popHint .popHeader {
+	height: 1%;
+	overflow: hidden !important;
+	overflow: visible
+}
+
+.popHint .popLeft {
+	float: left;
+	width: 5px;
+	height: 24px;
+	background-position: 0 0;
+	background-repeat: no-repeat
+}
+
+.popHint .popRight {
+	float: left;
+	width: 5px;
+	height: 24px;
+	background-position: -10px -25px;
+	background-repeat: no-repeat
+}
+
+.popHint .popAngle {
+	clear: both;
+	position: relative;
+	height: 10px
+}
+
+.popHint .popAngle span {
+	position: absolute;
+	top: -3px;
+	left: 12px;
+	width: 7px;
+	height: 13px;
+	background-position: 0 -75px;
+	background-repeat: no-repeat;
+}
+
+.popHintText {
+	float: left;
+	color: red;
+	height: 19px !important;
+	height: 24px;
+	padding: 5px 0 0 0;
+	white-space: nowrap;
+	background-position: 0 -50px;
+	background-repeat: repeat-x;
+	overflow: hidden;
+	background-color: red
+}
+
+.popHintText .popIcon {
+	float: left;
+	width: 15px;
+	height: 10px;
+	margin: 1px 3px 0 0
+}
+
+.popHint .wrong {
+	background-position: 0 -90px;
+	background-repeat: no-repeat
+}
+
+.popHint .right {
+	background-position: 0 -105px;
+	background-repeat: no-repeat
+}
+
+.gray {
+	color: #666666;
+	margin-top: 2px;
+	display: none;
+}
+
+.light {
+	color: #FF6600;
+	margin: 0 5px
+}
+
+.b {
+	font-weight: bold
+}
+
+textarea {
+	font: 12px Tahoma;
+	color: #666666;
+	padding: 2px;
+	border: solid 1px #DBDBDB
+}
+
+/*       loading..     */
+.test {
+	border: 0pt;
+	left: 0px;
+	top: 0px;
+	width: 100%;
+	height: 100%;
+	z-index: 33332;
+	display: ;
+	background-color: red;
+	position: absolute;
+	FILTER: alpha(opacity = 25)
+}
+
+.black_overlay {
+	display: none;
+	position: absolute;
+	top: 0%;
+	left: 0%;
+	width: 100%;
+	height: 100%;
+	background-color: #000;
+	z-index: 1000;
+	filter:alpha(opacity=10);
+	opacity: 0.1;
+}
+
+.loading-indicator {
+	font-size: 8pt;
+	background-image: url(../images/validate/loading.gif);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding-left: 20px;
+	height: 18px;
+	text-align: left;
+}
+
+.loading {
+	display: none;
+	position: absolute;
+	left: 45%;
+	top: 40%;
+	border: 1px solid red;
+	background: white url(../images/validate/block-bg.gif) repeat-x;
+	padding: 10px;
+	font: bold 14px verdana, tahoma, helvetica;
+	color: #003366;
+	text-align: center;
+	z-index: 1002;
+	overflow: auto;
+}

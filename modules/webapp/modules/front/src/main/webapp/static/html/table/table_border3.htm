@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>表格综合制作</title>
+</head>
+<body>
+间距为0的黑色单边框表格：
+<table width="300" height="60" align="center" border="1" cellspacing="0" cellpadding="0" bordercolor="#000000">
+    <tr>
+       <th>电脑组成</th>
+       <td>中央处理器</td>
+       <td>硬盘</td>
+	   <td>显卡</td>
+       <td>主板</td>
+    </tr>
+    <tr>
+       <th>知名品牌</th>
+       <td>英特尔</td>
+       <td>希捷</td>
+	   <td>Nvidia</td>
+	   <td>华硕</td>
+    </tr>	
+</table>
+<hr />
+表格无外边框、每个单元格嵌套表格的情况：
+<table width="300" height="60" align="center" border="0" cellspacing="2" cellpadding="0">
+    <tr>
+	   <td>
+	      <table width="100%" border="1" bordercolor="#000000">
+		    <tr>
+             <th>电脑组成</th>
+		  </tr>
+		</table>
+		</td>
+		 <td>
+	      <table width="100%" border="1" bordercolor="#000000">
+		    <tr>
+             <td>中央处理器</td>
+             </tr>
+		</table>
+		</td>
+	</tr>  
+    <tr>
+	   <td>
+	      <table width="100%" border="1" bordercolor="#000000">
+		    <tr>
+             <th>知名品牌</th>
+		  </tr>
+		</table>
+		</td>
+		 <td>
+	      <table width="100%" border="1" bordercolor="#000000">
+		    <tr>
+             <td>英特尔</td>
+             </tr>
+		</table>
+		</td>
+	</tr> 
+</table>
+<hr />
+设置单元格的高光和暗调色模拟按钮块：
+<table width="300" height="100" align="center" border="1" cellspacing="5" cellpadding="0" bordercolorlight="#ffffff" bordercolordark="#ffffff" >
+    <tr>
+       <th bgcolor="#B7B7B7" bordercolorlight="#000000" bordercolordark="#eeeeee">电脑组成</th>
+       <td bgcolor="#B7B7B7" bordercolorlight="#000000" bordercolordark="#eeeeee">中央处理器</td>
+    </tr>
+    <tr>
+       <th bgcolor="#B7B7B7" bordercolorlight="#000000" bordercolordark="#eeeeee">知名品牌</th>
+       <td bgcolor="#B7B7B7" bordercolorlight="#000000" bordercolordark="#eeeeee">英特尔</td>
+    </tr>	
+</table>
+</body>
+</html>

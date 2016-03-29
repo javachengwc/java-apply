@@ -1,0 +1,37 @@
+----------nexus私服搭建-------------------------
+注: nexus 2.6以上版本需jdk1.7
+    nexus下载地址:  http://www.sonatype.org/nexus/  http://www.sonatype.org/nexus/go
+    nexus安装的目录及储存目录最好是777(读写执行)权限全有.
+---------------
+cd ..../bin
+./nexus console     ----检查是否正常
+./nexus start&    ---启动
+----------maven命令------------------------------
+---查看插件描述
+   mvn help:describe -DgroupId=org.apache.maven.plugins -DartifactId=maven-jar-plugin -Ddetail
+---发布到本地仓库
+   mvn install:install-file -Dfile=easyjweb-core-1.0-m3.jar -DgroupId=com.easyjf.easyjweb -DartifactId=easyjweb-core -Dversion=1.0-m3 -Dpackaging=jar
+---发布到私服
+   mvn deploy:deploy-file -Dfile=D:\other_lib\DBConfigDecrypt-1.0.jar -DgroupId=music.external.interface.dbDecrypt -DartifactId=DBConfigDecrypt -Dversion=1.0 -Dpackaging=jar -Durl=http://172.19.101.62:8081/nexus/content/repositories/yymz -DrepositoryId=yymz
+---创建普通项目
+   mvn archetype:create  -DgroupId=sfs.maven.learn -DartifactId=maven_test
+---创建web项目
+   mvn archetype:create  -DgroupId=sfs.maven.learn -DartifactId=maven_web_test -DarchetypeArtifactId=maven-archetype-webapp
+---清理
+   mvn clean
+---编译源代码
+   mvn compile
+---编译测试代码
+   mvn test-compile
+---运行测试
+   mvn test
+---打包
+   mvn package
+---清理,编译,跳过测试且依赖打包,并发布到本地
+   mvn clean  compile dependency:copy-dependencies install  -Dmaven.test.skip=true
+---maven通过jetty插件启动web
+   mvn -Djetty.port=1001  jetty:run
+----------其他相关-------------------------------
+---移除下载失败的jar包
+   find ~/.m2 -name "*.lastUpdated" -exec grep -q "Could not transfer" {} \; -print -exec rm {} \;
+--------------------------------------------------

@@ -1,0 +1,58 @@
+-------------------------log4j additivity--------------------------
+log4j的additivity属性是子Logger是否继承父Logger(包括root Logger)的输出源(appender)的标志位。
+默认情况下子Logger会继承父Logger的appender，子Logger会在父Logger的appender里输出。
+若子Logger的additivity设为false，则它会在自己的appender里输出，而不会在父Logger的appender里输出。
+注:additivity属性不能延伸到子层中,只针对设置的Logger有效。
+
+ep1:
+
+log4j.rootLogger=DEBUG,console
+
+log4j.appender.console=org.apache.log4j.ConsoleAppender
+log4j.appender.console.layout=org.apache.log4j.PatternLayout
+log4j.appender.console.layout.ConversionPattern=%-5p %d [%t] %c: %m%n
+
+log4j.logger.mobileLogger=INFO,specLogger
+log4j.additivity.specLogger=false
+log4j.appender.specLogger=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.specLogger.layout=org.apache.log4j.PatternLayout
+log4j.appender.specLogger.DatePattern='.'yyyy-MM-dd-HH-mm-ss
+log4j.appender.specLogger.layout.ConversionPattern=%m%n
+log4j.appender.specLogger.file=/var/log/spec.log
+log4j.appender.specLogger.encoding=UTF-8
+
+此日志配置中 specLogger就不会输出到console中
+
+ep2:
+
+log4j.logger.com=debug,p
+log4j.additivity.com.test=false
+log4j.logger.com.test.p1=debug, p1
+log4j.logger.com.test.p2=debug, p2
+
+日志输出:
+
+  p.log 	com,com.test.p1,com.test.p2
+  p1.log    com.test.p1
+  p2.log    com.test.p2
+
+  从结果看出log4j.logger.additivity.com.test=false 并没有阻止p1,p2得日志进入p中，
+  因为com.test包没有定义Appender，com.test的additivity属性并不能延伸到子层（p1, p2）的包中。
+
+ep3:
+
+log4j.logger.com=debug, p
+log4j.additivity.com.test.p2=false
+log4j.logger.com.test.p1=debug, p1
+log4j.logger.com.test.p2=debug, p2
+
+日志输出:
+
+  p.log   com,com.test.p1
+  p1.log  com.test.p1
+  p2.log  com.test.p2
+
+  因为Appender log4j.logger.com.test.p2 的additivity属性被设置为false,
+  顶层或父层的appender将不再记录程序包com.test.p2中的程序输出的日志
+
+------------------------------------------------------------------

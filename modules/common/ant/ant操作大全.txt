@@ -1,0 +1,412 @@
+------------ant介绍----------------
+Ant是一个Apache基金会下的跨平台的构件工具，它可以实现项目的自动构建和部署等功能。
+Ant是一款类似make的工具，用来编译/运行/打包Java程序。在构建、包装和发布过程中几乎每一件事都可以由Ant的任务来处理
+
+------------ant安装----------------
+下载解压即可
+将bin目录加入到path环境变量
+设置环境变量ANT_HOME，指向ant的目录
+
+------------ant运行----------------
+#ant [options] [target [target2 [target3] ...]]
+
+ant                             ---使用当前目录下的build.xml运行Ant，执行缺省的target。
+ant -buildfile file             ---指定构件文件执行其默认target目标
+       ep:ant -buildfile test.xml                    //使用当前目录下的test.xml运行Ant，执行缺省的target。
+ant -buildfile file target      ---指定构件文件执行指定的目标
+       ep:ant -buildfile test.xml dist               //使用当前目录下的test.xml运行Ant，执行一个叫做dist的target。
+          ant -buildfile test.xml -Dbuild=build/classes dist
+                              //使用当前目录下的test.xml运行Ant，执行一个叫做dist的target，并设定build属性的值为build/classes。
+------------ant运行选项说明--------
+[options]
+-help                           ---显示描述Ant 命令及其选项的帮助信息
+
+-projecthelp                    ---显示包含在构建文件中的、所有用户编写的帮助文档。
+                                   即为各个<target>中description 属性的文本，以及包含在<description>元素中的任何文本。
+                                   将有description 属性的目标列为主目标（“Main target”），
+                                   没有此属性的目标则列为子目标（“Subtarget”）
+
+-version                        ---Ant 显示其版本信息
+
+-quiet                          ---抑制并非由构建文件中的echo 任务所产生的大多数消息
+
+-verbose                        ---显示构建过程中每个操作的详细消息。此选项与-debug 选项只能选其一
+
+-debug                          ---显示Ant 和任务开发人员已经标志为调试消息的消息。此选项与-verbose 只能选其一
+
+-emacs                          ---对日志消息进行格式化，使它们能够很容易地由Emacs 的shell 模式（shellmode）所解析
+
+-logfile filename               ---将日志输出重定向到指定文件
+
+-logger classname               ---指定一个类来处理Ant 的日志记录。所指定的类必须实现了org.apache.tools.ant.BuildLogger 接口
+
+-listener classname             ---为Ant 声明一个监听类，并增加到其监听者列表中。在Ant与IDE或其他Java程序集成时，此选项非常有用。
+                                   必须将所指定的监听类编写为可以处理Ant 的构建消息接发。
+
+-buildfile filename             ---指定Ant 需要处理的构建文件。默认的构建文件为build.xml
+
+-find filename                  ---指定Ant 应当处理的构建文件。与-buildfile 选项不同，如果所指定文件在当前目录中未找到，
+                                   -find 就要求Ant 在其父目录中再进行搜索。这种搜索会继续在其祖先目录中进行，直至达到文件系统的根为止，
+                                   在此如果文件还未找到，则构建失败。
+
+-Dproperty=value                ---在命令行上定义一个特性名－值对
+
+------------ant构件内置变量------
+#<property environment="env"/><!--取window,unix...的环境变量，可引用env.JAVA_HOME这样的系统变量--> 
+
+basedir           project基目录的绝对路径 (与<project>的basedir属性一样)。
+
+ant.file          buildfile的绝对路径。
+
+ant.version       Ant的版本。
+
+ant.project.name  当前执行的project的名字；由<project>的name属性设定.
+
+ant.java.version  Ant检测到的JVM的版本；
+
+------------ant构件中的任务------
+Ant中的任务可以为3类。
+（1） 核心任务。核心任务是Ant自带的任务。
+（2） 可选任务。可选任务实来自第三方的任务，因此需要一个附加的JAR文件。
+（3） 用户自定义的任务。用户自定义的任务实用户自己开发的任务。
+
+[File（Directory）类]
+
+<mkdir dir="build/classes"/>                           ---创建一个目录，如果他的父目录不存在，也会被同时创建。
+<copy file="myfile.txt" tofile="mycopy.txt"/>          ---拷贝单个的文件
+<copy file="myfile.txt" todir="../some/other/dir"/>    ---拷贝单个的文件到指定目录下
+<copy todir="../new/dir">
+    <fileset dir="src_dir"/>
+</copy>                                                ---拷贝一个目录到另外一个目录下
+<copy todir="../dest/dir">
+    <fileset dir="src_dir">
+        <include name="**/*.java"/>
+        <exclude name="**/Test.java"/> 
+    </fileset>
+</copy>                                                ---拷贝一批文件到指定目录下
+<copy todir="../dest/dir">
+    <fileset dir="src_dir" excludes="**/*.java"/>
+</copy>                                                ---拷贝一批文件到指定目录下
+<copy todir="../backup/dir">
+    <fileset dir="src_dir"/>
+    <mapper type="glob" from="*" to="*.bak"/>
+</copy>                                                ---拷贝一批文件到指定目录下，将文件名后增加.bak后缀
+<delete file="/lib/ant.jar"/>                          ---删除一个文件
+<delete dir="lib"/>                                    ---删除指定目录及其子目录
+<delete>
+    <fileset dir="." includes="**/*.bak"/>
+</delete>                                              ---删除指定的一组文件
+<move file="file.orig" tofile="file.moved"/>           ---移动或重命名一个文件
+<move file="file.orig" todir="dir/to/move/to"/>        ---移动或重命名一个文件到另一个文件夹下面
+<move todir="new/dir/to/move/to">
+    <fileset dir="src/dir"/>
+</move>                                                ---将一个目录移到另外一个目录下
+
+[java相关]
+
+<javac srcdir="{src}" destdir="{build}" classpath="xyz.jar" debug="on"/>
+                                                       ---编译{src}目录及其子目录下的所有.Java文件
+<javac srcdir="{src}:{src2}" destdir="{build}"
+       includes="mypackage/p1/**,mypackage/p2/**"
+       excludes="mypackage/p1/testpackage/**"
+       classpath="xyz.jar" debug="on"
+/>                                                     ---编译{src}和{src2}目录及其子目录下的所有.Java文件，
+                      但是mypackage/p1/**,mypackage/p2/**将被编译，而mypackage/p1/testpackage/**将不会被编译
+<property name="classpath" value=".;./xml-apis.jar;../lib/xbean.jar;./easypo.jar"/>
+<javac srcdir="{src}" destdir="{src}" classpath="{classpath}" debug="on"/>
+                                                       ---编译{src}目录及其子目录下的所有.Java文件,类路径是在property中定义的
+<java classname="test.Main">
+<classpath>
+    <pathelement location="dist/test.jar"/>
+    <pathelement path="{java.class.path}"/>
+</classpath>
+</java>                                                ---执行指定的java类，classname中指定要执行的类，classpath设定要使用的环境变量
+<java fork="true" classname="proguard.ProGuard" classpath="${proguard.classpath}">
+    <arg line="-libraryjars ${proguard.classpath}"/>
+    <arg line="-injars temp/${app.project}_tmp.jar"/>
+    <arg line="-outjar temp/${app.project}_obf.jar"/>
+    <arg line="-defaultpackage ''"/>
+    <arg line="-dontusemixedcaseclassnames"/>
+    <arg line="-keep public class ${app.midlet}"/>
+</java>                                                ---带参执行java类，fork参数为true时，在新的JVM实例中运行，不影响当前JVM工作
+<jar destfile="{dist}/lib/app.jar" basedir="{build}/classes"/>
+                                                       ---将{build}/classes下面的所有文件打包到{dist}/lib/app.jar中
+<jar destfile="{dist}/lib/app.jar" basedir="{build}/classes"
+     includes="mypackage/test/**"
+     excludes="**/Test.class"
+     manifest="my.mf"
+/>                                                     ---manifest属性指定自己的META-INF/MANIFEST.MF文件，而不是由系统生成
+<war destfile="myapp.war" webxml="src/metadata/myapp.xml">
+    <fileset dir="src/html/myapp"/>
+    <fileset dir="src/jsp/myapp"/>
+    <lib dir="thirdparty/libs">
+        <exclude name="jdbc1.jar"/>
+    </lib>
+    <classes dir="build/main"/>
+    <zipfileset dir="src/graphics/images/gifs" prefix="images"/>
+</war>                                                 ---打包Web应用成war包
+<ear destfile="{build.dir}/myapp.ear" appxml="{src.dir}/metadata/application.xml">
+    <fileset dir="{build.dir}" includes="*.jar,*.war"/>
+</ear>                                                 ---打包成ear包
+
+[其他]
+
+<tstamp/>                                              ---根据当前系统时间和日期设置 Ant 属性
+                                                          DSTAMP 设置为当前日期，默认格式为yyyymmdd 如:20031217
+                                                          TSTAMP 设置为当前时间，默认格式为 hhmm 如:1603
+                                                          TODAY 设置为当前日期，带完整的月份 如:2003 年 12 月 17 日
+                                                          在调用 tstamp 任务之后，就能够根据日期命名该 JAR 文件，如：
+                                                          <jar destfile="package-{DSTAMP}.jar" basedir="classes"/>
+<tstamp>
+    <format property="OFFSET_TIME" pattern="HH:mm:ss" offset="10" unit="minute"/>
+</tstamp>                                             ---将 OFFSET_TIME 属性设置为距离当前时间 10 分钟之后的小时数、分钟数和秒数。
+                                                         用于定义格式字符串的字符与 java.text.SimpleDateFormat 类所定义的那些格式字符相同
+<sql driver="org.gjt.mm.mysql.Driver"
+     url="jdbc:mysql://localhost:3306/mydb"
+     userid="root" password="root"
+     src="data.sql"
+/>                                                    ---执行sql
+<mail mailhost="smtp.myisp.com" mailport="1025" subject="Test build">
+    <from address="me@myisp.com"/>
+    <to address="all@xyz.com"/>
+    <message>The {buildname} nightly build has completed</message>
+    <fileset dir="dist">
+        <includes name="**/*.zip"/>
+    </fileset>
+</mail>                                               ---发送邮件
+<exec executable="${LIB_PATH}/preverify.exe">
+    <arg line="-classpath ${compile.classpath} -d temp/build temp/obfuscate"/>
+</exec>                                               ---exec任务，用以调用外部程序
+<echo message="Hello,ANT" file="/home/philander/logs/ant.log" append="true">
+                                                      ---输出信息
+
+[自定义Task]
+#编写Ant 自定义任务很简单，继承Task类，实现execute方法，
+Ant 能够使用生成文件中指定的对应属性的值来调用这个方法，这个方法的名称需要是 set 加上属性的名称
+
+<taskdef name="filesorter"   classname="FileSorter" classpath="filesorter"/>
+                                                      ---自定义一个任务
+<target name="main">
+     <filesorter file="input.txt" tofile="output.txt"/>
+</target>                                             ---使用自定义任务
+
+------------ant构件文件build.xml说明------
+Ant的buildfile是用XML写的。每个buildfile含有一个project。
+buildfile中每个task元素可以有一个id属性，可以用这个id值引用指定的任务。这个值必须是唯一的。
+
+[project]
+
+project有下面的属性：
+name        项目名称
+default     当没有指定target时使用的缺省target 必填
+basedir     用于计算所有其他路径的基路径。该属性可以被basedir property覆盖。当覆盖时，该属性被忽略。
+            如果属性和basedir property都没有设定，就使用buildfile文件的父目录。
+项目的描述以一个顶级的<description>元素的形式出现
+一个项目可以定义一个或多个target。一个target是一系列你想要执行的。
+执行Ant时，你可以选择执行那个target。当没有给定target时，使用project的default属性所确定的target。
+
+[target]
+
+target有下面的属性：
+name              target的名字   必填
+depends           用逗号分隔的target的名字列表，也就是依赖表。
+if                执行target所需要设定的属性名
+unless            执行target需要清除设定的属性名
+description       关于target功能的简短描述。
+
+一个target可以依赖于其他的target。例如，你可能会有一个target用于编译程序，一个target用于生成可执行文件。
+在生成可执行文件之前必须先编译通过，所以生成可执行文件的target依赖于编译target。Ant会处理这种依赖关系。
+然而，应当注意到，Ant的depends属性只指定了target应该被执行的顺序－如果被依赖的target无法运行，这种depends对于指定了依赖关系的target就没有影响。
+Ant会依照depends属性中target出现的顺序（从左到右）依次执行每个target。然而，要记住的是只要某个target依赖于一个target，后者就会被先执行。
+
+<target name="A"/>
+
+<target name="B" depends="A"/>
+
+<target name="C" depends="B"/>
+
+<target name="D" depends="C,B,A"/>
+
+假定我们要执行target D。从它的依赖属性来看，你可能认为先执行C，然后B，最后A被执行。错了，C依赖于B，B依赖于A，所以先执行A，然后B，然后C，最后D被执行 
+一个target只能被执行一次，即时有多个target依赖于它。
+如果（或如果不）某些属性被设定，才执行某个target。这样，允许根据系统的状态（java version, OS, 命令行属性定义等等）来更好地控制build的过程。
+要想让一个target这样做，就应该在target元素中，加入if（或unless）属性，带上target因该有所判断的属性。例如：
+
+<target name="build-module-A" if="module-A-present"/>
+
+<target name="build-own-fake-module-A" unless="module-A-present"/>
+如果没有if或unless属性，target总会被执行。
+可选的description属性可用来提供关于target的一行描述，这些描述可由-projecthelp命令行选项输出。
+
+[task]
+
+一个task是一段可执行的代码。
+一个task可以有多个属性（如果你愿意的话，可以将其称之为变量）。属性只可能包含对property的引用。这些引用会在task执行前被解析。
+下面是Task的一般构造形式：
+
+<name attribute1="value1" attribute2="value2" ... />
+
+这里name是task的名字，attributeN是属性名，valueN是属性值。
+有一套内置的（built-in）task，以及一些可选task，但你也可以编写自己的task。
+所有的task都有一个task名字属性。Ant用属性值来产生日志信息。
+可以给task赋一个id属性：
+
+<taskname id="taskID" ... />
+
+这里taskname是task的名字，而taskID是这个task的唯一标识符。通过这个标识符，你可以在脚本中引用相应的task。例如，在脚本中你可以这样：
+
+<script ... >
+
+task1.setFoo("bar");
+
+</script>
+
+设定某个task实例的foo属性。在另一个task中（用java编写），你可以利用下面的语句存取相应的实例。
+
+project.getReference("task1").
+
+注意1：如果task1还没有运行，就不会被生效（例如：不设定属性），如果你在随后配置它，你所作的一切都会被覆盖。
+注意2：未来的Ant版本可能不会兼容这里所提的属性，因为很有可能根本没有task实例，只有proxies。
+
+[properties]
+一个project可以有很多的properties。可以在buildfile中用property task来设定，或在Ant之外设定。一个property有一个名字和一个值。
+property可用于task的属性值。这是通过将属性名放在"{"和"}"之间并放在属性值的位置来实现的。
+例如如果有一个property builddir的值是"build"，这个property就可用于属性值：{builddir}/classes。这个值就可被解析为build/classes。
+如果你使用了<property> task 定义了所有的系统属性，Ant允许你使用这些属性。例如，{os.name}对应操作系统的名字。
+要想得到系统属性的列表可参考tJavadoc of System.getProperties。
+
+除了Java的系统属性，Ant还定义了一些自己的内置属性：
+
+basedir           project基目录的绝对路径 (与<project>的basedir属性一样)。
+
+ant.file          buildfile的绝对路径。
+
+ant.version       Ant的版本。
+
+ant.project.name  当前执行的project的名字；由<project>的name属性设定.
+
+ant.java.version  Ant检测到的JVM的版本；
+
+[path-like]
+
+你可以用":"和";"作为分隔符，指定类似PATH和CLASSPATH的引用。Ant会把分隔符转换为当前系统所用的分隔符。
+当需要指定类似路径的值时，可以使用嵌套元素。一般的形式是
+
+<classpath>
+
+<pathelement path="{classpath}"/>
+
+<pathelement location="lib/helper.jar"/>
+
+</classpath>
+
+location属性指定了相对于project基目录的一个文件和目录，而path属性接受逗号或分号分隔的一个位置列表。
+path属性一般用作预定义的路径－－其他情况下，应该用多个location属性。
+也可通过<fileset>元素指定路径。构成一个fileset的多个文件加入path-like structure的顺序是未定的。
+<classpath>
+
+<pathelement path="{classpath}"/>
+
+<fileset dir="lib">
+
+<include name="**/*.jar"/>
+
+</fileset>
+
+<pathelement location="classes"/>
+
+</classpath>
+
+上面的例子构造了一个路径值包括：{classpath}的路径，跟着lib目录下的所有jar文件，接着是classes目录。
+如果想在多个task中使用相同的path-like structure，你可以用<path>元素定义他们（与target同级），然后通过id属性引用
+<path id="base.path">
+
+<pathelement path="{classpath}"/>
+
+<fileset dir="lib">
+
+<include name="**/*.jar"/>
+
+</fileset>
+
+<pathelement location="classes"/>
+
+</path>
+
+<path id="tests.path">
+
+<path refid="base.path"/>
+
+<pathelement location="testclasses"/>
+
+</path>
+------------ant构件例子----------
+<?xml version="1.0"?>  
+<project name="Hello world" default="doc">  
+    <!-- properies -->  
+    <property name="src.dir" value="src" />  
+    <property name="report.dir" value="report" />  
+    <property name="classes.dir" value="classes" />  
+    <property name="lib.dir" value="lib" />  
+    <property name="dist.dir" value="dist" />  
+    <property name="doc.dir" value="doc"/>  
+    <!-- 定义classpath -->  
+    <path id="master-classpath">  
+	<fileset file="${lib.dir}/*.jar" />  
+	<pathelement path="${classes.dir}"/>  
+    </path>  
+    <!-- 初始化任务 -->  
+    <target name="init">  
+    </target>  
+    <!-- 编译 -->  
+    <target name="compile" depends="init" description="compile the source files">  
+	<mkdir dir="${classes.dir}"/>  
+	<javac srcdir="${src.dir}" destdir="${classes.dir}" target="1.6">  
+	    <classpath refid="master-classpath"/>  
+	</javac>  
+    </target>  
+    <!-- 测试 -->  
+    <target name="test" depends="compile" description="run junit test">  
+	<mkdir dir="${report.dir}"/>  
+	<junit printsummary="on"  
+	    haltonfailure="false"  
+	    failureproperty="tests.failed"  
+	    showoutput="true">  
+	    <classpath refid="master-classpath" />  
+	    <formatter type="plain"/>  
+	    <batchtest todir="${report.dir}">  
+	        <fileset dir="${classes.dir}">  
+	            <include name="**/*Test.*"/>  
+	        </fileset>  
+	    </batchtest>  
+	 </junit>  
+	 <fail if="tests.failed">
+	 </fail>  
+    </target>  
+    <!-- 打包成jar -->  
+    <target name="pack" depends="test" description="make .jar file">  
+	<mkdir dir="${dist.dir}" />  
+	<jar destfile="${dist.dir}/hello.jar" basedir="${classes.dir}">  
+	    <exclude name="**/*Test.*" />  
+	    <exclude name="**/Test*.*" />  
+	</jar>  
+    </target>  
+    <!-- 输出api文档 -->  
+    <target name="doc" depends="pack" description="create api doc">  
+        <mkdir dir="${doc.dir}" />  
+        <javadoc destdir="${doc.dir}"  
+	    author="true"  
+	    version="true"  
+	    use="true"  
+	    windowtitle="Test API">  
+            <packageset dir="${src.dir}" defaultexcludes="yes">  
+	        <include name="example/**" />  
+	    </packageset>  
+	    <doctitle><![CDATA[<h1>Hello, test</h1>]]></doctitle>  
+	    <bottom><![CDATA[<i>All Rights Reserved.</i>]]></bottom>  
+	    <tag name="todo" scope="all" description="To do:" />  
+	</javadoc>  
+    </target>  
+</project>  
+		
+---------------------------------

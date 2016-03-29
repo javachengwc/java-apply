@@ -1,0 +1,145 @@
+redis如果不指定配置文件，redis也可以启动，此时，redis使用默认的内置配置。
+不过在正式环境，常常通过配置文件【通常叫redis.conf】来配置redis
+
+redis.conf配置参数：
+
+1）daemonize on|yes
+
+redis默认不是以守护进程的方式运行，可以通过该配置项修改，使用yes时，启用守护进程
+启动Redis后，在命令行里不断跳各种日志，即便通过“&”，让其后台运行，也无济于事，这就需要此参数以Daemo模式运行
+
+2）pidfile /var/run/redis_6379.pid
+
+redis以守护进程方式运行时，系统默认会把pid写入/var/run/redis.pid，可以通过pidfile指定pid文件
+
+3）port 6379
+
+redis默认监听6379端口，可以通过port指定redis要监听的端口
+
+4）bind 127.0.0.1
+
+绑定主机地址
+
+5）unixsocket /tmp/redis.sock
+
+指定redis监听的unix socket 路径
+
+6）timeout 300
+
+当客户端闲置多长时间，关闭连接，单位秒
+
+7）loglevel verbose|debug|notice|warning
+
+指定日志记录级别，默认是verbose
+
+8）logfile /var/log/redis_6379.log
+
+日志记录文件，默认是标准输出stdout，如果redis以守护进程方式运行，logfile 配置为stdout时，logs将要输出到/dev/null
+
+9)syslog-enabled no|yes
+
+当配置为yes时，日志输出到系统日志，默认是no
+
+10）syslog-ident redis
+
+指定syslog的标示符
+
+11）syslog-facility local0
+
+指定syslog设备(facility)，必须是user或则local0到local7
+
+12）databases 16
+
+设置redis中数据库的个数，默认数据库是DB 0，可以通过select <dbid>，选择使用的数据库。dbis大于等于0，小于等于databases -1 【这里是16-1】
+
+13）save <seconds> <changes>
+
+指定多长时间内，有多少次更新操作时，将数据同步到数据库文件，可以多个条件配合，
+ep:save 60 1000 #当时间间隔超过60秒，或存储超过1000条记录时，进行持久化。
+系统默认配置如下：
+
+[plain] view plaincopy
+
+    save 900 1 #900秒 1个修改
+    save 300 10 #300秒 10个更新
+    save 60 10000<span style="white-space:pre"> </span>#60秒 10000个更新
+
+注意，如果不持久化【不把数据写入磁盘】，注释掉save即可。
+
+14）rdbcompression yes|no
+
+数据dump到数据文件时，系统是否压缩string对象数据，系统默认是yes。如果为了节省cpu，可以设置为no，此时数据文件比用LZF压缩时要大
+15）dbfilename dump.rdb
+
+指定数据库文件名，默认是dump.rdb
+
+16）dir /var/lib/redis/6379
+
+指定本地数据库存放目录
+
+17）slaveof <masterip> <masterport>
+
+当本机是slave服务时，设置master服务的ip和端口
+ep:slaveof 192.168.133.139 6379
+
+18）masterauth <master-password>
+
+当master服务设置了密码时，slave服务连接master的密码。如果配置不对，slave服务请求将被拒绝
+
+19）slave-serve-stale-data yes|no
+
+当slave和master之间的连接断开或slave正在于master同步时，如果有slave请求，当slave-serve-stale-data配置为yes时，slave可以相应客户端请求；当为no时，slave将要响应错误，默认是yes
+
+20）requirepass foobared
+
+设置redis连接密码
+
+21）maxclients 128
+
+设置同一时间客户端最大连接数，默认是无限制。如果设置maxclients 0 时，表示不限制
+
+22）maxmemory <bytes>
+
+指定redis最大内存限制，redis在启动时，会把数据加载到内存中，达到最大内存后，redis会先清除已到期或将过期的key，仍然到达最大内存设置，将无法再进行写入操作，但仍然可以进行读操作
+切记，一定要设定maxmemmory，且配置大小要小于物理内存，留有足够的内存供系统使用
+如果不设此值，如果期间数据暴涨，导致内存吃紧，SWAP加剧，会直接宕机。
+
+23）maxmemory-policy volatile-lru|allkeys-lru|volatile-random|allkeys->random|volatile-ttl|noeviction
+
+当redis使用内存达到最大时，使用哪种策略移除内存中数据
+
+24）appendonly no|yes
+
+指定是否在每次更新操作后进行日志记录，默认配置是no，即在采用异步方式把数据写入到磁盘，如果不开启，可能会在断电时导致部分数据丢失
+
+25）appendfilename appendonly.aof
+
+指定更新日志文件名【aof日志】，默认为appendonly.aof
+
+26）appendfsync everysec|no|aways
+
+指定更新日志条件，no表示等操作系统进行数据缓存同步到磁盘的aof文件（快）always表示每次更新操作后手动调用fsync将数据写到磁盘的aof文件（慢，安全）
+
+everysec，表示每秒同步一次（拆中，默认值）
+
+27）slowlog-log-slower-than 10000
+
+配置记录慢日志的条件，单位是微妙，当是负值时，关闭慢日志记录，当是0时，记录所有操作
+
+28）slowlog-max-len 1024
+
+配置记录慢查询的最大条数
+
+29）hash-max-zipmap-entries 512
+
+配置最大元素数，当超过该配置数据时，redis采用特殊hash算法
+
+30）hash-max-zipmap-value 64
+
+配置最大元素值，当草果配置值时，采用特殊hash算法
+
+31）activerehashing yes
+
+指定是否激活充值hash，默认开启
+
+----------------------------------------

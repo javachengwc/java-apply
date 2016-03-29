@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//www.ibatis.com//DTD SQL Map Config 2.0//EN" 
+"http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+<sqlMapConfig>
+    <settings cacheModelsEnabled="true" enhancementEnabled="true"
+		errorTracingEnabled="true" lazyLoadingEnabled="true" maxRequests="256"
+		maxSessions="64" maxTransactions="16" useStatementNamespaces="false" />
+    <sqlMap resource="ibatissql/module.xml"/>
+    <sqlMap resource="ibatissql/adminor.xml"/>
+    <sqlMap resource="ibatissql/role.xml"/>
+    <sqlMap resource="ibatissql/resource.xml"/>
+    <sqlMap resource="ibatissql/resource_permission.xml"/>
+
+	<sqlMap resource="ibatissql/extend.xml" />
+
+</sqlMapConfig>

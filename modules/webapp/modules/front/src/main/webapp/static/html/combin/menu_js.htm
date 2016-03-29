@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>二级水平导航（js实现）</title>
+<style type="text/css">
+*{margin:0;
+  padding:0;}
+body {font-size:12px;}
+ul{list-style: none;}
+#nav,#main{width:320px;
+           margin:0px auto;
+		   border:1px solid #999;}
+#nav {line-height: 24px;
+	  background:#666;}
+#nav a {display: block;
+        width: 80px; 
+		text-align:center;}
+a:link{text-decoration:none;}
+a:visited{text-decoration:none;}
+a:hover{text-decoration:none;        
+		font-weight:bold;
+		background:#333;
+		color:#fff;}
+#nav li {width: 80px; 
+         float:left;
+		 background:#ccc;}
+#nav li ul {display: none;}
+#nav li ul li{float: left;
+              width: 80px;			  
+              background: #eee;}
+#nav li ul li a{display: block; 
+             width: 60px;
+			 text-align:left;
+			 padding-left:20px;}
+#main{height:250px;
+	  border-top:none;
+	  color:#999;}
+</style>
+<script type="text/javascript">
+ var Set=function(){
+   var menu= document.getElementById("nav").getElementsByTagName("li");
+   for(i=0;i<menu.length;i++){
+        if(menu[i].className=="li_a"){
+	        menu[i].onmouseover=function(){
+	            this.getElementsByTagName("ul")[0].style.display="block";
+				this.getElementsByTagName("ul")[0].style.width="80px";
+				this.getElementsByTagName("ul")[0].style.height="100px";
+				this.getElementsByTagName("ul")[0].style.position="absolute";
+                }
+			menu[i].onmouseout=function(){
+	            this.getElementsByTagName("ul")[0].style.display="none";
+                }
+        }
+   }
+ }
+ window.onload=Set; 
+</script>
+</head>
+<body>
+<ul id="nav">
+  <li class="li_a"><a href="#">首页</a>
+    <ul>
+     <li><a href="#">网站介绍</a></li>
+     <li><a href="#">关于我们</a></li>
+     <li><a href="#">联系我们</a></li>
+    </ul>
+  </li>
+  <li class="li_a"><a href="#">产品介绍</a>
+    <ul>
+     <li><a href="#">电视机</a></li>
+     <li><a href="#">家庭影院</a></li>
+     <li><a href="#">电脑</a></li>
+     <li><a href="#">微波炉</a></li>
+    </ul>
+  </li>
+   <li class="li_a"><a href="#">公司活动</a>
+    <ul>
+     <li><a href="#">优惠活动</a></li>
+     <li><a href="#">有奖促销</a></li>
+     <li><a href="#">项目招标</a></li>
+    </ul>
+  </li>
+     <li class="li_a"><a href="#">产品介绍</a>
+    <ul>
+     <li><a href="#">电视机</a></li>
+     <li><a href="#">家庭影院</a></li>
+     <li><a href="#">电脑</a></li>
+     <li><a href="#">微波炉</a></li>
+    </ul>
+  </li>
+</ul>
+<div id="main">页面主体内容页面主体内容页面主体内容页面主体内容页面主体内容</div>
+</body>
+</html>

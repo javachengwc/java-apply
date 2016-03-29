@@ -1,0 +1,11 @@
+-----------------fastdfs相关命令-----------------
+
+--------启动fastdfs
+    cd .../FastDFS                                      ---切到dfs根目录
+    storage/fdfs_storaged conf/storage.conf             ---启动一个存储
+    storage/fdfs_storaged conf/storage2.conf            ---启动另一存储
+    tracker/fdfs_trackerd conf/tracker.conf             ---启动一跟踪管理进程
+
+-------------------------------------------------
+
+

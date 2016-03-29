@@ -1,0 +1,83 @@
+Redis是个高性能的key-value数据库，它的key具有丰富的数据结构：string，hash，list set和sorted set。
+作为NOSQL，比起memcache之类，不仅仅key数据结构丰富，而且具有持久化的功能，并且能够支持主从复制，很方便构建集群。
+redis高性能很大程度上源于它是个内存型数据库，它的高性能表现在：set操作11w/s，get操作8.1w/s
+
+1,下载安装
+
+[root@xsf003 tool]# wget -c http://redis.googlecode.com/files/redis-2.4.17.tar.gz    #下载
+[root@xsf003 tool]# tar -zxvf redis-2.4.17.tar.gz   #解压
+[root@xsf003 tool]# cd redis-2.4.17
+[root@xsf003 redis-2.4.17]# make  #编译
+[root@xsf003 redis-2.4.17]# make install #安装
+
+#把redis设置成开机自启动
+
+注:执行install_server.sh，需要先进入utils目录，不然脚本会报错，提示找不到相应文件
+[root@xsf003 redis-2.4.17]# cd utils/
+[root@xsf003 utils]# ./install_server.sh
+
+2、手动启动关闭服务
+
+[root@xsf003 utils]# /etc/init.d/redis_6379 stop   #关闭
+[root@xsf003 utils]# /etc/init.d/redis_6379 start  #启动
+或命令关闭服务
+/usr/local/bin/redis-server /etc/redis/redis.conf   #指定配置文件 启动
+/usr/local/bin/redis-cli -p 6379 shutdown   # 关闭，如果默认端口6379 可以直接 /usr/local/bin/redis-cli shutdown
+
+3、通过客户端命令行工具连接redis服务查看redis相关信息
+
+[root@xsf003 utils]# redis-cli
+redis 127.0.0.1:6379>
+
+redis 127.0.0.1:6379> info  #查看server版本内存使用连接等信息
+
+redis 127.0.0.1:6379> client list  #获取客户连接列表
+
+redis 127.0.0.1:6379> client kill 127.0.0.1:33441 #终止某个客户端连接
+
+redis 127.0.0.1:6379> dbsize #当前保存key的数量
+
+redis 127.0.0.1:6379> save #立即保存数据到硬盘
+
+redis 127.0.0.1:6379> bgsave #异步保存数据到硬盘
+
+redis 127.0.0.1:6379> flushdb #当前库中移除所有key
+
+redis 127.0.0.1:6379> flushall #移除所有key从所有库中
+
+redis 127.0.0.1:6379> lastsave #获取上次成功保存到硬盘的unix时间戳
+
+redis 127.0.0.1:6379> monitor #实时监测服务器接收到的请求
+
+redis 127.0.0.1:6379> slowlog len #查询慢查询日志条数
+(integer) 3
+
+redis 127.0.0.1:6379> slowlog get #返回所有的慢查询日志，最大值取决于slowlog-max-len配置
+
+redis 127.0.0.1:6379> slowlog get 2 #打印两条慢查询日志
+
+redis 127.0.0.1:6379> slowlog reset #清空慢查询日志信息
+
+4、调优
+前面启动Redis时，看到如下警告：
+# WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add 'vm.overcommit_memory = 1'
+to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+
+需要修改/etc/sysctl.conf文件：
+vim /etc/sysctl.conf
+末尾追加vm.overcommit_memory = 1
+然后执行sysctl vm.overcommit_memory=1，使之生效。
+
+proc/sys/vm/overcommit_memory
+为了调整内存分配策略，需要配置/proc/sys/vm/overcommit_memory
+    0， 表示内核将检查是否有足够的可用内存供应用进程使用；如果有足够的可用内存，内存申请允许；否则，内存申请失败，并把错误返回给应用进程。
+    1， 表示内核允许分配所有的物理内存，而不管当前的内存状态如何。
+    2， 表示内核允许分配超过所有物理内存和交换空间总和的内存
+默认为0，如果内存情况比较紧张的话，设为1：
+    cho 1 > /proc/sys/vm/overcommit_memory
+
+
+
+
+
+-----------------------------------------------------------------

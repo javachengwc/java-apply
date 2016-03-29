@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.configcenter.dao.biz.ConfigItemDao" >
+
+    <resultMap id="BaseResultMap" type="com.configcenter.model.ConfigItem" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="app_id" property="appId" jdbcType="INTEGER" />
+        <result column="conf_key" property="key" jdbcType="VARCHAR" />
+        <result column="conf_value" property="value" jdbcType="VARCHAR" />
+        <result column="update_at" property="updateAt" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <resultMap id="BaseResultExtMap" type="com.configcenter.vo.ConfigItemVo" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="app_id" property="appId" jdbcType="INTEGER" />
+        <result column="app_name" property="appName" jdbcType="VARCHAR" />
+        <result column="conf_key" property="key" jdbcType="VARCHAR" />
+        <result column="conf_value" property="value" jdbcType="VARCHAR" />
+        <result column="update_at" property="updateAt" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <select id="countAll"  resultType="java.lang.Integer">
+        select count(1) as count  from cc_config_item
+    </select>
+
+    <select id="getById"  resultMap="BaseResultMap" parameterType="com.configcenter.model.ConfigItem">
+        select * from cc_config_item where id =#{id}
+    </select>
+
+    <insert id="add" parameterType="com.configcenter.model.ConfigItem">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into cc_config_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="appId != null">
+                app_id,
+            </if>
+            <if test="key != null">
+                conf_key,
+            </if>
+            <if test="value != null">
+                conf_value,
+            </if>
+            <if test="updateAt != null">
+                update_at,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="appId != null">
+                #{appId},
+            </if>
+            <if test="key != null">
+                #{key},
+            </if>
+            <if test="value != null">
+                #{value},
+            </if>
+            <if test="updateAt != null">
+                #{updateAt},
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="batchAdd" parameterType="java.util.List">
+        insert into cc_config_item  ( app_id , conf_key,conf_value,update_at )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.appId},
+            #{item.confKey},
+            #{item.confValue},
+            #{item.updateAt},
+            )
+        </foreach>
+    </insert>
+
+    <update id="update" parameterType="com.configcenter.model.ConfigItem">
+        update cc_config_item
+        set
+        <trim prefix="" suffix="" suffixOverrides=",">
+            <if test="appId != null">
+                app_id=#{appId},
+            </if>
+            <if test="key != null and key !='' ">
+                conf_key=#{key},
+            </if>
+            <if test="value != null and value !=''">
+                conf_value=#{value},
+            </if>
+            <if test="updateAt != null">
+                update_at=#{updateAt},
+            </if>
+        </trim>
+        where  id=#{id}
+    </update>
+
+    <delete id="delete" parameterType="com.configcenter.model.ConfigItem">
+        delete from cc_config_item where id=#{id}
+    </delete>
+
+    <select id="queryList" resultMap="BaseResultMap" parameterType="com.configcenter.vo.CommonQueryVo">
+        select a.*
+        from cc_config_item a
+        join cc_app b on a.app_id=b.id
+        where 1=1
+        <if test="name!=null and name!=''">
+            and  b.name like "%"#{name}"%"
+        </if>
+        <if test="key!=null and key!=''">
+            and a.conf_key like "%"#{key}"%"
+        </if>
+        <if test="parentId!=null">
+            and a.app_id = #{parentId}
+        </if>
+        <if test="start != null and rows != null">
+            LIMIT ${start},${rows}
+        </if>
+    </select>
+
+    <select id="queryListExt" resultMap="BaseResultExtMap" parameterType="com.configcenter.vo.CommonQueryVo">
+        select a.*,b.name as app_name
+        from cc_config_item a
+        join cc_app b on a.app_id=b.id
+        where 1=1
+        <if test="name!=null and name!=''">
+            and  b.name like "%"#{name}"%"
+        </if>
+        <if test="key!=null and key!=''">
+            and a.conf_key like "%"#{key}"%"
+        </if>
+        <if test="parentId!=null">
+            and a.app_id = #{parentId}
+        </if>
+        <if test="start != null and rows != null">
+            LIMIT ${start},${rows}
+        </if>
+    </select>
+
+    <select id="count"  resultType="java.lang.Integer" parameterType="com.configcenter.vo.CommonQueryVo">
+        select count(1) as count
+        from cc_config_item a
+        join cc_app b on a.app_id=b.id
+        where 1=1
+        <if test="name!=null and name!=''">
+            and  b.name like "%"#{name}"%"
+        </if>
+        <if test="key!=null and key!=''">
+            and a.conf_key like "%"#{key}"%"
+        </if>
+        <if test="parentId!=null">
+            and a.app_id = #{parentId}
+        </if>
+    </select>
+
+    <delete id="deleteByApp" parameterType="com.configcenter.model.App">
+        delete from cc_config_item where app_id=#{id}
+    </delete>
+
+    <select id="queryByApp" resultMap="BaseResultMap" parameterType="com.configcenter.model.App">
+        select * from cc_config_item where app_id=#{id}
+    </select>
+
+    <select id="queryConfigItemFull" resultMap="BaseResultExtMap" parameterType="com.configcenter.model.ConfigItem">
+        select a.*,b.name as app_name
+        from cc_config_item a
+        join cc_app b on a.app_id=b.id
+        where a.id = #{id}
+    </select>
+
+</mapper>

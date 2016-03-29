@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>个人网站-相册</title>
+<link href="css/style.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="js/main.js"></script>
+<script type="text/javascript">
+ function closeContent(x){
+     x.parentNode.style.display="none";
+	 document.getElementById("content").style.display="none";
+	 }
+ function openContent(x){
+     document.getElementById("content").style.display="block";
+	 document.getElementById("content_p").style.display="block";
+	 document.getElementById("content_p").getElementsByTagName("img")[0].src=document.getElementsByTagName("img")[x].alt;
+	 } 
+</script>
+<style type="text/css">
+h4{letter-spacing:1em;
+   font-size:15px;
+   background:#e6e4db url(img/h4_bg.jpg);
+   height:24px;
+   border-bottom:1px solid #d9d7cb;
+   padding-top:5px;
+   margin-top:2px;
+   padding-left:10px;}
+#right{width:754px;
+       height:538px;
+	   border:1px solid #d9d7cb;
+	   margin:10px;
+	   float:left;}
+#right h4{width:744px;}
+#right h5{font-size:13px;
+		  text-align:center;}
+#right a{color:#333;}
+#right a:visited{color:#333;}
+#right a:hover{color:#d9d7cb;}
+#right table td{text-align:center;}
+#right img{border:1px solid #999;	}
+#content{position:absolute;
+         top:0px;
+		 left:0px;
+		 display:none;
+		 width:100%;
+		 height:100%;
+		 background:#000;
+		 text-align:center;
+		 filter:alpha(opacity=85);	}
+#content_h5{text-align:center;
+            font-size:16px;}
+#content_p{width:100%;
+           height:350px;	
+		   text-align:center;	 
+		   position:absolute;
+           top:190px;
+		   left:0px;
+		   display:none;}
+#content_btn{width:100px;
+             height:18px;
+			 margin-top:10px;
+			 border:1px solid #999;}
+</style>
+</head>
+<body>
+<div id="top">
+   <div id="top_txt"><a href="javascript:addFav('个人网站示例');" title="添加本页到收藏夹">收藏本页</a>|<a href="mailto:zhanzhang@qq.com" title="给站长发邮件">联系站长</a></div>
+</div>
+<div id="vi">
+   <div id="tt">成功没有早晚<br />
+   努力就有收获</div>
+</div>
+<div id="nav">
+   <ul>
+      <li><a href="index.htm" target="_self">首页</a></li>
+      <li class="bar">|</li>
+      <li><a href="article.htm" target="_self">日志</a></li>
+      <li class="bar">|</li>
+      <li><a href="photo.htm" target="_self">相册</a></li>
+      <li class="bar">|</li>
+      <li><a href="msg.htm" target="_self">留言</a></li>
+   </ul>
+</div>
+<div id="main">
+  <div id="right">
+     <h4>|相片列表</h4>
+	 <table align="center" cellpadding="0" cellspacing="20" width="750">
+	 <tr>
+	   <td><h5><a href="javascript:openContent(0);" title="单击显示大图">森林美景</a></h5></td>
+	   <td><h5><a href="javascript:openContent(1);" title="单击显示大图">地球景色</a></h5></td>
+	   <td><h5><a href="javascript:openContent(2);" title="单击显示大图">世界遗产</a></h5></td>
+	 </tr>
+	 <tr>
+	   <td><a href="javascript:openContent(0);" title="单击显示大图"><img src="img/l_01.jpg" title="单击显示大图" alt="img/b_01.jpg" /></a></td>
+	   <td><a href="javascript:openContent(1);" title="单击显示大图"><img src="img/l_02.jpg" title="单击显示大图" alt="img/b_02.jpg" /></a></td>
+	   <td><a href="javascript:openContent(2);" title="单击显示大图"><img src="img/l_03.jpg" title="单击显示大图" alt="img/b_03.jpg" /></a></td>
+	 </tr>
+	 <tr>
+	   <td><h5><a href="javascript:openContent(3);" title="单击显示大图">校园一角</a></h5></td>
+	   <td><h5><a href="javascript:openContent(4);" title="单击显示大图">江边</a></h5></td>
+	   <td><h5><a href="javascript:openContent(5);" title="单击显示大图">森林美景</a></h5></td>
+	 </tr>
+	 <tr>
+	   <td><a href="javascript:openContent(3);" title="单击显示大图"><img src="img/l_04.jpg" title="单击显示大图" alt="img/b_04.jpg" /></a></td>
+	   <td><a href="javascript:openContent(4);" title="单击显示大图"><img src="img/l_05.jpg" title="单击显示大图" alt="img/b_05.jpg" /></a></td>
+	   <td><a href="javascript:openContent(5);" title="单击显示大图"><img src="img/l_01.jpg" title="单击显示大图" alt="img/b_01.jpg" /></a></td>
+	 </tr>
+	 <tr>
+	   <td><h5><a href="javascript:openContent(6);" title="单击显示大图">地球景色</a></h5></td>
+	   <td><h5><a href="javascript:openContent(7);" title="单击显示大图">世界遗产</a></h5></td>
+	   <td><h5><a href="javascript:openContent(8);" title="单击显示大图">校园一角</a></h5></td>
+	 </tr>
+	 <tr>
+	   <td><a href="javascript:openContent(6);" title="单击显示大图"><img src="img/l_02.jpg" title="单击显示大图" alt="img/b_02.jpg" /></a></td>
+	   <td><a href="javascript:openContent(7);" title="单击显示大图"><img src="img/l_03.jpg" title="单击显示大图" alt="img/b_03.jpg" /></a></td>
+	   <td><a href="javascript:openContent(8);" title="单击显示大图"><img src="img/l_04.jpg" title="单击显示大图" alt="img/b_04.jpg" /></a></td>
+	 </tr>	
+	</table> 
+  </div>
+</div>
+<div id="bt">本网站版权为YEQING所有<br /><span id="sysmsg"></span></div>
+<div id="content"></div>
+  <p id="content_p"> 
+     <img src="" id="img_dis" /><br />
+	 <button onclick="closeContent(this);" id="content_btn">关闭窗口</button>
+  </p>
+</body>
+</html>

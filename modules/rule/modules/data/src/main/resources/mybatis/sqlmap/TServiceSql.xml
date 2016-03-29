@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap>
+    <resultMap id="ServiceGroupMap"
+               class="com.rule.data.model.SerService">
+        <result property="serviceID" column="serviceID"/>
+        <result property="name" column="name"/>
+        <result property="type" column="type"/>
+        <result property="baseServiceID" column="baseServiceID"/>
+        <result property="sql" column="sql"/>
+        <result property="dbID" column="dbID"/>
+        <result property="state" column="state"/>
+        <result property="cacheTime" column="cacheTime"/>
+        <result property="updateTime" column="updateTime"/>
+        <result property="columns" column="serviceID"
+                select="TServiceColumnList"/>
+    </resultMap>
+
+    <select id="ServiceMappingList"
+            resultClass="com.rule.data.model.SerMap">
+        SELECT
+        serviceInterface
+        , serviceImplement
+        FROM `t_service_mapping`
+    </select>
+
+    <select id="ServiceGroupInfoList" resultMap="ServiceGroupMap">
+        select
+        `name`
+        ,`type`
+        ,baseServiceID
+        ,`sql`
+        ,dbID
+        ,state
+        ,cacheTime
+        ,updateTime
+        ,serviceID
+        from
+        t_service
+    </select>
+
+    <select id="ServiceGroupInfo" parameterClass="java.lang.String"
+            resultMap="ServiceGroupMap">
+        select
+        `name`
+        ,`type`
+        ,baseServiceID
+        ,`sql`
+        ,dbID
+        ,state
+        ,cacheTime
+        ,updateTime
+        ,serviceID
+        from
+        t_service
+        where `name`=#name#
+    </select>
+
+    <select id="SelectSqlByName" parameterClass="java.lang.String"
+            resultClass="java.lang.String">
+        select
+            `sql`
+        from
+        t_service
+        where `name`=#name#
+    </select>
+
+    <insert id="insertTServiceAlarm"
+            parameterClass="com.rule.data.model.SerAlarm">
+        insert into t_service_alarm(sname, msg) values(#sname#, #msg#)
+    </insert>
+
+    <insert id="insertTServiceMonitor"
+            parameterClass="com.rule.data.model.SerMonitor">
+        insert into t_service_monitor(httptimes, cachesum, serviceinvoke)
+        values(#httptimes#, #cachesum#, #serviceinvoke#)
+    </insert>
+
+    <insert id="insertTServiceCallLog" parameterClass="com.rule.data.model.SerCallLog">
+        insert into t_service_call_log(serviceName,param,ip,`time`)
+        values(#serviceName#,#param#,#ip#,#time#)
+    </insert>
+
+</sqlMap>

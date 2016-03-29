@@ -1,0 +1,292 @@
+﻿---------linux系统服务介绍-----------
+1. alsasound ：Alsa声卡驱动守护程序。
+
+2. acpid：acpid（Advanced Configuration and Power Interface）是为替代传统的APM电源管理标准而推出的新型电源管理标准。通常笔记本电脑需要启动电源进行管理。
+
+3. atalk：AppleTalk网络守护进程。
+
+4. amd： 自动安装NFS守护进程。
+
+5. anacron：一个自动化运行任务守护进程。
+
+6. apmd：apmd（Advanced Power Management）是高级电源管理。
+
+7. arptables_jf ：为arptables网络的用户控制过滤的守护进程。
+
+8. arpwatch： 记录日志并构建一个在LAN接口上看到的以太网地址和IP地址对数据库。
+
+9. autofs：自动安装管理进程automount，与NFS相关，依赖于NIS服务器。
+
+10. bootparamd：引导参数服务器，为LAN上的无盘工作站提供引导所需的相关信息。
+
+11. bluetooch：蓝牙服务器守护进程。
+
+12. crond ：cron是Unix下的一个传统程序，该程序周期地运行用户调度的任务。比起传统的Unix版本，Linux版本添加了不少属性，而且更安全，配置更简单。类似计划任务。
+
+13. chargen：使用tcp协议的chargen server，chargen（Character Generator Protocol）是一种网络服务，主要功能是提供类似远程打字的功能。
+
+14. chargen-udp：使用UDP协议的chargen server。
+
+15. cpuspeed：监测系统空闲百分比，降低或加快CPU时钟速度和电压从而在系统空闲时将能源消耗降为最小，而在系统繁忙时最大化加快系统执行速度。
+
+16. dhcpd：动态主机控制协议(Dynamic Host Control Protocol)的服务守护进程。
+
+17. cups：cups(Common UNIX Printing System)是通用UNIX打印守护进程。
+
+18. cups－config－daemons：cups打印系统切换守护进程。
+
+19. cups-lpd：cups行打印守护进程。
+
+20. daytime：使用TCP 协议的Daytime守护进程，该协议为客户机实现从远程服务器获取日期和时间的功能。预设端口：13。
+
+21. daytime-udp：使用UDP 协议的Daytime守护进程。
+
+22. dc_server：使用SSL安全套接字的代理服务器守护进程。
+
+23. dc_client：使用SSL安全套接字的客户端守护进程。
+
+24. diskdump：服务器磁盘备份守护进程。
+
+25. echo：服务器回显客户数据服务守护进程。
+
+26. echo-udp：使用UDP协议的服务器回显客户数据服务守护进程。
+
+27. eklogin：接受rlogin会话鉴证和用kerberos5加密的一种服务的守护进程。
+
+28. gated ：网关路由守护进程。它支持各种路由协议，包括RIP版本1和2、DCN HELLO协议、OSPF版本2以及EGP版本2到4。
+
+29. gpm：gpm（General Purpose Mouse Daemon ）守护进程为文本模式下的Linux程序如mc(Midnight Commander)提供了鼠标的支持。
+
+30. gssftp： 使用kerberos 5认证的ftp守护进程
+
+31. httpd：Web服务器Apache守护进程。
+
+32. inetd ：因特网操作守护程序。
+
+33. innd：Usenet新闻服务器守护进程。
+
+34. iiim：中文输入法服务器守护进程。
+
+35. iptables：iptables防火墙守护进程。
+
+36. irda：红外端口守护进程。
+
+37. isdn：isdn启动和中止服务守护进程。
+
+38. krb5－telnet:使用kerberos 5认证的telnet守护进程。
+
+39. klogin：远程登陆守护进程。
+
+40. keytable：该进程的功能是转载在/etc/sysconfig/keyboards里定义的键盘映射表，该表可以通过kbdconfig工具进行选择。您应该使该程序处于激活状态。
+
+41. irqbalance：对多个系统处理器环境下的系统中断请求进行负载平衡的守护程序。如果你只安装了一个CPU，就不需要加载这个守护程序。
+
+42. kshell ：kshell守护进程。
+
+43. kudzu：硬件自动检测程序。
+
+44. ldap：ldap（Lightweight Directory Access Protocol）目录访问协议服务器守护进程。
+
+45. lm_seroems：检测主板工作情况守护进程。
+
+46. lpd ：lpd是老式打印守护程序，负责将lpr等程序提交给打印 作业。
+
+47. mdmonitor：RAID相关设备的守护程序。
+
+48. messagebus：D-BUS是一个库，为两个或两个以上的应用程序提供一对一的通讯。
+
+49. microcode_ctl：可编码以及发送新的微代码到内核以更新Intel IA32系列处理器。
+
+50. mysqld： 一个快速高效可靠的轻型SQL数据库引擎守护进程。
+
+51. named：DNS（BIND）服务器守护进程。
+
+52. netplugd：netplugd（network cable hotplug management daemon）守护程序，用于监控一个或多个网络接口的状态，当某些事件触发时运行一个外部脚本程序。
+
+53. netdump：远程网络备份服务器守护进程。
+
+54. netfs：Network Filesystem Mounter，该进程安装和卸载NFS、SAMBA和NCP网络文件系统。
+
+55. nfs：网络文件系统守护进程。
+
+56. nfslock：NFS是一个流行的通过TCP/IP网络共享文件的协议，此守护进程提供了NFS文件锁定功能。
+
+57. ntpd：Network time Protocol daemon（网络时间校正协议）。ntpd是用来使系统和一个精确的时间源保持时间同步的协议守护进程。
+
+58. network：激活/关闭启动时的各个网络接口守护进程。
+
+59. psacct：该守护进程包括几个工具用来监控进程活动的工具，包括ac,lastcomm, accton 和sa。
+
+60. pcmcia：主要用于支持笔记本电脑接口守护进程。
+
+61. portmap：该守护进程用来支持RPC连接，RPC被用于NFS以及NIS 等服务。
+
+62. postgresql: PostgreSQL 关系数据库引擎。
+
+63. proftpd: proftpd 是Unix下的一个配置灵活的ftp服务器的守护程序。
+
+64. pppoe：ADSL连接守护进程。
+
+65. random ：保存和恢复系统的高质量随机数生成器，这些随机数是系 统一些随机行为提供的。
+
+66. rawdevices：在使用集群文件系统时用于加载raw设备的守护进程。
+
+67. readahead、readahead_early：readahead和readahead_early是在Fedora core 2中最新推出的两个后台运行的守护程序。其作用是在启动系统期间，将启动系统所要用到的文件首先读取到内存中，然后在内存中进行执行，以加快系统的启动速度。
+
+68. rhnsd：Red Hat 网络服务守护进程。通知官方的安全信息以及为系统打补丁。
+
+69. routed ：该守护程序支持RIP协议的自动IP路由表维护。
+
+70. rsync：remote sync远程数据备份守护进程。
+
+71. rsh ：远程主机上启动一个shell，并执行用户命令。
+
+72. rwhod： 允许远程用户获得运行rwho守护程序的机器上所有已登录用户的列表。
+
+73. rstatd：一个为LAN上的其它机器收集和提供系统信息的守候进程。
+
+74. ruserd：远程用户定位服务，这是一个基于RPC的服务，它提供关于当前记录到LAN上一个机器日志中的用户信息
+
+75. rwalld：激活rpc.rwall服务进程，这是一项基于RPC的服务，允许用户给每个注册到LAN机器上的其他终端写消息。
+
+76. rwhod：激活rwhod服务进程，它支持LAN的rwho和ruptime服务。
+
+77. saslauthd： 使用SASL的认证守护进程。
+
+78. sendmail：邮件服务器sendmail守护进程。
+
+79. smb：Samba文件共享/打印服务守护进程。
+
+80. snmpd：本地简单网络管理守护进程。
+
+81. squid：代理服务器squid守护进程。
+
+82. sshd：OpenSSH服务器守护进程。Secure Shell Protocol可以实现安全地远程管理主机。
+
+83. smartd：Self Monitor Analysis and Reporting Technology System，监控你的硬盘是否出现故障。
+
+84. syslog：一个让系统引导时起动syslog和klogd系统日志守候进程的脚本。
+
+85. time ：该守护进程从远程主机获取时间和日期，采用TCP协议。
+
+86. time-udp： 该守护进程从远程主机获取时间和日期，采用UDP协议。
+
+87. tux：在Linux内核中运行apache服务器的守护进程。
+
+88. vsftpd：vsftpd服务器的守护进程。
+
+89. vncserver：VNC （Virtual Network Computing，虚拟网络计算）。
+
+90. xfs：X Window字型服务器守护进程，为本地和远程X服务器提供字型集。
+
+91. xinetd：支持多种网络服务的核心守护进程。
+
+92. ypbind：为NIS（网络信息系统）客户机激活ypbind服务进程 。
+
+93. yppasswdd：NIS口令服务器守护进程。
+
+94. ypserv：NIS主服务器守护进程。
+
+95. yum：RPM操作系统自动升级和软件包管理守护进程。
+
+1 amd：运行 automount精灵程序，该精灵在必要时自动安装一些本地设备和NFS文件系统。
+
+2.apmd ：用来监视系统用电状态，并将相关信息通过 syslogd 写入日志。也可以用来在电源不足时关机。
+
+3.arpwatch ：该程序主要用来维护以太网物理地址和 IP地址的对应关系。
+
+4.atalk：AppleTalk精灵程序。注意不要在后台运行该程序，该程序的数据结构必须在运行其他进程前先花一定时间初始化。
+
+5.atd ：运行用户用 At命令调度的任务。也在系统负荷比较低时运行批处理任务。
+
+6.autofs：当您需要时自动转载文件系统，而当您不需要时自动卸载。
+
+7.bootparamd :该服务允许老的Sun工作站从Linux 网络启动，它和 rarp现在很少使用，基本。上被 bootp和 dhcp取代了。
+
+8.crond ：cron 是 Unix 下的一个传统程序，该程序周期地运行用户调度的任务。比起传统的Unix版本，Vixie版本添加了不少属性，而且更安全，配置更简单。
+
+9.Dhcpd：该精灵提供了对动态主机控制协议(Dynamic Host Control Protocol)的访问支持。
+
+10.gated ：gated通过一个数据库提供了网络路由功能支持。它支持各种路由协议，包括RIP。版本1 和 2、DCN HELLO 协议、OSPF版本 2以及EGP版本 2 到 4。
+
+10.gpm :为文本模式下的Linux程序如 mc(Midnight Commander)提供了鼠标的支持。它也支持。控制台下鼠标的拷贝，粘贴操作以及弹出式菜单。
+
+11.httpd ：http 是著名的 www 服务器，可用来提供HTML文件以及 CGI 动态内容服务，如常见的是APache。
+
+12.Xinetd：因特网操作服务程序。监控网络对各种它管理的服务的需求，并在必要的时候启动相应的服务程序。通常，inetd管理的程序有 telnet、ftp、rsh 和 rlogin。关闭 inetd也就关闭了这些由它管理的服务。
+
+13.Innd：inn 是最流行的用户组新闻服务器。它允许您建立起本地新闻服务器。配置有一定的难度，可以先阅读/usr/doc/ inn*文档获得帮助。
+
+14.Keytable :该程序的功能是转载您在/etc/sysconfig/keyboards里说 明的键盘映射表，该表可以通过 kbdconfig工具进行选 择。您应该使该程序处于激活状态。
+
+15.ldap：LDAP代表 Lightweight Directory Access Protocol，实现了目录访问协议的行业标准。
+
+16.linuxconf：linuxconf是 Linux 下的一个有效的系统配置工具，该服务允许远程运行。
+
+17.lpd：lpd是系统打印守护程序，负责将lpr 等程序提交给打印作业。
+
+18.mcserv ：Midnight Commander 服务进程允许远程机器上的用户通过 idnight Commander 文件管理器操作本机文件。服务进程用 PAM来验证用户，需要给出“用户名/口令”以通过验证。
+
+19.Mysql ：一个快速高效可靠的轻型SQL数据库引擎。
+
+20.Named : 域名服务器，将 Internet主机名解析为点分的IP地址。最为著名的是bind;
+
+21.Netfs :负责装载/卸载 NFS、Samba、NCP(Netware)文件系统。
+
+22.network :激活/关闭启动时的各个网络接口。
+
+23.nfs: NFS 是一个流行的基于 TCP/IP 网络的文件共享协议。该服务提供了 NFS 文件共享服务，具体的配置在/etc/exports 文件里。
+
+24.nscd :该服务负责密码和组的查询，并且缓冲查询结果。如果您的系统有比较慢的服务(如 NIS和 NIS+)，则应该启动该服务。 cmciapcmcia 主要用于支持笔记本电脑。
+
+25.Portma: portmap用来支持RPC连接，RPC被用于 NFS以及NIS等服务。
+
+26.Postgresql: PostgreSQL关系数据库引擎。
+
+27.Proftp: proftpd是Unix下的一个配置灵活的 ftp守护程序。
+
+28.Radvd: 路由广播程序。
+
+29.random :保存和恢复系统的高质量随机数生成器，这些随机数是系统一些随机行为提供的。
+
+30.routed :该守护程序支持 RIP协议的自动IP路由表维护。RIP主要使用在小型网络上，大一点的网络就需要复杂一点的协议。
+
+31.Rstatd : Rstat协议允许网络上的用户获得同一网络上各机器的性能参数。
+
+32.Rusersd :该服务使网络用户可以定位同一网络上的其他用户。
+
+33.rwalld :Rwall 协议允许远程用户向在同一系统中活跃着的终端发送消息，类似 wall 的本地行为。 34.rwhod : 允许远程用户获得运行 rwho 精灵的机器上所有已登录用户的列表，与 finger 类似。
+
+35.Sendmail :大名鼎鼎的邮件服务器。
+
+36.Smb: 启动和关闭 smbd和 nmbd精灵程序以提供SMB文件及网络打印网络服务。
+
+37.Snmpd: 简单网络管理协议(SNMP)的守护精灵。
+
+38.syslog : syslog 是操作系统提供的一种机制，守护程序通常使用这种机制将各种信息写到各个系统日志文件。通常应该启动该服务。
+
+39.Xfs : X 的字体服务器。
+
+40.Ypbind :NIS/YP的客户端守护程序。如果您需要使用 NIS/YP机器，请启动这项服务，否则，关闭这项服务。
+
+41.yppasswd : 让 NIS 用户能够修改密码。运行在 NIS 域的服务器上。客户端程序同样也叫yppasswd。
+
+42.Ypserv : 标准 NIS/YP 网络协议的一个实现。允许主机名，用户名和其他信息分布于网络各端。运行在NIS服务器上，客户端不需要。
+
+43.Mars : 文件及打印机共享 for netware client
+
+44.Nfs: tcp/ip网络上的文件及打印共享
+
+45.Vncserver: 远程桌面 x-window管理
+
+46.Rarpd: 反向解析
+
+47.Rhnsd: kprop自动更新服务
+
+48.Smartd: 后台的自我监视
+
+49.Isiam: kudzu硬件鉴测和配置
+
+50.Keytable :键盘映射
+
+------------------------------------------------

@@ -1,0 +1,21 @@
+----------------es安装与启动-------------
+
+1,下载es压缩包并解压
+2,cd到es根目录 bin/elasticsearch 启动es服务 (windows下是执行bin/elasticsearch.bat)
+  es服务默认端口:
+  9200 ---restful的对外端口
+  9300 ---java api的对外端口
+
+访问es: http://127.0.0.1:9200/
+
+-----------------es必备插件---------------
+
+head--查看索引情况，搜索索引，查看集群状态和分片分布等
+      安装:es根目录下执行 bin/plugin --install mobz/elasticsearch-head
+      访问:http://127.0.0.1:9200/_plugin/head/
+
+bigdesk--查看集群的jvm信息，磁盘IO，索引创建删除信息等，适合查找系统瓶颈，监控集群状态等
+      安装:es根目录下执行 bin/plugin --install lukas-vlcek/bigdesk
+      访问:http://127.0.0.1:9200/_plugin/bigdesk/
+
+-------------------------------------------

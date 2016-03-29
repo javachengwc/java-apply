@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>location对象的应用</title>
+<script type="text/javascript">
+  function display(x){
+      var txt;
+	  var txt2=document.getElementById("txt2").value;
+      switch(x){
+	    case 1:
+		txt=location.hostname;
+		break;
+		case 2:
+		txt=location.protocol;
+		break;
+		case 3:
+		txt=location.pathname;
+		break;
+		case 4:
+		txt=location.href;
+		break;
+		case 5:
+		txt=location.href;
+		window.frames[0].location.href=txt2;
+		break;
+		default:
+		txt="";
+	  }
+	document.getElementById("txt").innerText=txt;
+  }
+</script>
+</head>
+<body>
+<span id="txt"></span>
+<hr />
+<button onclick="display(1);">主机名</button>
+<button onclick="display(2);">协议名</button>
+<button onclick="display(3);">内部路径</button>
+<button onclick="display(4);">完整URL</button>
+<hr />
+<input type="text" id="txt2" value="navigator.htm" size="30" />
+<button onclick="display(5);">显示</button>
+<br />
+<iframe name="ifr" id="ifr" width="400" height="120"></iframe>
+</body>
+</html>

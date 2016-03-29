@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="/js/jquery-1.8.0.js"></script>
+    <script type="text/javascript" src="/js/jquery.form.js"></script>
+
+    <style type="text/css">
+        body {font-size:14px; background:#fff;}
+        div.login {width:300px; height:130px; border:1px #ccc solid; margin:0 auto; text-align:center; padding:10px;}
+        .tip_div{margin:0 auto; text-align:center;}
+    </style>
+    <title>用户登录</title>
+</head>
+
+<body>
+<div class="login">
+    <form id="flogin">
+        <p>用户名：<input type="text"  id="account" name="account" value="admin"/></p>
+        <p>密&nbsp;&nbsp;&nbsp;&nbsp;码：<input type="password"id="passwd"  name="passwd" value="admin"/></p>
+        <p><input  id="loginBtn" type="button" value="登录" /></p>
+    </form>
+</div>
+<div class="tip_div">
+    <p id="loginTips"></p>
+</div>
+
+<script language="JavaScript" type="text/javascript">
+
+    //回车触发登陆
+    document.onkeyup = function(event)
+    {
+        var evt = window.event || event;
+        var code = evt.keyCode?evt.keyCode : evt.which;
+
+        if(code == 13)
+        {
+            login();
+        }
+    }
+
+    //聚焦输入框，登陆按钮绑定点击函数
+    $(document).ready(function() {
+
+        $('#account').focus();
+
+        $('#loginBtn').click(function(){
+            login();
+        });
+    });
+
+    //登陆
+    function login()
+    {
+        var account = $('#account').val();
+        var passwd = $('#passwd').val();
+        if($.trim(account)=="" || $.trim(passwd)==""){
+            alert("请输入用户名和密码");
+            return;
+        }
+        var params = {
+            account:account,
+            passwd:passwd
+        };
+        $.ajax({
+            url:'/login.do',
+            type:'post',
+            dataType:'json',
+            data:params,
+            success:update_page
+        });
+    }
+
+    function update_page(json){
+
+        if(json.result==0){
+            $('#loginTips').html("");
+            var index = window.location.href.lastIndexOf('/');
+            var url = window.location.href;
+            url = url.substr(0, index);
+            window.location.href = url+"/index.do";
+        }else{
+            var tips='<span style="color:red;">'+json.msg+'</span>';
+            $('#loginTips').html(tips);
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>测试</title>
+    <script type="text/javascript" src="../js/jquery-1.8.0.js"></script>
+    <script>
+
+        /**将周期转成可读的数据 显示**/
+        function transReadAblePeriod(period,flag)
+        {
+            if(period==null || isNaN(period))
+            {
+                return "";
+            }
+
+            var hour=0;
+            var minite=0;
+            var sed=0;
+
+
+            var md = period%60;
+            var hs = Math.floor(period/60);
+
+            if(flag==1)
+            {
+                //表示参数 是秒数
+                sed=md;
+                minite = hs%60;
+                hs = Math.floor(hs/60);
+            }else
+            {
+                minite=md;
+            }
+            hour = hs;
+
+            var buf ="";
+            if(hour>0)
+            {
+                buf+=hour+"小时";
+            }
+            if(minite>0)
+            {
+                buf+=minite+"分钟";
+            }
+            if(sed>0)
+            {
+                buf+=sed+"秒";
+            }
+            return buf;
+        }
+
+
+
+
+        function trans()
+        {
+
+            var fd="haha";
+            var tdflag="'td[field="+'"'+fd+'"'+"]'";
+            alert(tdflag);
+            var period = document.getElementById("period").value;
+            period =""+period;
+            var rt = transPercent(period,0);
+            alert(rt);
+        }
+
+        /**将小数显示成百分比*/
+        function transPercent(period)
+        {
+            if(period==null)
+            {
+                return "";
+            }
+            if(isNaN(period))
+            {
+                return period;
+            }
+
+            var rt = eval(period)*100;
+            rt =""+rt;
+            if(rt.indexOf(".00")>0)
+            {
+                rt=rt.substring(0,rt.indexOf(".00"));
+            }else {
+                rt = eval(rt).toFixed(2);
+            }
+            return rt+"%";
+        }
+    </script>
+</head>
+<body>
+<div id="content">
+    周期:<input type="text" id="period" name="period" />&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" id="btn" value="转换" onclick="trans();" />
+
+</div>
+</body>
+</html>

@@ -1,0 +1,58 @@
+------------------------es查询----------------------
+
+http方式查询
+
+http://127.0.0.1:9200/search/{"query":{"term":{"user.name":"cheng"}}}  --post方式查询(get方式拿不到结果)
+
+http://127.0.0.1:9200/search/
+{"query":
+    {"bool":
+        {"must":
+            [{"term":
+                {"user.name":"cheng"}
+            }],
+         "must_not":[],
+         "should":[]
+         }
+    },
+    "from":0,
+    "size":10,
+    "sort":[],
+    "facets":{}
+}
+
+http://127.0.0.1:9200/search/
+{
+    "query": {
+        "bool": {
+            "must": [
+                {
+                    "term": {
+                        "user.name": "cheng"
+                    }
+                }
+                ,
+                {
+                    "range": {
+                        "user.age": {
+                            "from": "20",
+                            "to": "50"
+                        }
+                    }
+                }
+            ],
+            "must_not": [ ],
+            "should": [ ]
+        }
+    },
+    "from": 0,
+    "size": 10,
+    "sort": [ ],
+    "facets": { }
+}
+---------------------------------------------------
+
+
+
+
+

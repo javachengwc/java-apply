@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.com//DTD SQL Map 2.0//EN" 
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="Role">
+    <typeAlias alias="Role" type="com.manage.model.rbac.Role" />
+    <typeAlias alias="RoleQuery" type="com.manage.model.rbac.query.RoleQuery" />
+    
+    <resultMap id="roleResult" class="Role">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="introduct" column="introduct"/>
+    </resultMap>
+    
+    <select id="getRoleById" resultMap="roleResult">
+         select * from admin_role where id=#id#
+    </select>
+    
+    <select id="getRoleAll" resultClass="Role">
+        select * from admin_role
+    </select>
+    
+    <select id="getRoleListByAdm" resultClass="Role" parameterClass="int">
+        select a.* from admin_role a,admin_user_role b where a.id=b.role_id and b.user_id=#adminorId#; 
+    </select>
+    
+    <select id="findPageRoleTotalCount" resultClass="int" parameterClass="RoleQuery">
+        select count(1) from admin_role
+        <dynamic prepend="WHERE">   
+           <isNotEmpty prepend="AND" property="name">
+                name like concat(concat("%",#name#),"%") 
+           </isNotEmpty>
+        </dynamic>
+    </select>
+
+    <select id="findPageRole" resultMap="roleResult" parameterClass="RoleQuery">
+        select * from admin_role 
+        <dynamic prepend="WHERE">   
+           <isNotEmpty prepend="AND" property="name">
+                name like concat(concat("%",#name#),"%") 
+           </isNotEmpty>
+        </dynamic>
+         limit #start#,#pageSize#
+    </select>
+    
+    
+    <update id="updateRole" parameterClass="Role">
+        update admin_role set name=#name#, introduct=#introduct# where id=#id#
+    </update>
+
+   <delete id="deleteRoleById" parameterClass="int">
+        delete from admin_role where id=#id#
+    </delete>
+
+    <insert id="insertRole" parameterClass="Role">
+        insert into admin_role (name, introduct) values (#name#,#introduct#)
+        <selectKey keyProperty="id" resultClass="int">
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+    
+</sqlMap>

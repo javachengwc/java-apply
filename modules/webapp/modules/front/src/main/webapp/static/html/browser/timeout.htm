@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>延时执行命令</title>
+<script type="text/javascript">
+  var id;
+  var i=1;
+  function Begin(){
+   var bar;   
+    function get(){
+      if(i%2==1){
+	   bar="亲爱的读者";
+	  }else{
+	   bar="你们好！";
+	  }
+	  i++;
+	  document.getElementById("bar").innerText=bar;
+	 }
+   id=setTimeout(get,5000);
+  }
+</script>
+<style type="text/css">
+body{text-align:center;}
+#bar2{width:10px;
+     height:20px;
+	 background:#ccc;}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<hr />
+<button onclick="Begin();">等5秒再出现</button>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>边框样式设置</title>
+<style type="text/css">
+* {	margin: 0px;}
+#all{width:400px;
+     height:270px;
+	 margin:0px auto;	 
+	 background-color:#ccc;}
+#a,#b,#c,#d,#e,#f,#g{width:160px;
+               height:50px;
+			   text-align:center;
+			   line-height:50px;
+			   background-color:#eee;}
+#a{width:380px;
+   margin:5px;
+   border:1px solid #333;}
+#b{border:20px solid #333;
+   float:left;}
+#c{margin-left:5px;
+   border:20px groove #f00;}
+#d{margin-left:5px; 
+   border:2px dashed #000;
+   float:left;}
+#e{margin-left:5px; 
+   border:2px dotted #000;
+   float:left;}
+#f{margin:5px;
+   border-left:2px solid #fff;
+   border-top:2px solid #fff;
+   border-right:2px solid #333;
+   border-bottom:2px solid #333;
+   float:left;}
+#g{margin-top:5px;
+   border-top:2px groove #333;} 
+</style>
+</head>
+<body>
+<div id="all">
+   <div id="a">a盒子</div>
+   <div id="b">b盒子（solid类型）</div>
+   <div id="c">c盒子（groove类型）</div>
+   <div id="d">d盒子（dashed类型）</div>
+   <div id="e">e盒子（dotted类型）</div>
+   <div id="f">f盒子</div>
+   <div id="g">g盒子</div>
+</div>
+</body>
+</html>

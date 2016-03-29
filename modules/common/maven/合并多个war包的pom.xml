@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.platform</groupId>
+    <artifactId>platform</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+
+    <properties>
+        <appname>platform</appname>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>com.datacenter</groupId>
+            <artifactId>datacenter-manage</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>war</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.security</groupId>
+                    <artifactId>security-manage</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.security</groupId>
+            <artifactId>security-manage</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>war</type>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
+        <plugins>
+            <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>9.2.0.RC0</version>
+                <configuration>
+                    <scanIntervalSeconds>2</scanIntervalSeconds>
+                    <webAppConfig>
+                        <contextPath>/</contextPath>
+                        <!--<defaultsDescriptor>src/main/webapp/WEB-INF/common/webdefault.xml</defaultsDescriptor>-->
+                        <allowDuplicateFragmentNames>true</allowDuplicateFragmentNames>
+                    </webAppConfig>
+                    <stopPort>8082</stopPort>
+                    <stopKey>jetty</stopKey>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.eclipse.jetty</groupId>
+                        <artifactId>jetty-maven-plugin</artifactId>
+                        <version>9.2.0.RC0</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <overlays>
+                        <overlay>
+                            <groupId>com.security</groupId>
+                            <artifactId>security-manage</artifactId>
+                        </overlay>
+
+                        <overlay>
+                            <groupId>com.datacenter</groupId>
+                            <artifactId>datacenter-manage</artifactId>
+                        </overlay>
+                    </overlays>
+
+                    <dependentWarExcludes>
+                        WEB-INF/lib/security-service-1.0-SNAPSHOT-client.jar,
+                        WEB-INF/lib/commons-collections-3.1.jar
+                    </dependentWarExcludes>
+
+                    <webResources>
+                        <resource>
+                            <directory>src/main/resources</directory>
+                            <targetPath>WEB-INF/classes</targetPath>
+                            <filtering>true</filtering>
+                        </resource>
+
+                        <resource>
+                            <directory>src/main/webapp</directory>
+                            <targetPath>common</targetPath>
+                            <filtering>true</filtering>
+                            <includes>
+                                <include>common/*</include>
+                            </includes>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.appfuse.plugins</groupId>
+                <artifactId>maven-warpath-plugin</artifactId>
+                <version>2.2.1</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>add-classes</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+</project>

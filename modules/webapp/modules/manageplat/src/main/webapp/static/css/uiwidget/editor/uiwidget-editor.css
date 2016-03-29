@@ -1,0 +1,14 @@
+/*common*/
+input,div{
+	font-family: "宋体", Arial, Verdana;
+	font-size: 12px;
+}
+.uiwidget-editor ,.uiwidget-editor input{
+	padding: 0;margin: 0;
+}
+.uiwidget-editor{
+	display: none;position: absolute;	
+}	
+.uiwidget-editor input, .uiwidget-editor select{
+	border:1px solid #FFC740;background-color:#fff;
+}

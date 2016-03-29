@@ -1,0 +1,99 @@
+<h2 class="template_title">文件列表</h2>
+<div class="template_con">
+    <div class="search_con">
+        类型:<select name="type" id="type" class="input-xlarge">
+                <option value="0" >-----图片-----</option>
+                <option value="1" >-----其他-----</option>
+            </select>
+        <input type="hidden" id="pageNo" value="1"/>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="javascript:void(0)" onclick="showList()" id="search">查 询</a>
+    </div>
+
+    <div class="listSide">
+        <table id ="resultTable" class="tempTable" border="0" cellspacing="1" cellpadding="1" >
+            <thead>
+            <td width="10%">id</td>
+            <td width="30%">图片</td>
+            <td width="30%">链接地址</td>
+            <td width="10%">操作</td>
+            </thead>
+            <tbody class="tbody">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+
+        showList();
+    });
+    //显示list
+    function showList(){
+
+        var pageNo = $("#pageNo").val();
+        var type = $("#type").val();
+        var data={type:type,pageNo:pageNo};
+        $.ajax({
+            url: "/file/queryPage.do",
+            type: 'get',
+            data:data,
+            dataType:'json',
+            success: function(data){
+
+                if(data==null || data==undefined || data.list==null)
+                {
+                    return;
+                }
+                $('.tbody').empty();// 清空 列表
+                renderData(data.list)
+
+            }
+        });
+    }
+
+    function renderData(list)
+    {
+        var html = '';
+        $.each(list, function(i, n){
+            var single = list[i];
+
+            var link = single['link'];
+            var type = single.type;
+            var url="";
+            if(type==0)
+            {
+                url='<img width="200" height="50" src="/file/showPic.do?id='+single.id+'"></img>';
+            }
+            html += '<tr>';
+            html +='<td>'+ single.id+ '</td>';
+            html +='<td>'+ url +'</td>';
+            html +='<td>'+ link +'</td>';
+            html +='<td>'+'<a onclick="deleteFile('+single.id+')"  href="javascript:void(0)"><span color="blue">删除</span></a>' + '</td>';
+            html += '</tr>';
+
+        });
+        $(".tbody").append(html);
+    }
+
+    //删除
+    function deleteFile(id){
+        $.ajax({
+            url: "/file/delFile.do",
+            type: 'post',
+            data :{'id' : id},
+            dataType: 'json',
+            success: function(json){
+                if(json.error == 0){
+                    alert("删除成功");
+                    showList();
+                }else{
+                    alert("服务器错误");
+                }
+            }
+        });
+    }
+
+</script>

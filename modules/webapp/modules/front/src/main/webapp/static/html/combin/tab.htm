@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>选项卡切换块</title>
+<script type="text/javascript">
+  function Click(x){
+    var grid = x.parentNode.getElementsByTagName("td");
+	var ct = document.getElementsByTagName("div");
+	for(i=0;i<grid.length;i++){
+		if(x==grid[i]){
+          grid[i].className = "down";
+         ct[i].className = "dis";
+		 }else{
+		  grid[i].className = "up";
+		  ct[i].className = "undis";
+		}
+	 }
+  } 
+</script>
+<style type="text/css">
+a{display:block;
+  width:100%;
+  height:100%;
+  text-decoration:none;
+  text-align:center;
+  outline:none;
+  color:#333;
+  font-weight:bold;}
+a:visited{color:#333;}
+.down{background:#fff;}
+.up{background:#333;}
+.up a{color:#fff;}
+.dis{display:block;}
+.undis{display:none;}
+</style>
+</head>
+<body>
+<table width="300" align="center" cellpadding="0" cellspacing="1">
+ <tr>
+   <td width="100" onclick="Click(this);" class="down"><a href="#" hidefocus="true">项目A</a></td>
+   <td width="100" onclick="Click(this);" class="up"><a href="#" hidefocus="true">项目B</a></td>
+   <td width="100" onclick="Click(this);" class="up"><a href="#" hidefocus="true">项目C</a></td>
+ </tr>
+</table>
+<div class="dis">
+<table width="300" height="150" align="center" cellpadding="0" cellspacing="0" >
+ <tr>
+   <td>内容块A</td>
+ </tr>
+</table>
+</div>
+<div class="undis">
+<table width="300" height="150" align="center" cellpadding="0" cellspacing="0" >
+ <tr>
+   <td>内容块B</td>
+ </tr>
+</table>
+</div>
+<div  class="undis">
+<table width="300" height="150" align="center" cellpadding="0" cellspacing="0">
+ <tr>
+   <td>内容块C</td>
+ </tr>
+</table>
+</div>
+</body>
+</html>

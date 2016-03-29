@@ -1,0 +1,235 @@
+<style>
+    .temp_table .evenrowcolor{background-color:#FFFFFF;}
+    .temp_table .oddrowcolor{background-color:#FFFFFF;}
+    .temp_table tbody .currentline{background-color:#D1D0CE;}
+</style>
+
+<script type="text/javascript">
+
+    //分页对象
+    var dataPageToolBar;
+    //查询对象
+    var dataSearcher;
+
+    $(document).ready(function(){
+
+        //初始化
+        $("#tyQueryId").val(ty_query_id);
+
+        dataSearcher={
+            isFirstLoad:1,
+            pageNo:1
+        };
+
+        listData();
+    });
+
+    //查询列表
+    function listData(){
+
+        var options={
+
+            url: '/tongyong/tyQuery.do',
+            type: 'get',
+            dataType: 'json',
+            success: function(json){
+
+                if(json.error!=0 ){
+
+                    $("#dataList_tbody").html("");
+                    $("#dataPageToolBar").html("");
+                    alert(json.msg);
+
+                    return;
+                }
+                if(dataSearcher.isFirstLoad == 1){
+
+                    dataPageToolBarRegist(json)
+
+                }else{
+                    renderDataTable(json);
+                }
+            }
+        }
+
+        $("#queryForm").ajaxSubmit(options);
+    }
+
+    //渲染数据
+    function renderDataTable(json){
+
+        var result =json.result;
+
+        //渲染条件
+        renderQueryCdn(result);
+
+        var theadHtml="";
+
+        //是否配置了显示的列
+        var rendHead=false;
+        var headCol=[];
+        //渲染head
+        if(result.entityItem && result.entityItem.length>0)
+        {
+            theadHtml+='<tr>';
+            for(var i = 0; i < result.entityItem.length; i ++){
+                var n = result.entityItem[i];
+                theadHtml +='<td>'+ n.itemName+'</td>';
+                headCol[i]= n.itemCol;
+            }
+            theadHtml+='</tr>';
+            rendHead=true;
+        }
+        //渲染数据
+        var html = '';
+        if(result.list && result.list.length>0) {
+
+            for (var i = 0; i < result.list.length; i++) {
+
+                var n = result.list[i];
+
+                html += '<tr>';
+
+                //没配显示的列，默认用结果列名作为thead中个列名
+                if (!rendHead) {
+                    //遍历json中的map
+                    for (var key in n) {
+                        if(i==0)
+                        {
+                            theadHtml +='<td>'+ key+'</td>';
+                        }
+                        var value = n[key];
+                        html += '<td field="'+key+'">' + value + '</td>';
+                    }
+                    if(i==0)
+                    {
+                        theadHtml ='<tr>'+ theadHtml+'</tr>';
+                    }
+                }else
+                {
+                    //jquery遍历数组
+                    $.each(headCol,function(a,value) {
+
+                        var col = headCol[a];
+
+                        var colValue=n[col];
+                        if(colValue==null)
+                        {
+                            colValue="";
+                        }
+                        html += '<td field="'+col+'">' + colValue + '</td>';
+                    });
+                }
+                html += '</tr>';
+            }
+        }
+
+        $("#data_thead").html(theadHtml);
+        $("#dataList_tbody").html(html);
+    }
+
+    //渲染条件
+    function renderQueryCdn(result)
+    {
+        var cnt =$(".search_cdn").html();
+        //加载过就不加载
+        //如果配置有改动，重进页面改动的条件才能渲染出来
+        if(cnt!=null && cnt.trim().length>0)
+        {
+            return;
+        }
+
+        var html='';
+
+        if(result.entityCdn && result.entityCdn.length>0)
+        {
+
+            var len =result.entityCdn.length;
+
+            for (var i = 0; i <len ; i++) {
+
+                var n = result.entityCdn[i];
+
+                html+='<span>'+n.cdnName+'</span>'+':'+'<input type="text" style="width:150px;" id="'+n.cdnCol +'" name="'+n.cdnCol+'"/>'+'&nbsp;&nbsp;&nbsp;&nbsp;';
+                if((i+1)%4==0 && (i+1)<len)
+                {
+                    html+='<br/>';
+                }
+            }
+            html+='<input type="button" value="查询" onclick="listData()" style="width:60px;"/>';
+        }
+        $(".search_cdn").html(html);
+
+    }
+
+    //初始化分页
+    function dataPageToolBarRegist(json){
+
+
+        var pageSize=20;
+        if(json.result.entity && json.result.entity.pageSize)
+        {
+            pageSize= json.result.entity.pageSize;
+        }
+        $("#pageSize").val(pageSize);
+
+        var totalCount=0;
+
+        if(json.result.count!=null)
+        {
+            totalCount = json.result.count;
+        }
+
+        dataPageToolBar = $('#dataPageToolBar').pageBar({
+            params: {}//相关查询参数
+            ,totalCount: totalCount
+            ,pageSize: pageSize //每页显示记录条数
+            ,limitPageCount:20
+            ,pageNo: dataSearcher.pageNo
+            ,changePage: function(t){//换页的回调方法
+
+                dataSearcher.pageNo = t.pageNo;
+                $("#pageNo").val(t.pageNo);
+
+                if (t.getLastPage() < t.pageNo && t.totalCount > 0) {
+                    t.getPreEl().click();
+                    return;
+                }
+
+                if(dataSearcher.isFirstLoad == 1){
+                    dataSearcher.isFirstLoad = 0;
+                    renderDataTable(json);
+                }else{
+                    listData();
+                }
+            }
+        });
+
+    }
+
+
+</script>
+
+<div class="template_con" style="width:1000px">
+    <div class="search_con">
+
+        <form id="queryForm">
+            <input type="hidden" id="tyQueryId" name="tyQueryId" />
+            <input type="hidden" id="pageNo" name="pageNo" value="1"/>
+            <input type="hidden" id="pageSize" name="pageSize"/>
+            <div class="search_cdn"></div>
+        </form>
+    </div>
+
+    <div class="data_div">
+        <table id="dataTable" class="tempTable" border="0" cellspacing="1" cellpadding="1" >
+            <thead id="data_thead">
+
+            </thead>
+            <tbody id="dataList_tbody">
+
+            </tbody>
+        </table>
+        <div id="dataPageToolBar" class="page-bar-con"></div>
+    </div>
+</div>

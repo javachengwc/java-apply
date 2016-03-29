@@ -1,0 +1,81 @@
+﻿--------rpm介绍-----------
+用rpm安装软件最大的麻烦就是需要手动寻找安装该软件所需要的一系列依赖关系，
+超级 麻烦不说，要是软件不用了需要卸载的话由于卸载掉了某个依赖关系而导致其他的软件不能用是非常恼人的
+------初始化rpm数据库-----
+通过rpm 命令查询一个rpm 包是否安装了，也是要通过rpm 数据库来完成的；所以我们要经常用下面的两个命令来初始化rpm 数据库
+rpm --initdb
+rpm --rebuilddb        注：这个要花好长时间
+注：这两个参数是极为有用，有时rpm 系统出了问题，不能安装和查询，大多是这里出了问题
+------安装--------
+rpm -ivh  file.rpm              --安装显示安装进度--install--verbose--hash
+      ep:rpm -ivh  /media/cdrom/RedHat/RPMS/samba-3.0.10-1.4E.i386.rpm /按路径安装并显示进度
+         rpm -ivh --relocate /=/opt/gaim gaim-1.3.0-1.fc4.i386.rpm    //指定安装目录
+         rpm -ivh --test gaim-1.3.0-1.fc4.i386.rpm　　　 //用来检查依赖关系；并不是真正的安装
+         rpm -ivh --nodeps --force gaim-1.3.0-1.fc4.i386.rpm   //强制安装
+------升级--------
+rpm -Uvh  file.rpm              --升级软件包--Update
+      ep:rpm -Uvh --oldpackage gaim-1.3.0-1.fc4.i386.rpm //新版本降级为旧版本
+------查询--------
+rpm -q app                      --查询程序是否安装
+rpm -qa                         --查看系统中所有已经安装的包
+      ep:rpm -qa | grep httpd　　　　　          /[搜索指定rpm包是否安装]--all搜索*httpd*
+         rpm -qa|grep yum|xargs rpm -e --nodeps  /xargs的作用就是把前面通过 | 传过来的数据作为下面命令的参数
+rpm -ql app                     --[搜索rpm包]--list所有文件安装目录
+      ep:rpm -ql httpd
+rpm -qf file                    --查找指定文件属于哪个RPM软件包[Query File]
+      ep:rpm -qf libevent_extra-1.4.so.2.1.3
+rpm -qi app                     --查询一个已安装软件包的信息 
+      ep:rpm -qi lynx
+rpm -qc app                     --查看一下已安装软件的配置文件
+      ep:rpm -qc lynx
+rpm -qd app                     --查看一个已经安装软件的文档安装位置
+      ep:rpm -qd lynx
+rpm -qR app                     --查看一下已安装软件所依赖的软件包及文件
+      ep:rpm -qR rpm-python
+rpm -qpl file.rpm               --查看一件软件包所包含的文件
+      ep:rpm -qpl Linux-1.4-6.i368.rpm
+rpm -qpi file.rpm               --查看一个软件包的描述信息,用途、版本等信息
+      ep:rpm -qpi Linux-1.4-6.i368.rpm
+rpm -qpf file.rpm               --[查看rpm包]--file
+      ep:rpm -qpf Linux-1.4-6.i368.rpm
+rpm -qpR file.rpm　　　　　　　 --查看软件包的依赖关系
+rpm -qpd file.rpm               --查看软件包的文档所在的位置
+rpm -qpc file.rpm               --查看一个软件包的配置文件
+rpm --showrc                    --查看rpm包管理的配置文件rpmrc,配置文件rpmrc的位置:locate rpmrc
+rpm2cpio file.rpm |cpio -div    --从rpm软件包抽取文件
+      ep:rpm2cpio gaim-1.3.0-1.fc4.i386.rpm |cpio -div 
+------查询补充----
+[root@localhost RPMS]# updatedb
+[root@localhost RPMS]# locate 软件名或文件名
+通过updatedb，可以用 locate 来查询一些软件安装到哪里了；
+              系统初次安装时要执行updatedb ，每隔一段时间也要执行一次；以保持已安装软件库最新；
+              updatedb 是slocate软件包所有；如果您没有这个命令，就得安装slocate ；
+------卸载--------
+rpm -e app                      --[删除一个rpm包]--erase
+       ep:rpm -e --nodeps httpd     /卸载httpd,但不卸载它的依赖
+------导入签名----
+rpm --import RPM-GPG-KEY
+rpm --import RPM-GPG-KEY-fedora
+       ep:rpm --import http://freshrpms.net/packages/RPM-GPG-KEY.txt  --安装freshrpms.net的GPG key
+--------常用参数---------------------------------------------------------
+-i, --install                     install package(s)
+-v, --verbose                     provide more detailed output
+-h, --hash                        print hash marks as package installs (good with -v)
+-e, --erase                       erase (uninstall) package
+-U, --upgrade=<packagefile>+      upgrade package(s)
+--replacepkge                     无论软件包是否已被安装，都强行安装软件包
+--test                            安装测试，并不实际安装
+--nodeps                          忽略软件包的依赖关系强行安装
+--force                           忽略软件包及文件的冲突
+
+Query options (with -q or --query):
+-a, --all                         query/verify all packages
+-p, --package                     query/verify a package file
+-l, --list                        list files in package
+-d, --docfiles                    list all documentation files
+-f, --file                        query/verify package(s) owning file
+----------------------------------------------------------------------
+.src.rpm结尾的文件，这些文件是由软件的源代码包装而成的，用户要安装这类RPM软件包，必须使用命令：
+rpm　--recompile　vim-4.6-4.src.rpm   ＃这个命令会把源代码解包并编译、安装它，如果用户使用命令：
+rpm　--rebuild　vim-4.6-4.src.rpm　　＃在安装完成后，还会把编译生成的可执行文件重新包装成i386.rpm的RPM软件包。
+----------------------------------------------------------------------

@@ -1,0 +1,19 @@
+#zone-video{width:480px;height:360px;margin:20px auto 0 auto;position: relative;}
+	#zone-video .jp-type-single{position: relative;background:#484848;heigth:400px;overflow: hidden;}
+	#zone-video .jp-type-single .icon{width: 56px;height: 20px;background: #ff6600;font:12px/20px "宋体";color: #FFF;text-align: center;right: 0;top:0;position: absolute;}
+	#jp-gui2{position: absolute;bottom: 0;left: 0;height: 35px;width: 100%;opacity: 0.8;filter:alpha(opacity=80);overflow: visible;background-color:#000000;}
+	#jp-gui2 .jp-interface .jp-progress{height:4px;overflow:hidden;overflow: visible;}
+	#jp-gui2 .jp-interface .jp-progress .jp-seek-bar{cursor: pointer;background:#ff7d07;height:3px;position: relative;}
+	#jp-gui2 .jp-interface .jp-progress .jp-seek-bar .jp-play-bar{background: url(../../../img/uiwidget/videoplayer/progress-played-bar.png) right center no-repeat;height:15px;position: absolute;left:0;top:-7px;z-index: 10;cursor: pointer;min-width: 16px;}
+	#jp-gui2 .jp-interface .jp-current-time,#jp-gui2 .jp-interface .jp-duration{width:60px;display:inline;color:#FFF;font:12px Arial;color: #b3b3b3;position: absolute;top:14px;}
+	#jp-gui2 .jp-interface .jp-current-time{left: 50px;}
+	#jp-gui2 .jp-interface .jp-duration{left: 84px;}
+	.video-bottom-con{clear: both;}
+	.video-bottom-con a{ display:block;position: absolute;top:10px;}
+	.video-bottom-con a.play{ width:19px; height:19px;background:url(../../../img/uiwidget/videoplayer/zone-play-btn.png) no-repeat; overflow:hidden;left:20px;}
+	.video-bottom-con a.pause{ width:19px; height:19px;background:url(../../../img/uiwidget/videoplayer/zone-pause-btn.png) no-repeat; overflow:hidden;left:20px;}
+	.video-bottom-con a.mute{width:21px; height:21px;background:url(../../../img/uiwidget/videoplayer/zone-voice-btn.png) no-repeat;right: 97px;}
+	.video-bottom-con a.volume{width:19px; height:15px;background:url(../../../img/uiwidget/videoplayer/video-icon.gif) scroll -144px -94px no-repeat; overflow:hidden;right: 97px; }
+	div.jp-volume-bar{position: absolute;overflow:hidden;background: #767676;width:80px;height:5px;cursor: pointer;}
+	div.jp-volume-bar {top:17px;right:11px;}
+	div.jp-volume-bar-value{height: 5px;background: #c1c1c1;}

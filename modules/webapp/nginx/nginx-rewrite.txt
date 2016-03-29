@@ -1,0 +1,36 @@
+nginx rewrite 中 last 表示匹配后(不再匹配同级的其他rewrite) 跳转执行对应的location,location里面如果仍然有rewrite ,同样规则嵌套执行.
+nginx rewrite 中 break 表示中断,不跳转到对应的location ,直接在所处片段执行proxy_pass
+
+rewrite last其实就相当于一个新的url，对nginx进行了一次请求，需要走一遍大多数的处理过程，最重要的是会做一次find config，提供了一个可以转到其他location的配置中处理的机会，
+而rewrite break则是在一个请求处理过程中将原来的url(包括uri和args)改写之后，在继续进行后面的处理，这个重写之后的请求始终都是在同一个location中处理.
+
+eg:
+    server {
+        listen 80 default_server;
+        server_name cc.com;
+        root www;
+
+        location /break/ {
+            rewrite ^/break/(.*) /test/$1 break;
+            echo "break page";
+        }
+
+        location /last/ {
+             rewrite ^/last/(.*) /test/$1 last;
+             echo "last page";
+        }
+
+        location /test/ {
+           echo "test page";
+        }
+    }
+
+    请求:http://dcshi.com/break/***
+    输出: break page
+
+    请求: http://dcshi.com/last/***
+    输出: test page
+    分析: last与break最大的不同是，last会重新发起一个新请求，并重新匹配location，
+    所以对于/last,重新匹配请求以后会匹配到/test/,所以最终对应的content阶段的输出是test page.
+
+-------------------------------------------------------------------------------------------------

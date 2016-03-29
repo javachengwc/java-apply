@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>管理平台</title>
+
+<link rel="stylesheet" type="text/css" href="../css/style.css" />
+<link rel="stylesheet" type="text/css" href="../css/uiwidget/popup/uiwidget-popup.css"/>
+<link rel="stylesheet" type="text/css" href="../css/uiwidget/previewer/uiwidget-previewer.css" />
+<link rel="stylesheet" type="text/css" href="../css/uiwidget/messagebox/uiwidget-messagebox.css"/>
+<link rel="stylesheet" type="text/css" href="../css/uiwidget/pagebar/uiwidget-pagebar.css"/>
+<link rel="stylesheet" type="text/css" href="../css/validate.css" />
+<link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.3.6/themes/gray/easyui.css"/>
+
+<script type="text/javascript" src="../js/jquery-1.8.0.js"></script>
+<script type="text/javascript" src="../js/jquery.form.js"></script>
+<script type="text/javascript" src="../js/jquery.url.min.js"></script>
+<script type="text/javascript" src="../js/jquery.cookie.min.js"></script>
+<script type="text/javascript" src="../js/json.js"></script>
+
+<script type="text/javascript" src="../js/commons/common-util.js"></script>
+<script type="text/javascript" src="../js/commons/date-util.js"></script>
+<script type="text/javascript" src="../js/commons/string-util.js"></script>
+<script type="text/javascript" src="../js/commons/jquery-ext.js"></script>
+
+<script type="text/javascript" src="../js/jquery-easyui-1.3.6/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../js/jquery-easyui-1.3.6/locale/easyui-lang-zh_CN.js"></script>
+
+<script type="text/javascript" src="../js/uiwidget/popup/uiwidget-popup.js"></script>
+<script type="text/javascript" src="../js/uiwidget/previewer/uiwidget-previewer.js"></script>
+<script type="text/javascript" src="../js/uiwidget/messagebox/uiwidget-messagebox.js"></script>
+<script type="text/javascript" src="../js/uiwidget/pagebar/uiwidget-pagebar.js"></script>
+<script type="text/javascript" src="../js/uiwidget/page/uiwidget-page.js"></script>
+
+<script type="text/javascript" src="../js/validation.js"></script>
+
+<script type="text/javascript" src="../js/layer/layer.js"></script>
+
+<script type="text/javascript" src="../js/My97DatePicker/WdatePicker.js"></script>
+<!-- ckeditor 资源加载 -->
+<script type="text/javascript" src="../js/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="../js/ckeditor/config.js"></script>
+
+<script type="text/javascript" src="../js/menu.js"></script>
+
+<script type="text/javascript">
+
+//标示一个列表页的访问入口为左侧菜单，
+// 只要是区别开从菜单展开的列表也与增改操作结束后返回的列表页或直接增改页面返回的列表页
+
+var accessComefromMenu=true;
+
+$(document).ready(function(){
+
+    loadMenu();
+});
+
+//退出后台
+function logout(){
+	$.post("/logout.do",null,function(data){
+		window.location.href ="login.html"
+	},"json");
+}
+
+function loadMenu()
+{
+    $.post("/mainPage.action",null,function(data){
+        var menus = data.menus;
+        var menuHTML ="";
+
+        var menuCount = 0;
+        if(menus.length>0){
+            $.each(window.menusInfos,function(index,menu){
+                if(menuCount==menus.length){
+                    return false;
+                }
+                for (var i = 0; i <menus.length; i++) {
+                    var  menuMap = menus[i];
+                    $.each(menuMap,function(key,n){
+                        var parentMenu = menu[key];
+                        if(parentMenu){
+                            menuHTML+='<ul class="collapse">';
+                            menuHTML+='<span>'+parentMenu.text+'</span>';
+                            for (var j = 0; j < n.length; j++) {
+                                var childMenu = parentMenu[n[j]];
+                                var targetFlag="";
+                                if(parentMenu.target){
+                                    targetFlag='target="'+parentMenu.target+'"';
+                                }
+                                menuHTML+='<li><a href="javascript:void(0);" url="'+childMenu.url+'" '+targetFlag+'>>>'+childMenu.name+'</a></li>';
+                            }
+                            menuCount++;
+                            menuHTML+='</ul>';
+                        }
+                    });
+                }
+            });
+        }
+
+        $('#left').append(menuHTML);
+
+        $('#left ul').click(function(){
+
+            if($(this).attr('class') == 'expand'){
+                $(this).attr('class', 'collapse');
+                $(this).find('li').hide();
+            }else if($(this).attr('class') == 'collapse'){
+                $(this).attr('class', 'expand');
+                $(this).find('li').show();
+            }
+        });
+        $('#left li').click(function(e){
+            e.stopPropagation();
+            e.preventDefault();
+            var a = $(this).find('a');
+            a.blur();
+            var url = a.attr('url');
+            if(a.attr("target")){
+                window.open(url);
+                return false;
+            }
+            $('#left li').removeClass('here');
+            $(this).attr('class', 'here');
+
+            $(document).unbind('keyup');
+
+            accessComefromMenu=true;
+            Validation.removeAllMessageDiv();//去除提示信息
+
+            $('#right').page(url);
+
+            $('#naviLeft').text('当前位置：'+$(this).parent().find('span').text() + $(this).text());
+        });
+
+
+        $('#left li').hide();
+        $("#left").show();
+        //设置用户信息
+        $("#userName").text(data.userName);
+
+        $($('#left ul')[0]).click();
+        $($('#left li')[0]).click();
+
+    },"json");
+}
+</script>
+</head>
+
+<body>
+<div class="warp">
+	<div class="top"><h2>管理平台</h2></div>
+	<div class="navi">
+		<div id="naviLeft" class="navi-left"> </div>
+		<div class="navi-right"><span id="userName"></span>，欢迎您！<a href="#" onclick="logout()">退出</a></div>
+	</div>
+	<div id="main" class="main">
+		<div class="left" id="left" style="display:none">
+			
+			
+		</div>
+		<div id="right" class="right">
+			
+		</div>
+		<div style="clear:both;width:100%;height:0;overflow:hidden;"></div>
+	</div>
+</div>
+</body>
+</html>

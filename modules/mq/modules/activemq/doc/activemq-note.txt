@@ -1,0 +1,90 @@
+1、ActiviteMQ消息有3中形式
+
+JMS 通用	                  点对点域                    发布/订阅域
+
+ConnectionFactory       QueueConnectionFactory        TopicConnectionFactory
+
+Connection              QueueConnection               TopicConnection
+
+Destination             Queue                         Topic
+
+Session                 QueueSession                  TopicSession
+
+MessageProducer         QueueSender                   TopicPublisher
+
+MessageConsumer         QueueReceiver                 TopicSubscriber
+
+(1)、点对点方式（point-to-point）
+
+点对点的消息发送方式主要建立在 Message Queue,Sender,reciever上，Message Queue 存贮消息，Sneder 发送消息，receive接收消息.
+具体点就是Sender Client发送Message Queue ,而 receiver Cliernt从Queue中接收消息和"发送消息已接受"到Quere,确认消息接收。
+消息发送客户端与接收客户端没有时间上的依赖，发送客户端可以在任何时刻发送信息到Queue，而不需要知道接收客户端是不是在运行
+
+(2)、发布/订阅 方式（publish/subscriber Messaging）
+
+发布/订阅方式用于多接收客户端的方式.作为发布订阅的方式，可能存在多个接收客户端，并且接收端客户端与发送客户端存在时间上的依赖。
+一个接收端只能接收他创建以后发送客户端发送的信息。作为subscriber ,在接收消息时有两种方法，destination的receive方法，和实现message listener 接口的onMessage 方法。
+
+发送消息的基本步骤：
+
+(1)、创建连接使用的工厂类JMS ConnectionFactory
+
+(2)、使用管理对象JMS ConnectionFactory建立连接Connection，并启动
+
+(3)、使用连接Connection 建立会话Session
+
+(4)、使用会话Session和管理对象Destination创建消息生产者MessageSender
+
+(5)、使用消息生产者MessageSender发送消息
+
+
+消息接收者从JMS接受消息的步骤
+
+(1)、创建连接使用的工厂类JMS ConnectionFactory
+
+(2)、使用管理对象JMS ConnectionFactory建立连接Connection，并启动
+
+(3)、使用连接Connection 建立会话Session
+
+(4)、使用会话Session和管理对象Destination创建消息接收者MessageReceiver
+
+(5)、使用消息接收者MessageReceiver接受消息，需要用setMessageListener将MessageListener接口绑定到MessageReceiver消息接收者必须实现了MessageListener接口，需要定义onMessage事件方法。
+
+
+JMS消息类型
+
+    JMS API 定义了五种消息正文类型：
+
+    Stream（流）- StreamMessage 对象的消息正文包含 Java 编程语言原始值流（“Java 基本类型”）。按顺序填充和读取。
+
+    Map（映射）- MapMessage 对象的消息正文包含一组名称-值对，其中名称是 String 对象，值是 Java 基本类型。可以根据名称按顺序或随机访问这些条目。条目的顺序是不确定的。
+
+    Text（文本）- TextMessage 对象的消息正文包含 java.lang.String 对象。此消息类型可用于传输纯文本消息和 XML 消息。
+
+    Object（对象）- ObjectMessage 对象的消息正文包含 Serializable Java 对象。
+
+    Byte（字节）- BytesMessage 对象的消息正文包含未解释的字节流。此消息类型可以按字面意义编码正文，以匹配现有的消息格式。
+    在大多数情况下，可以使用更易用的其他正文类型。尽管 JMS API 允许将消息属性用于字节消息，但一般不使用它们，因为包含属性可能会影响格式。
+
+
+ACK_MODE确认模式
+
+    确认模式用来指示会话如何确认收到消息，在使用Connection的createSession方法时需要指定此选项，在JMS的Session接口中包含下面四个选项
+
+　　1 AUTO_ACKNOWLEDGE = 1    自动确认
+
+　　      当会话从对 receive 的调用成功返回时，或在会话已调用的用于处理消息的消息侦听器成功返回时，会话会自动确认客户端的消息接收。
+
+　　2  CLIENT_ACKNOWLEDGE = 2    客户端手动确认
+
+　　      通过此确认模式，客户端通过调用消息的 acknowledge 方法确认已使用的消息。 确认已使用的消息将确认该会话已使用的所有消息。
+
+　　3  DUPS_OK_ACKNOWLEDGE = 3    自动批量确认
+
+　　      此确认模式指示会话延迟确认消息的传送。这可能在 JMS 提供者失败的情况下导致传送某些重复消息，因此只有能允许重复消息的使用方才应使用此模式。使用此模式可以通过最大限度地减少会话为防止重复所做的工作，从而减少会话开销。
+
+　　4  SESSION_TRANSACTED = 0    事务提交并确认
+
+　　      如果会话是事务的则使用此模式，忽略设置的其他模式值。在事务开启之后，和session.commit()之前，所有消费的消息，要么全部正常确认，要么全部redelivery。这种严谨性，通常在基于GROUP(消息分组)或者其他场景下特别适合。
+
+--------------------------------------------------------------------------------------------------------------------------------------

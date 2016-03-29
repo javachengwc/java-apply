@@ -1,0 +1,62 @@
+------------------------mysql应用-------------------------
+
+-----mysql中文转拼音
+
+SELECT id , name ,
+       ELT( INTERVAL( CONV( HEX( left( CONVERT( job_status USING gbk ) , 1 ) ) , 16, 10 ) , 0xB0A1, 0xB0C5, 0xB2C1, 0xB4EE, 0xB6EA, 0xB7A2, 0xB8C1, 0xB9FE, 0xBBF7, 0xBFA6, 0xC0AC, 0xC2E8, 0xC4C3, 0xC5B6, 0xC5BE, 0xC6DA, 0xC8BB, 0xC8F6, 0xCBFA, 0xCDDA, 0xCEF4, 0xD1B9, 0xD4D1 ) , 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'W', 'X', 'Y', 'Z' ) as py
+FROM db_table;
+
+-----删除表的重复记录
+
+a,如果记录完全相同才算重复记录
+
+select distinct * into #tmpp from tid;
+delete from tid;
+insert into tid select * from #tmpp;
+drop table #tmpp;
+
+b.如果有id主键(数字,自增1的那种)
+
+delete from tableA where id not in (select min(id) from tableA group by name);
+
+-----mysql获取名次
+
+select c.id, c.pm from
+(
+	 SELECT @rank:=@rank+1 as pm ,a.*
+	 FROM  ( select * from  admin_resource  order by id desc )a,(SELECT @rank:=0) b
+) c  where c.id=3
+
+------mysql随机
+
+select * from test order by rand() limit 3;
+
+-----mysql连表删数据
+
+1,从数据表a中把那些id值在数据表b里有匹配的记录删除
+delete a from a,b where a.id=b.aid
+
+2,从数据表a中把在数据表b里没有匹配的记录删除
+delete a from a left join b on a.id=b.aid where b.aid is null
+
+3,从两个表中找出相同记录的数据并把两个表中的数据都删除掉
+
+delte a,b from a join b on a.id =b.aid
+
+----------------------------------------------------------
+
+-----mysql主从表联查询,限制从表查询条数
+此查询从表查询条数限制在2条
+
+SELECT a1.id,b1.goods_id
+FROM a a1
+LEFT JOIN b b1 ON a1.id =b1.aid
+WHERE (SELECT COUNT(1)FROM b b2 WHERE b1.aid=b2.aid AND b1.id>b2.id)<2
+
+-----mysql获取字符串a在另一个字符串b最后一次出现的位置
+ select if((length('a,b,c,d') - locate(',', reverse('a,b,c,d'))+1)>length('a,b,c,d'),0,(length('a,b,c,d') - locate(',', reverse('a,b,c,d'))+1) ) as last_pos from dual;
+
+-----mysql获取字符串中某子字符串出现的次数
+ select round(((length('1,2,3,4')-length(replace('1,2,3,4',',', ''))))/ length(',')) as times from dual;
+
+-----------------------------------------------------------

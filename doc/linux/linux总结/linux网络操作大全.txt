@@ -1,0 +1,156 @@
+﻿---------------linux网络配置---------
+
+网络ip配置文件:/etc/sysconfig/network-scripts/ifconfg-*
+可直接编辑配置文件保存并 service network restart重启网络生效
+
+DEVICE=eth0      #网卡编号
+BOOTPROTO=static #静态ip或者DHCP动态获取。 静态--static   动态--dhcp
+BROADCAST=192.168.101.255  #广播地址
+HWADDR=00:0C:29:90:50:42   #MAC地址
+IPADDR=192.168.101.5       #IP地址
+NETMASK=255.255.255.0 #子网掩码
+NETWORK=192.168.101.0 #网段，我就是开始忘记设置这个了
+GATEWAY=192.168.0.251 #网关 CentOS的网关配置在/etc/sysconfig/network里
+ONBOOT=yes            #开机时是否启动网卡。启动--yes 不启动--no
+
+主机网络名称配置:/etc/sysconfig/network
+
+NETWORKING=yes  #网络是否可用 可用--yes， 不可用--no
+NETWORKING_IPV6=no  #IPv6支持 yes,no
+HOSTNAME=site.meilele.com   #主机名称
+
+DNS配置:/etc/resolv.conf
+ 
+search test.com #本机
+nameserver 192.168.3.2 #用户添加
+
+echo nameserver 192.168.0.1 /etc/resolv.conf #增加个dns
+
+host配置:/ect/hosts
+
+127.0.0.1   local.meilele.com
+
+系统服务端口配置:/etc/services
+
+---------------ifconfig--------------
+
+ifconfig命令配置并查看网络接口的配置情况
+ifconfig                            ---查看所有的网络接口配置
+ifconfig eth0                       ---查看指定的网络接口配置
+ifconfig eth0 up                    ---激活设备
+ifconfig eth0 down                  ---禁用设备
+ifconfig eth0 192.168.1.10 netmask 255.255.255.0 up
+         -----配置eth0的IP地址，同时激活该设备
+ifconfig eth0 192.168.1.3 
+route add -host 192.168.1.3 dev eth0:1 
+         -----配置eth0别名设备eth0:1的ip地址，并添加路由
+ifconfig eth0 down ：先禁用网卡 
+ifconfig eth0 hw ether 1234567890ab
+         -----修改 mac地址
+ifconfig etho -dynamic              ---动态获取IP
+
+
+--------------route-----------------
+
+route命令配置并查看内核路由表的配置情况
+
+route    -----查看内核路由表的配置
+
+route add -host 192.168.1.2 dev eth0:0      
+route add -host 10.20.30.148 gw 10.20.30.40     ---添加到主机的路由
+
+route add -net 10.20.30.40 netmask 255.255.255.248 eth0
+route add -net 10.20.30.48 netmask 255.255.255.248 gw 10.20.30.41
+route add -net 192.168.1.0/24 eth1              ---添加到网络的路由
+
+route add default gw 192.168.1.1                ---添加默认网关
+
+route del -host 192.168.1.2 dev eth0:0
+route del -host 10.20.30.148 gw 10.20.30.40
+route del -net 10.20.30.40 netmask 255.255.255.248 eth0
+route del -net 10.20.30.48 netmask 255.255.255.248 gw 10.20.30.41
+route del -net 192.168.1.0/24 eth1
+route del default gw 192.168.1.1                ---删除路由
+
+---------------netstat--------------------------
+
+netstat命令用于显示各种网络相关信息，如网络连接，路由表，接口状态 (Interface Statistics)，
+       masquerade 连接，多播成员 (Multicast Memberships) 等等 
+
+从整体上看，netstat的输出结果可以分为两个部分：
+一个是Active Internet connections，称为有源TCP连接，其中"Recv-Q"和"Send-Q"指%0A的是接收队列和发送队列。
+这些数字一般都应该是0。如果不是则表示软件包正在队列中堆积。这种情况只能在非常少的情况见到。
+另一个是Active UNIX domain sockets，称为有源Unix域套接口(和网络套接字一样，但是只能用于本机通信，性能可以提高一倍)。
+Proto显示连接使用的协议,RefCnt表示连接到本套接口上的进程号,Types显示套接口的类型,
+State显示套接口当前的状态,Path表示连接到套接口的其它进程使用的路径名。
+
+netstat -i            -----显示网络接口状态信息
+netstat -lpe          -----显示所有监控中的服务器的Socket和正使用Socket的程序信息
+netstat -r/-nr        -----显示内核路由表信息,核心路由信息,相当于route
+netstat -t            -----显示TCP传输协议的连接状态
+netstat -u            -----显示UDP传输协议的连接状态
+netstat -lx           -----只列出所有监听 UNIX 端口
+netstat -s            -----显示所有端口的统计信息
+netstat -anp          -----查看端口
+netstat -n | awk '/^tcp/ {++S[$NF]} END {for(a in S) print a, S[a]}'   
+                      -----查看tcp连接
+netstat -nat | grep "192.168.1.15:22" |awk '{print $5}'|awk -F: '{print $1}'|sort|uniq -c|sort -nr|head -20
+                      -----查看连接某服务端口最多的的IP地址
+netstat -nat |awk '{print $6}'
+                      ----- TCP各种状态列表
+netstat -nat |awk '{print $6}'|sort|uniq -c | sort -rn
+                      -----查看各个状态连接数量
+awk '{print $1}' access.log |sort|uniq -c|sort -nr|head -10
+                      -----查看访问日志access.log访问前10位的ip地址
+
+-----------
+常见参数:
+-a (all)显示所有选项，默认不显示LISTEN相关
+-t (tcp)仅显示tcp相关选项
+-u (udp)仅显示udp相关选项
+-n 拒绝显示别名，能显示数字的全部转化成数字,包括主机，端口和用户名 (host, port or user)
+-l 仅列出有在 Listen (监听) 的服務状态
+
+-p 显示建立相关链接的程序名
+-r 显示路由信息，路由表
+-e 显示扩展信息，例如uid等
+-s 按各个协议进行统计
+-c 每隔一个固定时间，执行该netstat命令。
+提示：LISTEN和LISTENING的状态只有用-a或者-l才能看到
+
+---------------其他网络命令---------------------
+
+traceroute命令显示数据包到达目的主机所经过的路由 
+
+
+traceroute ip           ---跟踪数据包到达网络主机所经过的路由,相当与window下的trancert
+traceroute www.sina.com.cn
+
+ping命令测试网络的连通性,是否丢包
+
+ping ip                 ---结果可查看到ip的发包丢包
+ping www.sina.com.cn
+ping -c 4 192.168.1.12
+
+hostname命令更改主机名
+
+hostname myhost
+
+arp命令来配置并查看arp缓存,ARP（Address Resolution Protocol）,地址解析协议
+
+arp                                      ---查看arp缓存
+arp -s 192.168.33.15 00:60:08:27:CE:B2   ---添加一个IP地址和MAC地址的对应记录
+arp -d 192.168.33.15                     ---删除一个IP地址和MAC地址的对应缓存记录
+
+iwlist                                   ---利用网线网卡进行AP的检测与取得相关的数据
+iwconfig                                 ---检查设置无限网卡的相关参数
+host                                     ---查出某个主机的或域名的IP
+nslookup                                 ---与host基本相同但是可以反查找IP对应的主机名或域名
+dhclient                                 ---从DHCP 服务器中申请新的网络设置
+netconfig                                ---字符界面进行网络配置,只能设置Eth0网卡
+setup                                    ---网络配置,只能设置Eth0网卡
+ip                                       ---ip是iproute2软件包里面一个强大的网络配置工具
+telnet 0 89                              ---判断89端口是否开启
+mtr ip                                   ---可路由追踪到ip的发包丢包
+
+--------------------------------------------------

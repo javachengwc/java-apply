@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>
+菜单权限设置
+</comment>
+<!-- 所有功能-->
+<entry key="menuFunctions">
+<!--0:公告管理-->noticeManager_noticeManager:listNotice
+<!--1:文件上传-->fileManager_fileUpload:listFile,uploadFile
+<!--2:文件删除-->fileManager_fileDelete:listFile,delFile
+<!--3:字典管理-->dictManager_userActNote:userActNoteList,addUserActNote,deleteUserActNote
+<!--4:统计管理-->statisticManager_userDistribute:queryUserDistribute,refreshReport,downloadUserDistributeData
+<!--4:通用列表-->tongyongManage_tyList:queryEntityPage,listPage
+<!--4:通用实例-->tongyongManage_entityManage:queryEntityPage
+<!--4:实例列项-->tongyongManage_entityItem:queryItemPage
+<!--4:实例条件-->tongyongManage_entityCdn:queryCdnPage
+</entry>
+<entry key="commonFunctions">
+mainPage
+</entry>
+</properties>

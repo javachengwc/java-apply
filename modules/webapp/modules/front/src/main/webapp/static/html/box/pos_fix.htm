@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>CSS固定定位</title>
+<style type="text/css">
+*{margin: 0px;
+  padding:0px;}
+#all{width:400px;
+     height:1200px;
+     background-color:#ccc;}
+#fixed{width:100px;
+       height:80px;
+	   border:15px outset #f00;
+	   background-color:#9c9;
+	   position:fixed;
+	   top:20px;
+	   left:10px;}
+#a{width:200px;
+   height:300px;
+   margin-left:20px;   
+   background-color:#eee;
+   border:2px outset #000;}
+</style></head>
+
+<body>
+<div id="all">
+   <div id="fixed">固定的容器</div>
+   <div id="a">无定位的div容器</div>
+</div>
+</body>
+</html>

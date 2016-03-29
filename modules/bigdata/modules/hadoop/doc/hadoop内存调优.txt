@@ -1,0 +1,25 @@
+在Reduce阶段，抛出Java heap space的异常，如果mapred-site.xml里面的配置reduce内存比较小，可调大此内存
+
+hadoop2.2内存控制的几个重要参数:
+
+yarn.scheduler.minimum-allocation-mb
+yarn.scheduler.maximum-allocation-mb
+yarn.nodemanager.vmem-pmem-ratio
+yarn.nodemanager.resource.memory.mb
+
+mapreduce.map.java.opts
+mapreduce.map.memory.mb
+
+mapreduce.reduce.java.opts
+mapreduce.reduce.memory.mb
+
+异常片段:
+
+    Container [pid=17645,containerID=container_1415210272486_0013_01_000004] is running beyond physical memory limits.
+    Current usage: 1.0 GB of 1 GB physical memory used; 1.6 GB of 2.1 GB virtual memory used. Killing container.
+    Dump of the process-tree for container_1415210272486_0013_01_000004 :
+
+可以调整yarn.nodemanager.vmem-pmem-ratio 的比率，默认是2.1，或者加大程序reduce的运行个数进行尝试，这个比率影响着虚拟内存的使用。
+当yarn计算出来的虚拟内存，比在mapred-site.xml里的mapreduce.map.memory.mb或mapreduce.reduce.memory.mb的2.1倍还要多时，就会发生上面的异常，
+而默认的mapreduce.map.memory.mb或mapreduce.reduce.memory.mb得初始大小为1024M，然后yarn自身根据运行环境推算出来的虚拟内存,发现比1024*2.1还要大,
+所以就会由NodeManage守护进程kill掉AM容器，从而导致整个MR作业运行失败，现在我们只需要调大这个比率即可，避免发生这种异常。

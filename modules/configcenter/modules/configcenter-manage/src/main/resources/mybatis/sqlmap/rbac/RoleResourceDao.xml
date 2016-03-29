@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.configcenter.dao.rbac.RoleResourceDao" >
+
+    <resultMap id="BaseResultMap" type="com.configcenter.model.rbac.RoleResource" >
+        <result column="role_id" property="roleId" jdbcType="INTEGER" />
+        <result column="resource_id" property="resourceId" jdbcType="INTEGER" />
+    </resultMap>
+
+    <insert id="add" parameterType="com.configcenter.model.rbac.RoleResource">
+        insert into simple_role_resource(role_id,resource_id) values(#{roleId},#{resourceId})
+    </insert>
+
+    <delete id="delete" parameterType="com.configcenter.model.rbac.RoleResource">
+        delete from simple_role_resource
+        where role_id =#{roleId}
+        and resource_id =#{resourceId}
+    </delete>
+
+    <delete id="deleteByResource" parameterType="com.configcenter.model.rbac.Resource">
+        delete from simple_role_resource
+        where resource_id =#{id}
+    </delete>
+
+    <delete id="deleteByRole" parameterType="com.configcenter.model.rbac.Role">
+        delete from simple_role_resource
+        where role_id =#{id}
+    </delete>
+
+    <select id="queryByRole" resultMap="BaseResultMap" parameterType="com.configcenter.model.rbac.Role">
+        select * from simple_role_resource where role_id =#{id}
+    </select>
+</mapper>

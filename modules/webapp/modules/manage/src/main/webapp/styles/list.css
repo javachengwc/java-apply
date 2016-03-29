@@ -1,0 +1,9 @@
+html{margin:0 3px!important;margin:0 10px; overflow-x:hidden;overflow-y:auto;float:left;}
+#hideselect{display:none;position:absolute;top:40px;left:150px;z-index:-1;width:100px;height:100px;background-color:#9cce2e;}
+#hideimg{display:block;position:absolute;top:60px;left:750px;z-index:-100;width:100px;height:60px;background-color:#9cce2e;}
+#mhid{display:none;position:absolute;top:40px;left:150px;z-index:-1;width:150px;height:400px;background-color:#9cce2e;filter:alpha(opacity=0);opacity:0.00;}
+/*更多查询样式*/
+.demo_inquire_nr .wz{ font-weight:normal; color:#7a7a7a; width:50px;text-overflow:ellipsis;white-space:nowrap; overflow:hidden; text-align:right;}
+.demo_inquire_input_01{border:#cbcbcb 1px solid;height:17pt; background:#f0f6f8; line-height:17pt; color:#003e51; width:100px;}
+.demo_inquire_select{height:17pt;width:100px;}
+.demo_inquire_gb{ position:absolute; width:12px; height:12px; top:9px; right:8px;}

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<services>
+    <service name="default" solrRequestUrl="http://127.0.0.1:10001/solr/main" pageSize="30">
+       <url>
+			<field name="category" solrname="cat_id" expression="category-\w+" separtor="category-" type="query"/>
+			<field name="keywords" solrname="keywords" expression="keywords/\w+" separtor="keywords/" type="query"/>
+			<field name="max" solrname="effect_price" expression="max\d{1,}" separtor="max" type="price"/>
+			<field name="min" solrname="effect_price" expression="min\d{1,}" separtor="min" type="price"/>
+			<field name="page" solrname="startPage" expression="page-\d{1,}" separtor="page-" type="page"/>
+			<field name="sort" solrname="sort" expression="sort-\w+" separtor="sort-" type="sort"/>
+			<field name="order" solrname="order" expression="(asc|desc)" separtor="" type="sort"/>
+			<field name="act" solrname="is_activity" expression="act\d{1,}" separtor="act" type=""/>
+        </url>
+		<facet>
+			<field name="mdname" />
+			<field name="bdname" />
+			<field name="sdname" />
+		</facet>
+		<sort_field>>
+			<field name="click_count"/>
+			<field name="add_time"/>
+		</sort_field>
+		<default-sort sort="sort_order" order="asc" />
+		<prices>
+			<price name="0-1000" begin="0" end="1000" />
+			<price name="1000-5000" begin="1000" end="5000" />
+			<price name="5000-10000" begin="5000" end="10000" />
+			<price name="10000-20000" begin="10000" end="20000" />
+			<price name="20000以上" begin="20000" end="0" />
+		</prices>
+		<activitys>
+		   
+			<activity name="spe" value="特价"/>
+			<activity name="dsd" value="直降"/>
+		</activitys>
+    </service>
+   	<service name="qwg" solrRequestUrl="http://127.0.0.1:10001/solr/qwg" pageSize="10">
+       <url>
+			<field name="style" solrname="suit_style" expression="\d+" separtor="-" type="query"/>
+			<field name="price" solrname="suit_price_interval" expression="\d+" separtor="-" type="query"/>
+			<field name="type" solrname="suit_house_type" expression="\d+" separtor="-" type="query"/>
+        </url>
+		<sort_field>
+			<field name="add_time"/>
+			<field name="click_count"/>
+		</sort_field>
+    </service>
+	<service name="ru" solrRequestUrl="http://127.0.0.1:10001/solr/ru" pageSize="30">
+    	<url>
+    		<field index="0" solrname="parent_id" expression="\d{1,5}" separtor="-" type="query"/>
+    		<field index="1" solrname="cat_id" expression="\d{1,5}" separtor="-" type="query"/>
+    		<field index="2" solrname="effect_price" expression="\d{1,5}" separtor="-" type="price"/>
+			<field index="3" solrname="sort" expression="\d{1,5}" separtor="-" type="sort"/>
+    		<field index="4" solrname="order" expression="\d{1,5}" separtor="-" type="order"/>
+    		<field index="5" solrname="page" expression="\d{1,5}" separtor="-" type="page"/>
+    	</url>
+		<facet>
+			<field name="mdname" />
+			<field name="bdname" />
+			<field name="sdname" />
+		</facet>
+    	<sort_field>
+			<field name="effect_price"/>
+			<field name="click_count"/>
+			<field name="add_time"/>
+    	</sort_field>
+    	<default-sort sort="sort_order" order="asc" />
+    	<prices>
+            <price name="0-1000" begin="0" end="1000" />
+            <price name="1000-5000" begin="1000" end="5000" />
+            <price name="5000-10000" begin="5000" end="10000" />
+            <price name="10000-20000" begin="10000" end="20000" />
+            <price name="20000以上" begin="20000" end="20000000" />
+		</prices>
+    </service>
+</services>

@@ -1,0 +1,5 @@
+antlr解析过程:
+为了简单起见，将解析分为两个阶段，当读到一个句子时，在第一阶段，将字符组成单词，然后像查词典一样识别出它们的意思。在第二阶段，根据已识别的单词去识别句子的结构。
+第一阶段的过程叫词法分析（lexical analysis），对应的分析程序叫做lexer，负责将符号（token）分组成符号类（token class or token type）。
+第二阶段就是真正的parser，默认ANTLR会构建出一棵分析树（parse tree）或叫语法树（syntax tree）
+

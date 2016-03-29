@@ -1,0 +1,51 @@
+------------------svn常用命令-------------------------
+#wc即本地工作空间
+
+svn checkout      ---检出
+
+svn status path   ---输出WC中文件和目录的状态
+
+svn log path      ---库中显示log消息
+
+svn add           ---单提交新增的文件
+
+svn mkdir path    ---创建目录
+
+svn commit        ---提交所有更新的文件
+
+svn update path   ---更新wc
+    eg：svn up -r22   ##更新到一个指定版本
+
+svn revert        ---还原WC中所有的本地更改
+
+svn resolve path  ---将冲突的文件标记为已解决，并且删掉冲突产生的临时文件。注意这个命令并不是能把冲突解决，解决冲突还是得靠人工
+    eg：svn resolve --accept mine-full foo.c             ---加上--accept参数，尝试自动处理冲突
+
+svn delete path   ---删除文件
+    eg：svn del localfile.cpp                            ---删除WC里的文件，在下一次提交WC的时候才会真正在仓库里将对应文件删除
+    eg: svn del file:///var/svn/repos/test/yourfile      ---删除仓库里的文件
+
+svn diff          ---比较并显示修改点
+    eg：svn diff -r 301 bin                               ---比较WC和版本301中的bin目录的修改点
+    eg：svn diff -r 3000:3500 file:///var/svn/repos/myProject/trunk   ---比较库里主干3000版和3500版的差异
+
+svn export url path
+                  ---导出一个干净的目录树，不包含所有的受控信息。可以选择从URL或WC中导出
+    eg：svn export file:///var/svn/repos my-export        ---导出到my-export目录
+
+svn import path url
+                  ---导入本地一个目录到库中。但是导入后，本地的目录并不会处于受控状态
+    eg：svn import -m "New import" myproj http://svn.myProject.com/repos/trunk/misc
+
+svn lock target   ---对目标获得修改锁。用--force参数强制从其他用户那里获得锁
+    eg：svn lock --force tree.jpg
+
+svn unlock targer ---解锁
+
+svn switch url    ---将WC转向一个其他的库地址同步
+    eg：svn sw http://svn.myProject.com/repos/trunk/vendors          ---将当前WC切换到另一个URL
+
+-----------------------------------------------------------------------------
+
+find . -name .svn -print0 | xargs -0 rm -rf
+---移除所有.svn目录

@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>navigator对象</title>
+</head>
+<body>
+<script type="text/javascript">
+  document.write("你的浏览器名称是"+navigator.appName);
+  document.write("<hr />你的浏览器版本是"+navigator.appVersion);
+  var lg;
+  if(navigator.appName=="Microsoft Internet Explorer"){
+   if(navigator.systemLanguage=="zh-cn"){
+    lg="简体中文";
+	}else{
+	lg=navigator.systemLanguage;
+	}
+   }else{
+    if(navigator.language=="zh-CN"){
+    lg="简体中文";
+	}else{
+	lg=navigator.language;
+	}
+	}
+  document.write("<hr />你系统的默认语言是"+lg);
+</script>
+</body>
+</html>

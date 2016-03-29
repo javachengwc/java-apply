@@ -1,0 +1,81 @@
+<project xmlns:artifact="antlib:org.apache.maven.artifact.ant" name="foshanmgr" basedir=".">
+	<property environment="env" />
+	<property name="project.version" value="SNAPSHOT" />
+	<property name="jdk.version" value="1.6" />
+	<property name="source.encoding" value="UTF-8" />
+	<property name="app.name" value="foshanmgr" />
+    <property name="tomcat.webapp.path" value="D:\Tomcat 6.0\webapps" />
+    <property name="tomcatHome" value="D:\Tomcat 6.0" />
+    <property name="project-lib" value="src/main/webapp/WEB-INF/lib" />
+    
+	<path id="classpath.project">
+		<fileset dir="${project-lib}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	<target name="clean">
+		<delete dir="target" />
+	</target>
+	<target name="compile" depends="clean">
+		<mkdir dir="target/classes" />
+		<javac srcdir="src/main/java" destdir="target/classes" source="${jdk.version}" target="${jdk.version}" encoding="${source.encoding}" debug="true">
+			<classpath>
+				<path refid="classpath.project" />
+			</classpath>
+		</javac>
+		<copy todir="target/classes">
+			<fileset dir="src/main/resources">
+				<include name="**" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="dist" depends="compile">
+		<jar destfile="target/${app.name}-${project.version}.jar">
+			<fileset dir="target/classes">
+				<include name="**" />
+			</fileset>
+		</jar>
+	</target>
+	<target name="deploy" depends="dist">
+		<copy todir="target/${app.name}">
+			<fileset dir="src/main/webapp">
+				<include name="**" />
+			</fileset>
+		</copy>
+		<copy todir="target/${app.name}/WEB-INF/lib" flatten="true">
+			<fileset dir="target">
+				<include name="${app.name}-${project.version}.jar" />
+			</fileset>
+		</copy>
+		<copy todir="target/${app.name}/WEB-INF/classes">
+			<fileset dir="src/main/resources">
+				<include name="**" />
+			</fileset>
+		</copy>
+	</target>
+	<target name="deploy2tomcat" depends="deploy">
+	    <delete dir="${tomcat.webapp.path}/${app.name}" />
+		<copy todir="${tomcat.webapp.path}/${app.name}">
+			<fileset dir="target/${app.name}">
+				<include name="**"/>
+			</fileset>
+	    </copy>
+	</target>
+	<target name="tomcat.start">
+		<java jar="${tomcatHome}/bin/bootstrap.jar" fork="true">
+		<jvmarg value="-Dcatalina.home=${tomcatHome}"/>
+		<jvmarg value="-Xms512m"/>
+		<jvmarg value="-Xmx512m"/>
+		<jvmarg value="-XX:MaxPermSize=256m"/>
+		</java>
+	</target>
+
+	<target name="tomcat.stop">
+		<java jar="${tomcatHome}/bin/bootstrap.jar" fork="true">
+		<jvmarg value="-Dcatalina.home=${tomcatHome}"/>
+		<arg line="stop"/>
+		</java>
+	</target>
+	
+</project>

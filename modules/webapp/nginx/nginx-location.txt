@@ -1,0 +1,42 @@
+location 语法: location [=|~|~*|^~] /uri/ { … }
+
+location指令匹配url,可配置使用常规字符串和正则表达式。如果使用正则表达式，必须使用 ~* 前缀不区分大小写的匹配或者 ~ 区分大小写的匹配
+
+location匹配优先级别
+
+(location =)          >
+(location 完整路径 )  >
+(location ^~ 路径)    >
+(location ~*, ~ 正则) >
+(location 部分起始路径)
+
+正则表达式根据配置文件中的前后顺序影响匹配, 前面的优先匹配.
+路径则根据匹配长度来优先匹配.
+
+eg:
+    location = / {
+        # 执行严格匹配,只匹配 / 查询。
+        [ configuration A ]
+    }
+    location / {
+        # 匹配任何查询，因为所有请求都以 / 开头。但是正则表达式规则和长的块规则将被优先和查询匹配。
+        [ configuration B ]
+    }
+
+    location ^~ /images/ {
+        #使用 ^~ 前缀。如果这个前缀用于一个常规字符串那么如果路径匹配则不测试正则表达式
+        # 匹配任何已 /images/ 开头的任何查询并且停止搜索。任何正则表达式将不会被测试。
+        [ configuration C ]
+    }
+
+    location ~* \.(gif|jpg|jpeg)$ {
+        # 匹配任何已 gif、jpg 或 jpeg 结尾的请求。然而所有 /images/ 目录的请求将使用 Configuration C。
+        [ configuration D ]
+    }
+
+    /                        -> configuration A
+    /documents/document.html -> configuration B
+    /images/1.gif            -> configuration C
+    /documents/1.jpg         -> configuration D
+
+------------------------------------------------------------

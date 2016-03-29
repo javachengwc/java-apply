@@ -1,0 +1,36 @@
+---------------------------------------------
+Velocity是一种Java模版引擎技术
+
+1：装载vm模版时，需要设置Velocity.FILE_RESOURCE_LOADER_PATH属性，
+  String loadpath；//此loadpath为vm文件的文件夹，是绝对路径。
+  Velocity.setProperty(Velocity.FILE_RESOURCE_LOADER_PATH, loadpath);
+  而 Velocity.getTemplate(String filename)中，filename是loadpath目录下的文件。
+
+2：在页面上展现一个javabean，该bean一定要是public的，不能是内部类。
+  下面是显示列表中的javabean的vlt语法：
+  #foreach($element in $SUB)
+    <font face="Arial, Helvetica, sans-serif" >$!element.pendacca</font>
+  #end
+
+3：如果某值没有设置，或者为空，可以在$后加！，写成类似 $!var 的形似，否则页面显示出来的就是“$var”。
+
+4：关于list和hashmap的显示：
+   List mapList = new ArrayList();
+   Map hashMap = new HashMap();
+   hashMap.put("NARR","myNarr in hashMap");
+   mapList.add(hashMap);
+   context.put("SUB", mapList);
+
+  此时，如果要列出hashMap中key=“NARR”的值，可以如下：
+  #foreach($element in $SUB)
+    <font face="Arial, Helvetica, sans-serif" >$!element.get("NARR")</font>
+  #end
+
+  如果要全部列出hashmap的key-value，可以如下：
+  #foreach($key in $hashVariable.keySet() )
+    <li> $key ‘s value: $ hashVariable.get($key) </li>
+  #end
+
+5：spring框架已经提供了对velocity的支持，在视图方面可以取代jsp。具体配置，可以参考“spring in action”
+
+---------------------------------------------------------------------------

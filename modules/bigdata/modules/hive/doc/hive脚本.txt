@@ -1,0 +1,50 @@
+-------------------hive参照脚本-----------------------------------
+
+select partitiontime,regexp_replace(url,'\\?.*','') as uu,count(1) as pv,count(distinct(user)) as uv
+from nf
+where partitiontime='20150427'
+and website='www.cc.com'
+and url like '/ju_tag/%'
+group by partitiontime,regexp_replace(url,'\\?.*','')
+
+select partitiontime,split(url,'\\?')[0],count(1) as pv,count(distinct(user)) as uv
+from nf
+where partitiontime='20150427'
+and website='www.cc.com'
+and url like '/ju_tag/%'
+group by partitiontime,split(url,'\\?')[0]
+
+
+SELECT partitiontime,regexp_extract(url,'([^?]*)(\\?)?.*',1) as url,count(1) as count
+FROM nf
+WHERE partitiontime = '20150728'
+and website = 'www.cc.com'
+and url like '/ju_tag/%'
+GROUP BY partitiontime,regexp_extract(url,'([^?]*)(\\?)?.*',1)
+
+select user_id, if(role rlike '\\w+#.*',regexp_extract(role,'(\\w+)#.*',1),'def') as role
+from exposure
+where partitiontime='20151027'
+and hour=1
+and role rlike '\\w+#.*'
+limit 100
+
+insert overwrite table daily_stat partition (partitiontime= '%s' )
+select a.partitiontime as create_time,a.user as utma ,a.user_id,
+    if(a.pv is null,0,a.pv) as pv,
+    if(a.out is null ,0,a.out) as out
+from table_pv_out
+
+----------hive中类似mysql group_concat的语句
+SELECT id,
+concat_ws(',', collect_set(str))
+FROM table
+GROUP BY id;
+
+select vn,count(1) as out_count
+from nf
+where partitiontime = '20150818'
+and split(split(parse_url(concat('http://',website,url), 'QUERY','page_stats_w'),'/')[1],'\\*')[0]<67
+group by vn
+
+------------------------------------------------------------------

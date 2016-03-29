@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="stringRedisSerializer" class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+
+    <bean id="jacksonJsonRedisSerializer" class="org.springframework.data.redis.serializer.JacksonJsonRedisSerializer">
+        <constructor-arg type="java.lang.Class" value="java.lang.Object"/>
+    </bean>
+
+    <bean id="jdkSerializationRedisSerializer" class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer"/>
+
+    <bean id="objectMapper" class="org.codehaus.jackson.map.ObjectMapper" />
+
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig" scope="prototype">
+        <property name="maxWaitMillis" value="#{redisProps['redis.pool.maxActive']}"/>
+        <property name="maxIdle" value="#{redisProps['redis.pool.maxIdle']}"/>
+        <property name="testOnBorrow" value="#{redisProps['redis.pool.testOnBorrow']}"/>
+    </bean>
+
+    <bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+          p:hostName="#{redisProps['redis.ip']}"
+          p:port="#{redisProps['redis.port']}"
+          p:database="#{redisProps['redis.database']}"
+          p:usePool="true"
+          p:poolConfig-ref="jedisPoolConfig" p:timeout="5000"/>
+
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"
+          p:connectionFactory-ref="jedisConnectionFactory"
+          p:keySerializer-ref="stringRedisSerializer"
+          p:valueSerializer-ref="jacksonJsonRedisSerializer"
+          p:hashKeySerializer-ref="stringRedisSerializer"
+          p:hashValueSerializer-ref="jacksonJsonRedisSerializer"/>
+
+</beans>

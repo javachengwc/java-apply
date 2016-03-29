@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMapConfig
+        PUBLIC "-//ibatis.apache.org//DTD SQL Map Config 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+    <transactionManager type="JDBC" commitRequired="true">
+        <dataSource type="SIMPLE">
+            <property name="JDBC.Driver" value="com.mysql.jdbc.Driver"/>
+            <property name="JDBC.ConnectionURL" value="jdbc:mysql://127.0.0.1:3306/rule?setUnicode=true&amp;characterEncoding=UTF-8"/>
+            <property name="JDBC.Username" value="root"/>
+            <property name="JDBC.Password" value="root"/>
+            <property name="Pool.MaximumActiveConnections" value="5"/>
+            <property name="Pool.MaximumIdleConnections" value="1"/>
+            <!-- 数据库联接池中，连接被某个任务所允许占用的最大时间，如果超过这个时间限定，连接将被强制收回。（毫秒）-->
+            <property name="Pool.MaximumCheckoutTime" value="10000"/>
+            <!-- 当线程试图从连接池中获取连接时，连接池中无可用连接可供使用，
+            此时线程将进入等待状态，直到池中出现空闲连接。此参数设定了线程所允许等待的最长时间。（毫秒）-->
+            <property name="Pool.TimeToWait" value="5000"/>
+            <property name="Pool.PingQuery" value="select 1 from dual"/>
+            <property name="Pool.PingEnabled" value="true"/>
+            <!--对持续连接时间超过设定值（毫秒）的连接进行检测。 -->
+            <property name="Pool.PingConnectionsOlderThan" value="0"/>
+            <!--对空闲超过设定值（毫秒）的连接进行检测-->
+            <property name="Pool.PingConnectionsNotUsedFor" value="100"/>
+        </dataSource>
+    </transactionManager>
+
+    <sqlMap resource="sqlmap/TServiceSql.xml"/>
+    <sqlMap resource="sqlmap/TServiceDBSql.xml"/>
+    <sqlMap resource="sqlmap/TServiceColumnSql.xml"/>
+</sqlMapConfig>

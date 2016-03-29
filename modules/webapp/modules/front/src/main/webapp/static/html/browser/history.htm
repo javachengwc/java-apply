@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>history对象的应用</title>
+<script type="text/javascript">
+  function display(x){
+	  var txt=document.getElementById("txt2").value;
+      switch(x){
+	    case 1:
+		window.frames[0].history.back();
+		break;
+		case 2:
+		window.frames[0].history.forward();
+		break;
+		case 3:
+		window.frames[0].history.go(0);
+		break;
+		case 4:
+		window.frames[0].location.href=txt;
+		break;
+		default:
+	  }
+  }
+</script>
+</head>
+<body>
+<button onclick="display(1);">后退</button>
+<button onclick="display(2);">前进</button>
+<button onclick="display(3);">刷新</button>
+<hr />
+<input type="text" id="txt2" value="interval.htm" size="30" />
+<button onclick="display(4);">显示</button>
+<br />
+<iframe name="ifr" id="ifr" width="400" height="120" src="interval.htm"></iframe>
+</body>
+</html>

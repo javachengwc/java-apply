@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.app</groupId>
+    <artifactId>app</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>modules/common</module>
+        <module>modules/config</module>
+		<module>modules/concurrent</module>
+		<module>modules/socket</module>
+        <module>modules/json</module>
+        <module>modules/httpclient</module>
+		<module>modules/excel</module>
+        <module>modules/xml</module>
+        <module>modules/captcha</module>
+        <module>modules/email</module>
+        <module>modules/solr</module>
+		<module>modules/zookeeper</module>
+		<module>modules/frame</module>
+		<module>modules/webapp</module>
+		<module>modules/cache</module>
+		<module>modules/antlr</module>
+		<module>modules/crawler</module>
+		<module>modules/template</module>
+        <module>modules/netty</module>
+		<module>modules/mina</module>
+		<module>modules/mq</module>
+		<module>modules/im</module>
+		<module>modules/es</module>
+        <module>modules/thrift</module>
+		<module>modules/dubbo</module>
+		<module>modules/rule</module>
+		<module>modules/webservice</module>
+		<module>modules/wh8m</module>
+		<module>modules/other</module>
+		<module>modules/bigdata</module>
+		<module>modules/main</module>
+		<module>modules/configcenter</module>
+    </modules>
+
+</project>

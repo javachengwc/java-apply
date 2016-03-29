@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>角色管理</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <link rel="stylesheet" type="text/css" href="/thirdpart/jquery-easyui/themes/default/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="/thirdpart/jquery-easyui/themes/icon.css" />
+    <link rel="stylesheet" type="text/css" href="/css/style.css" />
+    <style>
+        #query_div{text-align: left;}
+        #tbRole{width:100%;}
+        .select_rs{width:300px;height: 250px;}
+        #select_button a{width:60px;}
+    </style>
+
+    <script type="text/javascript" src="/js/jquery-1.8.0.js"></script>
+    <script type="text/javascript" src="/js/jquery.form.js"></script>
+    <script type="text/javascript" src="/js/base/date-util.js"></script>
+    <script type="text/javascript" src="/js/base/string-util.js"></script>
+    <script type="text/javascript" src="/js/base/popups-util.js"></script>
+
+    <script type="text/javascript" src="/thirdpart/jquery-easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/thirdpart/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="/js/role.js"></script>
+
+</head>
+<body>
+    <div id="toolbar">
+        <div id="query_div">
+            <span>名称:</span><input id="name" name="name" type="text"/> &nbsp;
+            <span>中文名:</span><input id="nameCh" name="nameCh" type="text" />&nbsp;
+            <input id="searchBtn" type="button" value="查询" onClick="search()" />&nbsp;&nbsp;
+            <input id="addBtn" type="button" value="新增" onClick="openRoleDlg()" />
+        </div>
+    </div>
+    <table id="tbRole">
+        <thead>
+        <tr>
+            <th data-options="field:'id',align:'left'" width="10%" >ID</th>
+            <th data-options="field:'name',align:'left'" width="35%" >角色名</th>
+            <th data-options="field:'nameCh',align:'left'" width="35%" >中文名</th>
+            <th data-options="field:'button',align:'center',formatter:formatOpt" width="20%" >操作</th>
+        </tr>
+        </thead>
+    </table>
+
+    <!--增改角色对话框-->
+    <div id="role_add" class="add_dlg easyui-dialog" closed="true" buttons="#add_button">
+
+        <form id="role_form" method="post">
+            <input type="hidden" id="id" name="id" />
+            <div class="fitem">
+                <label>角色名:</label>
+                <input name="name" class="easyui-textbox" required="true" />
+            </div>
+            <div class="fitem">
+                <label>中文名:</label>
+                <input name="nameCh" class="easyui-textbox" required="true" />
+            </div>
+        </form>
+    </div>
+    <div id="add_button">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" onclick="addOrUptRole()" >保存</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#role_add').dialog('close');">取消</a>
+    </div>
+
+    <!--关联资源对话框-->
+    <div id="select_rs_dlg" class="select_rs easyui-dialog" title="关联资源" closed="true" buttons="#select_button">
+    </div>
+    <div id="select_button">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" onclick="relaRs()" >保存</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#select_rs_dlg').dialog('close');" >取消</a>
+    </div>
+</body>
+</html>

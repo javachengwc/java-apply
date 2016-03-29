@@ -1,0 +1,74 @@
+
+<h2 class="template_title">新增文件</h2>
+<div class="template_con">
+    <div class="editSide">
+        <div id="search_con">
+            <form id="add_form" name="add_form" method="post" enctype="multipart/form-data">
+                <span>上传文件:</span><input type="file" id="file" name ="file" /><br/><br/>
+                <span>文件类型:</span>
+                    <select name="type" id="type" class="input-xlarge">
+                        <option value="0" >-----图片-----</option>
+                        <option value="1" >-----其他-----</option>
+                    </select>
+                <br/><br/>
+                <span>链接地址:</span><input type="text" id="linkAddress" name ="linkAddress" /><br/><br/>
+
+                <input id="cancel" type="button" onclick="cleanData()" value="取消"/>&nbsp;&nbsp;&nbsp;&nbsp;
+                <input id="save" type="button" onclick="addFile()" value="保存"/>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+    });
+
+    function cleanData()
+    {
+        $("#file").val("");
+        $("#linkAddress").val("");
+        $("#type").val("");
+    }
+
+    //添加
+    function addFile(){
+
+        var url = "/file/addFile.do";
+
+        var file =$("#file").val();
+        var linkAddress = $("#linkAddress").val();
+        var type = $("#type").val();
+
+        var b = !(linkAddress == '' || type =='' || file =='') ;
+
+        if(b){
+            var options={
+                url: url,
+                type: 'post',
+                dataType: 'json',
+                success: function(json){
+                    if(json.error == 0){
+                        alert("新增成功");
+                        cleanData();
+                    }else{
+                        if(json.msg)
+                        {
+                            alert(json.msg);
+                        }else {
+                            alert("服务器错误");
+                        }
+                    }
+                }
+            };
+
+            $("#add_form").ajaxSubmit(options);
+
+
+        }else{
+            alert("内容不能为空，请重新输入");
+        }
+    }
+
+</script>

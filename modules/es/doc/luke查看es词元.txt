@@ -1,0 +1,35 @@
+---------------luke查看es词元-------------
+ElasticSearch虽构建于Lucene之上，但ElasticSearch重写了自己独有的倒排表存取解析格式，
+所以直接使用Luke来打开elasticSearch的索引，是不会成功的
+
+重编译打包支持ElasticSearch的Luke
+
+1,在gitHub上，check出luke的源码,https://github.com/sonarme/luke
+
+2,修改此项目的pom.xml文件，添加elasticsearch支持
+
+    <!-- ElasticSearch -->
+    <dependency>
+        <groupId>org.elasticsearch</groupId>
+        <artifactId>elasticsearch</artifactId>
+        <version>1.4.2</version>
+    </dependency>
+
+3,执行mvn package命令打包jar,target目录下生成一个luke-with-deps.jar的文件
+
+4,解压此jar包,在META-INF\services下的org.apache.lucene.codecs.PostingsFormat文件末尾,
+添加如下三行elasticsearch的索引格式读写的类全名
+
+    org.elasticsearch.index.codec.postingsformat.BloomFilterPostingsFormat
+    org.elasticsearch.index.codec.postingsformat.Elasticsearch090PostingsFormat
+    org.elasticsearch.search.suggest.completion.Completion090PostingsFormat
+
+5，加完后，再次放入压缩包中，命令行执行java -jar luke-with-deps.jar
+即可打开Luke，就可在界面选择elasticsearc的索引，进行查看了
+
+注:当索引为空的时候，luke会报一个异常：
+There are no postings in the index reader的异常，
+这并不影响luke的正常使用，可直接忽略.
+
+------------------------------------
+

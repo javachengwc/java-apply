@@ -1,0 +1,42 @@
+--------------------------maven插件-------------------------
+Maven官方有两个插件列表，第一个列表的GroupId为org.apache.maven.plugins，这里的插件最为成熟，具体地址为：http://maven.apache.org/plugins/index.html
+第二个列表的GroupId为org.codehaus.mojo，这里的插件没有那么核心，但也有不少十分有用，其地址为：http://mojo.codehaus.org/plugins.html
+
+maven-antrun-plugin           maven-antrun-plugin能让用户在Maven项目中运行Ant任务
+
+maven-archetype-plugin        maven-archetype-plugin生成一个很简单的项目骨架
+
+maven-assembly-plugin         maven-assembly-plugin的用途是制作项目分发包，分发包可能包含了项目的可执行文件、源代码、readme、平台脚本等等。
+                              maven-assembly-plugin支持各种主流的格式如zip、tar.gz、jar和war等
+
+maven-dependency-plugin       maven-dependency-plugin是帮助分析项目依赖
+                              ep:dependency:list能够列出项目最终解析到的依赖列表
+                                 dependency:tree能进一步的描绘项目依赖树
+                                 dependency:copy-dependencies能将项目依赖从本地Maven仓库复制到某个特定的文件夹下面
+
+maven-enforcer-plugin         maven-enforcer-plugin能创建一系列规则强制项目遵守，包括设定Java版本、设定Maven版本、禁止某些依赖、禁止SNAPSHOT依赖。
+                              只要在一个父POM配置规则，然后让其他继承，当规则遭到破坏的时候，Maven就会报错。
+                              maven-enforcer-plugin的enforce目标负责检查规则，它默认绑定到生命周期的validate阶段
+
+maven-help-plugin             maven-help-plugin是一个小巧的辅助工具
+                              ep:help:system打印所有可用的环境变量和Java系统属性
+                                 help:effective-pom打印项目的有效POM
+                                 help:effective-settings打印项目的有效settings
+
+maven-release-plugin          maven-release-plugin的用途是帮助自动化项目版本发布
+
+maven-resources-plugin        maven-resources-plugin用来处理资源文件
+
+maven-surefire-plugin         maven-surefire-plugin用于执行测试的插件
+
+exec-maven-plugin             exec-maven-plugin用于运行任何本地的系统程序
+                              ep:为了简单的演示一个命令行Java程序，在POM中配置好exec-maven-plugin的相关运行参数，然后直接在命令运行 mvn exec:java 以查看运行效果
+
+jetty-maven-plugin            jetty-maven-plugin用于调试运行web程序，它能够周期性地检查源文件，一旦发现变更后自动更新到内置的Jetty Web容器
+
+yuicompressor-maven-plugin    yuicompressor-maven-plugin是YUI Compressor Maven压缩插件，用于对css,js文件的压缩
+
+maven-shade-plugin            用于生成可执行的jar包,如java -jar xx.jar, 它可以配置Main-Class的值，然后在打包的时候将值填入/META-INF/MANIFEST.MF文件。
+                              关于jar包的依赖，它将依赖的jar文件全部解压后，再将得到的.class文件连同当前项目的.class文件一起合并到最终的jar包中。
+
+------------------------------------------------------------

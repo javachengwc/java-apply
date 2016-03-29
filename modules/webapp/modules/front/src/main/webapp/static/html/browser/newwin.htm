@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>可定制的弹出窗口</title>
+<script type="text/javascript">
+  function newW(){
+    var w=document.getElementById("w").value;
+	var h=document.getElementById("h").value;
+	var hh=document.getElementById("hh").value;
+	var v=document.getElementById("v").value;
+	var style="directories=no,location=no,menubar=no,width="+w+",height="+h;
+	var myFunc=window.open("navigator.htm","nwindow",style);
+	myFunc.moveTo(hh,v);
+    }
+</script>
+</head>
+<body>
+新窗口宽度：<input type="text" size="4" id="w" value="300" />
+<br />
+新窗口高度：<input type="text" size="4" id="h" value="200" />
+<hr />
+新窗口水平位置坐标：<input type="text" size="4" id="hh" value="20" />
+<br />
+新窗口垂直位置坐标：<input type="text" size="4" id="v" value="50" />
+<hr />
+<button onclick="newW();">打开新窗口</button>
+</body>
+</html>

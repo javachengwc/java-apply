@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>screen对象的应用</title>
+<script type="text/javascript">
+  function display(x){
+	  var txt;
+      switch(x){
+	    case 1:
+		txt=screen.height+"像素";
+		break;
+		case 2:
+		txt=screen.width+"像素";
+		break;
+		case 3:
+		txt=screen.availHeight+"像素";
+		break;
+		case 4:
+		txt=screen.availWidth+"像素";
+		break;
+		case 5:
+		txt=screen.colorDepth+"位";
+		break;
+		default:
+		txt="你的屏幕信息"
+	  }
+	  document.getElementById("txt").innerText=txt;
+  }
+</script>
+</head>
+<body>
+<span id="txt">你的屏幕信息</span>
+<hr />
+<button onclick="display(1);">屏幕高度</button>
+<button onclick="display(2);">屏幕宽度</button>
+<button onclick="display(3);">屏幕可用高度</button>
+<button onclick="display(4);">屏幕可用宽度</button>
+<hr />
+<button onclick="display(5);">屏幕颜色深度</button>
+</body>
+</html>

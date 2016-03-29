@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+    body {font-size:14px; background:#fff;}
+    div.login {width:300px; height:130px; border:1px #ccc solid; margin:0 auto; text-align:center; padding:10px;}
+    .tip_div{margin:0 auto; text-align:center;}
+</style>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/jquery.url.min.js"></script>
+<script type="text/javascript" src="../js/sha1-min.js"></script>
+
+<title>用户登录</title>
+</head>
+
+<body>
+<div class="login" >
+	<form name="form1" id="flogin" method="post">
+		<p>用户名：<input type="text"  id="username" name="username" value="admin"/></p>
+		<p>密&nbsp;&nbsp;&nbsp;&nbsp;码：<input type="password"id="passwd"  name="passwd" value="admin"/></p>
+		<p><input  id="loginBtn" type="button" value="登录" /></p>
+	</form>
+</div>
+<div class="tip_div">
+    <p id="loginTips"></p>
+    <p id="exception"></p>
+</div>
+<script language="JavaScript" type="text/javascript">
+
+function login()
+{
+	var userName = $('#username').val();
+	var passwd = $('#passwd').val();
+	if($.trim(userName)=="" || $.trim(passwd)==""){
+		alert("请输入用户名和密码");
+		return;
+	}
+	var params = {
+		username:userName,
+		passwd:passwd
+	  };
+    $.ajax({   
+        url:'/login.do',
+        type:'post',   
+        dataType:'json',   
+        data:params,   
+        success:update_page
+    }); 
+}
+
+$(document).ready(function() {
+
+    if ($.url.param("message")) {
+
+        $('#exception').html("导常信息：" + $.url.param("message"));
+    }
+
+    $('#username').focus();
+	
+	$('#loginBtn').click(function(){
+
+
+	       login();
+    });
+});
+
+document.onkeyup = function(event)
+{
+    var evt = window.event || event;
+    var code = evt.keyCode?evt.keyCode : evt.which;
+
+    if(code == 13)
+    {
+        login();
+    }
+}
+
+function update_page(json){
+
+	if(json.flag=="true"){
+		$('#loginTips').html();
+		var index = window.location.href.lastIndexOf('/');
+		var url = window.location.href;
+		url = url.substr(0, index);
+		window.location.href = url+"/index.html";	
+	}else{
+        $('#loginTips').html('<font color="red">您输入的账号或密码输入有误，请重试!</font>');
+    }
+}
+</script>
+</body>
+</html>

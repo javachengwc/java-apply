@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>固定对联广告</title>
+<style type="text/css">
+*{margin:0;
+  padding:0;}
+body {font-size:12px;}
+.main{width:300px;
+      height:300px;
+	  margin:0px auto;
+	  background:#eee;
+	  border:1px solid #333;}
+p{height:90%;}
+#left,#right{width:110px;
+      height:230px;
+	  background:#F58A33 url(float_img/buy.gif) no-repeat bottom right ;
+	  color:#fff;
+	  position:absolute;
+	  top:40px;}
+#left{left:10px;}
+#right{right:10px;}
+a{color:#000;
+  display:block;
+  width:42px;
+  text-align:center;
+  height:12px;
+  border:1px solid #333;
+  font-weight:bold;
+  text-decoration:none;}
+a:visited{color:#000;}
+a:hover{color:#999;
+        border:1px dashed #999;}
+</style>
+<script type="text/javascript">
+  function closead(){
+   document.getElementById("left").style.display="none";
+   document.getElementById("right").style.display="none";
+  }
+  function get()  {     
+  var x, y, w, h;         
+     y = document.documentElement.scrollTop;         
+     x = document.documentElement.scrollLeft;         
+     w = document.documentElement.scrollWidth;         
+     h = document.documentElement.scrollHeight; 
+  var msg=new Array(y,x,w,h);    
+  return msg; 
+  } 
+  function Set(){ 
+     var y=get()[0]; 
+	 var x=get()[1];
+     var w=get()[2];
+	 var h=get()[3];    
+	 document.getElementById("left").style.top=(y+40)+"px";	
+	 document.getElementById("right").style.top=(y+40)+"px";
+	 document.getElementById("txt4").innerHTML="<strong>"+y+"像素</strong>";	 
+     document.getElementById("txt1").innerHTML="<strong>"+w+"像素</strong>";
+	 document.getElementById("txt2").innerHTML="<strong>"+h+"像素</strong>";
+	 document.getElementById("txt3").innerHTML="<strong>"+x+"像素</strong>";	   
+  }
+  window.onscroll=Set;
+</script>
+</head>
+<body>
+<div id="left">
+  <p></p>
+  <a href="javascript:closead();" title="关闭广告">×关闭</a>
+</div>
+<div id="right">
+    <p></p>
+   <a href="javascript:closead();" title="关闭广告">×关闭</a>
+</div>
+<div class="main">页面主体内容1</div>
+<div class="main">   
+   <hr />
+   页面滚动条垂直移动的距离<span id="txt4" /></span><hr />
+   页面滚动条的宽度：<span id="txt1" /></span><hr />
+   页面滚动条的高度：<span id="txt2" /></span><hr />
+   页面滚动条水平移动的距离：<span id="txt3" /></span>
+   <hr />
+</div>
+<div class="main">页面主体内容3</div>
+<div class="main">页面主体内容4</div>
+</body>
+</html>

@@ -1,0 +1,28 @@
+-------------------mysql备忘----------------
+---清查询缓存
+reset query cache;
+---不缓存查询某语句
+select sql_no_cache   * from test ...
+---设置客户端连接字符集
+set names utf8;
+---执行查询计划
+explain select ...
+---强制使用索引
+select * from table force index(aa_index)
+
+----------------------------------------------
+window下用source还原数据库中文乱码问题无法回避,因为window下的cmd命令字符集固定的gbk,不能换成其他字符集,
+变通的做法直接把sql语句在sql客户端客户端执行,而不用cmd命令行去操作
+
+mysql中,float占4个字节，double占8个字节，decimal(M,D)占M+2个字节。
+decimal(5, 2) 的最大值为9999.99，因为有7 个字节可用, decimal(p,s)中p最大为65，S最大为30
+
+在多表关联查询中，类似如下
+select a.*,b.* from a left join b on a.id=b.aid and b.aa=?
+where a.cc=? and b.kk=?
+对于左外连接查询，如果右表b有条件刷选,应当把条件放到 on.... and 后面，这样可以对b进行条件刷选后 去关联a.
+如果 我们把此条件放到 where下面，左外连接 就变成join 内连接了。
+
+当使用MySQL操作数据库时，IN()方法中不能使用包含预定义变量
+
+----------------------------------------------

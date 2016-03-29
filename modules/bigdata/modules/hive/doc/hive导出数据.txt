@@ -1,0 +1,108 @@
+------------------Hive数据导出三种方式 -------------------
+
+根据导出的地方不一样，这些方式分为三种：
+（1）、导出到本地文件系统；
+（2）、导出到HDFS中；
+（3）、导出到Hive的另一个表中。
+
+一、导出到本地文件系统
+
+    hive> insert overwrite local directory '/home/wyp/wyp'
+        > select * from wyp;
+
+    这条HQL的执行需要启用Mapreduce完成，运行完这条语句之后，将会在本地文件系统的/home/wyp/wyp目录下生成文件，
+    这个文件是Reduce产生的结果（这里生成的文件名是000000_0），可以看看这个文件的内容：
+
+    [wyp@master ~/wyp]$ vim 000000_0
+    5^Awyp1^A23^A131212121212
+    6^Awyp2^A24^A134535353535
+    7^Awyp3^A25^A132453535353
+    8^Awyp4^A26^A154243434355
+    1^Awyp^A25^A13188888888888
+    2^Atest^A30^A13888888888888
+    3^Azs^A34^A899314121
+
+    可以看出，这就是wyp表中的所有数据。数据中的列与列之间的分隔符是^A(ascii码是\00001)。
+
+二、导出到HDFS中
+
+     hive> insert overwrite directory '/home/wyp/hdfs'
+         > select * from wyp;
+
+     将会在HDFS的/home/wyp/hdfs目录下保存导出来的数据。注意，和导出文件到本地文件系统的HQL少一个local，数据的存放路径就不一样了
+
+ 三、导出到Hive的另一个表中
+
+    这也是Hive的数据导入方式，如下操作：
+
+     hive> insert into table test
+        > partition (age='25')
+        > select id, name, tel
+        > from wyp;
+    #####################################################################
+               这里输出了一堆Mapreduce任务信息，这里省略
+    #####################################################################
+    Total MapReduce CPU Time Spent: 1 seconds 310 msec
+    OK
+    Time taken: 19.125 seconds
+
+    hive> select * from test;
+    OK
+    5       wyp1    131212121212    25
+    6       wyp2    134535353535    25
+    7       wyp3    132453535353    25
+    8       wyp4    154243434355    25
+    1       wyp     13188888888888  25
+    2       test    13888888888888  25
+    3       zs      899314121       25
+    Time taken: 0.126 seconds, Fetched: 7 row(s)
+
+    说明一下，导入数据到文件中，数据的列之间为什么不是wyp表设定的列分隔符呢？
+    其实在Hive 0.11.0版本之间，数据的导出是不能指定列之间的分隔符的，只能用默认的列分隔符，
+    也就是上面的^A来分割，这样导出来的数据很不直观，看起来很不方便！
+    如果Hive版本是0.11.0，那么可以在导出数据的时候来指定列之间的分隔符。
+
+    在Hive0.11.0版本新引进了一个新的特性，也就是当用户将Hive查询结果输出到文件，用户可以指定列的分割符
+
+    hive> insert overwrite local directory '/home/wyp/Documents/result'
+    hive> row format delimited
+    hive> fields terminated by '\t'
+    hive> select * from test;
+
+    再次看出输出的结果
+
+    196        242        3
+    186        302        3
+    22        377        1
+    244        51        2
+
+    结果好看多了。如果是map类型可以用下面语句来分割map的key和value
+
+    hive> insert overwrite local directory './test-04'
+    hive> row format delimited
+    hive> FIELDS TERMINATED BY '\t'
+    hive> COLLECTION ITEMS TERMINATED BY ','
+    hive> MAP KEYS TERMINATED BY ':'
+    hive> select * from src;
+
+    还可以用hive的-e和-f参数来导出数据。其中-e 表示后面直接接带双引号的sql语句；而-f是接一个文件，文件的内容为一个sql语句，如下：
+
+    [wyp@master ~/local][        DISCUZ_CODE_26        ]hive -e "select * from wyp" >> local/wyp.txt
+    [wyp@master ~/local][        DISCUZ_CODE_26        ]cat wyp.txt
+    5       wyp1    23      131212121212
+    6       wyp2    24      134535353535
+    7       wyp3    25      132453535353
+    8       wyp4    26      154243434355
+    1       wyp     25      13188888888888
+    2       test    30      13888888888888
+    3       zs      34      899314121
+
+    得到的结果也是用\t分割的。也可以用-f参数实现：
+
+    [wyp@master ~/local]$ cat wyp.sql
+    select * from wyp
+    [wyp@master ~/local]$ hive -f wyp.sql >> local/wyp2.txt
+
+----------------------------------------------------------------------
+
+

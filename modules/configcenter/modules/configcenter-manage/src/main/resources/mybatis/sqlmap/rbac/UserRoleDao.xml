@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.configcenter.dao.rbac.UserRoleDao" >
+
+    <resultMap id="BaseResultMap" type="com.configcenter.model.rbac.UserRole" >
+        <result column="user_id" property="userId" jdbcType="INTEGER" />
+        <result column="role_id" property="roleId" jdbcType="INTEGER" />
+    </resultMap>
+
+    <insert id="add" parameterType="com.configcenter.model.rbac.UserRole">
+        insert into simple_user_role(user_id,role_id) values(${userId},${roleId})
+    </insert>
+
+    <delete id="delete" parameterType="com.configcenter.model.rbac.UserRole">
+        delete from simple_user_role
+        where user_id =${userId}
+        and role_id =${roleId}
+    </delete>
+
+    <delete id="deleteByUser" parameterType="com.configcenter.model.rbac.User">
+        delete from simple_user_role
+        where user_id =#{id}
+    </delete>
+
+    <delete id="deleteByRole" parameterType="com.configcenter.model.rbac.Role">
+        delete from simple_user_role
+        where role_id =#{id}
+    </delete>
+
+    <select id="queryByUser" resultMap="BaseResultMap" parameterType="com.configcenter.model.rbac.User">
+        select * from simple_user_role where user_id =#{id}
+    </select>
+
+</mapper>

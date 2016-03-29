@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.configcenter.dao.biz.AppDao" >
+
+    <resultMap id="BaseResultMap" type="com.configcenter.model.App" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="name_ch" property="nameCh" jdbcType="VARCHAR" />
+        <result column="note" property="note" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <select id="countAll"  resultType="java.lang.Integer">
+        select count(1) as count  from cc_app
+    </select>
+
+    <select id="getById"  resultMap="BaseResultMap" parameterType="com.configcenter.model.App">
+        select * from cc_app where id =#{id}
+    </select>
+
+    <insert id="add" parameterType="com.configcenter.model.App">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into cc_app
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">
+                name,
+            </if>
+            <if test="nameCh != null">
+                name_ch,
+            </if>
+            <if test="note != null">
+                note,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">
+                #{name},
+            </if>
+            <if test="nameCh != null">
+                #{nameCh},
+            </if>
+            <if test="note != null">
+                #{note},
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="batchAdd" parameterType="java.util.List">
+        insert into cc_app  ( name , name_ch,note )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.name},
+            #{item.nameCh},
+            #{item.note}
+            )
+        </foreach>
+    </insert>
+
+    <update id="update" parameterType="com.configcenter.model.App">
+        update cc_app
+        set
+        <trim prefix="" suffix="" suffixOverrides=",">
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="nameCh != null and nameCh !='' ">
+                name_ch=#{nameCh},
+            </if>
+            <if test="note != null and note !=''">
+                note=#{note},
+            </if>
+        </trim>
+        where  id=#{id}
+    </update>
+
+    <delete id="delete" parameterType="com.configcenter.model.App">
+        delete from cc_app where id=#{id}
+    </delete>
+
+    <select id="queryList" resultMap="BaseResultMap" parameterType="com.configcenter.vo.CommonQueryVo">
+        select * from cc_app
+        where 1=1
+        <if test="name!=null and name!=''">
+            and name like "%"#{name}"%"
+        </if>
+        <if test="nameCh!=null and nameCh!=''">
+            and name_ch like "%"#{nameCh}"%"
+        </if>
+        <if test="start != null and rows != null">
+            LIMIT ${start},${rows}
+        </if>
+    </select>
+
+    <select id="count"  resultType="java.lang.Integer" parameterType="com.configcenter.vo.CommonQueryVo">
+        select count(1) as count
+        from cc_app
+        where 1=1
+        <if test="name!=null and name!=''">
+            and  name like "%"#{name}"%"
+        </if>
+        <if test="nameCh!=null and nameCh!=''">
+            and name_ch like "%"#{nameCh}"%"
+        </if>
+    </select>
+</mapper>

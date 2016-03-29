@@ -1,0 +1,63 @@
+-----------------zookeeper笔记-------------------
+zookeeper是维护了一个分布式的树形目录。
+它通过fast paxos算法保证多个节点上znode的数据一致性。
+一套zookeeper可以同时给多个应用程序使用，只需要隔离好各自的path
+
+-----------------zookeeper相关概念---------------
+1.CreateMode  在create的时候可以设置znode的类型
+
+PERSISTENT (持续的，相对于EPHEMERAL，不会随着client的断开而消失)
+PERSISTENT_SEQUENTIAL（持久的且带顺序的）
+EPHEMERAL (短暂的，生命周期依赖于client session)
+EPHEMERAL_SEQUENTIAL  (短暂的，带顺序的)
+
+2.Watcher  Watcher是一种反向推送机制，即zonde（包括他的child）有改变的时候会通知客户端。可以自定义Watcher，注册给zonde。
+
+watcher分为两大类：data watches和child watches。前者监听数据的变动，后者监听子node的变动。
+Watcher是一次性的！一旦被调用，则需要重新注册。
+
+3.ACL  acl即access control。zookeeper通过ACL机制来控制权限。创建znode的时候可以指定。
+一套zookeeper会被多个程序使用,就像linux支持多用户一样。
+所以需要有一套权限控制：不然自己创建的节点，被别的应用程序无缘无故删了，那找谁去?
+
+zookeeper的权限级别：
+READ: 允许获取该节点的值和列出子节点。
+WRITE: 允许设置该节点的值。
+CREATE: 允许创建子节点。
+DELETE: 可以删除子节点。
+ADMIN: 超级权限。相当于root
+从上到下递次增强，后面的权限包含前面的权限。
+
+----------------zookeeper应用点---------------
+1，Name Service
+有点类似JNDI，树形目录天生的就有全局唯一名称。
+
+2，配置文件同步
+
+3，全局锁
+zookeeper可以利用它的数据一致性算法来提供可靠的全局锁服务。
+获得锁是一个递归的过程
+1.创建znode "/distributed_lock"
+2.在distributed_lock下新建子节点"/distributed_lock/xxxxxx"，EPHEMERAL_SEQUENTIAL 模式，当前序号假如是i。
+3.对distributed_lock调用getChildren()，如果i是children列表里最小的，则获得锁；否则进入第4步
+4.等待children列表里紧跟在i后边的那个节点被删除的通知（exists()方法）。记为j。而j又依赖于仅比j小的节点k。一直递归等待最小的znode的被删除。。
+注:虽然EPHEMERAL_SEQUENTIAL是递增的，但仍然不能粗暴的认为紧跟在i后边的节点j=i-1。这是因为释放锁的顺序并不是完全按照节点顺序！
+释放锁:删除自己创建的子节点即可
+
+4，分布式队列
+类似于上边全局锁的设计。只要确保每次消费的时候编号都是最小的。就能做到先进先出。
+
+5, 集群管理
+每个Server起来之后都在 Zookeeper 上创建一个 EPHEMERAL 类型的znode，
+假设他们都有一个共同的父GroupMembers。我们在每个Server上调用getChildren(GroupMembers)方法，并注册一个 Child Watcher。
+由于是 EPHEMERAL的znode，当创建它的 Server 死去，这个znode也随之被删除，所以 Children 将会变化，
+这时 getChildren上的 Watcher 将会被调用，所以其它 Server 就知道已经有某台 Server 挂掉了。新增 Server 也是同样的原理
+
+6,Leader选举
+和集群管理的设计基本一样，不同的地方是，这次创建的znone类型是EPHEMERAL_SEQUENTIAL，
+不仅仅随着member的同生同灭，而且是有顺序的。
+只要把编号最小的member认为是Master，就可以做到Leader的动态选举。
+
+7，其他
+
+-----------------------------------------------

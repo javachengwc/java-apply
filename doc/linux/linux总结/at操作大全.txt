@@ -1,0 +1,60 @@
+﻿---------------at定时任务------------------
+只是要让特定任务运行一次,那么，这时候就要用到at监控程序了。注意：linux默认为不启动，而ubuntu默认为启动的。
+at类似打印进程，会把任务放到/var/spool/at目录中，到指定时间运行它 。
+at命令相当于另一个shell，运行at time命令时，它发送一个个命令，可以输入任意命令或者程序。
+
+at命令执行流程如下:
+
+# at 2:05 tomorrow
+
+at>/home/kyle/do_job
+
+at> Ctrl+D
+
+---------------at服务启动停止----------------------
+/sbin/service atd start      ---启动服务
+/sbin/service atd stop       ---关闭服务
+/sbin/service atd restart    ---重启服务
+/sbin/service atd status     ---查看服务状态
+
+---------------at中AT Time时间表示方法-------------
+
+　　时 间     例子                 说明
+　　-----------------------------------------------
+　　Minute    at now + 5 minutes   任务在5分钟后运行
+
+　　Hour      at now + 1 hour      任务在1小时后运行
+
+　　Days      at now + 3 days      任务在3天后运行
+
+　　Weeks     at now + 2 weeks     任务在两周后运行
+
+　　Fixed     at midnight          任务在午夜运行
+
+　　Fixed     at 10:30pm           任务在晚上10点30分
+　　
+---------------at命令及选项--------------------------
+
+at -V               ---显示版本号
+at [AT Time]        ---增加一次性任务
+at -m               ---即使任务执行完成后没有输出结果, 也要寄封信给使用者 
+at -l               ---列出所有的一次性任务
+atq                 ---列出所有的一次性任务 
+at -d [number]      ---删除一次性任务 
+atrm  [number]      ---删除一次性任务 
+at -v               ---列出所有已经完成但尚未删除的一次性任务
+at -f file          ---读入预先写好的命令档。使用者不一定要使用交谈模式来输入，可以先将所有的指定先写入档案后再一次读入
+at -q               ---使用指定的伫列(Queue)来储存，at 的资料是存放在所谓的 queue 中，
+                       使用者可以同时使用多个 queue，而 queue 的编号为 a, b, c... z 以及 A, B, ... Z 共 52 个
+ 
+---------------at例子------------------------
+
+at 5pm 3 days /bin/ls 
+       ---三天后的下午5点锺执行/bin/ls  
+at 5pm 2 weeks /bin/ls
+       ---二个星期后的下午5点锺执行/bin/ls 
+at 17:20 tomorrow /bin/date
+       ---明天的 17:20 执行/bin/date 
+at 23:59 12/31/1999 echo the end of world !
+       ---1999 年的最后一天的最后一分钟印出 the end of world ! 
+---------------------------------------------

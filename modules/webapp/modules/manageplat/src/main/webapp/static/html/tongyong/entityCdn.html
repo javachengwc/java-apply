@@ -1,0 +1,164 @@
+<style>
+    .tempTable .evenrowcolor{background-color:#FFFFFF;}
+    .tempTable .oddrowcolor{background-color:#FFFFFF;}
+    .tempTable tbody .currentline{background-color:#D1D0CE;}
+</style>
+
+<script type="text/javascript">
+
+    //分页对象
+    var entityCdnPageToolBar;
+    //查询对象
+    var entityCdnSearcher;
+
+    $(document).ready(function(){
+
+        entityCdnSearcher={
+            isFirstLoad:1,
+            pageNo:1,
+            pageSize:20
+        };
+
+        listEntityCdn();
+    });
+
+    //查询列表
+    function listEntityCdn(){
+
+        var params = "pageNo=" + entityCdnSearcher.pageNo + "&pageSize=" + entityCdnSearcher.pageSize;
+        var queryParams=getQueryParams();
+        if(queryParams!=null)
+        {
+            params = params+"&"+queryParams;
+        }
+
+        $.ajax({
+            url: '/tongyong/queryCdnPage.do',
+            type: 'get',
+            dataType: 'json',
+            data: params,
+            success: function(json){
+                if(!json.list || json.list.length==0 ){
+
+                    $("#entityCdnList_tbody").html("");
+                    if(!json.count)
+                    {
+                        $("#entityCdnPageToolBar").html("");
+                    }
+                    return;
+                }
+                if(entityCdnSearcher.isFirstLoad == 1){
+
+                    entityCdnPageToolBarRegist(json)
+
+                }else{
+                    renderEntityCdnTable(json);
+                }
+            }
+        });
+    }
+
+    //渲染数据
+    function renderEntityCdnTable(json){
+        var html = '';
+        for(var i = 0; i < json.list.length; i ++){
+            var n = json.list[i];
+            html += '<tr id="cdn_'+n.id+'">'
+                    +   '<td>'+ n.id+'</td>'
+                    +	'<td>' + n.entityId + '</td>'
+                    +	'<td>' + n.cdnName + '</td>'
+                    +	'<td>' + n.cdnCol + '</td>'
+                    +	'<td>' + (n.cdnType=1?'String':'int') + '</td>'
+                    +	'<td>' + (n.isShow=1?'是':'否') + '</td>'
+                    +	'<td>' + n.sort + '</td>'
+                    +   '<td>'
+                    +     '<a href="javascript:void(0);" onclick="uptEntity(this,'+n.id+');">修改</a> &nbsp;&nbsp;'
+                    +   '</td>'
+                    +	'</tr>';
+        }
+        $("#entityCdnList_tbody").html(html);
+        altRows("entityCdnList_tbody");
+    }
+
+    //给表格的每行增加鼠标移入移出不同的颜色效果
+    function altRows(id){
+
+        var tbody = document.getElementById(id);
+        var rows = tbody.getElementsByTagName("tr");
+        for(var i = 0; i < rows.length; i++){
+            rows[i].className = "evenrowcolor";
+            rows[i].onmouseover = function(){
+                this.className = "currentline";
+            }
+            rows[i].onmouseout = function(){
+                this.className = "evenrowcolor";
+            }
+        }
+    }
+
+    //初始化分页
+    function entityCdnPageToolBarRegist(json){
+
+        entityCdnPageToolBar = $('#entityCdnPageToolBar').pageBar({
+            params: {}//相关查询参数
+            ,totalCount: json.count
+            ,pageSize: entityCdnSearcher.pageSize//每页显示记录条数
+            ,limitPageCount:20
+            ,pageNo: entityCdnSearcher.pageNo
+            ,changePage: function(t){//换页的回调方法
+                entityCdnSearcher.pageNo = t.pageNo;
+                if (t.getLastPage() < t.pageNo && t.totalCount > 0) {
+                    t.getPreEl().click();
+                    return;
+                }
+                if(entityCdnSearcher.isFirstLoad == 1){
+                    entityCdnSearcher.isFirstLoad = 0;
+                    renderEntityCdnTable(json);
+                }else{
+                    listEntityCdn();
+                }
+            }
+        });
+    }
+
+    //查询参数
+    function getQueryParams(){
+        var entityId = $('#entityId').val();
+        var cdnName = $('#cdnName').val();
+        var cdnCol = $('#cdnCol').val();
+        return 'entityId=' +entityId + '&cdnName=' + cdnName + '&cdnCol=' + cdnCol;
+    }
+
+
+</script>
+
+<div class="template_con">
+    <div class="search_con">
+
+        实例Id:<input id="entityId" name="entityId" style="width:150px;" maxlength="50"/>&nbsp;&nbsp;&nbsp;&nbsp;
+        条件名:<input id="cdnName" name="cdnName" style="width:150px;" maxlength="50"/>&nbsp;&nbsp;&nbsp;&nbsp;
+        条件列:<input id="cdnCol" name="cdnCol" style="width:150px;" maxlength="50"/>&nbsp;&nbsp;&nbsp;&nbsp;
+
+        <input type="button" value="查询" onclick="listEntityCdn()" style="width:60px;"/>
+    </div>
+
+    <div class="entityCdnDiv" style="width:1000px">
+        <table id="entityCdnTable" class="tempTable" border="0" cellspacing="1" cellpadding="1" >
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>实例Id</th>
+                <th>条件名</th>
+                <th>条件列</th>
+                <th>条件类型</th>
+                <th>是否显示</th>
+                <th>序号</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody id="entityCdnList_tbody">
+            </tbody>
+        </table>
+        <div id="entityCdnPageToolBar" class="page-bar-con"></div>
+    </div>
+</div>

@@ -1,0 +1,82 @@
+<style>
+    #select_role_table{width: 100%;}
+    #select_role_table thead td{width: 20%;}
+</style>
+
+<div class="select_role_div">
+    <form id="select_role_form" method="post" >
+        <input id="userId" name="userId" type="hidden">
+        <table id="select_role_table">
+            <thead>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            </thead>
+            <tbody id="select_role_tbody">
+            </tbody>
+        </table>
+    </form>
+</div>
+<script type="text/javascript">
+    $(function () {
+
+        $("#userId").val(selectUserId);
+
+        $.ajax({
+            type: "get",
+            url: "/rbac/getUserSelectRole.do?userId="+selectUserId,
+            success: function (json) {
+                if(json.result==null || json.result!=0)
+                {
+                    tipMsg("错误", json.msg);
+                    return;
+                }
+                var list =json.list;
+                if(list ==null)
+                {
+                    return;
+                }
+                renderData(list);
+            }
+        });
+    });
+
+    function renderData(list)
+    {
+        var html="";
+        var len =list.length;
+        for(var i = 0; i < len; i ++){
+            var n = list[i];
+            if(i==0)
+            {
+                html+='<tr>';
+            }
+            if(i>0 && i%5==0)
+            {
+                html+='</tr><tr>';
+            }
+            html +=  '<td><input type="checkbox" name="selectRole" value="'+ n.id+'" ';
+            if(n.isSelect==true)
+            {
+                html+=' checked="checked"';
+            }
+            html+='></input>'+ n.nameCh+'</td>';
+        }
+        //额外补充的td数
+        var addTdCount = 0;
+        if(len%5!=0)
+        {
+            addTdCount=5-(len%5);
+        }
+        for(var i = 0; i < addTdCount; i ++){
+            html+='<td></td>';
+        }
+        html+='</tr>';
+        $("#select_role_tbody").html(html);
+    }
+</script>
+

@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>用户管理</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <link rel="stylesheet" type="text/css" href="/thirdpart/jquery-easyui/themes/default/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="/thirdpart/jquery-easyui/themes/icon.css" />
+    <link rel="stylesheet" type="text/css" href="/css/style.css" />
+    <style>
+        #query_div{text-align: left;}
+        #tbUser{width:100%;}
+        .select_role{width:400px;height: 250px;}
+        #select_button a{width:60px;}
+    </style>
+
+    <script type="text/javascript" src="/js/jquery-1.8.0.js"></script>
+    <script type="text/javascript" src="/js/jquery.form.js"></script>
+    <script type="text/javascript" src="/js/base/date-util.js"></script>
+    <script type="text/javascript" src="/js/base/string-util.js"></script>
+    <script type="text/javascript" src="/js/base/popups-util.js"></script>
+
+    <script type="text/javascript" src="/thirdpart/jquery-easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/thirdpart/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="/js/user.js"></script>
+</head>
+<body>
+    <div id="toolbar">
+        <div id="query_div">
+            <span>名称:</span><input id="name" name="name" type="text"/> &nbsp;
+            <span>账号:</span><input id="nameCh" name="nameCh" type="text" />&nbsp;
+            <input id="searchBtn" type="button" value="查询" onClick="search()" />&nbsp;&nbsp;
+            <input id="addBtn" type="button" value="新增" onClick="openUserDlg()" />
+        </div>
+    </div>
+    <table id="tbUser">
+        <thead>
+        <tr>
+            <th data-options="field:'id',align:'left'" width="10%" >ID</th>
+            <th data-options="field:'name',align:'left'" width="25%" >名称</th>
+            <th data-options="field:'account',align:'left'" width="25%" >账号</th>
+            <th data-options="field:'useable',align:'left',formatter:formatUseable" width="15%" >状态</th>
+            <th data-options="field:'button',align:'center',formatter:formatOpt" width="25%" >操作</th>
+        </tr>
+        </thead>
+    </table>
+
+    <div id="user_add" class="add_dlg easyui-dialog" closed="true" buttons="#add_button">
+
+        <form id="user_form" method="post">
+            <input type="hidden" id="id" name="id" />
+            <div class="fitem">
+                <label>名称:</label>
+                <input name="name" class="easyui-textbox" required="true" />
+            </div>
+            <div class="fitem">
+                <label>账号:</label>
+                <input name="account" class="easyui-textbox" required="true" />
+            </div>
+            <div class="fitem">
+                <label>密码:</label>
+                <input name="password" class="easyui-textbox" />
+            </div>
+        </form>
+    </div>
+    <div id="add_button">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" onclick="addOrUptUser()" >保存</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#user_add').dialog('close');">取消</a>
+    </div>
+
+    <!--授权对话框-->
+    <div id="select_role_dlg" class="select_role easyui-dialog" title="授权" closed="true" buttons="#select_button">
+    </div>
+    <div id="select_button">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" onclick="authUser()" >保存</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#select_role_dlg').dialog('close');" >取消</a>
+    </div>
+
+</body>
+</html>

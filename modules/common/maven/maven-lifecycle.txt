@@ -1,0 +1,17 @@
+-----------------------------maven生命周期--------------------------
+
+clean阶段，clean插件执行clean目标。
+
+compile阶段，compiler插件执行compile目标。
+
+process-test-resources阶段，resources插件执行testResources目标。
+
+test-compile阶段，compiler插件执行testCompile目标。
+
+test阶段，surefire插件执行test目标。
+
+package阶段，war插件执行war目标。
+
+install阶段，install插件执行install目标。
+
+--------------------------------------------------------------------

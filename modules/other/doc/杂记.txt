@@ -1,0 +1,39 @@
+常用在线工具----http://tool.oschina.net/
+
+Jodd 是一个开源的 Java 工具集， 包含一些实用的工具类和小型框架。简单，却很强大！
+Jodd 被分成众多模块，按需选择，其中
+
+    工具类模块有：
+
+        jodd-core        一些工具类，包括Printf、JDateTime、StringUtil、Fast buffers等等
+
+        jodd-bean        BeanUtil以及类型检查转换工具
+
+        jodd-props       更强大的Java Properties替代
+
+        jodd-email       更简单易用的e-mail收发
+
+        jodd-upload      处理HTTP上传
+
+        jodd-servlets    一些Servlet相关的工具类, 附带一套漂亮的JSP标签库
+
+        jodd-http        轻巧的HTTP客户端
+
+    小型框架模块有：
+
+        jodd-madvoc      一个MVC框架
+
+        jodd-petite      一个依赖注入容器
+
+        jodd-lagarto     HTML/XML解析器，包含Jerry和CSSelly，让你像jQuery一样筛选HTML节点
+
+        jodd-lagarto-web Lagarto的Web扩展，包含Decora、HtmlStapler等等
+
+        jodd-proxetta    帮你实现动态代理，获取函数参数名
+
+        jodd-dboom       数据库访问的轻量级封装，可看作一个简单的ORM
+
+        jodd-json        JSON解析、序列化
+
+        jodd-vtor        一个基于注解的字段验证框架
+--------------------------------------------------------

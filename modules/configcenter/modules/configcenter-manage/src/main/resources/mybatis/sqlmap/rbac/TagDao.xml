@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.configcenter.dao.rbac.TagDao" >
+
+    <select id="queryPage" resultType="java.lang.String" parameterType="com.configcenter.vo.CommonQueryVo">
+        select tag from
+        (
+            select tag from simple_resource where tag !='' and tag is not null
+            union all
+            select distinct tag from simple_tag_user_or_role
+        ) a
+        where 1=1
+        <if test="name!=null and name!=''">
+           and  a.tag like "%"#{name}"%"
+        </if>
+        <if test="start != null and rows != null">
+            LIMIT ${start},${rows}
+        </if>
+    </select>
+
+</mapper>

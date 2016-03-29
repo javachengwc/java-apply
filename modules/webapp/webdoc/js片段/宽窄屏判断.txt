@@ -1,0 +1,6 @@
+window.isWide = true;
+
+window.isWide = window.isWide && ((window.innerWidth || document.body.clientWidth || document.documentElement.clientWidth) >= 1280 ? true : false);
+
+var Ie8 = /msie\s8\.0/.test(navigator.userAgent.toLowerCase());
+window.isWide = window.isWide && !Ie8;

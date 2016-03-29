@@ -1,0 +1,44 @@
+.page-bar{text-align:center; margin:20px 0 0 0; color:#666;}
+.page-bar li{ float:none; display:inline; text-align:center; margin-right:7px;}
+.page-bar a{ display:inline-block;height:18px;line-height:18px;margin:0 auto;text-align:center;width:18px; border:1px #e3e4dc solid;color:#666; text-decoration:none;}
+.page-bar a:link{ color:#666;}
+.page-bar a:hover{  text-decoration:none; border:1px #ffa400 solid;}
+.page-bar a.page-bar-pre,a.page-bar-next { background:url(../images/page_bg.jpg) repeat-x; width:40px; height:18px; line-height:18px; padding:0 5px; border:1px #cccccc solid; margin:0;}
+.page-bar .page-bar-no{ border:1px #cccccc solid; height:18px; width:18px; text-align:center; line-height:18px;}
+.page-bar a.page-bar-current{height:18px; width:18px; text-align:center; line-height:18px; background:#ffa400; color:#fff; border:1px #ffa400 solid; cursor:default;}
+.page-bar a.page-bar-current:link{ color:#fff;}
+.page-bar a.page-bar-current:visited{ color:#fff;}
+
+.star-content .star-board .star-board-right .star-message .page-bar{text-align:center; margin: 0 auto;border-bottom: none;}
+.star-content .star-board .star-board-right .star-message .page-bar li{ float:none; display:inline; text-align:center;}
+.star-content .star-board .star-board-right .star-message .page-bar a{font-size: 11px; display:inline-block;height:18px;line-height:18px;margin:0 auto;text-align:center;width:18px; text-decoration:none; color: #666;border:none;}
+.star-content .star-board .star-board-right .star-message .page-bar a:link{}
+.star-content .star-board .star-board-right .star-message .page-bar a:hover{text-decoration:none; border:none;}
+.star-content .star-board .star-board-right .star-message .page-bar a.page-bar-pre,a.page-bar-next { width:40px; height:18px; line-height:18px; padding:0 5px;  margin:0; color: #236297; font-size: 12px;}
+.star-content .star-board .star-board-right .star-message .page-bar .page-bar-no{border:none; height:18px; width:18px; text-align:center; line-height:18px;}
+.star-content .star-board .star-board-right .star-message .page-bar .page-bar-current{background:none;height:18px; width:18px; text-align:center; line-height:18px; font-weight: bold; color: #236297;}
+.star-content .star-board .star-board-right .star-message .page-bar a.page-bar-current:link{ }
+.star-content .star-board .star-board-right .star-message .page-bar a.page-bar-current:visited{ }
+
+
+
+
+
+.star-content .star-board .star-board-right .star-message .page-bar{text-align:center; margin:0;border-bottom: none;}
+.star-content .star-board .star-board-right .star-message .page-bar li{ float:none; display:inline; text-align:center;}
+.star-content .star-board .star-board-right .star-message .page-bar a{font-size: 12px; display:inline-block;height:9px;line-height:9px;margin:0 auto;text-align:center;width:6px; text-decoration:none; color: #666;}
+.star-content .star-board .star-board-right .star-message .page-bar a:link{}
+.star-content .star-board .star-board-right .star-message .page-bar a:hover{ text-decoration:none; }
+.star-content .star-board .star-board-right .star-message .page-bar a.page-bar-pre, .star-content .star-board .star-board-right .star-message .page-bar a.page-bar-next { width:11px; height:11px; line-height:11px; padding:0;  margin:0; color: #236297; font-size: 12px;}
+.star-content .star-board .star-board-right .star-message .page-bar .page-bar-no{ height:9px; width:6px; text-align:center; line-height:9px;}
+.star-content .star-board .star-board-right .star-message .page-bar .page-bar-current{height:9px; width:6px; text-align:center; line-height:9px; font-weight: bold; color: #f0891a;font-weight: normal;}
+.star-content .star-board .star-board-right .star-message .page-bar a.page-bar-current:link{}
+.star-content .star-board .star-board-right .star-message .page-bar a.page-bar-current:visited{}
+
+.star-content .star-board .star-board-right .star-message .page-bar {color: #c8c8c8;}
+.star-content .star-board .star-board-right .star-message a.page-bar-current:hover {color: #f0891a; font-weight: normal;}
+.star-content .star-board .star-board-right .star-message a:hover {text-decoration: underline;}
+.star-content .star-board .star-board-right .star-message a:hover {color: #236297;}
+.star-content .star-board .star-board-right .star-message .page-bar-pre, .star-content .star-board .star-board-right .star-message .page-bar-next {height:11px;line-height:11px;width:11px;}
+.star-content .star-board .star-board-right .star-message .page-bar li a.page-bar-pre {background: url(../images/star/star-page-pre-arrow.gif) no-repeat center center;}
+.star-content .star-board .star-board-right .star-message .page-bar li a.page-bar-next {background: url(../images/star/star-page-next-arrow.gif) no-repeat center center;}

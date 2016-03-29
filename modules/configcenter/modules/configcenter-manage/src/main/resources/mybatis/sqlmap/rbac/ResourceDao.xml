@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.configcenter.dao.rbac.ResourceDao" >
+
+    <resultMap id="BaseResultMap" type="com.configcenter.model.rbac.Resource" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="path" property="path" jdbcType="VARCHAR" />
+        <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+        <result column="is_show" property="isShow" jdbcType="INTEGER" />
+        <result column="is_menu" property="isMenu" jdbcType="INTEGER" />
+        <result column="tag" property="tag" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <select id="countAll"  resultType="java.lang.Integer">
+        select count(1) as count  from simple_resource
+    </select>
+
+    <select id="getById"  resultMap="BaseResultMap" parameterType="com.configcenter.model.rbac.Resource">
+        select * from simple_resource where id =#{id}
+    </select>
+
+    <insert id="add" parameterType="com.configcenter.model.rbac.Resource">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into simple_resource
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">
+                name,
+            </if>
+            <if test="path != null">
+                path,
+            </if>
+            <if test="parentId != null">
+                parent_id,
+            </if>
+            <if test="isShow != null">
+                is_show,
+            </if>
+            <if test="isMenu != null">
+                is_menu,
+            </if>
+            <if test="tag != null">
+                tag,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">
+                #{name},
+            </if>
+            <if test="path != null">
+                #{path},
+            </if>
+            <if test="parentId != null">
+                #{parentId},
+            </if>
+            <if test="isShow != null">
+               #{isShow},
+            </if>
+            <if test="isMenu != null">
+               #{isMenu},
+            </if>
+            <if test="tag != null">
+               #{tag},
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="batchAdd" parameterType="java.util.List">
+        insert into simple_resource  ( name , path,parent_id,is_show,is_menu,tag )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.name},
+            #{item.path}
+            #{item.parentId},
+            #{item.isShow},
+            #{item.isMenu},
+            #{item.tag}
+            )
+        </foreach>
+    </insert>
+
+    <update id="update" parameterType="com.configcenter.model.rbac.Resource">
+        update simple_resource
+        set
+        <trim prefix="" suffix="" suffixOverrides=",">
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="path != null">
+                path=#{path},
+            </if>
+            <if test="parentId != null">
+                parent_id=#{parentId},
+            </if>
+            <if test="isShow != null">
+                is_show=#{isShow},
+            </if>
+            <if test="isMenu != null">
+                is_menu=#{isMenu},
+            </if>
+            <if test="tag != null">
+                tag=#{tag},
+            </if>
+        </trim>
+        where  id=#{id}
+    </update>
+
+    <delete id="delete" parameterType="com.configcenter.model.rbac.Resource">
+        delete from simple_resource where id=#{id}
+    </delete>
+
+    <select id="queryList" resultMap="BaseResultMap" parameterType="com.configcenter.vo.CommonQueryVo">
+        select * from simple_resource
+        where 1=1
+        <if test="parentId!=null ">
+           and parent_id =#{parentId}
+        </if>
+        <if test="name!=null and name!=''">
+           and name like "%"#{name}"%"
+        </if>
+        <if test="start != null and rows != null">
+            LIMIT ${start},${rows}
+        </if>
+    </select>
+
+    <select id="count"  resultType="java.lang.Integer" parameterType="com.configcenter.vo.CommonQueryVo">
+        select count(1) as count
+        from simple_resource
+        where 1=1
+        <if test="parentId!=null ">
+          and parent_id =#{parentId}
+        </if>
+        <if test="name!=null and name!=''">
+          and name like "%"#{name}"%"
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.configcenter.dao.rbac.UserDao" >
+
+    <resultMap id="BaseResultMap" type="com.configcenter.model.rbac.User" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="account" property="account" jdbcType="VARCHAR" />
+        <result column="password" property="password" jdbcType="VARCHAR" />
+        <result column="useable" property="useable" jdbcType="INTEGER" />
+    </resultMap>
+
+    <resultMap id="ResourceMap" type="com.configcenter.model.rbac.Resource" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="path" property="path" jdbcType="VARCHAR" />
+        <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+        <result column="is_show" property="isShow" jdbcType="INTEGER" />
+        <result column="is_menu" property="isMenu" jdbcType="INTEGER" />
+        <result column="tag" property="tag" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <select id="countAll"  resultType="java.lang.Integer">
+        select count(1) as count  from simple_user
+    </select>
+
+    <select id="getById"  resultMap="BaseResultMap" parameterType="com.configcenter.model.rbac.User">
+        select * from simple_user where id =#{id}
+    </select>
+
+    <insert id="add" parameterType="com.configcenter.model.rbac.User">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into simple_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">
+                name,
+            </if>
+            <if test="account != null">
+                account,
+            </if>
+            <if test="password != null">
+                password,
+            </if>
+            <if test="useable != null">
+                useable,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">
+                #{name},
+            </if>
+            <if test="account != null">
+                #{account},
+            </if>
+            <if test="password != null">
+                #{password},
+            </if>
+            <if test="useable != null">
+                #{useable},
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="batchAdd" parameterType="java.util.List">
+        insert into simple_user  ( name , account,password,useable )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.name},
+            #{item.account},
+            #{item.password},
+            #{item.useable}
+            )
+        </foreach>
+    </insert>
+
+    <update id="update" parameterType="com.configcenter.model.rbac.User">
+        update simple_user
+        set
+        <trim prefix="" suffix="" suffixOverrides=",">
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="account != null and account !='' ">
+                account=#{account},
+            </if>
+            <if test="password != null and password !=''">
+                password=#{password},
+            </if>
+            <if test="useable != null">
+                useable=#{useable},
+            </if>
+        </trim>
+        where  id=#{id}
+    </update>
+
+    <delete id="delete" parameterType="com.configcenter.model.rbac.User">
+        delete from simple_user where id=#{id}
+    </delete>
+
+    <select id="queryList" resultMap="BaseResultMap" parameterType="com.configcenter.vo.CommonQueryVo">
+        select id,name,account,useable from simple_user
+        where 1=1
+        <if test="name!=null and name!=''">
+           and name like "%"#{name}"%"
+        </if>
+        <if test="nameCh!=null and nameCh!=''">
+           and account like "%"#{nameCh}"%"
+        </if>
+        <if test="start != null and rows != null">
+            LIMIT ${start},${rows}
+        </if>
+    </select>
+
+    <select id="count"  resultType="java.lang.Integer" parameterType="com.configcenter.vo.CommonQueryVo">
+        select count(1) as count
+        from simple_user
+        where 1=1
+        <if test="name!=null and name!=''">
+            and name like "%"#{name}"%"
+        </if>
+        <if test="nameCh!=null and nameCh!=''">
+            and account like "%"#{nameCh}"%"
+        </if>
+    </select>
+
+    <select id="getByAccount" resultMap="BaseResultMap" parameterType="com.configcenter.model.rbac.User">
+        select * from simple_user
+        <where>
+            <if test="account!=null and account!=''">
+                account ='${account}'
+            </if>
+        </where>
+        limit 1
+    </select>
+
+    <select id="queryUserResource" resultMap="ResourceMap" parameterType="map">
+        select a.* from simple_resource a
+        join simple_role_resource b on a.id = b.resource_id
+        join simple_user_role c on b.role_id=c.role_id
+        join simple_user d on c.user_id=d.id
+        where a.is_menu=1 and a.is_show=1
+        <if test="parentId!=null ">
+            and a.parent_id=${parentId}
+        </if>
+        <if test="account!=null and account!=''">
+            and d.account='${account}'
+        </if>
+    </select>
+
+</mapper>

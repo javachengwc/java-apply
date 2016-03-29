@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.com//DTD SQL Map 2.0//EN" 
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="Adminor">
+    <typeAlias alias="Adminor" type="com.manage.model.rbac.Adminor" />
+    <typeAlias alias="AdminorQuery" type="com.manage.model.rbac.query.AdminorQuery" />
+    
+    <resultMap id="adminorResult" class="Adminor">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="nickname" column="nickname"/>
+        <result property="password" column="password"/>
+        <result property="typevalue" column="type"/>
+        <result property="createTime" column="create_time"/>
+        <result property="lastLoginTime" column="last_login_time"/>
+    </resultMap>
+    
+    <select id="getAdminorById" resultMap="adminorResult">
+         select * from admin_adminor where id=#id#
+    </select>
+    
+    <select id="getByName" resultMap="adminorResult">
+         select * from admin_adminor where name=#name#
+    </select>
+    
+    <select id="getAdminorAll" resultMap="adminorResult">
+        select * from admin_adminor
+    </select>
+    
+    
+    <select id="findPageAdminorTotalCount" resultClass="int" parameterClass="AdminorQuery">
+        select count(1) from admin_adminor
+        <dynamic prepend="WHERE">   
+           <isNotEmpty prepend="AND" property="name">
+                name like concat(concat("%",#name#),"%") 
+           </isNotEmpty>
+           <isNotEmpty prepend="AND" property="nickname">
+                nickname like concat(concat("%",#nickname#),"%") 
+           </isNotEmpty>
+        </dynamic>
+    </select>
+
+    <select id="findPageAdminor" resultMap="adminorResult" parameterClass="AdminorQuery">
+        select * from admin_adminor 
+        <dynamic prepend="WHERE">   
+           <isNotEmpty prepend="AND" property="name">
+                name like concat(concat("%",#name#),"%") 
+           </isNotEmpty>
+           <isNotEmpty prepend="AND" property="nickname">
+                nickname like concat(concat("%",#nickname#),"%") 
+           </isNotEmpty>
+        </dynamic>
+         limit #start#,#pageSize#
+    </select>
+    
+    
+    <update id="updateAdminor" parameterClass="Adminor">
+        update admin_adminor
+        <dynamic prepend="set">
+           <isNotEmpty prepend="," property="name">
+               name=#name#
+           </isNotEmpty>
+           <isNotEmpty prepend="," property="nickname">
+               nickname=#nickname#
+           </isNotEmpty>
+           <isNotEmpty prepend="," property="password">
+               password=#password#
+           </isNotEmpty>
+           <isNotEmpty prepend="," property="typevalue">
+               type=#typevalue#
+           </isNotEmpty>
+           <isNotEmpty prepend="," property="createTime">
+               create_time=#createTime#
+           </isNotEmpty>
+           <isNotEmpty prepend="," property="lastLoginTime">
+               last_login_time=#lastLoginTime#
+           </isNotEmpty>
+        </dynamic> 
+         where id=#id#
+    </update>
+
+   <delete id="deleteAdminorById" parameterClass="int">
+        delete from admin_adminor where id=#id#
+    </delete>
+
+    <insert id="insertAdminor" parameterClass="Adminor">
+        insert into admin_adminor (name, nickname, password,type,create_time) values (#name#,#nickname#,#password#,#typevalue#,#createTime#)
+        <selectKey keyProperty="id" resultClass="int">
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+    
+    <delete id="cancelRole" >
+        delete from admin_user_role where user_id=#adminorId# and role_id=#roleId#
+    </delete>
+    
+    <insert id="addRole" >
+        insert into admin_user_role (user_id,role_id) values (#adminorId#,#roleId#)
+    </insert>
+    
+    <delete id="delAdmRelaRole">
+        delete from admin_user_role 
+        <dynamic prepend="WHERE">   
+           <isNotEmpty prepend="AND" property="userId">
+                user_id=#userId# 
+           </isNotEmpty>
+           <isNotEmpty prepend="AND" property="roleId">
+               role_id=#roleId#
+           </isNotEmpty>
+        </dynamic>
+    </delete>
+    
+</sqlMap>
