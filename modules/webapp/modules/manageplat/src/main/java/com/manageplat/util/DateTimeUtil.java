@@ -49,6 +49,15 @@ public class DateTimeUtil {
 
     public static void main(String args [])
     {
+
+        DateTime beginDate =new DateTime().withDate(2016,3,31).withTime(0,0,0,0);
+        DateTime endDate =new DateTime().withDate(2016,4,5).withTime(0,0,0,0);
+
+        Days dys = Days.daysBetween(beginDate, endDate);
+        int days = dys.getDays() + 1;
+
+        System.out.println("days="+days);
+
         DateTime date1 = DateTime.now();
         date1= getDateTime(date1.toString("yyyy-MM-dd"),"yyyy-MM-dd");
 

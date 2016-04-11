@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>配置项管理</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <link rel="stylesheet" type="text/css" href="/thirdpart/jquery-easyui/themes/default/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="/thirdpart/jquery-easyui/themes/icon.css" />
+    <link rel="stylesheet" type="text/css" href="/css/style.css" />
+    <style>
+        #query_div{text-align: left;}
+        #tbConfig{width:100%;}
+        #zk_dlg{ width:400px;height:200px;padding:10px 20px;}
+        #zk_value{margin-left: 10px;line-height: 15px;}
+    </style>
+
+    <script type="text/javascript" src="/js/jquery-1.8.0.js"></script>
+    <script type="text/javascript" src="/js/jquery.form.js"></script>
+    <script type="text/javascript" src="/js/base/date-util.js"></script>
+    <script type="text/javascript" src="/js/base/string-util.js"></script>
+    <script type="text/javascript" src="/js/base/popups-util.js"></script>
+
+    <script type="text/javascript" src="/thirdpart/jquery-easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/thirdpart/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="/js/configitem.js"></script>
+
+    <script type="text/javascript">
+        //初始化
+        $(function () {
+
+            $('#tbConfig').datagrid({
+                pageSize:20,
+                rownumbers:true,
+                fitColumns:true,
+                collapsible:true,
+                singleSelect:true,
+                showFooter:true,
+                pagination:true,
+                toolbar:'#toolbar',
+                method:'get',
+                url:'/queryConfigItemPage.do'
+            });
+
+        });
+
+    </script>
+
+</head>
+<body>
+    <div id="toolbar">
+        <div id="query_div">
+            <span>应用key:</span><input id="name" name="name" type="text" />&nbsp;
+            <span>配置项:</span><input id="key" name="key" type="text"/> &nbsp;
+            <input id="searchBtn" type="button" value="查询" onClick="search()" />
+        </div>
+    </div>
+    <table id="tbConfig">
+        <thead>
+        <tr>
+            <th data-options="field:'id',align:'left'" width="10%" >ID</th>
+            <th data-options="field:'appName',align:'left'" width="15%" >应用</th>
+            <th data-options="field:'key',align:'left'" width="15%" >配置项</th>
+            <th data-options="field:'value',align:'left'" width="30%" >配置值</th>
+            <th data-options="field:'updateAt',align:'left',formatter:formatDateTime" width="15%" >更新时间</th>
+            <th data-options="field:'button',align:'center',formatter:formatOpt" width="15%" >操作</th>
+        </tr>
+        </thead>
+    </table>
+
+    <!--增改配置项对话框-->
+    <div id="config_add" class="add_dlg easyui-dialog" closed="true" buttons="#add_button">
+
+        <form id="config_form" method="post">
+            <input type="hidden" id="id" name="id" />
+            <div class="fitem">
+                <label>应用:</label>
+                <input id="appId" name="appId" class="easyui-textbox"/>
+            </div>
+            <div class="fitem">
+                <label>配置项:</label>
+                <input name="key" class="easyui-textbox" required="true" />
+            </div>
+            <div class="fitem">
+                <label>配置值:</label>
+                <input name="value" class="mult_text easyui-textbox"  data-options="multiline:true" style="height: 60px;"/>
+            </div>
+        </form>
+    </div>
+    <div id="add_button">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" onclick="addOrUptConfigItem()" >保存</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#config_add').dialog('close');">取消</a>
+    </div>
+
+    <!--zk值框-->
+    <div id="zk_dlg" class="easyui-dialog" title="ZK值" closed="true">
+        <div id="zk_value">
+        </div>
+    </div>
+
+</body>
+</html>

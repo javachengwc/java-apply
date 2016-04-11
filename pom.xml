@@ -41,6 +41,7 @@
 		<module>modules/bigdata</module>
 		<module>modules/main</module>
 		<module>modules/configcenter</module>
+		<module>modules/shop</module>
     </modules>
 
 </project>
