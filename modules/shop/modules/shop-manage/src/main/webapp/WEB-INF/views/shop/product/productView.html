@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>商品管理</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <link rel="stylesheet" type="text/css" href="/shop/thirdpart/jquery-easyui/themes/default/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="/shop/thirdpart/jquery-easyui/themes/icon.css" />
+    <link rel="stylesheet" type="text/css" href="/shop/css/style.css" />
+    <style>
+        #query_div{text-align: left;}
+        #tbProduct{width:100%;}
+    </style>
+
+    <script type="text/javascript" src="/shop/js/jquery-1.8.0.js"></script>
+    <script type="text/javascript" src="/shop/js/jquery.form.js"></script>
+    <script type="text/javascript" src="/shop/js/base/date-util.js"></script>
+    <script type="text/javascript" src="/shop/js/base/string-util.js"></script>
+    <script type="text/javascript" src="/shop/js/base/popups-util.js"></script>
+
+    <script type="text/javascript" src="/shop/thirdpart/jquery-easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/shop/thirdpart/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="/shop/thirdpart/jquery-easyui/extension/datagrid-detailview.js"></script>
+
+    <script type="text/javascript" src="/shop/js/product.js"></script>
+
+</head>
+<body>
+<div id="toolbar">
+    <div id="query_div">
+        <span>商品Id:</span><input id="productId" name="productId" type="text"/> &nbsp;
+        <span>名称:</span><input id="name" name="name" type="text" />&nbsp;
+        <span>卖家Id:</span><input id="sellerId" name="selerId" type="text" />&nbsp;
+        <input id="searchBtn" type="button" value="查询" onClick="search()" />
+    </div>
+</div>
+<table id="tbProduct">
+    <thead>
+    <tr>
+        <th data-options="field:'id',align:'left'">ID</th>
+        <th data-options="field:'productId',align:'left'" >商品Id</th>
+        <th data-options="field:'name',align:'left'" >商品名称</th>
+        <th data-options="field:'sellerId',align:'left'">卖家Id</th>
+        <th data-options="field:'directCatId',align:'left'">直接分类Id</th>
+        <th data-options="field:'state',align:'left'">状态</th>
+        <th data-options="field:'saleTime',align:'left'">销售时间</th>
+        <th data-options="field:'offlineTime',align:'left'">下架时间</th>
+        <th data-options="field:'createTime',align:'left'">创建时间</th>
+        <th data-options="field:'updateTime',align:'left'">修改时间</th>
+    </tr>
+    </thead>
+</table>
+
+</body>
+</html>
