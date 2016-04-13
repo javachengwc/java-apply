@@ -13,10 +13,10 @@ public class ProductSkuController {
     private static final String PREFIX = "/shop/product/";
 
     //产品sku库存页面
-    @RequestMapping(value = "/productSkuView")
-    public String productSkuView()
+    @RequestMapping(value = "/productSku")
+    public String productSku()
     {
-        return PREFIX + "productSkuView";
+        return PREFIX + "productSku";
     }
 
 }

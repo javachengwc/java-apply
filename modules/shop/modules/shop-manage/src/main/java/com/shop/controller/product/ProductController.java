@@ -25,10 +25,10 @@ public class ProductController extends BaseController {
     private ProductService productService;
 
     //产品页面
-    @RequestMapping(value = "/productView")
-    public String productView()
+    @RequestMapping(value = "/product")
+    public String product()
     {
-        return PREFIX + "productView";
+        return PREFIX + "product";
     }
 
     //产品列表
