@@ -17,6 +17,8 @@ create table sys_resource
 insert into sys_resource values(1,'商品管理','',0,1,1,'');
 insert into sys_resource values(2,'商品列表','/shop/product/product.do',1,1,1,'');
 insert into sys_resource values(3,'商品SKU','/shop/product/productSku.do',1,1,1,'');
+insert into sys_resource values(4,'订单管理','',0,1,1,'');
+insert into sys_resource values(5,'订单列表','/shop/order/order.do',4,1,1,'');
 
 create table pd_product
 (
@@ -78,6 +80,76 @@ create table pd_sku_stock
   unique key product_sku(product_id,sku_num),
   KEY seller_product (seller_id,product_id)
 ) ENGINE=InnoDB default charset=utf8 comment '商品sku库存表';
+
+create table od_order (
+   id bigint auto_increment,
+   order_id varchar(20) comment '订单ID',
+   trade_code varchar(5) comment'订单渠道, Z0001:实体交易 Z0002:话费充值 Z0003:积分兑换类 Z0004:货到付款',
+   from_source int default 1 comment '订单来源: 1--PC,2--无线',
+   order_state int default 0 comment '订单状态: 0:初始 1:待支付 2:待发货 3:已发货 5:交易成功 7:交易关闭',
+   user_id bigint comment '买家ID',
+   user_name varchar(128) comment '买家昵称',
+   user_comment varchar(256) comment '卖家备注',
+   seller_id int comment '卖家ID',
+   seller_name varchar(128) comment '卖家名称',
+   seller_comment varchar(256) comment '卖家备注',
+   create_time datetime comment '订单生成时间',
+   is_overbuy int default 0 comment '是否超卖: 0,正常 1,超卖',
+   is_cancel int default 0 comment '是否取消 0--否,1--是',
+   cancel_time datetime comment '订单取消时间',
+   cancel_type int comment '订单取消类型: 1,系统自动取消  2,买家手工取消  3,售后取消  4,维权取消',
+   cancel_reason int comment '订单取消原因: 1,我不想买了 2,信息填写错误 3:重新拍 4:卖家缺货 5:同城见面交易 6:其他原因',
+   update_time timestamp comment '更新时间',
+   update_user_id int comment '更新的user',
+   price_amount bigint default 0 comment '订单价格',
+   postage bigint default 0 comment '邮费',
+   exchange_score int default 0 comment '兑换的积分数量',
+   exchange_cash  bigint default 0  comment '兑换的金额',
+   coupon_no varchar(32) comment '优惠券编码',
+   coupon_price bigint default 0 comment '优惠券金额',
+   discount_id int comment '活动id',
+   discount_type int comment '活动类型',
+   discount_desc varchar(128) comment '活动描述',
+   discount_rule varchar(128) comment '满足的活动规则',
+   discount_price bigint comment  '活动优惠的价格',
+   pay_state int default 0 comment '支付状态: 0:未支付 1:支付成功 2:支付失败',
+   pay_time datetime comment '买家付款时间',
+   pay_account varchar(64) comment '支付账号',
+   trade_pay_id varchar(64) comment '交易系统支付ID',
+   pay_channel int default 0 comment '支付渠道 0:无 1:支付宝 2:微信支付 3:网银',
+   pay_id varchar(64) comment '支付交易代码',
+   receiver_province_id int comment '收货人所属省ID',
+   receiver_province_name varchar(36) comment '收货人所属省名称',
+   receiver_city_id int comment  '收货人所属城市ID',
+   receiver_city_name varchar(36) comment  '收货人所属城市名称',
+   receiver_area_id int comment  '收货人所属区县ID',
+   receiver_area_name varchar(36) comment '收货人所属区县名称',
+   receiver_address varchar(256) comment '收货人地址',
+   receiver_name varchar(64) comment '收货人姓名',
+   receiver_mobile varchar(20) comment '收货人手机号',
+   receiver_tele varchar(20) comment '收货人电话',
+   receiver_address_id int comment '收货人地址ID',
+   receive_time timestamp comment '收货时间',
+   deliver_time timestamp comment '卖家发货时间',
+   deliver_time_limit int comment '发货时限小时,超过此时间再发货则发货超时',
+   remind_deliver_count int default 0 comment '买家提醒卖家发货的次数',
+   express_id int comment '快递公司编码',
+   express_name varchar(128) comment '快递公司名称',
+   express_no varchar(128) comment '货运单号',
+  primary key(id),
+  unique key (order_id),
+  key trade_pay_id(trade_pay_id),
+  key create_order(create_time,order_id),
+  key seller_order(seller_id,order_id),
+  key user_order(user_id,order_id),
+  key state_order(order_state,order_id),
+  key paytime_order(pay_time,order_id),
+  key receive_time_order(receive_time,order_id),
+  key receiver_name_order (receiver_name,order_id),
+  key receiver_mobile(receiver_mobile,order_id),
+  key deliver_time(deliver_time,order_id),
+  key express_order (express_no,express_id,order_id)
+) ENGINE=InnoDB default charset=utf8 comment '订单表';
 
 
 

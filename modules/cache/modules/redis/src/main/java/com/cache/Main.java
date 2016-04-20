@@ -1,12 +1,16 @@
 package com.cache;
 
 import com.cache.redis.demo.MapService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class Main {
+
+    private static Logger logger = LoggerFactory.getLogger(Main.class);
 
     public static void main(String args [])
     {
@@ -15,6 +19,8 @@ public class Main {
                         "classpath:spring/ApplicationContext-redis.xml"
                 });
         applicationContext.start();
+
+        logger.info("applicationContext started..............");
 
         MapService mapService = applicationContext.getBean(MapService.class);
         try {
@@ -48,6 +54,7 @@ public class Main {
             e.printStackTrace(System.out);
 
         } finally {
+            logger.info("Main program exit.............");
             System.exit(0);
         }
     }
