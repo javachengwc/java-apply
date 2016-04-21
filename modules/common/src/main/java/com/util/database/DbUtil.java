@@ -107,13 +107,65 @@ public class DbUtil {
         return sqlName;
     }
 
+    /**
+     * 备份数据库带条件查询的表部分数据
+     * @param host               主机host
+     * @param port               端口
+     * @param db                 数据库名
+     * @param table              表名
+     * @param condition          查询条件
+     * @param user               账号
+     * @param password           密码
+     * @param backUpDir          保存的目录
+     * @return
+     * mysqldump  -h 127.0.0.1 -P 3306 -uroot -proot --skip-lock-tables  db_admin  -w "id>1 and id<10" admin_role --result-file=E:/ttt\db_admin-table-20150703115203.sql --default-character-set=utf8
+     */
+    public static String backUpTableWithCdn(String host,Integer port,String db,String table,String condition,String user,String password,String backUpDir) {
+
+        // 生成临时备份文件
+        SimpleDateFormat sd = new SimpleDateFormat("yyyyMMddHHmmss");
+        String fineName = db+"-table-" + sd.format(new Date());
+        String sqlName = fineName + Constant.FILE_SUFFIX_SQL;
+        try {
+            File dir = new File(backUpDir);
+            if (!dir.exists()) {
+                dir.mkdir();
+            }
+            String savePath= backUpDir+File.separator+sqlName;
+            StringBuffer sbs = new StringBuffer();
+            sbs.append("mysqldump ");
+            sbs.append(" -h ").append(host);
+            if(port!=null)
+            {
+                sbs.append(" -P ").append(port);
+            }
+            sbs.append(" -u").append(user);
+            sbs.append(" -p").append(password);
+            sbs.append(" --skip-lock-tables ");
+            sbs.append(" ");
+            sbs.append(db);
+            sbs.append(" -w");
+            sbs.append(" \"");
+            sbs.append(condition);
+            sbs.append(" \"");
+            sbs.append(" ");
+            sbs.append(table);
+            sbs.append(" --result-file=").append(savePath);
+            sbs.append(" --default-character-set=utf8 ");
+            Runtime runtime = Runtime.getRuntime();
+            System.out.println(sbs.toString());
+            Process process = runtime.exec(sbs.toString());
+            process.waitFor();
+            process.destroy();
+        } catch (Exception e) {
+        }
+        return sqlName;
+    }
+
     public static void main(String args [])
     {
-        String rt = backUpDb("127.0.0.1",3306,"db_admin","root","root","E:/ttt");
-        System.out.println(rt);
-
-        String rt2 = backUpTable("127.0.0.1",3306,"db_admin","admin_role admin_resource","root","root","E:/ttt");
-        System.out.println(rt2);
+        //String rt = backUpDb("127.0.0.1",3306,"db_admin","root","root","E:/ttt");
+        //System.out.println(rt);
 
     }
 }
