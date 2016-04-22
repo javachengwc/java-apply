@@ -6,19 +6,21 @@
 
     <parent>
         <groupId>com.app</groupId>
-        <artifactId>app</artifactId>
+        <artifactId>shop</artifactId>
         <relativePath>../../pom.xml</relativePath>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
     <groupId>com.app</groupId>
-    <artifactId>shop</artifactId>
+    <artifactId>shop-stat</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     
 	<modules>
-        <module>modules/shop-manage</module>
-		<module>modules/shop-stat</module>
+        <module>modules/shop-stat-core</module>
+		<module>modules/shop-stat-service</module>
+		<module>modules/shop-stat-task</module>
+		<module>modules/shop-stat-manage</module>
 	</modules>
 
 </project>

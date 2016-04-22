@@ -1,0 +1,6 @@
+.add_dlg{width:400px;padding:10px 20px;}
+.add_dlg label{ display: inline-block;width: 80px;}
+.add_dlg input{ width: 200px;}
+.add_dlg select{ width: 100px;}
+.add_dlg .fitem { margin-bottom: 5px;}
+.add_dlg a{width:70px;}
