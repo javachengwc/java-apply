@@ -54,6 +54,9 @@ alter table ecs_users change address3 address_after  varchar(60)
 --修改列属性
 alter table ecs_users modify education tinyint(1);
 
+--修改自动更新时间为当前时间
+alter table ecs_users add column update_time TIMESTAMP default CURRENT_TIMESTAMP() on update CURRENT_TIMESTAMP;
+
 --------索引相关-------
 
 -- 增加主键
@@ -72,6 +75,41 @@ alter table test add index combin_index_name(column1,column2,column3)
 drop index address on test
 alter table test drop index address
 alter table table_name drop primary key
+
+----------------------增删改--------------------------------
+-----insert 操作-----
+insert ignore into ......  忽略数据库中已经存在的数据，如果数据库没有数据则插入新的数据，如果有数据则跳过这条数据
+insert into  ......
+replace into ...... 如果存在primary or unique相同的记录 则先删除在执行插入操作
+
+----update操作------
+
+--单表
+update persondata set age=age+1;
+
+--多表
+update items,month set items.price=month.price where items.id=month.id
+
+--多表
+upate goods a
+join goods_act b on a.goods_id=b.goods_id
+join act c on b.act_id=c.act_id
+set a.discount=if(b.privilege_price<>0,b.privilege_price,0)
+where c.is_finished=0
+
+------delete 操作------
+
+-----mysql连表删数据
+
+1,从数据表a中把那些id值在数据表b里有匹配的记录删除
+delete a from a,b where a.id=b.aid
+
+2,从数据表a中把在数据表b里没有匹配的记录删除
+delete a from a left join b on a.id=b.aid where b.aid is null
+
+3,从两个表中找出相同记录的数据并把两个表中的数据都删除掉
+
+delte a,b from a join b on a.id =b.aid
 
 ----------------------复杂查询------------------------------
 select a.*,b.name as style_name,c.name as price_interval_name,d.name as house_type_name ,d.type as house_type ,

@@ -31,20 +31,6 @@ select c.id, c.pm from
 
 select * from test order by rand() limit 3;
 
------mysql连表删数据
-
-1,从数据表a中把那些id值在数据表b里有匹配的记录删除
-delete a from a,b where a.id=b.aid
-
-2,从数据表a中把在数据表b里没有匹配的记录删除
-delete a from a left join b on a.id=b.aid where b.aid is null
-
-3,从两个表中找出相同记录的数据并把两个表中的数据都删除掉
-
-delte a,b from a join b on a.id =b.aid
-
-----------------------------------------------------------
-
 -----mysql主从表联查询,限制从表查询条数
 此查询从表查询条数限制在2条
 
@@ -58,5 +44,47 @@ WHERE (SELECT COUNT(1)FROM b b2 WHERE b1.aid=b2.aid AND b1.id>b2.id)<2
 
 -----mysql获取字符串中某子字符串出现的次数
  select round(((length('1,2,3,4')-length(replace('1,2,3,4',',', ''))))/ length(',')) as times from dual;
+
+-----mysql锁
+
+GET_LOCK(name,3) RELEASE_LOCK
+获取锁           释放锁
+
+DECLARE is_success TINYINT(1) DEFAULT 0;
+DECLARE is_s_lock smallint(5) DEFAULT 0;
+
+DECLARE t_error INTEGER DEFAULT 1;
+DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET t_error=0;
+
+if GET_LOCK('goods',3) THEN
+SET AUTOCOMMIT =0;
+IF t_error = 0 THEN
+    ROLLBACK;
+ELSE
+    COMMIT;
+END IF;
+SET AUTOCOMMIT =1;
+set is_s_lock=RELEASE_LOCK('goods');
+
+-----获取最后一次写入的id
+
+select last_insert_id();
+
+-----判断字符是否中文或英文字符
+
+select name, name REGEXP '[u0391-uFFE5]' from t1;
+| 中文 | 0 |
+| sdalfkj | 1
+
+//[u0391-uFFE5] 匹配中文以外的字符
+
+select length(name),char_length(name) from t1;
+| 中文 | 6 | 2 |
+| sdalfkj | 7 | 7 |
+
+//当字符集为UTF-8,并且字符为中文时,
+//length() 和 char_length() 两个方法返回的结果不相同
+
+select 'aabb' REGEXP '[a-z]+';   //匹配字母
 
 -----------------------------------------------------------
