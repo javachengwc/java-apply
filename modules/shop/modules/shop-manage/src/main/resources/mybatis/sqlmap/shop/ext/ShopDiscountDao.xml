@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shop.dao.ext.shop.ShopDiscountDao" >
+
+    <resultMap id="BaseResultMap" type="com.shop.model.pojo.ShopDiscount" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="shop_id" property="shopId" jdbcType="INTEGER" />
+        <result column="discount_name" property="discountName" jdbcType="VARCHAR" />
+        <result column="begin_time" property="beginTime" jdbcType="TIMESTAMP" />
+        <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+        <result column="discount_state" property="discountState" jdbcType="INTEGER" />
+        <result column="discount_range" property="discountRange" jdbcType="INTEGER" />
+        <result column="discount_products" property="discountProducts" jdbcType="VARCHAR" />
+        <result column="discount_type" property="discountType" jdbcType="INTEGER" />
+        <result column="discount_rule" property="discountRule" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <select id="queryPage" resultMap="BaseResultMap" parameterType="com.shop.model.vo.ShopDiscountQueryVo">
+        select * from shop_discount
+        <where>
+            <if test="createTimeBegin!=null and createTimeBegin!=''">
+                <![CDATA[ create_time >= '${createTimeBegin}' ]]>
+            </if>
+            <if test="createTimeEnd!=null and createTimeEnd!=''">
+                <![CDATA[ AND create_time <= '${createTimeEnd}' ]]>
+            </if>
+            <if test="beginTimeBegin!=null and beginTimeBegin!=''">
+                <![CDATA[ AND begin_time >= '${beginTimeBegin}' ]]>
+            </if>
+            <if test="beginTimeEnd!=null and beginTimeEnd!=''">
+                <![CDATA[ AND begin_time <= '${beginTimeEnd}' ]]>
+            </if>
+            <if test="endTimeBegin!=null and endTimeBegin!=''">
+                <![CDATA[ AND end_time >= '${endTimeBegin}' ]]>
+            </if>
+            <if test="endTimeEnd!=null and endTimeEnd!=''">
+                <![CDATA[ AND end_time <= '${endTimeEnd}' ]]>
+            </if>
+
+            <if test="shopId!=null ">
+                AND shop_id = '${shopId}'
+            </if>
+            <if test="discountState!=null  and discountState!=-1 ">
+                AND discount_state = ${discountState}
+            </if>
+            <if test="discountType!=null and discountType!=-1 ">
+                AND discount_type = ${discountType}
+            </if>
+            <if test="discountName!=null and discountName!='' ">
+                AND discount_name = '${discountName}'
+            </if>
+        </where>
+        <if test="start != null and rows != null">
+            limit ${start},${rows}
+        </if>
+    </select>
+
+    <select id="count"  resultType="java.lang.Integer" parameterType="com.shop.model.vo.ShopDiscountQueryVo">
+        select count(1) as count
+        from shop_discount
+        <where>
+            <if test="createTimeBegin!=null and createTimeBegin!=''">
+                <![CDATA[ create_time >= '${createTimeBegin}' ]]>
+            </if>
+            <if test="createTimeEnd!=null and createTimeEnd!=''">
+                <![CDATA[ AND create_time <= '${createTimeEnd}' ]]>
+            </if>
+            <if test="beginTimeBegin!=null and beginTimeBegin!=''">
+                <![CDATA[ AND begin_time >= '${beginTimeBegin}' ]]>
+            </if>
+            <if test="beginTimeEnd!=null and beginTimeEnd!=''">
+                <![CDATA[ AND begin_time <= '${beginTimeEnd}' ]]>
+            </if>
+            <if test="endTimeBegin!=null and endTimeBegin!=''">
+                <![CDATA[ AND end_time >= '${endTimeBegin}' ]]>
+            </if>
+            <if test="endTimeEnd!=null and endTimeEnd!=''">
+                <![CDATA[ AND end_time <= '${endTimeEnd}' ]]>
+            </if>
+
+            <if test="shopId!=null ">
+                AND shop_id = '${shopId}'
+            </if>
+            <if test="discountState!=null  and discountState!=-1 ">
+                AND discount_state = ${discountState}
+            </if>
+            <if test="discountType!=null and discountType!=-1 ">
+                AND discount_type = ${discountType}
+            </if>
+            <if test="discountName!=null and discountName!='' ">
+                AND discount_name = '${discountName}'
+            </if>
+        </where>
+    </select>
+</mapper>

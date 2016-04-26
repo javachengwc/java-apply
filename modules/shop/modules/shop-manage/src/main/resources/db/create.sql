@@ -19,6 +19,23 @@ insert into sys_resource values(2,'商品列表','/shop/product/product.do',1,1,
 insert into sys_resource values(3,'商品SKU','/shop/product/productSku.do',1,1,1,'');
 insert into sys_resource values(4,'订单管理','',0,1,1,'');
 insert into sys_resource values(5,'订单列表','/shop/order/order.do',4,1,1,'');
+insert into sys_resource values(6,'订单详单','/shop/order/orderProduct.do',4,1,1,'');
+insert into sys_resource values(7,'发货物流管理','',0,1,1,'');
+insert into sys_resource values(8,'售后管理','',0,1,1,'');
+insert into sys_resource values(9,'店铺管理','',0,1,1,'');
+insert into sys_resource values(10,'发货管理','',7,1,1,'');
+insert into sys_resource values(11,'物流公司','',7,1,1,'');
+insert into sys_resource values(12,'物流异常','',7,1,1,'');
+insert into sys_resource values(13,'售后管理','',8,1,1,'');
+insert into sys_resource values(14,'维权管理','',8,1,1,'');
+insert into sys_resource values(15,'投诉管理','',8,1,1,'');
+insert into sys_resource values(16,'退款管理','',8,1,1,'');
+insert into sys_resource values(17,'退货管理','',8,1,1,'');
+insert into sys_resource values(18,'店铺列表','',9,1,1,'');
+insert into sys_resource values(19,'卖家资产','',9,1,1,'');
+insert into sys_resource values(20,'店铺折扣','',9,1,1,'');
+insert into sys_resource values(21,'营销管理','',0,1,1,'');
+insert into sys_resource values(22,'商城活动','',21,1,1,'');
 
 create table pd_product
 (
@@ -150,6 +167,26 @@ create table od_order (
   key deliver_time(deliver_time,order_id),
   key express_order (express_no,express_id,order_id)
 ) ENGINE=InnoDB default charset=utf8 comment '订单表';
+
+create table shop_discount (
+   id bigint auto_increment,
+   shop_id int default 0 comment '商家id',
+   discount_name varchar(128) comment '折扣名称',
+   begin_time timestamp comment '折扣开始时间',
+   end_time timestamp  comment '折扣结束时间',
+   discount_state int default 0 comment '促销状态 0--正常, 1--删除, 2--终止',
+   discount_range int comment '折扣范围 1--全店商品, 2--指定商品',
+   discount_products varchar(256) comment '指定商品串，依,号分割',
+   discount_type int comment '折扣类型：1--满额减额,2--满件打折,3--满件包邮,4--满额包邮',
+   discount_rule varchar(128) comment '折扣规则',
+   create_time timestamp comment '创建时间',
+   update_time timestamp comment '更新时间',
+   primary key (id),
+   key shop_discount (shop_id,discount_name),
+   key time_shop (begin_time,end_time,shop_id,discount_state)
+) engine=InnoDB default charset =utf8 comment '商店折扣表';
+
+
 
 
 
