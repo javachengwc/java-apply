@@ -33,7 +33,7 @@ insert into sys_resource values(16,'退款管理','',8,1,1,'');
 insert into sys_resource values(17,'退货管理','',8,1,1,'');
 insert into sys_resource values(18,'店铺列表','',9,1,1,'');
 insert into sys_resource values(19,'卖家资产','',9,1,1,'');
-insert into sys_resource values(20,'店铺折扣','',9,1,1,'');
+insert into sys_resource values(20,'店铺折扣','/shop/shop/shopDiscount.do',9,1,1,'');
 insert into sys_resource values(21,'营销管理','',0,1,1,'');
 insert into sys_resource values(22,'商城活动','',21,1,1,'');
 
@@ -168,9 +168,30 @@ create table od_order (
   key express_order (express_no,express_id,order_id)
 ) ENGINE=InnoDB default charset=utf8 comment '订单表';
 
-create table shop_discount (
+create table sh_shop
+(
    id bigint auto_increment,
-   shop_id int default 0 comment '商家id',
+   name varchar(50) comment '店铺名称',
+	 state int comment '店铺状态',
+   create_time datetime comment '创建时间',
+   grade int default 1 comment '店铺等级',
+   shop_desc varchar(256) comment '店铺描述',
+   pic varchar(128) comment '店铺图',
+   verify_status int comment '认证状态',
+   verify_time datetime comment '认证时间',
+   is_enterprise int default 0 comment '是否企业店铺 0--否 1--是',
+   en_name varchar(128) comment '企业名称',
+   owner_id bigint comment '拥有者id',
+   owner_name varchar(50) comment '拥有者名',
+   primary key (id),
+   key shop_name(name),
+   key create_shop (create_time,name),
+   key shop_owner (owner_id,id)
+) engine=InnoDB default charset =utf8 comment '商店表';
+
+create table sh_discount (
+   id bigint auto_increment,
+   shop_id bigint default 0 comment '商家id',
    discount_name varchar(128) comment '折扣名称',
    begin_time timestamp comment '折扣开始时间',
    end_time timestamp  comment '折扣结束时间',

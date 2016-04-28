@@ -223,4 +223,14 @@ function showdate(n)
 	uom.setDate(uom.getDate()+n);  
 	uom = uom.getFullYear() + "-" +   (uom.getMonth()+1) + "-" + uom.getDate();  
 	return uom;  
-} 
+}
+
+function intDate(addDay)
+{
+    var date = new Date();
+    date.setDate(date.getDate()+addDay);//获取addDay天后的日期
+    var y = date.getFullYear();
+    var m = (date.getMonth() + 1) > 9 ? (date.getMonth() + 1) : "0"+ (date.getMonth() + 1);
+    var d = date.getDate() > 9 ? date.getDate() : "0" + date.getDate();
+    return y+"-"+m+"-"+d + " 00:00:00";
+}

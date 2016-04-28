@@ -2,9 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.shop.dao.ext.shop.ShopDiscountDao" >
 
-    <resultMap id="BaseResultMap" type="com.shop.model.pojo.ShopDiscount" >
+    <resultMap id="BaseResultMap" type="com.shop.model.pojo.ShDiscount" >
         <id column="id" property="id" jdbcType="BIGINT" />
-        <result column="shop_id" property="shopId" jdbcType="INTEGER" />
+        <result column="shop_id" property="shopId" jdbcType="BIGINT" />
         <result column="discount_name" property="discountName" jdbcType="VARCHAR" />
         <result column="begin_time" property="beginTime" jdbcType="TIMESTAMP" />
         <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
@@ -18,7 +18,7 @@
     </resultMap>
 
     <select id="queryPage" resultMap="BaseResultMap" parameterType="com.shop.model.vo.ShopDiscountQueryVo">
-        select * from shop_discount
+        select * from sh_discount
         <where>
             <if test="createTimeBegin!=null and createTimeBegin!=''">
                 <![CDATA[ create_time >= '${createTimeBegin}' ]]>
@@ -47,6 +47,9 @@
             </if>
             <if test="discountType!=null and discountType!=-1 ">
                 AND discount_type = ${discountType}
+            </if>
+            <if test="discountRange!=null and discountRange!=-1 ">
+                AND discount_range = ${discountRange}
             </if>
             <if test="discountName!=null and discountName!='' ">
                 AND discount_name = '${discountName}'
@@ -59,7 +62,7 @@
 
     <select id="count"  resultType="java.lang.Integer" parameterType="com.shop.model.vo.ShopDiscountQueryVo">
         select count(1) as count
-        from shop_discount
+        from sh_discount
         <where>
             <if test="createTimeBegin!=null and createTimeBegin!=''">
                 <![CDATA[ create_time >= '${createTimeBegin}' ]]>
@@ -88,6 +91,9 @@
             </if>
             <if test="discountType!=null and discountType!=-1 ">
                 AND discount_type = ${discountType}
+            </if>
+            <if test="discountRange!=null and discountRange!=-1 ">
+                AND discount_range = ${discountRange}
             </if>
             <if test="discountName!=null and discountName!='' ">
                 AND discount_name = '${discountName}'

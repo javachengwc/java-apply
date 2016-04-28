@@ -21,6 +21,8 @@ public class ShopDiscountQueryVo  implements Serializable {
 
     private Integer discountType;
 
+    private Integer discountRange;
+
     //创建开始时间
     private String createTimeBegin;
 
@@ -147,6 +149,14 @@ public class ShopDiscountQueryVo  implements Serializable {
 
     public void setRows(Integer rows) {
         this.rows = rows;
+    }
+
+    public Integer getDiscountRange() {
+        return discountRange;
+    }
+
+    public void setDiscountRange(Integer discountRange) {
+        this.discountRange = discountRange;
     }
 
     public void genDateParam()

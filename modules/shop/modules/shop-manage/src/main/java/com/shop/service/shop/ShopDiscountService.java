@@ -1,7 +1,7 @@
 package com.shop.service.shop;
 
 import com.shop.dao.ext.shop.ShopDiscountDao;
-import com.shop.model.pojo.ShopDiscount;
+import com.shop.model.pojo.ShDiscount;
 import com.shop.model.vo.ShopDiscountQueryVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ public class ShopDiscountService {
         return shopDiscountDao.count(queryVo);
     }
 
-    public List<ShopDiscount> queryPage(ShopDiscountQueryVo queryVo)
+    public List<ShDiscount> queryPage(ShopDiscountQueryVo queryVo)
     {
         return shopDiscountDao.queryPage(queryVo);
     }

@@ -1,7 +1,7 @@
 package com.shop.dao.ext.shop;
 
 import com.shop.dao.BaseDao;
-import com.shop.model.pojo.ShopDiscount;
+import com.shop.model.pojo.ShDiscount;
 import com.shop.model.vo.ShopDiscountQueryVo;
 import org.springframework.stereotype.Repository;
 
@@ -18,7 +18,7 @@ public class ShopDiscountDao extends BaseDao {
         return (Integer)getSqlSession().selectOne("com.shop.dao.ext.shop.ShopDiscountDao.count", queryVo);
     }
 
-    public List<ShopDiscount> queryPage(ShopDiscountQueryVo queryVo)
+    public List<ShDiscount> queryPage(ShopDiscountQueryVo queryVo)
     {
         return getSqlSession().selectList("com.shop.dao.ext.shop.ShopDiscountDao.queryPage", queryVo);
     }

@@ -2,7 +2,7 @@ package com.shop.controller.shop;
 
 import com.alibaba.fastjson.JSONObject;
 import com.shop.controller.BaseController;
-import com.shop.model.pojo.ShopDiscount;
+import com.shop.model.pojo.ShDiscount;
 import com.shop.model.vo.ShopDiscountQueryVo;
 import com.shop.service.shop.ShopDiscountService;
 import com.util.web.HttpRenderUtil;
@@ -39,7 +39,7 @@ public class ShopDiscountController extends BaseController {
         queryVo.genDateParam();
         queryVo.genPage();
 
-        List<ShopDiscount> list = shopDiscountService.queryPage(queryVo);
+        List<ShDiscount> list = shopDiscountService.queryPage(queryVo);
         int count = shopDiscountService.count(queryVo);
 
         JSONObject map = new JSONObject();

@@ -27,6 +27,12 @@ public class StringMain {
     public static void main(String args []) throws Exception
 	{
 
+        System.out.println("-------------------");
+
+        //System.out.println(String.valueOf(null));
+
+        System.out.println("-------------------");
+
 		boolean notDo=true;
 
         String keykey="2|_|1010|_|1|_|3|_|5";
