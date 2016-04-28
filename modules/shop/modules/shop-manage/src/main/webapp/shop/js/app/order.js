@@ -2,6 +2,18 @@
 //初始化
 $(function () {
 
+    $("#payTimeBegin").datebox();
+    $("#payTimeEnd").datebox();
+    $("#deliverTimeBegin").datebox();
+    $("#deliverTimeEnd").datebox();
+    $("#createTimeBegin").datebox();
+    $("#createTimeEnd").datebox();
+
+    initQuery();
+
+    var payTimeBegin = $('#payTimeBegin').datebox("getValue");
+    var payTimeEnd = $('#payTimeEnd').datebox("getValue");
+
     $('#tbOrder').datagrid({
         pageSize:20,
         rownumbers:true,
@@ -12,10 +24,17 @@ $(function () {
         pagination:true,
         toolbar:'#toolbar',
         method:'get',
+        queryParams:{payTimeBegin:payTimeBegin,payTimeEnd:payTimeEnd},
         url:'/shop/order/orderList.do'
     });
 
 });
+
+function initQuery()
+{
+    $("#payTimeBegin").datebox("setValue", intDate(-1));
+    $("#payTimeEnd").datebox("setValue", intDate(0));
+}
 
 //重载商品
 function reloadOrder(){
@@ -24,9 +43,25 @@ function reloadOrder(){
 
 //查询
 function search() {
-    var name =$("#name").val();
-    var productId =$("#productId").val();
+
+    var orderId =$("#orderId").val();
+    var fromSource =$("#fromSource").val();
+    var orderState =$("#orderState").val();
+    var isOverbuy =$("#isOverbuy").val();
+    var isCancel =$("#isCancel").val();
+    var userId =$("#userId").val();
+    var userName =$("#userName").val();
     var sellerId =$("#sellerId").val();
-    var data ={name:name,productId:productId,sellerId:sellerId};
+    var sellerName =$("#sellerName").val();
+    var payTimeBegin = $('#payTimeBegin').datebox("getValue");
+    var payTimeEnd = $('#payTimeEnd').datebox("getValue");
+    var deliverTimeBegin = $('#deliverTimeBegin').datebox("getValue");
+    var deliverTimeEnd = $('#deliverTimeEnd').datebox("getValue");
+    var createTimeBegin = $('#createTimeBegin').datebox("getValue");
+    var createTimeEnd = $('#createTimeEnd').datebox("getValue");
+
+    var data ={orderId:orderId,fromSource:fromSource,orderState:orderState,isOverbuy:isOverbuy,isCancel:isCancel,
+        userId:userId,userName:userName,sellerId:sellerId,sellerName:sellerName,payTimeBegin:payTimeBegin,
+        payTimeEnd:payTimeEnd,deliverTimeBegin:deliverTimeBegin,deliverTimeEnd:deliverTimeEnd,createTimeBegin:createTimeBegin,createTimeEnd:createTimeEnd};
     $('#tbOrder').datagrid('reload',data);
 }
