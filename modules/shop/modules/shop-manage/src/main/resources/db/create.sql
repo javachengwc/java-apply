@@ -41,7 +41,7 @@ create table pd_product
 (
    id  bigint auto_increment comment '自增长id',
    product_id varchar(50) comment '产品id',
-   seller_id int comment  '卖家ID',
+   shop_id bigint comment  '商店ID',
    name varchar(128) comment '产品名称',
    title varchar(128) comment '产品标题',
    direct_cat_id int comment '直接分类id',
@@ -80,7 +80,7 @@ create table pd_product
 create table pd_sku_stock
 (
    id  bigint auto_increment comment '自增长id',
-   seller_id int comment  '卖家ID',
+   shop_id bigint comment  '商店ID',
    product_id varchar(50) comment '产品ID',
    sku_num varchar(64) comment 'sku编码',
    sku_name varchar(128) comment 'sku编码名称',
@@ -107,9 +107,9 @@ create table od_order (
    user_id bigint comment '买家ID',
    user_name varchar(128) comment '买家昵称',
    user_comment varchar(256) comment '卖家备注',
-   seller_id int comment '卖家ID',
-   seller_name varchar(128) comment '卖家名称',
-   seller_comment varchar(256) comment '卖家备注',
+   shop_id bigint comment '商店ID',
+   shop_name varchar(128) comment '商店名称',
+   shop_comment varchar(256) comment '商店备注',
    create_time datetime comment '订单生成时间',
    is_overbuy int default 0 comment '是否超卖: 0,正常 1,超卖',
    is_cancel int default 0 comment '是否取消 0--否,1--是',

@@ -40,7 +40,9 @@ LEFT JOIN b b1 ON a1.id =b1.aid
 WHERE (SELECT COUNT(1)FROM b b2 WHERE b1.aid=b2.aid AND b1.id>b2.id)<2
 
 -----mysql获取字符串a在另一个字符串b最后一次出现的位置
- select if((length('a,b,c,d') - locate(',', reverse('a,b,c,d'))+1)>length('a,b,c,d'),0,(length('a,b,c,d') - locate(',', reverse('a,b,c,d'))+1) ) as last_pos from dual;
+ select if((char_length('a,b,c,d') - locate(',', reverse('a,b,c,d'))+1)>char_length('a,b,c,d'),0,(char_length('a,b,c,d') - locate(',', reverse('a,b,c,d'))+1) ) as last_pos from dual;
+
+ select right('aa,bbbc,a', locate(',',reverse('aa,bbbc,a'))-1)
 
 -----mysql获取字符串中某子字符串出现的次数
  select round(((length('1,2,3,4')-length(replace('1,2,3,4',',', ''))))/ length(',')) as times from dual;
