@@ -12,6 +12,11 @@ public class JarDiffMain {
      * 输入要比较的两个目录，目录下包含jar，结果输出到控制台
      */
     public static void main(String[] args) throws IOException {
+
+        args = new String[2];
+        args[0]="E:\\dependency-a";
+        args[1]="E:\\dependency-b";
+
         if (args.length != 2) {
             System.out.println("please input two compare dirs");
             System.exit(1);
