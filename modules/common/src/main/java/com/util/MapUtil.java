@@ -8,9 +8,9 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Field;
 import java.util.*;
 
-public class MapDataUtil {
+public class MapUtil {
 
-    private static Logger logger = LoggerFactory.getLogger(MapDataUtil.class);
+    private static Logger logger = LoggerFactory.getLogger(MapUtil.class);
 
     private static Long zeroLong =0l;
 
@@ -386,7 +386,7 @@ public class MapDataUtil {
                     {
                         mapValue.put(colMap.get(key), map.get(key));
                     }
-                    MapDataUtil.injectValue(stat, mapValue);
+                    MapUtil.injectValue(stat, mapValue);
                     break;
                 }
             }
@@ -402,7 +402,7 @@ public class MapDataUtil {
                     for (String key : pkMap.keySet()) {
                         mapValue.put(pkMap.get(key), map.get(key));
                     }
-                    MapDataUtil.injectValue(stat, mapValue);
+                    MapUtil.injectValue(stat, mapValue);
 
                     statisticList.add(stat);
                 }catch(Exception e)

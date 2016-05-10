@@ -2,7 +2,7 @@ package com.hadoop.service;
 
 import com.hadoop.model.UserDailyStatBvo;
 import com.hadoop.task.base.HadoopBaseTask;
-import com.util.MapDataUtil;
+import com.util.MapUtil;
 import com.util.NumberUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -274,7 +274,7 @@ public class UserDailyStatService extends HadoopBaseTask {
                     // logger.info("-----key:"+key+", anKey:"+colMap.get(key)+",value:"+map.get(key));
                     mapValue.put(colMap.get(key), map.get(key));
                 }
-                MapDataUtil.injectValue(bvo, mapValue);
+                MapUtil.injectValue(bvo, mapValue);
             }
 
             if(!find)
@@ -300,7 +300,7 @@ public class UserDailyStatService extends HadoopBaseTask {
                 for (String key : colMap.keySet()) {
                     mapValue.put(colMap.get(key), map.get(key));
                 }
-                MapDataUtil.injectValue(stat, mapValue);
+                MapUtil.injectValue(stat, mapValue);
 
                 list.add(stat);
             }
