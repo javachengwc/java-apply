@@ -1,6 +1,7 @@
 package com.util;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +12,7 @@ public class MapDataUtil {
 
     private static Logger logger = LoggerFactory.getLogger(MapDataUtil.class);
 
+    private static Long zeroLong =0l;
 
     /**
      * 给List对象写入值
@@ -474,5 +476,128 @@ public class MapDataUtil {
         }
         return true;
     }
+
+    //从map中提取某key的值
+    public static Object extractData(Map<String,Object> map ,String key,Class clazz,Integer defNum)
+    {
+        if(map==null)
+        {
+            return null;
+        }
+        String objStr = (map.get(key)==null)?"":map.get(key).toString();
+
+        if(clazz==String.class)
+        {
+            return objStr;
+        }
+        if(clazz==int.class || clazz==Integer.class)
+        {
+            Integer rt= defNum;
+            if(!StringUtils.isBlank(objStr))
+            {
+                rt=Integer.parseInt(objStr);
+            }
+            return numberSerialize(rt,clazz);
+        }
+        if(clazz==long.class || clazz==Long.class)
+        {
+            Long rt=(defNum==null)?null:defNum.longValue();
+            if(!StringUtils.isBlank(objStr))
+            {
+                rt=Long.parseLong(objStr);
+            }
+            return numberSerialize(rt,clazz);
+        }
+        if(clazz==float.class || clazz==Float.class)
+        {
+            Float rt= (defNum==null)?null:defNum.floatValue();
+            if(!StringUtils.isBlank(objStr))
+            {
+                rt=Float.parseFloat(objStr);
+            }
+            return numberSerialize(rt,clazz);
+        }
+        if(clazz==double.class || clazz==Double.class)
+        {
+            Double rt= (defNum==null)?null:defNum.doubleValue();
+            if(!StringUtils.isBlank(objStr))
+            {
+                rt=Double.parseDouble(objStr);
+            }
+            return numberSerialize(rt,clazz);
+        }
+
+        if(clazz==byte.class || clazz==Byte.class )
+        {
+            Byte rt =(defNum==null)?null:defNum.byteValue();
+            if(!StringUtils.isBlank(objStr))
+            {
+                rt=Byte.parseByte(objStr);
+            }
+            return numberSerialize(rt,clazz);
+        }
+        if(clazz==short.class || clazz==Short.class)
+        {
+            Short rt= (defNum==null)?null:defNum.shortValue();
+            if(!StringUtils.isBlank(objStr))
+            {
+                rt=Short.parseShort(objStr);
+            }
+            return numberSerialize(rt,clazz);
+        }
+        if(clazz==char.class || clazz==Character.class)
+        {
+            Character rt= StringUtils.isBlank(objStr)?null:objStr.toCharArray()[0];
+            if(clazz==char.class && rt==null)
+            {
+                rt =zeroLong.toString().toCharArray()[0];
+            }
+            return rt;
+        }
+        if(clazz==boolean.class || clazz==Boolean.class)
+        {
+            Boolean rt = StringUtils.isBlank(objStr)?null:Boolean.parseBoolean(objStr);
+            if(clazz==boolean.class && rt==null)
+            {
+                rt =false;
+            }
+            return rt;
+        }
+        return objStr;
+    }
+
+    public static Object numberSerialize(Number number ,Class clazz)
+    {
+        if(number!=null)
+        {
+            return number;
+        }
+        if(clazz==int.class)
+        {
+            return zeroLong.intValue();
+        }
+        if(clazz==byte.class)
+        {
+            return zeroLong.byteValue();
+        }
+        if(clazz==short.class)
+        {
+            return zeroLong.shortValue();
+        }
+        if(clazz==long.class)
+        {
+            return zeroLong.longValue();
+        }
+        if(clazz==float.class)
+        {
+            return zeroLong.floatValue();
+        }
+        if(clazz==double.class)
+        {
+            return zeroLong.doubleValue();
+        }
+        return number;
+    }
+
 
 }
