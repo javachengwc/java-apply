@@ -172,7 +172,7 @@ public class DbUtil {
      * @param password           密码
      * @param backUpDir          保存的目录
      * @return
-     * mysqldump --default-character-set=utf8 -h 127.0.0.1 -P 3306 -uroot -proot --skip-lock-tables  db_admin  -e "select * from table" --result-file=E:/ttt\data.txt
+     * mysql --default-character-set=utf8 -h 127.0.0.1 -P 3306 -uroot -proot --skip-lock-tables  db_admin  -e "select * from table" --result-file=E:/ttt\data.txt
      */
     public static String backUpSelectResult(String host,Integer port,String user,String password,String db,String select,String backUpDir) {
 
