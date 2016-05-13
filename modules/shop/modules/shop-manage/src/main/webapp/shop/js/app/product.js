@@ -26,7 +26,7 @@ function reloadProduct(){
 function search() {
     var name =$("#name").val();
     var productId =$("#productId").val();
-    var sellerId =$("#sellerId").val();
-    var data ={name:name,productId:productId,sellerId:sellerId};
+    var shopId =$("#shopId").val();
+    var data ={name:name,productId:productId,shopId:shopId};
     $('#tbProduct').datagrid('reload',data);
 }

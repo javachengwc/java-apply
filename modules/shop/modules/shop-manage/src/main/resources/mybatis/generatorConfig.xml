@@ -49,6 +49,30 @@
 
 
         <!-- 添加需要生成的表，以及生成方式 -->
+        <table tableName="pd_tag" >
+
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+
+        </table>
+
+        <table tableName="pd_product" >
+
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+
+        </table>
+
+        <table tableName="pd_sku_stock" >
+
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+
+        </table>
+
+        <table tableName="od_order" >
+
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+
+        </table>
+
         <table tableName="sh_shop" >
 
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
@@ -60,6 +84,7 @@
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
 
         </table>
+
     </context>
 
 </generatorConfiguration>

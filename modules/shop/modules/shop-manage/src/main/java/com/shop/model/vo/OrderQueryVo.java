@@ -23,9 +23,9 @@ public class OrderQueryVo implements Serializable{
 
     private String userName;
 
-    private Integer sellerId;
+    private Long shopId;
 
-    private String sellerName;
+    private String shopName;
 
     private Integer isOverbuy;
 
@@ -96,20 +96,20 @@ public class OrderQueryVo implements Serializable{
         this.userName = userName;
     }
 
-    public Integer getSellerId() {
-        return sellerId;
+    public Long getShopId() {
+        return shopId;
     }
 
-    public void setSellerId(Integer sellerId) {
-        this.sellerId = sellerId;
+    public void setShopId(Long shopId) {
+        this.shopId = shopId;
     }
 
-    public String getSellerName() {
-        return sellerName;
+    public String getShopName() {
+        return shopName;
     }
 
-    public void setSellerName(String sellerName) {
-        this.sellerName = sellerName;
+    public void setShopName(String shopName) {
+        this.shopName = shopName;
     }
 
     public Integer getIsOverbuy() {

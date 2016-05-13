@@ -51,8 +51,8 @@ function search() {
     var isCancel =$("#isCancel").val();
     var userId =$("#userId").val();
     var userName =$("#userName").val();
-    var sellerId =$("#sellerId").val();
-    var sellerName =$("#sellerName").val();
+    var shopId =$("#shopId").val();
+    var shopName =$("#shopName").val();
     var payTimeBegin = $('#payTimeBegin').datebox("getValue");
     var payTimeEnd = $('#payTimeEnd').datebox("getValue");
     var deliverTimeBegin = $('#deliverTimeBegin').datebox("getValue");
@@ -61,7 +61,7 @@ function search() {
     var createTimeEnd = $('#createTimeEnd').datebox("getValue");
 
     var data ={orderId:orderId,fromSource:fromSource,orderState:orderState,isOverbuy:isOverbuy,isCancel:isCancel,
-        userId:userId,userName:userName,sellerId:sellerId,sellerName:sellerName,payTimeBegin:payTimeBegin,
+        userId:userId,userName:userName,shopId:shopId,shopName:shopName,payTimeBegin:payTimeBegin,
         payTimeEnd:payTimeEnd,deliverTimeBegin:deliverTimeBegin,deliverTimeEnd:deliverTimeEnd,createTimeBegin:createTimeBegin,createTimeEnd:createTimeEnd};
     $('#tbOrder').datagrid('reload',data);
 }

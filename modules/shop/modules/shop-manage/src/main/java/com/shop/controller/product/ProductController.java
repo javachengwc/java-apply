@@ -33,7 +33,7 @@ public class ProductController extends BaseController {
 
     //产品列表
     @RequestMapping(value = "/productList")
-    public void productList(HttpServletResponse response,String productId,String name,Integer sellerId,Integer page ,Integer rows) {
+    public void productList(HttpServletResponse response,String productId,String name,Long shopId,Integer page ,Integer rows) {
 
         if (page == null) {
             page = 1;
@@ -46,8 +46,8 @@ public class ProductController extends BaseController {
             start = 0;
         }
 
-        List<PdProduct> list = productService.queryPage(productId,name,sellerId,start,rows);
-        int count = productService.count(productId,name,sellerId);
+        List<PdProduct> list = productService.queryPage(productId,name,shopId,start,rows);
+        int count = productService.count(productId,name,shopId);
 
         JSONObject map = new JSONObject();
         map.put(DATAGRID_ROWS,list);

@@ -3,60 +3,60 @@
 <mapper namespace="com.shop.dao.ext.order.OrderDao" >
 
     <resultMap id="BaseResultMap" type="com.shop.model.pojo.OdOrder" >
-        <id column="id" property="id" jdbcType="BIGINT" />
-        <result column="order_id" property="orderId" jdbcType="VARCHAR" />
-        <result column="trade_code" property="tradeCode" jdbcType="VARCHAR" />
-        <result column="from_source" property="fromSource" jdbcType="INTEGER" />
-        <result column="order_state" property="orderState" jdbcType="INTEGER" />
-        <result column="user_id" property="userId" jdbcType="BIGINT" />
-        <result column="user_name" property="userName" jdbcType="VARCHAR" />
-        <result column="user_comment" property="userComment" jdbcType="VARCHAR" />
-        <result column="seller_id" property="sellerId" jdbcType="INTEGER" />
-        <result column="seller_name" property="sellerName" jdbcType="VARCHAR" />
-        <result column="seller_comment" property="sellerComment" jdbcType="VARCHAR" />
-        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
-        <result column="is_overbuy" property="isOverbuy" jdbcType="INTEGER" />
-        <result column="is_cancel" property="isCancel" jdbcType="INTEGER" />
-        <result column="cancel_time" property="cancelTime" jdbcType="TIMESTAMP" />
-        <result column="cancel_type" property="cancelType" jdbcType="INTEGER" />
-        <result column="cancel_reason" property="cancelReason" jdbcType="INTEGER" />
-        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
-        <result column="update_user_id" property="updateUserId" jdbcType="INTEGER" />
-        <result column="price_amount" property="priceAmount" jdbcType="BIGINT" />
-        <result column="postage" property="postage" jdbcType="BIGINT" />
-        <result column="exchange_score" property="exchangeScore" jdbcType="INTEGER" />
-        <result column="exchange_cash" property="exchangeCash" jdbcType="BIGINT" />
-        <result column="coupon_no" property="couponNo" jdbcType="VARCHAR" />
-        <result column="coupon_price" property="couponPrice" jdbcType="BIGINT" />
-        <result column="discount_id" property="discountId" jdbcType="INTEGER" />
-        <result column="discount_type" property="discountType" jdbcType="INTEGER" />
-        <result column="discount_desc" property="discountDesc" jdbcType="VARCHAR" />
-        <result column="discount_rule" property="discountRule" jdbcType="VARCHAR" />
-        <result column="discount_price" property="discountPrice" jdbcType="BIGINT" />
-        <result column="pay_state" property="payState" jdbcType="INTEGER" />
-        <result column="pay_time" property="payTime" jdbcType="TIMESTAMP" />
-        <result column="pay_account" property="payAccount" jdbcType="VARCHAR" />
-        <result column="trade_pay_id" property="tradePayId" jdbcType="VARCHAR" />
-        <result column="pay_channel" property="payChannel" jdbcType="INTEGER" />
-        <result column="pay_id" property="payId" jdbcType="VARCHAR" />
-        <result column="receiver_province_id" property="receiverProvinceId" jdbcType="INTEGER" />
-        <result column="receiver_province_name" property="receiverProvinceName" jdbcType="VARCHAR" />
-        <result column="receiver_city_id" property="receiverCityId" jdbcType="INTEGER" />
-        <result column="receiver_city_name" property="receiverCityName" jdbcType="VARCHAR" />
-        <result column="receiver_area_id" property="receiverAreaId" jdbcType="INTEGER" />
-        <result column="receiver_area_name" property="receiverAreaName" jdbcType="VARCHAR" />
-        <result column="receiver_address" property="receiverAddress" jdbcType="VARCHAR" />
-        <result column="receiver_name" property="receiverName" jdbcType="VARCHAR" />
-        <result column="receiver_mobile" property="receiverMobile" jdbcType="VARCHAR" />
-        <result column="receiver_tele" property="receiverTele" jdbcType="VARCHAR" />
-        <result column="receiver_address_id" property="receiverAddressId" jdbcType="INTEGER" />
-        <result column="receive_time" property="receiveTime" jdbcType="TIMESTAMP" />
-        <result column="deliver_time" property="deliverTime" jdbcType="TIMESTAMP" />
-        <result column="deliver_time_limit" property="deliverTimeLimit" jdbcType="INTEGER" />
-        <result column="remind_deliver_count" property="remindDeliverCount" jdbcType="INTEGER" />
-        <result column="express_id" property="expressId" jdbcType="INTEGER" />
-        <result column="express_name" property="expressName" jdbcType="VARCHAR" />
-        <result column="express_no" property="expressNo" jdbcType="VARCHAR" />
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="order_id" jdbcType="VARCHAR" property="orderId" />
+        <result column="trade_code" jdbcType="VARCHAR" property="tradeCode" />
+        <result column="from_source" jdbcType="INTEGER" property="fromSource" />
+        <result column="order_state" jdbcType="INTEGER" property="orderState" />
+        <result column="user_id" jdbcType="BIGINT" property="userId" />
+        <result column="user_name" jdbcType="VARCHAR" property="userName" />
+        <result column="user_comment" jdbcType="VARCHAR" property="userComment" />
+        <result column="shop_id" jdbcType="BIGINT" property="shopId" />
+        <result column="shop_name" jdbcType="VARCHAR" property="shopName" />
+        <result column="shop_comment" jdbcType="VARCHAR" property="shopComment" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="is_overbuy" jdbcType="INTEGER" property="isOverbuy" />
+        <result column="is_cancel" jdbcType="INTEGER" property="isCancel" />
+        <result column="cancel_time" jdbcType="TIMESTAMP" property="cancelTime" />
+        <result column="cancel_type" jdbcType="INTEGER" property="cancelType" />
+        <result column="cancel_reason" jdbcType="INTEGER" property="cancelReason" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="updater" jdbcType="INTEGER" property="updater" />
+        <result column="price_amount" jdbcType="BIGINT" property="priceAmount" />
+        <result column="postage" jdbcType="BIGINT" property="postage" />
+        <result column="exchange_score" jdbcType="INTEGER" property="exchangeScore" />
+        <result column="exchange_cash" jdbcType="BIGINT" property="exchangeCash" />
+        <result column="coupon_no" jdbcType="VARCHAR" property="couponNo" />
+        <result column="coupon_price" jdbcType="BIGINT" property="couponPrice" />
+        <result column="discount_id" jdbcType="INTEGER" property="discountId" />
+        <result column="discount_type" jdbcType="INTEGER" property="discountType" />
+        <result column="discount_desc" jdbcType="VARCHAR" property="discountDesc" />
+        <result column="discount_rule" jdbcType="VARCHAR" property="discountRule" />
+        <result column="discount_price" jdbcType="BIGINT" property="discountPrice" />
+        <result column="pay_state" jdbcType="INTEGER" property="payState" />
+        <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+        <result column="pay_account" jdbcType="VARCHAR" property="payAccount" />
+        <result column="trade_pay_id" jdbcType="VARCHAR" property="tradePayId" />
+        <result column="pay_channel" jdbcType="INTEGER" property="payChannel" />
+        <result column="pay_id" jdbcType="VARCHAR" property="payId" />
+        <result column="receiver_province_id" jdbcType="INTEGER" property="receiverProvinceId" />
+        <result column="receiver_province_name" jdbcType="VARCHAR" property="receiverProvinceName" />
+        <result column="receiver_city_id" jdbcType="INTEGER" property="receiverCityId" />
+        <result column="receiver_city_name" jdbcType="VARCHAR" property="receiverCityName" />
+        <result column="receiver_area_id" jdbcType="INTEGER" property="receiverAreaId" />
+        <result column="receiver_area_name" jdbcType="VARCHAR" property="receiverAreaName" />
+        <result column="receiver_address" jdbcType="VARCHAR" property="receiverAddress" />
+        <result column="receiver_name" jdbcType="VARCHAR" property="receiverName" />
+        <result column="receiver_mobile" jdbcType="VARCHAR" property="receiverMobile" />
+        <result column="receiver_tele" jdbcType="VARCHAR" property="receiverTele" />
+        <result column="receiver_address_id" jdbcType="INTEGER" property="receiverAddressId" />
+        <result column="receive_time" jdbcType="TIMESTAMP" property="receiveTime" />
+        <result column="deliver_time" jdbcType="TIMESTAMP" property="deliverTime" />
+        <result column="deliver_time_limit" jdbcType="INTEGER" property="deliverTimeLimit" />
+        <result column="remind_deliver_count" jdbcType="INTEGER" property="remindDeliverCount" />
+        <result column="express_id" jdbcType="INTEGER" property="expressId" />
+        <result column="express_name" jdbcType="VARCHAR" property="expressName" />
+        <result column="express_no" jdbcType="VARCHAR" property="expressNo" />
     </resultMap>
 
     <select id="queryPage" resultMap="BaseResultMap" parameterType="com.shop.model.vo.OrderQueryVo">
@@ -96,11 +96,11 @@
             <if test="userName!=null and userName!='' ">
                 AND user_name = '${userName}'
             </if>
-            <if test="sellerId!=null ">
-                AND seller_id = ${sellerId}
+            <if test="shopId!=null ">
+                AND shop_id = ${shopId}
             </if>
-            <if test="sellerName!=null and sellerName!='' ">
-                AND seller_name = '${sellerName}'
+            <if test="shopName!=null and shopName!='' ">
+                AND shop_name = '${shopName}'
             </if>
             <if test="isOverbuy!=null and isOverbuy!=-1 ">
                 AND is_overbuy = ${isOverbuy}
@@ -152,11 +152,11 @@
             <if test="userName!=null and userName!='' ">
                 AND user_name = '${userName}'
             </if>
-            <if test="sellerId!=null ">
-                AND seller_id = ${sellerId}
+            <if test="shopId!=null ">
+                AND shop_id = ${shopId}
             </if>
-            <if test="sellerName!=null and sellerName!='' ">
-                AND seller_name = '${sellerName}'
+            <if test="shopName!=null and shopName!='' ">
+                AND shop_name = '${shopName}'
             </if>
             <if test="isOverbuy!=null and isOverbuy!=-1 ">
                 AND is_overbuy = ${isOverbuy}

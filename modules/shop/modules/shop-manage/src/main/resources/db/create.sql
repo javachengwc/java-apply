@@ -37,6 +37,23 @@ insert into sys_resource values(20,'店铺折扣','/shop/shop/shopDiscount.do',9
 insert into sys_resource values(21,'营销管理','',0,1,1,'');
 insert into sys_resource values(22,'商城活动','',21,1,1,'');
 
+create  table  pd_tag (
+  id int auto_increment comment '分类ID',
+  name varchar(50) default '' comment '分类名称',
+  pid int default 0 comment '上级分类id',
+  level int default 1 comment '级数',
+  state int default 1 comment '状态 1--新增 2--作废',
+  sort int default 0 comment  '排序序号',
+  is_leaf int default 0 comment '是否叶子节点 0--否,1--是',
+  create_time datetime comment '创建时间',
+  creator int comment '创建人ID',
+  update_time datetime comment '更新时间',
+  updater int comment '更新人Id',
+  note varchar(128) comment '备注',
+  primary key(id),
+  key pid(pid)
+) ENGINE=InnoDB default charset=utf8 comment '产品分类表'
+
 create table pd_product
 (
    id  bigint auto_increment comment '自增长id',
@@ -44,7 +61,7 @@ create table pd_product
    shop_id bigint comment  '商店ID',
    name varchar(128) comment '产品名称',
    title varchar(128) comment '产品标题',
-   direct_cat_id int comment '直接分类id',
+   direct_tag_id int comment '直接分类id',
    post_type int default 1 comment '包邮 0--不限,1--包邮,2--不包邮,3--部分地区不包邮',
    no_free varchar(256) comment '不包邮地区ID串',
    imgs varchar(512) comment '图片地址串，依逗号分隔',
@@ -57,7 +74,7 @@ create table pd_product
    update_time timestamp comment '修改时间',
    updater int comment '更新人ID',
    create_time timestamp comment '创建时间',
-   creater int comment  '创建人ID',
+   creator int comment  '创建人ID',
    note varchar(256) comment '备注',
    type int default 1 comment  '商品类型 1--普通商品,2--虚拟商品',
    send_time_limit int comment '发货时限小时,超过此时间再发货则发货超时',
@@ -72,9 +89,9 @@ create table pd_product
    key product(product_id),
    key update_time(update_time),
    key create_time(create_time),
-   key seller_product(seller_id,product_id),
+   key shop_product(shop_id,product_id),
    key state(state,audit_type),
-   key cat_product(direct_cat_id,product_id)
+   key tag_product(direct_tag_id,product_id)
 )ENGINE=InnoDB default charset=utf8 comment '商品表';
 
 create table pd_sku_stock
@@ -90,12 +107,12 @@ create table pd_sku_stock
    update_time timestamp comment '修改时间',
    updater int comment '更新人ID',
    create_time timestamp comment '创建时间',
-   creater int comment '创建人ID',
+   creator int comment '创建人ID',
    pic varchar(256) comment 'sku图片',
    note varchar(256) comment '备注',
   primary key (id),
   unique key product_sku(product_id,sku_num),
-  KEY seller_product (seller_id,product_id)
+  KEY shop_product (shop_id,product_id)
 ) ENGINE=InnoDB default charset=utf8 comment '商品sku库存表';
 
 create table od_order (
@@ -117,7 +134,7 @@ create table od_order (
    cancel_type int comment '订单取消类型: 1,系统自动取消  2,买家手工取消  3,售后取消  4,维权取消',
    cancel_reason int comment '订单取消原因: 1,我不想买了 2,信息填写错误 3:重新拍 4:卖家缺货 5:同城见面交易 6:其他原因',
    update_time timestamp comment '更新时间',
-   update_user_id int comment '更新的user',
+   updater int comment '更新人id',
    price_amount bigint default 0 comment '订单价格',
    postage bigint default 0 comment '邮费',
    exchange_score int default 0 comment '兑换的积分数量',
@@ -157,7 +174,7 @@ create table od_order (
   unique key (order_id),
   key trade_pay_id(trade_pay_id),
   key create_order(create_time,order_id),
-  key seller_order(seller_id,order_id),
+  key shop_order(shop_id,order_id),
   key user_order(user_id,order_id),
   key state_order(order_state,order_id),
   key paytime_order(pay_time,order_id),
@@ -180,7 +197,7 @@ create table sh_shop
    verify_status int comment '认证状态',
    verify_time datetime comment '认证时间',
    is_enterprise int default 0 comment '是否企业店铺 0--否 1--是',
-   en_name varchar(128) comment '企业名称',
+   ent_name varchar(128) comment '企业名称',
    owner_id bigint comment '拥有者id',
    owner_name varchar(50) comment '拥有者名',
    primary key (id),

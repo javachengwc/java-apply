@@ -18,7 +18,7 @@ public class ProductService {
     @Autowired
     private PdProductMapper pdProductMapper;
 
-    public int count(String productId,String name,Integer sellerId)
+    public int count(String productId,String name,Long shopId)
     {
         PdProductExample example = new PdProductExample();
         PdProductExample.Criteria criteria = example.createCriteria();
@@ -30,14 +30,14 @@ public class ProductService {
         {
             criteria.andNameEqualTo(name);
         }
-        if(sellerId!=null)
+        if(shopId!=null)
         {
-            criteria.andSellerIdEqualTo(sellerId);
+            criteria.andShopIdEqualTo(shopId);
         }
         return pdProductMapper.countByExample(example);
     }
 
-    public List<PdProduct> queryPage(String productId,String name,Integer sellerId,int start ,int rows)
+    public List<PdProduct> queryPage(String productId,String name,Long shopId,int start ,int rows)
     {
         PdProductExample example = new PdProductExample();
         PdProductExample.Criteria criteria = example.createCriteria();
@@ -49,9 +49,9 @@ public class ProductService {
         {
             criteria.andNameEqualTo(name);
         }
-        if(sellerId!=null)
+        if(shopId!=null)
         {
-            criteria.andSellerIdEqualTo(sellerId);
+            criteria.andShopIdEqualTo(shopId);
         }
         example.setOrderByClause(" id desc limit "+start +","+rows);
 
