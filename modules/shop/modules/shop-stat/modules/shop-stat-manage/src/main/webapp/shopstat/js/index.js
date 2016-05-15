@@ -2,7 +2,7 @@ $(function () {
     //加载菜单
     $.ajax({
         type: "get",
-        url: "/shop/menuList.do",
+        url: "/shopstat/menuList.do",
         success: function (rt) {
 
             if(rt.result==null || rt.result!=0)
