@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -233,7 +235,41 @@ public class ClassLoaderUtil {
 		return null;
 	}
 
-	public static void main(String[] args) throws MalformedURLException {
+    /**
+     * 查询类在运行期对应的JAR包
+     */
+    public static String where(final Class cls) {
+        if (cls == null)throw new IllegalArgumentException("null input: cls");
+        URL result = null;
+        final String clsAsResource = cls.getName().replace('.', '/').concat(".class");
+        final ProtectionDomain pd = cls.getProtectionDomain();
+        if (pd != null) {
+            final CodeSource cs = pd.getCodeSource();
+            if (cs != null) result = cs.getLocation();
+            if (result != null) {
+                if ("file".equals(result.getProtocol())) {
+                    try {
+                        if (result.toExternalForm().endsWith(".jar") ||
+                                result.toExternalForm().endsWith(".zip"))
+                            result = new URL("jar:".concat(result.toExternalForm())
+                                    .concat("!/").concat(clsAsResource));
+                        else if (new File(result.getFile()).isDirectory())
+                            result = new URL(result, clsAsResource);
+                    }
+                    catch (MalformedURLException ignore) {}
+                }
+            }
+        }
+        if (result == null) {
+            final ClassLoader clsLoader = cls.getClassLoader();
+            result = clsLoader != null ?
+                    clsLoader.getResource(clsAsResource) :
+                    ClassLoader.getSystemResource(clsAsResource);
+        }
+        return result.toString();
+    }
+
+    public static void main(String[] args) throws MalformedURLException {
 		// ClassLoaderUtil.getExtendResource("../spring/dao.xml");
 		// ClassLoaderUtil.getExtendResource("../../../src/log4j.properties");
 		// ClassLoaderUtil.getExtendResource(".."+File.separator+"log4j.properties");
