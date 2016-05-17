@@ -225,6 +225,33 @@ create table sh_discount (
 ) engine=InnoDB default charset =utf8 comment '商店折扣表';
 
 
+create table od_saleafter
+(
+    id bigint auto_increment,
+    order_id varchar(50) not null comment '订单id',
+    order_amount bigint comment '订单金额',
+    cost_amount bigint comment '扣款金额',
+    product_id varchar(20) comment '商品id',
+		product_name varchar(128) comment '商品名称',
+    sku_num varchar(128) comment 'sku编码',
+    apply_time datetime comment '申请售后时间',
+    user_id bigint comment '买家id',
+    user_name varchar(50) comment '买家名称',
+    shop_id bigint comment '商店id',
+    shop_name varchar(128) comment '商店名称',
+    refund_type int comment '退款类型 1--只退款, 2--退货退款',
+    refund_reason varchar(256) comment '退货退款原因',
+    saleafter_state int comment '售后状态 1--等待商家处理, 2--退款退货处理中 3--拒绝退款退货 4--售后完成',
+    deal_time datetime comment '处理时间',
+    complete_time datetime comment '完成时间',
+    complain_id bigint comment '维权id,买家因售后处理不合意而发起维权对应的维权id',
+    primary key(id),
+    key order_id(order_id),
+    key product(product_id,sku_num,order_id),
+    key apply_time(apply_time),
+    key user_apply(user_id,apply_time),
+    key shop_apply(shop_id,apply_time)
+) engine=InnoDB default charset=utf8 comment '售后表';
 
 
 
