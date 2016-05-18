@@ -1,0 +1,82 @@
+--------------------nginx模块----------------------------
+nginx将各功能模块组织成一条链，当有请求到达的时候，请求依次经过这条链上的部分或者全部模块，进行处理。
+每个模块实现特定的功能。例如，实现对请求解压缩的模块，实现SSI的模块，实现与上游服务器进行通讯的模块，实现与FastCGI服务进行通讯的模块。
+有两个模块比较特殊，他们居于nginx core和各功能模块的中间。这两个模块就是http模块和mail模块。
+这2个模块在nginx core之上实现了另外一层抽象，处理与HTTP协议和email相关协议（SMTP/POP3/IMAP）有关的事件，并且确保这些事件能被以正确的顺序调用其他的一些功能模块。
+---------------------------------------------------------
+nginx的模块根据其功能基本上可以分为以下几种类型：
+event module:	搭建了独立于操作系统的事件处理机制的框架，及提供了各具体事件的处理。
+                包括ngx_events_module， ngx_event_core_module和ngx_epoll_module等。nginx具体使用何种事件处理模块，这依赖于具体的操作系统和编译选项。
+phase handler:	此类型的模块也被直接称为handler模块。主要负责处理客户端请求并产生待响应内容，比如ngx_http_static_module模块，负责客户端的静态页面请求处理并将对应的磁盘文件准备为响应内容输出。
+output filter:	也称为filter模块，主要是负责对输出的内容进行处理，可以对输出进行修改。
+                例如，可以实现对输出的所有html页面增加预定义的footbar一类的工作，或者对输出的图片的URL进行替换之类的工作。
+upstream:	    upstream模块实现反向代理的功能，将真正的请求转发到后端服务器上，并从后端服务器上读取响应，发回客户端。
+                upstream模块是一种特殊的handler，只不过响应内容不是真正由自己产生的，而是从后端服务器上读取的。
+load-balancer:	负载均衡模块，实现特定的算法，在众多的后端服务器中，选择一个服务器出来作为某个请求的转发服务器
+---------------------------------------------------------
+nginx核心模块,这些模块是必须的。
+
+名称 	说明
+Main 	配置错误日志、进程、权限等。
+Events 	配置epoll、kqueue、select、poll等。
+------------------------
+标准http模块,这些模块是默认均被编译进去的，除非通过configure明确地禁用它们。
+
+名称 	        版本 	           禁用选项                                       说明
+Core                               --without-http 	                             控制端口、location、错误页、别名和其他必要配置。
+Access 	                           --without-http_access_module                  基于客户端IP地址允许/拒绝Http请求。
+Auth Basic 	                       --without-http_auth_basic_module              Basic HTTP 认证。
+Auto Index 	                       --without-http_autoindex_module               自动为没有索引页面的目录生成文件列表。
+Browser 	 	0.4.3 	           --without-http_browser_module                 翻译"User-Agent" 字符串。
+Charset 	                       --without-http_charset_module                 对Web页面重新编码。
+Empty GIF 	    0.3.10 	           --without-http_empty_gif_module               在内存中生成一个高1像素、宽1像素的GIF图片，并对外提供服务。
+FastCGI 	                       --without-http_fastcgi_module                 提供对FastCGI的支持。
+Geo 	        0.1.17 	           --without-http_geo_module                     通过IP地址的键值对来设置配置参数。
+Gzip 	                           --without-http_gzip_module                    支持使用Gzip压缩响应内容。
+Headers 	                                                                     可以设定任意的HTTP响应头。
+Index 	                                                                         控制将哪些文件作为索引页面。
+Limit Requests  0.7.20 	           --without-http_limit_req_module               限定客户端创建连接的频率。
+Limit Zone 	    0.5.6 	           --without-http_limit_zone_module              限定客户端同时建立连接的最大数。从1.1.8起不再推荐使用，建议使用 Limit Conn。
+Limit Conn 	                       --without-http_limit_conn_module              通过配置参数限定客户端的最大并发连接数。
+Log 	                                                                         可以定制访问日志。
+Map 	 	    0.3.16 	           --without-http_map_module                     以键值对的方式设定任意配置参数。
+Memcached 	                       --without-http_memcached_module               支持Memcached。
+Proxy 	                           --without-http_proxy_module                   代理上级服务器。
+Referer 	                       --without-http_referer_module                 基于RefererHTTP请求头对请求进行过滤。
+Rewrite 	                       --without-http_rewrite_module                 使用正则表达式对请求进行重写。
+SCGI 	        0.8.42 	           --without-http_scgi_module                    支持SCGI协议。
+Split Clients   0.8.37 	           --without-http_split_clients_module           基于某些条件将客户端分类。
+SSI 	                           --without-http_ssi_module                     支持服务器端的include。
+Upstream 	                       --without-http_upstream_ip_hash_module        支持负载均衡。
+User ID 	                       --without-http_userid_module                  发行用户身份标识cookie。
+uWSGI 	        0.8.40 	           --without-http_uwsgi_module                   支持uWSGI协议。
+X-Accel 	                                                                     类X-Sendfile模块。
+------------------------------
+可选http模块,下面的模块必须在编译时为configure明确地设定相应的启用选项。
+名称 		    版本 	          启用选项                                        说明
+Addition 	                      --with-http_addition_module                    可以为页面追加文本。
+Degradation 	0.8.25 	          --with-http_degradation_module                 允许当剩余内存较低时对某些位置的请求返回 204 或 404 状态码。
+Embedded Perl 	0.3.21 	          --with-http_perl_module                        允许在配置文件中使用 Perl。
+FLV 	     	0.4.7 	          --with-http_flv_module                         支持Flash视频(Flash Streaming Video)。
+GeoIP 	        0.8.6, 0.7.63 	  --with-http_geoip_module                       根据来自 MaxMind 的 GeoIP 二进制文件中的信息创建变量。
+Google Perftools
+                0.6.29 	          --with-google_perftools_module 	             支持 Google 性能工具。
+Gzip Precompression
+ 	            0.6.23 	          --with-http_gzip_static_module                 提供预压缩的静态文件。
+Image Filter 	0.7.54 	          --with-http_image_filter_module                支持使用 Libgd 对图片进行变换。
+MP4 	        1.1.3, 1.0.7 	  --with-http_mp4_module                         允许对 mp4 流进行寻址。
+Random Index 	0.7.15 	          --with-http_random_index_module                允许使目录索引随机化。
+Real IP 	    0.3.8 	          --with-http_realip_module                      允许将 nginx 作为后端服务器。
+Secure Link 	0.7.18 	          --with-http_secure_link_module                 允许通过密钥保护指定的文件。
+SSL 	                          --with-http_ssl_module                         支持 HTTPS/SSL。
+Stub Status 	0.1.18 	          --with-http_stub_status_module                 提供查看服务器统计信息的能力。
+Substitution                      --with-http_sub_module                         可以替换页面中的文本。
+WebDAV 	        0.3.38 	          --with-http_dav_module                         支持 WebDAV 穿透。
+XSLT 	        0.7.8 	          --with-http_xslt_module                        允许对页面使用 XSLT 进行后处理。
+---------------------------
+其他第三方模块，很多
+比如:
+
+nginx_concat_module              --针对nginx 的文件合并模块，主要用于合并前端代码减少 http 请求数。
+
+-----------------------------------------------------------------

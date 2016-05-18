@@ -12,13 +12,39 @@ kill -HUP  nginx.pid               ---平滑重启nginx进程
 nginx -s stop                      ---停止nginx
 
 nginx -v                           ---查看版本号
+nginx -V                           ---查看编译参数
 
 -----------平滑升级nginx
 
-1,用新程序替换旧程序文件，编译安装的话新程序直接编译到nginx安装目录中
+1,用新程序替换旧程序文件，编译安装的话新程序直接编译到nginx安装目录中(配置文件最好做好备份)
 
-2,kill -USR2 旧版程序nginx主进程号
+2,kill -USR2 旧版程序nginx主进程号,主进程将重命名它的 .pid 文件为 .oldbin,这时两个nginx实例会同时运行，一起处理输入的请求
 
-3,kill -WINCH `cat /var/run/nginx.pid`    旧版程序nginx主进程号
+3,kill -WINCH `cat /usr/local/nginx/logs/nginx.pid.oldbin`  旧版程序nginx主进程号,关闭旧程序的工作进程
+
+4,kill -QUIT `cat /usr/local/nginx/logs/nginx.pid.oldbin` 升级成功，发送QUIT信号给旧的主进程使其退出而只留下新的服务运行
+
+当做到第3步的时候，发现新的服务有问题要恢复恢复旧的服务
+a, kill -HUP  `cat /usr/local/nginx/logs/nginx.pid.oldbin`  不重载配置文件的情况下启动旧主进程的工作进程
+b, kill -WINCH `cat /usr/local/nginx/logs/nginx.pid`        新主进程从容关闭其工作进程
+c, kill -TERM  `cat /usr/local/nginx/logs/nginx.pid`        关闭新主进程，如果因为某些原因新的工作进程不能退出，kill -9强制关闭
+新的主进程退出后，旧的主进程会由移除 .oldbin 前缀，恢复为它的 .pid 文件，这样就都恢复到升级之前了
 
 --------------------------------------------------------
+nginx控制信号
+
+主进程可以处理以下的信号：
+TERM, INT 	  快速关闭
+QUIT 	      从容关闭
+HUP 	      重载配置,用新的配置开始新的工作进程从容关闭旧的工作进程
+USR1 	      重新打开日志文件
+USR2 	      平滑升级可执行程序
+WINCH 	      从容关闭工作进程
+命令为 kill -信号 nginx.pid
+ep:   kill -QUIT nginx.pid
+
+工作进程也支持一些信号：
+TERM, INT 	  快速关闭
+QUIT 	      从容关闭
+USR1 	      重新打开日志文件
+---------------------------------------------------------

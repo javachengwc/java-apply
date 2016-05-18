@@ -1,0 +1,160 @@
+---------------------nginx安装----------------------
+nginx的源码编译安装
+参考网站:http://www.nginx.cn
+
+nginx的前置依赖
+    1,编译器(一般linux都自带安装了编译器)
+    yum -y install gcc automake autoconf libtool make     ---安装make
+    yum install gcc gcc-c++                               ---安装gcc g++
+
+    2,pcre:支持地址重写rewrite功能
+    wget ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.38.tar.gz
+    tar -zxvf pcre-8.38.tar.gz
+    cd pcre-8.38
+    ./configure
+    make
+    make instal
+    (中间有报错信息的话，可以./configure, make ,make check, make install, make clean依次执行看输出)
+
+    3,zlib:gzip模块，需要zlib库支持
+    wget http://zlib.net/zlib-1.2.8.tar.gz
+    tar -zxvf zlib-1.2.8.tar.gz
+    cd zlib-1.2.8
+    ./configure
+    make
+    make install
+
+    4,openssl:nginx提供ssl功能
+    wget http://www.openssl.org/source/openssl-1.0.1c.tar.gz
+    tar -zxvf openssl-1.0.1c.tar.gz
+    cd openssl-1.0.1c
+    ./config
+    make
+    make install
+
+建立启用nginx对应的用户组
+    groupadd -r nginx
+    useradd -s /sbin/nologin -g nginx -r nginx
+    id nginx
+
+安装nginx
+    wget http://nginx.org/download/nginx-1.8.1.tar.gz
+    tar -zxvf nginx-1.8.1.tar.gz
+    cd nginx-1.8.1
+
+    ./configure
+    --user=nginx
+    --group=nginx
+    --with-http_ssl_module
+    --with-pcre=/usr/local/src/pcre-8.38
+    --with-zlib=/usr/local/src/zlib-1.2.8
+    --with-openssl=/usr/local/src/openssl-1.0.1c
+
+    make
+    make install
+
+    说明:
+    --with-pcre=/usr/src/pcre-8.38 指的是pcre-8.38的源码路径。
+    --with-zlib=/usr/src/zlib-1.2.8 指的是zlib-1.2.8的源码路径
+-------------------------------------
+nginx编译选项
+    configure命令是用来检测系统的目标特征的。它定义了系统的各个方面，包括nginx的被允许使用的连接处理的方法，比如它会检测是不是有CC或GCC。它是个shell脚本，执行结束时，它会创建一个Makefile文件。
+    make是用来编译的，它从Makefile中读取指令，然后编译。
+    make install是用来安装的，它也从Makefile中读取指令，安装到指定的位置。
+
+    nginx的configure命令支持以下参数：
+     --help 运行所提供的配置脚本来查看所有支持的编译选项列表（包含可选模块)。
+    --prefix=path    定义一个目录，存放服务器上的文件 ，也就是nginx的安装目录。默认使用 /usr/local/nginx。
+    --sbin-path=path 设置nginx的可执行文件的路径，默认为  prefix/sbin/nginx。
+    --conf-path=path  设置在nginx.conf配置文件的路径。nginx允许使用不同的配置文件启动，通过命令行中的-c选项。默认为prefix/conf/nginx.conf。
+    --pid-path=path  设置nginx.pid文件，将存储的主进程的进程号。安装完成后，可以随时改变的文件名 ， 在nginx.conf配置文件中使用 PID指令。默认情况下，文件名 为prefix/logs/nginx.pid。
+    --error-log-path=path 设置主错误，警告，和诊断文件的名称。安装完成后，可以随时改变的文件名 ，在nginx.conf配置文件中 使用 的error_log指令。默认情况下，文件名 为prefix/logs/error.log。
+    --http-log-path=path  设置主请求的HTTP服务器的日志文件的名称。安装完成后，可以随时改变的文件名 ，在nginx.conf配置文件中 使用 的access_log指令。默认情况下，文件名 为prefix/logs/access.log。
+    --user=name  设置nginx工作进程的用户。安装完成后，可以随时更改的名称在nginx.conf配置文件中 使用的 user指令。默认的用户名是nobody。
+    --group=name  设置nginx工作进程的用户组。安装完成后，可以随时更改的名称在nginx.conf配置文件中 使用的 user指令。默认的为非特权用户。
+    --with-select_module --without-select_module 启用或禁用构建一个模块来允许服务器使用select()方法。该模块将自动建立，如果平台不支持的kqueue，epoll，rtsig或/dev/poll。
+    --with-poll_module --without-poll_module 启用或禁用构建一个模块来允许服务器使用poll()方法。该模块将自动建立，如果平台不支持的kqueue，epoll，rtsig或/dev/poll。
+    --without-http_gzip_module — 不编译压缩的HTTP服务器的响应模块。编译并运行此模块需要zlib库。
+    --without-http_rewrite_module  不编译重写模块。编译并运行此模块需要PCRE库支持。
+    --without-http_proxy_module — 不编译http_proxy模块。
+    --with-http_ssl_module — 使用https协议模块。默认情况下，该模块没有被构建。建立并运行此模块的OpenSSL库是必需的。
+    --with-pcre=path — 设置PCRE库的源码路径。正则表达式使用在location指令和 ngx_http_rewrite_module 模块中。
+    --with-pcre-jit —编译PCRE包含“just-in-time compilation”（1.1.12中， pcre_jit指令）。
+    --with-zlib=path —设置的zlib库的源码路径。ngx_http_gzip_module模块需要使用zlib 。
+    --with-cc-opt=parameters — 设置额外的参数将被添加到CFLAGS变量。例如,当你在FreeBSD上使用PCRE库时需要使用:--with-cc-opt="-I /usr/local/include。.如需要需要增加 select()支持的文件数量:--with-cc-opt="-D FD_SETSIZE=2048"。
+    --with-ld-opt=parameters —设置附加的参数，将用于在链接期间。例如，当在FreeBSD下使用该系统的PCRE库,应指定:--with-ld-opt="-L /usr/local/lib"。
+----------------------------------------------------
+nginx第三方模块安装
+   在未安装nginx的情况下安装nginx第三方模块
+   ./configure
+   --user=nginx
+   --group=nginx
+   --with-http_ssl_module
+   --with-pcre=/usr/local/src/pcre-8.38
+   --with-zlib=/usr/local/src/zlib-1.2.8
+   --with-openssl=/usr/local/src/openssl-1.0.1c
+   --add-module=../ngx_pagespeed-master
+   --add-module=第三方模块目录
+
+   make
+   make install
+
+   在已安装nginx情况下安装nginx模块
+   ./configure
+   --user=nginx
+   --group=nginx
+   --with-http_ssl_module
+   --with-pcre=/usr/local/src/pcre-8.38
+   --with-zlib=/usr/local/src/zlib-1.2.8
+   --with-openssl=/usr/local/src/openssl-1.0.1c
+   --add-module=../ngx_pagespeed-master
+   --add-module=第三方模块目录
+
+   make
+
+   备注:在已安装nginx下安装第三方模块不需要再make install了,
+       重新编译的时候，记得一定要把以前编译过的模块一同加到configure参数里面,可以用nginx -V 查看以前的configure参数
+
+   比如安装阿里的nginx_concat_module模块
+   svn co http://code.taobao.org/svn/nginx_concat_module/trunk/  nginx_concat_module --获取源码都某目录
+
+   在已安装nginx情况下安装nginx模块
+   ./configure
+   --user=nginx
+   --group=nginx
+   --with-http_ssl_module
+   --with-pcre=/usr/local/src/pcre-8.38
+   --with-zlib=/usr/local/src/zlib-1.2.8
+   --with-openssl=/usr/local/src/openssl-1.0.1c
+   --add-module=../ngx_pagespeed-master
+   --add-module=/usr/local/src/nginx-concat-master
+
+   make
+
+   备注:由于nginx在新版本中，使用了标准的 MIME-Type：application/javascript。
+   而在nginx_concat_module模块目前版本的代码中，写的是 application/x-javascript 的类型。
+   这样子就造成了，安装该模块之后，对于js文件依旧不能合并，并且会报如下的400错误。
+   因此，最好在向nginx添加该模块之前，修改nginx_concat_module的源代码文件ngx_http_concat_module.c，
+   将application/x-javascript更改为application/javascript，然后再编译安装即可。
+
+   配置nginx_concat_module模块参数，使其生效。
+   nginx_concat_module模块添加进nginx之后，我们需要对其进行配置才能够正常使用。配置的参数主要有如下几个:
+   concat on;                    # nginx_concat_module主开关
+   concat_max_files 10;    # 最大合并文件数
+   concat_unique on;       # 只允许同类型文件合并
+   concat_types text/html,application/x-javascript, text/css;   # 允许合并的文件类型，多个以逗号分隔。如：application/x-javascript, text/css
+
+   在使用中，如果在location 标签下配置就表示对当前的location生效，
+   如果在server下就表示对server标签下的内容生效。
+   需要注意的是，它可能会和配置的rewrite规则干扰，因此请注意使用范围。
+
+   curl http://localhost/b.js
+   bbbbbbbbbbbbbbbbbb
+   curl http://localhost/a.js
+   aaaaaaaaaaaaaaaaaa
+   curl http://localhost/??a.js,b.js
+   aaaaaaaaaaaaaaaaaa
+   bbbbbbbbbbbbbbbbbb
+
+-----------------------------------------------------
+

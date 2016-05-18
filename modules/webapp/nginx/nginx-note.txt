@@ -1,0 +1,25 @@
+-----------------------nginx笔记-----------------------
+nginx日志切割
+
+1,定义日志轮滚策略
+vim nginx-log-rotate
+    /data/logs/nginx/*.log {
+        nocompress
+        daily
+        copytruncate
+        create
+        notifempty
+        rotate 7
+        olddir /data/logs/nginx/old_log
+        missingok
+        dateext
+        postrotate
+            /bin/kill -HUP `cat /var/local/nginx/nginx.pid 2> /dev/null` 2> /dev/null || true
+        endscript
+    }
+
+2,设置计划任务
+vim /etc/crontab
+0 0 * * * root  /usr/sbin/logrotate -f /data/shell/nginx-log-rotate
+
+-----------------------------------------------------

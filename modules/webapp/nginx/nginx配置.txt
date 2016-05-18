@@ -1,0 +1,168 @@
+---------------------nginx配置---------------------
+user nobody;
+#启动进程,通常设置成和cpu的数量相等或2倍
+worker_processes  1;
+
+#全局错误日志及PID文件
+#error_log  logs/error.log;
+#error_log  logs/error.log  notice;
+#error_log  logs/error.log  info;
+
+#pid        logs/nginx.pid;
+
+#工作模式及连接数上限
+events {
+    #epoll是多路复用IO(I/O Multiplexing)中的一种方式,
+    #仅用于linux2.6以上内核,可以大大提高nginx的性能
+    use   epoll;
+
+    #单个后台worker process进程的最大并发链接数
+    worker_connections  1024;
+}
+
+
+http {
+    #设定mime类型,类型由mime.type文件定义
+    include    mime.types;
+    default_type  application/octet-stream;
+    #设定日志格式
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  logs/access.log  main;
+
+    #sendfile 指令指定 nginx 是否调用 sendfile 函数（zero copy 方式）来输出文件，
+    #对于普通应用，必须设为 on,
+    #如果用来进行下载等应用磁盘IO重负载应用，可设置为 off，
+    #以平衡磁盘与网络I/O处理速度，降低系统的uptime.
+    sendfile     on;
+    #tcp_nopush     on;
+
+    #连接超时时间
+    #keepalive_timeout  0;
+    keepalive_timeout  65;
+    tcp_nodelay     on;
+
+    #开启gzip压缩
+    gzip  on;
+    gzip_disable "MSIE [1-6].";
+
+    #设定请求缓冲
+    client_header_buffer_size    128k;
+    large_client_header_buffers  4 128k;
+
+    #反向代理
+    upstream proxyserver  {
+        #ip_hash 每个请求按访问IP的hash结果分配，这样来自同一个IP的访客固定访问一个后端服务器，有效解决了动态网页存在的session共享问题
+
+        #url_hash 按访问url的hash结果来分配请求，使每个url定向到同一个后端服务器，可以进一步提高后端缓存服务器的效率
+        #nginx本身是不支持url_hash的，如果需要使用这种调度算法，必须安装nginx 的hash软件包
+
+        #air 此算法可以依据页面大小和加载时间长短智能地进行负载均衡，也就是根据后端服务器的响应时间来分配请求，响应时间短的优先分配。
+        #nginx本身是不支持fair的，如果需要使用这种调度算法，必须下载nginx的upstream_fair模块
+
+        #轮询加权重的负载均衡
+        #weigth参数表示权值，权值越高被分配到的几率越大
+        server 192.168.100.2:8081    weight=5;
+        server 192.168.100.3:8081    weight=1 max_fails=10 fail_timeout=30 ;
+                                     #max_fails为允许请求失败的次数，fail_timeout为在经历了max_fails次失败后，暂停服务的时间
+        server 192.168.100.4:8081    backup; #预留的备份机器。当其他所有的非backup机器出现故障或者忙的时候，才会请求backup机器
+        server 192.168.100.5:8081    down; #当前的server暂时不参与负载均衡
+    }
+
+    #缓存相关
+    #proxy_cache指令负责反向代理缓存后端服务器的静态内容，
+    #fastcgi_cache主要用来处理FastCGI动态进程缓存
+    #cache begin
+    proxy_buffering on;
+    #设置缓存时间10m
+    proxy_cache_valid any 10m;
+    #设置缓存路径及路径层级，缓存的名称，大小，inactive参数指定的时间内缓存的数据没有被请求则被删除
+    proxy_cache_path /data/cache levels=1:2 keys_zone=my-cache:20m max_size=1g inactive=60m;
+    proxy_temp_path /data/temp;
+    proxy_buffer_size 4k;
+    proxy_buffers 100 8k;
+    #cache end
+
+    #设定虚拟主机配置
+    server {
+        #侦听80端口
+        listen    80;
+        #定义使用 www.cc.com访问
+        server_name  www.cc.com;
+
+        #定义服务器的默认网站根目录位置
+        root html;
+
+        #设定本虚拟主机的访问日志
+        access_log  logs/nginx.access.log  main;
+
+        #ip限制，可以放到http, server, location, limit_except语句块
+        #allow 1.1.1.1;
+        allow all;
+        #deny all;
+        deny 192.168.100.100;
+
+        #默认请求
+        location / {
+
+            #定义首页索引文件的名称
+            index index.php index.html index.htm;
+
+        }
+
+        # 定义错误提示页面
+        error_page   500 502 503 504 /50x.html;
+        location = /50x.html {
+        }
+
+        #静态文件，nginx自己处理
+        location ~ ^/(images|javascript|js|css|flash|media|static)/ {
+
+            #过期30天，静态文件不怎么更新，过期可以设大一点，
+            #如果频繁更新，则可以设置得小一点。
+            expires 30d;
+        }
+
+        location ~ .*.(jsp|action|svt)$ {
+
+            #反向代理相关
+            proxy_pass  http://proxyserver;
+            #缓存设置
+            proxy_cache my-cache;
+            #为200的应答设置缓存时间为10分钟
+            proxy_cache_valid 200 10m;
+            #Proxy Settings
+            proxy_redirect     off;
+            proxy_set_header   Host             $host;
+            proxy_set_header   X-Real-IP        $remote_addr;
+            proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+            proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+            proxy_max_temp_file_size 0;
+            proxy_connect_timeout      90;
+            proxy_send_timeout         90;
+            proxy_read_timeout         90;
+            proxy_buffer_size          4k;
+            proxy_buffers              4 32k;
+            proxy_busy_buffers_size    64k;
+            proxy_temp_file_write_size 64k;
+        }
+
+        #PHP 脚本请求全部转发到 FastCGI处理. 使用FastCGI默认配置.
+        location ~ .php$ {
+            fastcgi_pass 127.0.0.1:9000;
+            fastcgi_index index.php;
+            fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+            include fastcgi_params;
+        }
+
+        #禁止访问 .htxxx 文件
+            location ~ /.ht {
+            deny all;
+        }
+
+    }
+}
+
+--------------------------------------------------------------
