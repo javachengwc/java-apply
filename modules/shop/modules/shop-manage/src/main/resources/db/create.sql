@@ -224,7 +224,7 @@ create table sh_discount (
    key time_shop (begin_time,end_time,shop_id,discount_state)
 ) engine=InnoDB default charset =utf8 comment '商店折扣表';
 
-create table od_saleafter
+create table od_aftersale
 (
     id bigint auto_increment,
     order_id varchar(50) not null comment '订单id',

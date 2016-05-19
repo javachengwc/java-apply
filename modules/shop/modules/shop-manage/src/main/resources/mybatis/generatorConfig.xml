@@ -49,19 +49,7 @@
 
 
         <!-- 添加需要生成的表，以及生成方式 -->
-        <table tableName="od_saleafter" >
-
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-
-        </table>
-
-        <table tableName="od_safeguard_right" >
-
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-
-        </table>
-
-        <table tableName="od_complain" >
+        <table tableName="od_aftersale" >
 
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
 
