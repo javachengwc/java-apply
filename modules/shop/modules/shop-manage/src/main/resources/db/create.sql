@@ -224,11 +224,11 @@ create table sh_discount (
    key time_shop (begin_time,end_time,shop_id,discount_state)
 ) engine=InnoDB default charset =utf8 comment '商店折扣表';
 
-
 create table od_saleafter
 (
     id bigint auto_increment,
     order_id varchar(50) not null comment '订单id',
+    from_source int default 1 comment '订单来源: 1--PC,2--无线',
     order_amount bigint comment '订单金额',
     cost_amount bigint comment '扣款金额',
     product_id varchar(20) comment '商品id',
@@ -246,14 +246,72 @@ create table od_saleafter
     complete_time datetime comment '完成时间',
     complain_id bigint comment '维权id,买家因售后处理不合意而发起维权对应的维权id',
     primary key(id),
-    key order_id(order_id),
+    key order_id(order_id,from_source),
     key product(product_id,sku_num,order_id),
     key apply_time(apply_time),
     key user_apply(user_id,apply_time),
     key shop_apply(shop_id,apply_time)
 ) engine=InnoDB default charset=utf8 comment '售后表';
 
+create table od_safeguard_right
+(
+  id bigint auto_increment,
+  aftersale_id bigint default 0 comment '售后id',
+  order_id varchar(50) comment '订单id',
+  from_source int default 1 comment '订单来源: 1--PC,2--无线',
+  order_amount bigint comment '订单金额',
+  product_id varchar(20) comment '商品id',
+  product_name varchar(50) comment '商品名称',
+  sku_num varchar(128) comment 'sku编号',
+  apply_time datetime comment '申请时间',
+  user_id bigint comment '买家id',
+  user_name varchar(50) comment '买家名称',
+  shop_id bigint comment '商店id',
+  shop_name varchar(128) comment '商店名称',
+  safeguard_state int comment '维权状态',
+  safeguard_starter int comment '维权发起方,1--买家,2--商家',
+  safeguard_reason int comment '维权原因',
+  safeguard_desc varchar(256) comment '维权问题说明',
+  user_feedback int comment '买家反馈意见',
+  user_feedback_content varchar(256) comment '买家反馈内容',
+  shop_feedback int comment '商家反馈意见',
+  shop_feedback_content varchar(256) comment '商家反馈内容',
+  safeguard_result int comment '维权结果',
+  mistaker int comment '过错方,1--商家,2--买家,3--买卖双方,4--平台,5--不确定',
+  over_time  datetime comment '结束时间',
+  primary key (id),
+  key order_safeguard(order_id,from_source,id),
+  key product_safeguard(product_id,sku_num,id),
+  key apply_time(apply_time),
+  key user_apply(user_id,apply_time),
+  key shop_apply(shop_id,apply_time)
+)engine=InnoDB default charset=utf8 comment '维权表';
 
+create table od_complain
+(
+  id bigint auto_increment,
+  order_id varchar(50) comment '订单id',
+  from_source int default 1 comment '订单来源: 1--PC,2--无线',
+  order_amount bigint comment '订单金额',
+  apply_time datetime comment '申请时间',
+  user_id bigint comment '买家id',
+  user_name varchar(50) comment '买家名称',
+  shop_id bigint comment '商店id',
+  shop_name varchar(128) comment '商店名称',
+  complain_type int comment '投诉类型 1--商家服务, 2--商品质量, 3--超时发货, 4--其他 ',
+  complain_content varchar(256) comment '投诉信息',
+  complain_state int default 0 comment '投诉状态 0--待处理, 1--投诉成立, 2--投诉不成立, 3--买家取消投诉',
+  unagree_reason int comment  '投诉不成立原因 1--服务没问题, 2--商品没问题, 3--未违背发货承诺 4--其它',
+  complain_result int default 0 comment '投诉结果 0--未处理, 1--接受投诉, 2--拒绝投诉',
+  lasted_operator int comment '操作人ID',
+  lasted_operator_name varchar(50) comment '操作人名称',
+  lasted_operate_time datetime comment '操作时间',
+  primary key (id),
+  key order_complain(order_id,from_source,id),
+  key apply_time(apply_time),
+  key user_apply(user_id,apply_time),
+  key shop_apply(shop_id,apply_time)
+)engine=InnoDB default charset=utf8 comment '投诉表';
 
 
 

@@ -55,6 +55,18 @@
 
         </table>
 
+        <table tableName="od_safeguard_right" >
+
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+
+        </table>
+
+        <table tableName="od_complain" >
+
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+
+        </table>
+
     </context>
 
 </generatorConfiguration>
