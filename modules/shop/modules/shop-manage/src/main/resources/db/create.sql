@@ -244,7 +244,7 @@ create table od_aftersale
     saleafter_state int comment '售后状态 1--等待商家处理, 2--退款退货处理中 3--拒绝退款退货 4--售后完成',
     deal_time datetime comment '处理时间',
     complete_time datetime comment '完成时间',
-    complain_id bigint comment '维权id,买家因售后处理不合意而发起维权对应的维权id',
+    safeguard_id bigint comment '维权id,买家因售后处理不合意而发起维权对应的维权id',
     primary key(id),
     key order_id(order_id,from_source),
     key product(product_id,sku_num,order_id),
