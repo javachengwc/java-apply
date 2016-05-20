@@ -10,7 +10,7 @@ $(function () {
     var applyTimeBegin = $('#applyTimeBegin').datebox("getValue");
     var applyTimeEnd = $('#applyTimeEnd').datebox("getValue");
 
-    $('#tbAftersale').datagrid({
+    $('#tbComplain').datagrid({
         pageSize:20,
         rownumbers:true,
         fitColumns:true,
@@ -21,7 +21,7 @@ $(function () {
         toolbar:'#toolbar',
         method:'get',
         queryParams:{applyTimeBegin:applyTimeBegin,applyTimeEnd:applyTimeEnd},
-        url:'/shop/aftersale/aftersaleList.do'
+        url:'/shop/aftersale/complainList.do'
     });
 
 });
@@ -32,9 +32,9 @@ function initQuery()
     $("#applyTimeEnd").datebox("setValue", intDate(0));
 }
 
-//重载售后
-function reloadAftersale(){
-    $('#tbAftersale').datagrid('reload');
+//重载投诉
+function reloadComplain(){
+    $('#tbComplain').datagrid('reload');
 }
 
 //查询
@@ -43,7 +43,6 @@ function search() {
     var id =$("#id").val();
     var fromSource =$("#fromSource").val();
     var orderId =$("#orderId").val();
-    var productId =$("#productId").val();
     var userId =$("#userId").val();
     var userName =$("#userName").val();
     var shopId =$("#shopId").val();
@@ -52,9 +51,10 @@ function search() {
     var applyTimeEnd = $('#applyTimeEnd').datebox("getValue");
     var state =$("#state").val();
     var type =$("#type").val();
+    var result=$("#result").val();
 
-    var data ={id:id,fromSource:fromSource,orderId:orderId,productId:productId,
+    var data ={id:id,fromSource:fromSource,orderId:orderId,
         userId:userId,userName:userName,shopId:shopId,shopName:shopName,
-        applyTimeBegin:applyTimeBegin,applyTimeEnd:applyTimeEnd,state:state,type:type};
-    $('#tbAftersale').datagrid('reload',data);
+        applyTimeBegin:applyTimeBegin,applyTimeEnd:applyTimeEnd,state:state,type:type,result:result};
+    $('#tbComplain').datagrid('reload',data);
 }

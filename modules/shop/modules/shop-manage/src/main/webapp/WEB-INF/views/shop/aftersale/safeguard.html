@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>维权管理</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <link rel="stylesheet" type="text/css" href="/shop/thirdpart/jquery-easyui/themes/default/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="/shop/thirdpart/jquery-easyui/themes/icon.css" />
+    <link rel="stylesheet" type="text/css" href="/shop/css/style.css" />
+    <style>
+        #query_div{text-align: left;padding:5px 0px 5px 5px;}
+        #tbSafeguard{width:100%;}
+    </style>
+
+    <script type="text/javascript" src="/shop/js/jquery-1.8.0.js"></script>
+    <script type="text/javascript" src="/shop/js/jquery.form.js"></script>
+    <script type="text/javascript" src="/shop/js/base/date-util.js"></script>
+    <script type="text/javascript" src="/shop/js/base/string-util.js"></script>
+    <script type="text/javascript" src="/shop/js/base/popups-util.js"></script>
+
+    <script type="text/javascript" src="/shop/thirdpart/jquery-easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/shop/thirdpart/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="/shop/thirdpart/jquery-easyui/extension/datagrid-detailview.js"></script>
+
+    <script type="text/javascript" src="/shop/js/app/aftersale/safeguard.js"></script>
+
+</head>
+<body>
+<div id="toolbar">
+    <div id="query_div">
+        <span>维权Id:
+            <input id="id" name="id" type="text"/>
+        </span>
+        <span>售后Id:
+            <input id="aftersaleId" name="aftersaleId" type="text"/>
+        </span>
+        <span style="margin-left:5px;">来源:
+            <select name="fromSource" id="fromSource" style="width:100px">
+                <option selected="" value="-1">全部</option>
+                <option value="1">PC</option>
+                <option value="2">无线</option>
+            </select>
+        </span>
+        <span style="margin-left:5px;">订单Id:
+            <input id="orderId" name="orderId" type="text"/>
+        </span>
+        <span style="margin-left:5px;">商品Id:
+            <input id="productId" name="productId" type="text"/>
+        </span>
+        <div style="margin-bottom: 5px;"></div>
+        <span>买家Id:
+            <input id="userId" name="userId" type="text"/>
+        </span>
+        <span style="margin-left:5px;">买家名称:
+            <input id="userName" name="userName" type="text"/>
+        </span>
+        <span style="margin-left:5px;">商店Id:
+            <input id="shopId" name="shopId" type="text"/>
+        </span>
+        <span style="margin-left:5px;">商店名称:
+            <input id="shopName" name="shopName" type="text"/>
+        </span>
+        <div style="margin-bottom: 5px;"></div>
+        <span>申请时间:
+            <input id="applyTimeBegin" name="applyTimeBegin" class="easyui-datebox" />至
+            <input id="applyTimeEnd" name="applyTimeEnd" class="easyui-datebox" />
+        </span>
+        <span style="margin-left:5px;">状态:
+            <select name="state" id="state" style="width:100px">
+                <option selected="" value="-1">全部</option>
+                <option value="1">待平台处理</option>
+                <option value="2">待双方协商</option>
+                <option value="3">了结方案待审核</option>
+                <option value="4">了结方案被拒绝</option>
+                <option value="5">了结中</option>
+                <option value="6">维权完成</option>
+                <option value="7">维权关闭</option>
+            </select>
+        </span>
+        <span style="margin-left:5px;">维权发起方:
+            <select name="safeguardStarter" id="safeguardStarter" style="width:100px">
+                <option selected="" value="-1">全部</option>
+                <option value="1">买家</option>
+                <option value="2">商家</option>
+            </select>
+        </span>
+        <input id="searchBtn" type="button" value="查询" onClick="search()" />
+    </div>
+</div>
+<table id="tbSafeguard">
+    <thead>
+    <tr>
+        <th data-options="field:'id',align:'left'">ID</th>
+        <th data-options="field:'aftersaleId',align:'left'">售后Id</th>
+        <th data-options="field:'applyTime',align:'left'" >申请时间</th>
+        <th data-options="field:'saleafterState',align:'left'">维权状态</th>
+        <th data-options="field:'safeguardStarter',align:'left'">维权发起方</th>
+        <th data-options="field:'safeguardReason',align:'left'">维权原因</th>
+        <th data-options="field:'mistaker',align:'left'">过错方</th>
+        <th data-options="field:'orderId',align:'left'" >订单Id</th>
+        <th data-options="field:'fromSource',align:'left'" >来源</th>
+        <th data-options="field:'orderAmount',align:'left'" >订单金额</th>
+        <th data-options="field:'productId',align:'left'">商品id</th>
+        <th data-options="field:'productName',align:'left'">商品名称</th>
+        <th data-options="field:'skuNum',align:'left'">sku编码</th>
+        <th data-options="field:'userId',align:'left'">买家id</th>
+        <th data-options="field:'userName',align:'left'">买家名称</th>
+        <th data-options="field:'shopId',align:'left'">商店id</th>
+        <th data-options="field:'shopName',align:'left'">商店名称</th>
+        <th data-options="field:'overTime',align:'left'">结束时间</th>
+    </tr>
+    </thead>
+</table>
+
+</body>
+</html>

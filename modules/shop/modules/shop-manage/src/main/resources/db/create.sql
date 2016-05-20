@@ -268,7 +268,7 @@ create table od_safeguard_right
   user_name varchar(50) comment '买家名称',
   shop_id bigint comment '商店id',
   shop_name varchar(128) comment '商店名称',
-  safeguard_state int comment '维权状态',
+  safeguard_state int comment '维权状态 1--待平台处理,2--待双方协商,3--了结方案待审核,4--了结方案被拒绝,5--了结中,6--维权完成,7--维权关闭',
   safeguard_starter int comment '维权发起方,1--买家,2--商家',
   safeguard_reason int comment '维权原因',
   safeguard_desc varchar(256) comment '维权问题说明',

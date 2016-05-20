@@ -37,16 +37,15 @@ public class AftersaleQueryVo implements Serializable{
     //售后退款类型或投诉类型
     private Integer type;
 
+    //结果
+    private Integer result;
+
     //维权查询字段
     //维权对应的售后id
     private Long aftersaleId;
 
     //维权发起方
     private Integer safeguardStarter;
-
-    //投诉查询字段
-    //投诉结果
-    private Integer complainResult;
 
     private Integer page;
 
@@ -166,6 +165,14 @@ public class AftersaleQueryVo implements Serializable{
         this.type = type;
     }
 
+    public Integer getResult() {
+        return result;
+    }
+
+    public void setResult(Integer result) {
+        this.result = result;
+    }
+
     public Long getAftersaleId() {
         return aftersaleId;
     }
@@ -180,14 +187,6 @@ public class AftersaleQueryVo implements Serializable{
 
     public void setSafeguardStarter(Integer safeguardStarter) {
         this.safeguardStarter = safeguardStarter;
-    }
-
-    public Integer getComplainResult() {
-        return complainResult;
-    }
-
-    public void setComplainResult(Integer complainResult) {
-        this.complainResult = complainResult;
     }
 
     public Integer getPage() {
