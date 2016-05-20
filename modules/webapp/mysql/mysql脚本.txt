@@ -113,7 +113,7 @@ delte a,b from a join b on a.id =b.aid
 
 ----------------------复杂查询------------------------------
 select a.*,b.name as style_name,c.name as price_interval_name,d.name as house_type_name ,d.type as house_type ,
-REPLACE(GROUP_CONCAT(eas.space_name),',',' ') as space_name ,
+REPLACE(GROUP_CONCAT(eas.space_name SEPARATOR ';'),';',' ') as space_name ,
 REPLACE(GROUP_CONCAT(cast(eas.space_id as char)),',',' ') as space_ids,
 SUBSTRING_INDEX(GROUP_CONCAT(keting.space_img),',',1) img
 from house_suit a
