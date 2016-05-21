@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shop.dao.ext.aftersale.AftersaleDao" >
+
+    <resultMap id="BaseResultMap" type="com.shop.model.pojo.OdAftersale">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="order_id" jdbcType="VARCHAR" property="orderId" />
+        <result column="from_source" jdbcType="INTEGER" property="fromSource" />
+        <result column="order_amount" jdbcType="BIGINT" property="orderAmount" />
+        <result column="cost_amount" jdbcType="BIGINT" property="costAmount" />
+        <result column="product_id" jdbcType="VARCHAR" property="productId" />
+        <result column="product_name" jdbcType="VARCHAR" property="productName" />
+        <result column="sku_num" jdbcType="VARCHAR" property="skuNum" />
+        <result column="apply_time" jdbcType="TIMESTAMP" property="applyTime" />
+        <result column="user_id" jdbcType="BIGINT" property="userId" />
+        <result column="user_name" jdbcType="VARCHAR" property="userName" />
+        <result column="shop_id" jdbcType="BIGINT" property="shopId" />
+        <result column="shop_name" jdbcType="VARCHAR" property="shopName" />
+        <result column="refund_type" jdbcType="INTEGER" property="refundType" />
+        <result column="refund_reason" jdbcType="VARCHAR" property="refundReason" />
+        <result column="saleafter_state" jdbcType="INTEGER" property="saleafterState" />
+        <result column="deal_time" jdbcType="TIMESTAMP" property="dealTime" />
+        <result column="complete_time" jdbcType="TIMESTAMP" property="completeTime" />
+        <result column="safeguard_id" jdbcType="BIGINT" property="safeguardId" />
+    </resultMap>
+
+    <select id="queryPage" resultMap="BaseResultMap" parameterType="com.shop.model.vo.AftersaleQueryVo">
+        select * from od_aftersale
+        <where>
+            <if test="id!=null ">
+                id =${id}
+            </if>
+            <if test="applyTimeBegin!=null and applyTimeBegin!=''">
+                <![CDATA[ AND apply_time >= '${applyTimeBegin}' ]]>
+            </if>
+            <if test="applyTimeEnd!=null and applyTimeEnd!=''">
+                <![CDATA[ AND apply_time <= '${applyTimeEnd}' ]]>
+            </if>
+            <if test="orderId!=null and orderId!='' ">
+                AND order_id = '${orderId}'
+            </if>
+            <if test="fromSource!=null  ">
+                AND from_source = ${fromSource}
+            </if>
+            <if test="productId!=null and productId!='' ">
+                AND product_id = '${productId}'
+            </if>
+            <if test="userId!=null">
+                AND user_id = ${userId}
+            </if>
+            <if test="userName!=null and userName!='' ">
+                AND user_name = '${userName}'
+            </if>
+            <if test="shopId!=null">
+                AND shop_id = ${shopId}
+            </if>
+            <if test="shopName!=null and shopName!='' ">
+                AND shop_name = '${shopName}'
+            </if>
+            <if test="state!=null">
+                AND saleafter_state = ${state}
+            </if>
+            <if test="type!=null">
+                AND refund_type = ${type}
+            </if>
+        </where>
+        order by id desc
+        <if test="start != null and rows != null">
+            limit ${start},${rows}
+        </if>
+    </select>
+
+    <select id="count"  resultType="java.lang.Integer" parameterType="com.shop.model.vo.AftersaleQueryVo">
+        select count(1) as count
+        from od_aftersale
+        <where>
+            <if test="id!=null ">
+                id =${id}
+            </if>
+            <if test="applyTimeBegin!=null and applyTimeBegin!=''">
+                <![CDATA[ AND apply_time >= '${applyTimeBegin}' ]]>
+            </if>
+            <if test="applyTimeEnd!=null and applyTimeEnd!=''">
+                <![CDATA[ AND apply_time <= '${applyTimeEnd}' ]]>
+            </if>
+            <if test="orderId!=null and orderId!='' ">
+                AND order_id = '${orderId}'
+            </if>
+            <if test="fromSource!=null  ">
+                AND from_source = ${fromSource}
+            </if>
+            <if test="productId!=null and productId!='' ">
+                AND product_id = '${productId}'
+            </if>
+            <if test="userId!=null">
+                AND user_id = ${userId}
+            </if>
+            <if test="userName!=null and userName!='' ">
+                AND user_name = '${userName}'
+            </if>
+            <if test="shopId!=null">
+                AND shop_id = ${shopId}
+            </if>
+            <if test="shopName!=null and shopName!='' ">
+                AND shop_name = '${shopName}'
+            </if>
+            <if test="state!=null">
+                AND saleafter_state = ${state}
+            </if>
+            <if test="type!=null">
+                AND refund_type = ${type}
+            </if>
+        </where>
+    </select>
+</mapper>

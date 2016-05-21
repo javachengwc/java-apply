@@ -17,10 +17,10 @@ import java.util.List;
  * 维权controller类
  */
 @Controller
-@RequestMapping(value = "/shop/safeguard")
+@RequestMapping(value = "/shop/aftersale")
 public class SafeguardRightController  extends BaseController {
 
-    private static final String PREFIX = "/shop/safeguard/";
+    private static final String PREFIX = "/shop/aftersale/";
 
     @Autowired
     private SafeguardRightService safeguardRightService;

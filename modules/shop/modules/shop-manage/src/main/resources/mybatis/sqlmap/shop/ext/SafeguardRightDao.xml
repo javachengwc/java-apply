@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shop.dao.ext.aftersale.SafeguardRightDao" >
+
+    <resultMap id="BaseResultMap" type="com.shop.model.pojo.OdSafeguardRight" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="aftersale_id" property="aftersaleId" jdbcType="BIGINT" />
+        <result column="order_id" property="orderId" jdbcType="VARCHAR" />
+        <result column="from_source" property="fromSource" jdbcType="INTEGER" />
+        <result column="order_amount" property="orderAmount" jdbcType="BIGINT" />
+        <result column="product_id" property="productId" jdbcType="VARCHAR" />
+        <result column="product_name" property="productName" jdbcType="VARCHAR" />
+        <result column="sku_num" property="skuNum" jdbcType="VARCHAR" />
+        <result column="apply_time" property="applyTime" jdbcType="TIMESTAMP" />
+        <result column="user_id" property="userId" jdbcType="BIGINT" />
+        <result column="user_name" property="userName" jdbcType="VARCHAR" />
+        <result column="shop_id" property="shopId" jdbcType="BIGINT" />
+        <result column="shop_name" property="shopName" jdbcType="VARCHAR" />
+        <result column="safeguard_state" property="safeguardState" jdbcType="INTEGER" />
+        <result column="safeguard_starter" property="safeguardStarter" jdbcType="INTEGER" />
+        <result column="safeguard_reason" property="safeguardReason" jdbcType="INTEGER" />
+        <result column="safeguard_desc" property="safeguardDesc" jdbcType="VARCHAR" />
+        <result column="user_feedback" property="userFeedback" jdbcType="INTEGER" />
+        <result column="user_feedback_content" property="userFeedbackContent" jdbcType="VARCHAR" />
+        <result column="shop_feedback" property="shopFeedback" jdbcType="INTEGER" />
+        <result column="shop_feedback_content" property="shopFeedbackContent" jdbcType="VARCHAR" />
+        <result column="safeguard_result" property="safeguardResult" jdbcType="INTEGER" />
+        <result column="mistaker" property="mistaker" jdbcType="INTEGER" />
+        <result column="over_time" property="overTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <select id="queryPage" resultMap="BaseResultMap" parameterType="com.shop.model.vo.AftersaleQueryVo">
+        select * from od_safeguard_right
+        <where>
+            <if test="id!=null ">
+                id =${id}
+            </if>
+            <if test="applyTimeBegin!=null and applyTimeBegin!=''">
+                <![CDATA[ AND apply_time >= '${applyTimeBegin}' ]]>
+            </if>
+            <if test="applyTimeEnd!=null and applyTimeEnd!=''">
+                <![CDATA[ AND apply_time <= '${applyTimeEnd}' ]]>
+            </if>
+            <if test="orderId!=null and orderId!='' ">
+                AND order_id = '${orderId}'
+            </if>
+            <if test="fromSource!=null  ">
+                AND from_source = ${fromSource}
+            </if>
+            <if test="productId!=null and productId!='' ">
+                AND product_id = '${productId}'
+            </if>
+            <if test="userId!=null">
+                AND user_id = ${userId}
+            </if>
+            <if test="userName!=null and userName!='' ">
+                AND user_name = '${userName}'
+            </if>
+            <if test="shopId!=null">
+                AND shop_id = ${shopId}
+            </if>
+            <if test="shopName!=null and shopName!='' ">
+                AND shop_name = '${shopName}'
+            </if>
+            <if test="state!=null">
+                AND safeguard_state = ${state}
+            </if>
+            <if test="aftersaleId!=null">
+                AND aftersale_id = ${aftersaleId}
+            </if>
+            <if test="safeguardStarter!=null">
+                AND safeguard_starter = ${safeguardStarter}
+            </if>
+        </where>
+        order by id desc
+        <if test="start != null and rows != null">
+            limit ${start},${rows}
+        </if>
+    </select>
+
+    <select id="count"  resultType="java.lang.Integer" parameterType="com.shop.model.vo.AftersaleQueryVo">
+        select count(1) as count
+        from od_safeguard_right
+        <where>
+            <if test="id!=null ">
+                id =${id}
+            </if>
+            <if test="applyTimeBegin!=null and applyTimeBegin!=''">
+                <![CDATA[ AND apply_time >= '${applyTimeBegin}' ]]>
+            </if>
+            <if test="applyTimeEnd!=null and applyTimeEnd!=''">
+                <![CDATA[ AND apply_time <= '${applyTimeEnd}' ]]>
+            </if>
+            <if test="orderId!=null and orderId!='' ">
+                AND order_id = '${orderId}'
+            </if>
+            <if test="fromSource!=null  ">
+                AND from_source = ${fromSource}
+            </if>
+            <if test="productId!=null and productId!='' ">
+                AND product_id = '${productId}'
+            </if>
+            <if test="userId!=null">
+                AND user_id = ${userId}
+            </if>
+            <if test="userName!=null and userName!='' ">
+                AND user_name = '${userName}'
+            </if>
+            <if test="shopId!=null">
+                AND shop_id = ${shopId}
+            </if>
+            <if test="shopName!=null and shopName!='' ">
+                AND shop_name = '${shopName}'
+            </if>
+            <if test="state!=null">
+                AND safeguard_state = ${state}
+            </if>
+            <if test="aftersaleId!=null">
+                AND aftersale_id = ${aftersaleId}
+            </if>
+            <if test="safeguardStarter!=null">
+                AND safeguard_starter = ${safeguardStarter}
+            </if>
+        </where>
+    </select>
+</mapper>

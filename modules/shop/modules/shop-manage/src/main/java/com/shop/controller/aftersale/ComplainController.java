@@ -17,10 +17,10 @@ import java.util.List;
  * 投诉controller类
  */
 @Controller
-@RequestMapping(value = "/shop/complain")
+@RequestMapping(value = "/shop/aftersale")
 public class ComplainController extends BaseController {
 
-    private static final String PREFIX = "/shop/complain/";
+    private static final String PREFIX = "/shop/aftersale/";
 
     @Autowired
     private ComplainService complainService;

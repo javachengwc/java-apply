@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shop.dao.ext.aftersale.ComplainDao" >
+
+    <resultMap id="BaseResultMap" type="com.shop.model.pojo.OdComplain" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="order_id" property="orderId" jdbcType="VARCHAR" />
+        <result column="from_source" property="fromSource" jdbcType="INTEGER" />
+        <result column="order_amount" property="orderAmount" jdbcType="BIGINT" />
+        <result column="apply_time" property="applyTime" jdbcType="TIMESTAMP" />
+        <result column="user_id" property="userId" jdbcType="BIGINT" />
+        <result column="user_name" property="userName" jdbcType="VARCHAR" />
+        <result column="shop_id" property="shopId" jdbcType="BIGINT" />
+        <result column="shop_name" property="shopName" jdbcType="VARCHAR" />
+        <result column="complain_type" property="complainType" jdbcType="INTEGER" />
+        <result column="complain_content" property="complainContent" jdbcType="VARCHAR" />
+        <result column="complain_state" property="complainState" jdbcType="INTEGER" />
+        <result column="unagree_reason" property="unagreeReason" jdbcType="INTEGER" />
+        <result column="complain_result" property="complainResult" jdbcType="INTEGER" />
+        <result column="lasted_operator" property="lastedOperator" jdbcType="INTEGER" />
+        <result column="lasted_operator_name" property="lastedOperatorName" jdbcType="VARCHAR" />
+        <result column="lasted_operate_time" property="lastedOperateTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <select id="queryPage" resultMap="BaseResultMap" parameterType="com.shop.model.vo.AftersaleQueryVo">
+        select * from od_complain
+        <where>
+            <if test="id!=null ">
+                id =${id}
+            </if>
+            <if test="applyTimeBegin!=null and applyTimeBegin!=''">
+                <![CDATA[ AND apply_time >= '${applyTimeBegin}' ]]>
+            </if>
+            <if test="applyTimeEnd!=null and applyTimeEnd!=''">
+                <![CDATA[ AND apply_time <= '${applyTimeEnd}' ]]>
+            </if>
+            <if test="orderId!=null and orderId!='' ">
+                AND order_id = '${orderId}'
+            </if>
+            <if test="fromSource!=null  ">
+                AND from_source = ${fromSource}
+            </if>
+            <if test="userId!=null">
+                AND user_id = ${userId}
+            </if>
+            <if test="userName!=null and userName!='' ">
+                AND user_name = '${userName}'
+            </if>
+            <if test="shopId!=null">
+                AND shop_id = ${shopId}
+            </if>
+            <if test="shopName!=null and shopName!='' ">
+                AND shop_name = '${shopName}'
+            </if>
+            <if test="state!=null">
+                AND complain_state = ${state}
+            </if>
+            <if test="type!=null">
+                AND complain_type = ${type}
+            </if>
+            <if test="result!=null">
+                AND complain_result = ${result}
+            </if>
+        </where>
+        order by id desc
+        <if test="start != null and rows != null">
+            limit ${start},${rows}
+        </if>
+    </select>
+
+    <select id="count"  resultType="java.lang.Integer" parameterType="com.shop.model.vo.AftersaleQueryVo">
+        select count(1) as count
+        from od_complain
+        <where>
+            <if test="id!=null ">
+                id =${id}
+            </if>
+            <if test="applyTimeBegin!=null and applyTimeBegin!=''">
+                <![CDATA[ AND apply_time >= '${applyTimeBegin}' ]]>
+            </if>
+            <if test="applyTimeEnd!=null and applyTimeEnd!=''">
+                <![CDATA[ AND apply_time <= '${applyTimeEnd}' ]]>
+            </if>
+            <if test="orderId!=null and orderId!='' ">
+                AND order_id = '${orderId}'
+            </if>
+            <if test="fromSource!=null  ">
+                AND from_source = ${fromSource}
+            </if>
+            <if test="userId!=null">
+                AND user_id = ${userId}
+            </if>
+            <if test="userName!=null and userName!='' ">
+                AND user_name = '${userName}'
+            </if>
+            <if test="shopId!=null">
+                AND shop_id = ${shopId}
+            </if>
+            <if test="shopName!=null and shopName!='' ">
+                AND shop_name = '${shopName}'
+            </if>
+            <if test="state!=null">
+                AND complain_state = ${state}
+            </if>
+            <if test="type!=null">
+                AND complain_type = ${type}
+            </if>
+            <if test="result!=null">
+                AND complain_result = ${result}
+            </if>
+        </where>
+    </select>
+</mapper>
