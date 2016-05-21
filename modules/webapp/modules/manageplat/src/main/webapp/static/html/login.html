@@ -7,9 +7,9 @@
     div.login {width:300px; height:130px; border:1px #ccc solid; margin:0 auto; text-align:center; padding:10px;}
     .tip_div{margin:0 auto; text-align:center;}
 </style>
-<script type="text/javascript" src="../js/jquery.min.js"></script>
-<script type="text/javascript" src="../js/jquery.url.min.js"></script>
-<script type="text/javascript" src="../js/sha1-min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.url.min.js"></script>
+<script type="text/javascript" src="/static/js/sha1-min.js"></script>
 
 <title>用户登录</title>
 </head>
@@ -83,7 +83,12 @@ function update_page(json){
 		var index = window.location.href.lastIndexOf('/');
 		var url = window.location.href;
 		url = url.substr(0, index);
-		window.location.href = url+"/index.html";	
+        if(url.indexOf("static")>=0) {
+            window.location.href = url + "/index.html";
+        }else
+        {
+            window.location.href = url + "/static/html/index.html";
+        }
 	}else{
         $('#loginTips').html('<font color="red">您输入的账号或密码输入有误，请重试!</font>');
     }
