@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shopstat.dao.ext.aftersale.SafeguardStatDao" >
+
+    <resultMap id="BaseResultMap" type="com.shopstat.model.pojo.StatSafeguard" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="stat_date" property="statDate" jdbcType="DATE" />
+        <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+        <result column="from_source" property="fromSource" jdbcType="INTEGER" />
+        <result column="tag_id" property="tagId" jdbcType="INTEGER" />
+        <result column="sub_id" property="subId" jdbcType="INTEGER" />
+        <result column="third_id" property="thirdId" jdbcType="INTEGER" />
+        <result column="safeguard_starter" property="safeguardStarter" jdbcType="INTEGER" />
+        <result column="inc_cnt" property="incCnt" jdbcType="INTEGER" />
+        <result column="shop_mistake_cnt" property="shopMistakeCnt" jdbcType="INTEGER" />
+        <result column="user_mistake_cnt" property="userMistakeCnt" jdbcType="INTEGER" />
+        <result column="complete_cnt" property="completeCnt" jdbcType="INTEGER" />
+        <result column="complete_over_week_cnt" property="completeOverWeekCnt" jdbcType="INTEGER" />
+        <result column="close_cnt" property="closeCnt" jdbcType="INTEGER" />
+        <result column="dealing_total_cnt" property="dealingTotalCnt" jdbcType="INTEGER" />
+    </resultMap>
+
+    <select id="queryPage" resultMap="BaseResultMap" parameterType="com.shopstat.model.vo.StatQueryVo">
+        select * from stat_safeguard
+        <where>
+            <if test="statDateBegin!=null and statDateBegin!=''">
+                <![CDATA[ AND stat_date >= '${statDateBegin}' ]]>
+            </if>
+            <if test="statDateEnd!=null and statDateEnd!=''">
+                <![CDATA[ AND stat_date <= '${statDateEnd}' ]]>
+            </if>
+            <if test="fromSource!=null  ">
+                AND from_source = ${fromSource}
+            </if>
+            <if test="tagId!=null">
+                AND tag_id = ${tagId}
+            </if>
+            <if test="subId!=null">
+                AND sub_id = ${subId}
+            </if>
+            <if test="thirdId!=null">
+                AND third_id = ${thirdId}
+            </if>
+            <if test="ext1!=null">
+                AND safeguard_starter = ${ext1}
+            </if>
+        </where>
+        order by stat_date desc
+        <if test="start != null and rows != null">
+            limit ${start},${rows}
+        </if>
+    </select>
+
+    <select id="count"  resultType="java.lang.Integer" parameterType="com.shopstat.model.vo.StatQueryVo">
+        select count(1) as count
+        from stat_safeguard
+        <where>
+            <if test="statDateBegin!=null and statDateBegin!=''">
+                <![CDATA[ AND stat_date >= '${statDateBegin}' ]]>
+            </if>
+            <if test="statDateEnd!=null and statDateEnd!=''">
+                <![CDATA[ AND stat_date <= '${statDateEnd}' ]]>
+            </if>
+            <if test="fromSource!=null  ">
+                AND from_source = ${fromSource}
+            </if>
+            <if test="tagId!=null">
+                AND tag_id = ${tagId}
+            </if>
+            <if test="subId!=null">
+                AND sub_id = ${subId}
+            </if>
+            <if test="thirdId!=null">
+                AND third_id = ${thirdId}
+            </if>
+            <if test="ext1!=null">
+                AND safeguard_starter = ${ext1}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -44,7 +44,7 @@
             <if test="orderId!=null and orderId!='' ">
                 AND order_id = '${orderId}'
             </if>
-            <if test="fromSource!=null  ">
+            <if test="fromSource!=null and fromSource!=-1 ">
                 AND from_source = ${fromSource}
             </if>
             <if test="productId!=null and productId!='' ">
@@ -62,13 +62,13 @@
             <if test="shopName!=null and shopName!='' ">
                 AND shop_name = '${shopName}'
             </if>
-            <if test="state!=null">
+            <if test="state!=null and state!=-1 ">
                 AND safeguard_state = ${state}
             </if>
             <if test="aftersaleId!=null">
                 AND aftersale_id = ${aftersaleId}
             </if>
-            <if test="safeguardStarter!=null">
+            <if test="safeguardStarter!=null and safeguardStarter!=-1">
                 AND safeguard_starter = ${safeguardStarter}
             </if>
         </where>
@@ -94,7 +94,7 @@
             <if test="orderId!=null and orderId!='' ">
                 AND order_id = '${orderId}'
             </if>
-            <if test="fromSource!=null  ">
+            <if test="fromSource!=null and fromSource!=-1 ">
                 AND from_source = ${fromSource}
             </if>
             <if test="productId!=null and productId!='' ">
@@ -112,13 +112,13 @@
             <if test="shopName!=null and shopName!='' ">
                 AND shop_name = '${shopName}'
             </if>
-            <if test="state!=null">
+            <if test="state!=null and state!=-1 ">
                 AND safeguard_state = ${state}
             </if>
             <if test="aftersaleId!=null">
                 AND aftersale_id = ${aftersaleId}
             </if>
-            <if test="safeguardStarter!=null">
+            <if test="safeguardStarter!=null and safeguardStarter!=-1">
                 AND safeguard_starter = ${safeguardStarter}
             </if>
         </where>

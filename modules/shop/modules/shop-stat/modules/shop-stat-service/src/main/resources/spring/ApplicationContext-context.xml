@@ -11,7 +11,7 @@
 
     <!--注解说明 -->
     <context:annotation-config/>
-    <context:component-scan base-package="com.shopstat.dao,com.shopstat.service"/>
+    <context:component-scan base-package="com.shopstat.util,com.shopstat.dao,com.shopstat.service"/>
     <util:properties id="jdbcProps" location="classpath:jdbc.properties"/>
     <aop:aspectj-autoproxy/>
 

@@ -33,6 +33,7 @@
         <property name="mapperLocations">
             <array>
                 <value>classpath*:mybatis/sqlmap/shopstat/*.xml</value>
+                <value>classpath*:mybatis/sqlmap/shopstat/ext/*.xml</value>
             </array>
         </property>
     </bean>

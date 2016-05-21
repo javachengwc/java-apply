@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>维权统计</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <link rel="stylesheet" type="text/css" href="/shopstat/thirdpart/jquery-easyui/themes/default/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="/shopstat/thirdpart/jquery-easyui/themes/icon.css" />
+    <link rel="stylesheet" type="text/css" href="/shopstat/css/style.css" />
+    <style>
+        #query_div{text-align: left;padding:5px 0px 5px 5px;}
+        #tbSafeguardStat{width:100%;}
+    </style>
+
+    <script type="text/javascript" src="/shopstat/js/jquery-1.8.0.js"></script>
+    <script type="text/javascript" src="/shopstat/js/jquery.form.js"></script>
+    <script type="text/javascript" src="/shopstat/js/base/date-util.js"></script>
+    <script type="text/javascript" src="/shopstat/js/base/string-util.js"></script>
+    <script type="text/javascript" src="/shopstat/js/base/popups-util.js"></script>
+    <script type="text/javascript" src="/shopstat/js/base/field-formatter.js"></script>
+
+    <script type="text/javascript" src="/shopstat/thirdpart/jquery-easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/shopstat/thirdpart/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="/shopstat/thirdpart/jquery-easyui/extension/datagrid-detailview.js"></script>
+
+    <script type="text/javascript" src="/shopstat/js/app/aftersale/safeguardStat.js"></script>
+
+</head>
+<body>
+<div id="toolbar">
+    <div id="query_div">
+        <span>统计日期:
+            <input id="statDateBegin" name="statDateBegin" class="easyui-datebox" />至
+            <input id="statDateEnd" name="statDateEnd" class="easyui-datebox" />
+        </span>
+        <span style="margin-left:5px;">来源:
+            <select name="fromSource" id="fromSource" style="width:100px">
+                <option selected="" value="0">全部</option>
+                <option value="1">PC</option>
+                <option value="2">无线</option>
+            </select>
+        </span>
+        <span style="margin-left:5px;">维权发起方:
+            <select name="ext1" id="ext1" style="width:100px">
+                <option selected="" value="0">全部</option>
+                <option value="1">买家</option>
+                <option value="2">商家</option>
+            </select>
+        </span>
+        <div style="margin-bottom: 5px;"></div>
+        <span>一级分类:
+            <select name="tagId" id="tagId" style="width:100px">
+                <option selected="" value="0">全部</option>
+            </select>
+        </span>
+        <span style="margin-left:5px;">二级分类:
+            <select name="subId" id="subId" style="width:100px">
+                <option selected="" value="0">全部</option>
+            </select>
+        </span>
+        <span style="margin-left:5px;">三级分类:
+            <select name="thirdId" id="thirdId" style="width:100px">
+                <option selected="" value="0">全部</option>
+            </select>
+        </span>
+        <input id="searchBtn" type="button" value="查询" onClick="search()" />
+    </div>
+</div>
+<table id="tbSafeguardStat">
+    <thead>
+    <tr>
+        <th data-options="field:'weekDay',align:'center'">星期</th>
+        <th data-options="field:'statDate',align:'left'">统计日期</th>
+        <th data-options="field:'incCnt',align:'left'" >新增数</th>
+        <th data-options="field:'shopMistakeCnt',align:'left'"><a title="当天新增中商家责任的维权数" class="note"><span>商家责任<br/>维权数</span></a></th>
+        <th data-options="field:'userMistakeCnt',align:'left'"><a title="当天新增中买家责任的维权数" class="note"><span>买家责任<br/>维权数</span></a></th>
+        <th data-options="field:'completeCnt ',align:'left'">当天完成数</th>
+        <th data-options="field:'completeOverWeekCnt',align:'left'"><a title="当天完成且维权周期超过7天的维权数" class="note"><span>完成维权<br/>超7天数</span></a></th>
+        <th data-options="field:'closeCnt',align:'left'" >当天关闭数</th>
+        <th data-options="field:'dealingTotalCnt ',align:'left'" ><span>累计处理中<br/>的维权数</span></th>
+    </tr>
+    </thead>
+</table>
+
+</body>
+</html>
