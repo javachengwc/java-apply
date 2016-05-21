@@ -5,8 +5,7 @@ function formatDate(value, row, index) {
     {
         return "";
     }
-    var time = parseDate(new Date(value), 'yyyy-MM-dd');
-    return time;
+    return new Date(value).format('yyyy-MM-dd');
 }
 
 function formatDateTime(value, row, index)
@@ -15,8 +14,7 @@ function formatDateTime(value, row, index)
     {
         return "";
     }
-    var time = parseDate(new Date(value), 'yyyy-MM-dd hh:mm:ss');
-    return time;
+    return new Date(value).format('yyyy-MM-dd hh:mm:ss');
 }
 
 //星期
