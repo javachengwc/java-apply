@@ -30,3 +30,4 @@
         </dependencySet>
     </dependencySets>
 </assembly>
+<!--mvn clean compile package dependency:copy-dependencies install -Dmaven.test.skip -Dappname=${appname} -Pdev -->
