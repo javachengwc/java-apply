@@ -78,4 +78,29 @@
             </if>
         </where>
     </select>
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into stat_safeguard( stat_date, insert_time,from_source, tag_id, sub_id,third_id,safeguard_starter,
+        inc_cnt,shop_mistake_cnt,user_mistake_cnt,complete_cnt,complete_over_week_cnt,close_cnt, dealing_total_cnt)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.statDate},
+            #{item.insertTime},
+            #{item.fromSource},
+            #{item.sellerId},
+            #{item.tagId},
+            #{item.subId},
+            #{item.thirdId},
+            #{item.incCnt},
+            #{item.shopMistakeCnt},
+            #{item.userMistakeCnt},
+            #{item.completeCnt},
+            #{item.completeOverWeekCnt},
+            #{item.closeCnt},
+            #{item.dealingTotalCnt}
+            )
+        </foreach>
+    </insert>
+
 </mapper>

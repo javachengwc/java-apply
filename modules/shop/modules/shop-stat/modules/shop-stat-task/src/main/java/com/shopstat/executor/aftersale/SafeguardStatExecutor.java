@@ -2,11 +2,14 @@ package com.shopstat.executor.aftersale;
 
 import com.shopstat.dao.ext.aftersale.SafeguardStatDao;
 import com.shopstat.executor.IExecutor;
+import com.shopstat.util.DateTimeUtil;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 /**
  * 维权统计类
@@ -22,6 +25,10 @@ public class SafeguardStatExecutor  implements IExecutor{
     public void exec(DateTime dateTime)
     {
         logger.info("SafeguardStatExecutor exec begin,dateTime ="+dateTime);
+
+        Date date = DateTimeUtil.getDate(dateTime.toString(DateTimeUtil.FMT_YMD));
+        //清数据
+        safeguardStatDao.deleteByDate(date);
 
         //采集数据
         genDemoData(dateTime);
