@@ -50,6 +50,7 @@ skip-slave-start
 //add
 master-connect-retry=60 #如果从服务器发现主服务器断掉，重新连接的时间差(秒)
 replicate-do-db =test #只复制某个库
+replicate-do-db =test2 #复制多个库,每个库必须单独一行配置
 replicate-ignore-db=mysql #不复制某个库
 配置完后 重新启动mysql
 
