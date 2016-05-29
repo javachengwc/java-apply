@@ -1,7 +1,7 @@
 ﻿--------------------------------mysql主从-----------------------------
 说明:mysql 5.1.7后 不支持直接在配置文件配主从配置,也就是master-host这样的配置不支持了，第一次同步需要手动同步
 #从库
-chaknge master to master_user='slave',master_password='123456',
+change master to master_user='slave',master_password='123456',
 master_host='127.0.0.1',master_port=3306,master_log_file='mysql-bin.000005',master_log_pos=1592;
 
 start slave;//开始主从复制
