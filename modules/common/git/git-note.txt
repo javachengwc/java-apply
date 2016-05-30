@@ -30,7 +30,10 @@ git checkout -b local_path origin/remote_path
 git checkout aa                         --->将本地当前分支切换到aa
 git pull origin cheng                   --->拉去cheng的分支到当前分支aa
 git push origin aa:remoteaa             --->推送本地aa分支到远程remoteaa分支s
-git config --list                       --->查看git配置
+git config --list                       --->查看git配置， 配置文件一般是~/.gitconfig
+git config --global user.name  [username]  --->配置git账号
+git config --global user.email [email]
+#在项目工作区的目录 git config -e 可修改工作区的.git/config文件
 
 -----------------------------------------------------------------------
 
