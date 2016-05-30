@@ -6,6 +6,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ public class Dimen implements Serializable {
     private Class clazz;
 
     //维护选项值列表
-    private List<String> options= Collections.emptyList();
+    private List<String> options= new LinkedList<String>();
 
     //选项值中代表全部的选项值
     private String totalOption;

@@ -5,6 +5,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -28,10 +29,12 @@ public class Stat implements Serializable {
     public String dateColumn;
 
     //统计的维度列表
-    public List<Dimen> dimenList;
+    public List<Dimen> dimenList= new LinkedList<Dimen>();
 
     //统计的指标列表
-    public List<Norm> normList;
+    public List<Norm> normList =new LinkedList<Norm>();
+
+    public String querySql;
 
     public Class getStatClazz() {
         return statClazz;
@@ -89,6 +92,14 @@ public class Stat implements Serializable {
 
     public void setNormList(List<Norm> normList) {
         this.normList = normList;
+    }
+
+    public String getQuerySql() {
+        return querySql;
+    }
+
+    public void setQuerySql(String querySql) {
+        this.querySql = querySql;
     }
 
     public String toString()

@@ -20,6 +20,16 @@ public class DeepCopyUtil {
         T dest = (T)in.readObject();
         return dest;
     }
+    public static <T> T [] deepCopy(T [] src) throws IOException, ClassNotFoundException {
+        ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+        ObjectOutputStream    out     = new ObjectOutputStream(byteOut);
+        out.writeObject(src);
+
+        ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
+        ObjectInputStream    in     = new ObjectInputStream(byteIn);
+        T [] dest = (T [])in.readObject();
+        return dest;
+    }
 
 	public static <T> List<T> deepCopy(List<T> src) throws IOException, ClassNotFoundException {
 		ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
