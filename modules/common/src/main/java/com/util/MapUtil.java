@@ -6,7 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
+import java.sql.*;
 import java.util.*;
+import java.util.Date;
 
 public class MapUtil {
 
@@ -477,6 +479,38 @@ public class MapUtil {
         return true;
     }
 
+
+    public static Date extractDateTime(Map<String,Object> map ,String key)
+    {
+        if(map==null)
+        {
+            return null;
+        }
+        Timestamp dateTime = ((map.get(key) == null) ? null : (Timestamp) map.get(key));
+        if (dateTime != null) {
+            return new Date(dateTime.getTime());
+        }
+        return null;
+    }
+
+    public static Date extractDate(Map<String,Object> map ,String key)
+    {
+        if(map==null)
+        {
+            return null;
+        }
+        java.sql.Date date = (map.get(key) == null ? null : (java.sql.Date) map.get(key));
+        if (date != null) {
+            return new Date(date.getTime());
+        }
+        return null;
+    }
+
+    public static Object extractData(Map<String,Object> map ,String key,Class clazz)
+    {
+        return extractData(map,key,clazz,null);
+    }
+
     //从map中提取某key的值
     public static Object extractData(Map<String,Object> map ,String key,Class clazz,Integer defNum)
     {
@@ -599,5 +633,103 @@ public class MapUtil {
         return number;
     }
 
+    public static <T> T map2Bean(Map<String,Object> map,Class<T> clz)
+    {
+        return map2Bean(map,clz,false);
+    }
 
+    public static <T> T map2Bean(Map<String,Object> map,Class<T> clz,boolean transName)
+    {
+        if(map==null)
+        {
+            return null;
+        }
+        T bean=null;
+        try {
+            bean =clz.newInstance();
+            Class clazz = clz;
+            while(clazz!=null && clazz!=Object.class)
+            {
+                Field[] fields = clazz.getDeclaredFields();
+                for(Field field :fields)
+                {
+                    String fieldName = field.getName();
+                    String key =fieldName;
+                    if(transName)
+                    {
+                        key = StringUtil.field2Col(fieldName);
+                    }
+                    Object value =map.get(key);
+                    Class fdClazz = field.getType();
+                    if( Date.class.isAssignableFrom(fdClazz))
+                    {
+                        try {
+                            value = extractDateTime(map, key);
+                        }catch(Exception ee)
+                        {
+                            value = extractDate(map, key);
+                        }
+                    }else
+                    {
+                        value =extractData(map,key,fdClazz);
+                    }
+                    ReflectionUtil.setFieldValue(bean,fieldName,value);
+                }
+                clazz = clazz.getSuperclass();
+            }
+        } catch (Exception e) {
+            logger.error("MapUtil map2Bean error,", e);
+        }
+        return bean;
+    }
+
+    public static <T> List<T> listMap2ListBean(List<Map<String,Object>> listMap,Class<T> clz)
+    {
+        return listMap2ListBean(listMap,clz,false);
+    }
+
+    public static <T> List<T> listMap2ListBean(List<Map<String,Object>> listMap,Class<T> clz,boolean transName)
+    {
+        if(listMap==null)
+        {
+            return null;
+        }
+        List<Field> fieldList = ClassUtil.getAllField(clz);
+        List<T> list =new ArrayList<T>();
+        for(Map<String,Object> map:listMap) {
+            try {
+                T bean = clz.newInstance();
+                list.add(bean);
+
+                for (Field field : fieldList) {
+                    String fieldName = field.getName();
+                    String key =fieldName;
+                    if(transName)
+                    {
+                        key = StringUtil.field2Col(fieldName);
+                    }
+                    Object value =null;
+                    Class fdClazz = field.getType();
+                    if( Date.class.isAssignableFrom(fdClazz))
+                    {
+                        try {
+                            value = extractDateTime(map, key);
+                        }catch(Exception ee)
+                        {
+                            value = extractDate(map, key);
+                        }
+                    }else
+                    {
+                        value =extractData(map,key,fdClazz);
+                    }
+                    ReflectionUtil.setFieldValue(bean,fieldName,value);
+                    //这里不是用BeanUtils.setProperty,因为此方法如果field的类型不是内置类型，且value为null时，会报错
+                    // BeanUtils.setProperty(bean, fieldName, value);
+                }
+            } catch (Exception e) {
+                logger.error("MapUtil listMap2ListBean error,", e);
+            }
+        }
+        return list;
+    }
 }

@@ -12,7 +12,22 @@ public class Norm implements Serializable {
 
     public enum NormType
     {
-        SUM,AVG,MAX,MIN
+        SUM("sum"),AVG("avg"),MAX("max"),MIN("min");
+
+        private String funcName;
+
+        private NormType(String funcName)
+        {
+            this.funcName=funcName;
+        }
+
+        public String getFuncName() {
+            return funcName;
+        }
+
+        public void setFuncName(String funcName) {
+            this.funcName = funcName;
+        }
     }
 
     //指标名
@@ -76,6 +91,11 @@ public class Norm implements Serializable {
 
     public void setType(NormType type) {
         this.type = type;
+    }
+
+    public String getQueryFragment()
+    {
+        return type.getFuncName()+"("+normColumn+") as "+normColumn;
     }
 
     public String toString()

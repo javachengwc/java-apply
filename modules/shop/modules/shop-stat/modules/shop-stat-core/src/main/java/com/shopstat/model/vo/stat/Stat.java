@@ -1,7 +1,9 @@
 package com.shopstat.model.vo.stat;
 
 import com.util.StringUtil;
+import com.util.date.DateUtil;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -42,7 +44,7 @@ public class Stat implements Serializable {
 
     public void setStatClazz(Class statClazz) {
         this.statClazz = statClazz;
-        this.table=StringUtil.field2Col(statClazz.getSimpleName());
+        this.table=StringUtil.field2Col(StringUtil.initialLower(statClazz.getSimpleName()));
     }
 
     public String getTable() {
@@ -100,6 +102,81 @@ public class Stat implements Serializable {
 
     public void setQuerySql(String querySql) {
         this.querySql = querySql;
+    }
+
+    public String getNormQueryFragment()
+    {
+        StringBuffer normQueryBuf = new StringBuffer("");
+        for(Norm norm:getNormList())
+        {
+            normQueryBuf.append(norm.getQueryFragment()).append(",");
+        }
+        String normQueryStr = normQueryBuf.toString();
+        if(normQueryStr.endsWith(","))
+        {
+            normQueryStr =normQueryStr.substring(0,(normQueryStr.length()-1));
+        }
+        return normQueryStr;
+    }
+
+    public String getDateCdnFragMent()
+    {
+        StringBuffer buf = new StringBuffer("");
+        buf.append(dateColumn).append("=").append("'").append(DateUtil.formatDate(statDate,DateUtil.FMT_YMD)).append("'");
+        return buf.toString();
+    }
+
+    //自动拼接sql
+    public String combinSql(Stat stat,Integer [] combin)
+    {
+        //后面如果有复杂sql的情况，将扩展支持sql自定义
+        StringBuffer dynDimenQueryBuf=new StringBuffer("");
+        StringBuffer dynDimenGroupBuf=new StringBuffer("");
+        StringBuffer dimenCndBuf=new StringBuffer("");
+        for(int i=0;i<stat.getDimenList().size();i++)
+        {
+            Dimen dimen = stat.getDimenList().get(i);
+            int total= combin[i];
+            String queryFlag = dimen.getQueryFlagMent(total);
+            String groupFlag =dimen.getGroupFlagment(total);
+            dynDimenQueryBuf.append(queryFlag).append(",");
+            if(!StringUtils.isBlank(groupFlag))
+            {
+                dynDimenGroupBuf.append(groupFlag).append(",");
+            }
+            dimenCndBuf.append(" and ").append(dimen.getCndFlagMent());
+        }
+        String dynDimenQuery = dynDimenQueryBuf.toString();
+        if(dynDimenQuery.endsWith(","))
+        {
+            dynDimenQuery =dynDimenQuery.substring(0,(dynDimenQuery.length()-1));
+        }
+        String dynDimenGroup =dynDimenGroupBuf.toString();
+        if(dynDimenGroup.endsWith(","))
+        {
+            dynDimenGroup =dynDimenGroup.substring(0,(dynDimenGroup.length()-1));
+        }
+        String dimenCndStr = dimenCndBuf.toString();
+        boolean hasGroup=true;
+        if(StringUtils.isBlank(dynDimenGroup))
+        {
+            hasGroup=false;
+        }
+
+        String normQueryFrag =stat.getNormQueryFragment();
+
+        StringBuffer sqlBuf = new StringBuffer("");
+        sqlBuf.append("select ").append(stat.getDateColumn()).append(",");
+        sqlBuf.append(dynDimenQuery).append(",");
+        sqlBuf.append(normQueryFrag).append(" ");
+        sqlBuf.append(" from ").append(table).append(" ");
+        sqlBuf.append(" where ").append(stat.getDateCdnFragMent());
+        sqlBuf.append(dimenCndStr);
+        if(hasGroup) {
+            sqlBuf.append(" group by ").append(dynDimenGroup);
+        }
+        String sql =sqlBuf.toString();
+        return sql;
     }
 
     public String toString()

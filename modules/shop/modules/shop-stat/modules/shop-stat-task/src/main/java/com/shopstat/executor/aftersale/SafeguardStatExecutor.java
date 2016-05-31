@@ -14,6 +14,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -28,6 +29,9 @@ public class SafeguardStatExecutor  implements IExecutor{
 
     @Autowired
     private SafeguardStatDao safeguardStatDao;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     public void exec(DateTime dateTime)
     {
@@ -85,19 +89,24 @@ public class SafeguardStatExecutor  implements IExecutor{
 
         //根据采集的数据按照各维度来生成任意维度(包括多维度组合)为全部的汇总数据
         Stat stat =genStat(dateTime, fromSources, starters, tagIds, subIds, thirdIds);
-        List<StatSafeguard> totalList =StatTotalUtil.statTotal(stat,StatSafeguard.class);
-        int totalCount = (totalList==null)?0:totalList.size();
-        logger.info("SafeguardStatExecutor genStat totalCount="+totalCount);
-        if(totalCount>0)
-        {
-            Date now = new Date();
-            for(StatSafeguard per:totalList)
-            {
-                per.setInsertTime(now);
+
+        StatTotalUtil.statTotal(stat,StatSafeguard.class,jdbcTemplate,
+            new StatTotalUtil.StatCallBack<StatSafeguard>() {
+                public void deal(List<StatSafeguard> perList) {
+                    int perCount = (perList==null)?0:perList.size();
+                    logger.info("SafeguardStatExecutor genStat perCount="+perCount);
+                    if(perCount>0)
+                    {
+                        Date now = new Date();
+                        for(StatSafeguard per:perList)
+                        {
+                            per.setInsertTime(now);
+                        }
+                        safeguardStatDao.batchInsert(perList);
+                    }
+                }
             }
-            safeguardStatDao.batchInsert(totalList);
-            totalList.clear();
-        }
+        );
 
         logger.info("SafeguardStatExecutor exec end,dateTime="+dateTime);
     }

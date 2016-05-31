@@ -93,6 +93,39 @@ public class Dimen implements Serializable {
         options.add(option);
     }
 
+    public String getGroupFlagment(int total)
+    {
+        //0表示全部
+        if(total==0)
+        {
+            return "";
+        }
+        return columnName;
+    }
+
+    public String getQueryFlagMent(int total)
+    {
+        if(total==0)
+        {
+            if(Number.class.isAssignableFrom(clazz))
+            {
+
+                return totalOption+" as "+columnName;
+            }
+            return "'"+totalOption+"' as " +columnName;
+        }
+        return columnName;
+    }
+
+    public String getCndFlagMent()
+    {
+        if(Number.class.isAssignableFrom(clazz))
+        {
+            return columnName+"<>"+totalOption;
+        }
+        return  columnName+"!='" +totalOption+"'";
+    }
+
     public String toString()
     {
         return ToStringBuilder.reflectionToString(this);

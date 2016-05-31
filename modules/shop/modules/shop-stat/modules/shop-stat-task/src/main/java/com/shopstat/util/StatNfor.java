@@ -54,6 +54,40 @@ public class StatNfor {
         return rtList;
     }
 
+    /**
+     * @param n n进制
+     * @param len 位数
+     */
+    public static List<Integer []> nfor(int n,int len) throws Exception
+    {
+        List<Integer []> rtList =new ArrayList<Integer []>();
+
+        Integer [] as = new Integer [len];
+        for (int i = 0; i < len; i++) {
+            as[i] = 0;
+        }
+        rtList.add((Integer [])DeepCopyUtil.deepCopy(as));
+        printArray(as);
+
+        while (as[0] < n) {
+            as[len-1]++;    //最后一层的循环
+            for (int i = len - 1; i > 0; i--) {
+                if (as[i] >= n) {   //n为第i层循环中，i的终值
+                    as[i-1]++;
+                    as[i] = 0;
+                }
+            }
+            if(as[0] < n)
+            {
+                rtList.add((Integer [])DeepCopyUtil.deepCopy(as));
+                printArray(as);
+            }
+        }
+        System.out.println("-------total count:"+rtList.size());
+
+        return rtList;
+    }
+
     public static void main(String args []) throws  Exception
     {
         Map<Integer,Integer> limitMaxMap =new HashMap<Integer,Integer>();

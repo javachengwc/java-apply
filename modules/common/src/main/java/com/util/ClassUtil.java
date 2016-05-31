@@ -1,12 +1,10 @@
 package com.util;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ClassUtil {
 
@@ -96,4 +94,17 @@ public class ClassUtil {
 		}
 		return signature;
 	}
+
+    public static List<Field> getAllField(Class clz)
+    {
+        List<Field> list = new ArrayList<Field>();
+        Class clazz = clz;
+        while(clazz!=null && clazz!=Object.class)
+        {
+            Field[] fields = clazz.getDeclaredFields();
+            list.addAll(Arrays.asList(fields));
+            clazz = clazz.getSuperclass();
+        }
+        return list;
+    }
 }
