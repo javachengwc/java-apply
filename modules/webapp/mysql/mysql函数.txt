@@ -12,6 +12,18 @@ mysql> select CONCAT('My', NULL, 'QL');
 mysql> select CONCAT(14.3);
 　　-> '14.3'
 
+substring_index(str,substr,count)
+  str:要处理的字符串
+  substr:分隔符
+  count:计数
+  如果count是正数，那么返回的是从左往右数，第N个分隔符的左边的全部内容
+  如果count是负数，那么就是从右边开始数，第N个分隔符右边的所有内容
+
+mysql> select substring_index('aa.bb.cc','.',1);
+　　-> 'aa'
+mysql> select substring_index('aa.bb.cc','.',-2);
+　　-> 'bb.cc'
+
 locate(substr,str)
 　返回字符串substr在字符串str第一次出现的位置(str不包含substr时返回0)
 
