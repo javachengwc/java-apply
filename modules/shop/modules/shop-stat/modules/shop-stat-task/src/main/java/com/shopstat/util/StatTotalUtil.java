@@ -2,12 +2,15 @@ package com.shopstat.util;
 
 import com.shopstat.model.vo.stat.Dimen;
 import com.shopstat.model.vo.stat.Stat;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 统计汇总工具类
@@ -29,6 +32,18 @@ public class StatTotalUtil {
     {
         List<Dimen> dimenList = stat.getDimenList();
         int n = dimenList.size();
+        //有没全部选项的维度map，1--有 0--没有
+        Map<Integer,Integer> noTotalMap = new HashMap<Integer,Integer>();
+        for(int i=0;i<n;i++)
+        {
+            Dimen dimen= dimenList.get(i);
+            int has=1;
+            if(StringUtils.isBlank(dimen.getTotalOption()))
+            {
+                has=0;
+            }
+            noTotalMap.put(i,has);
+        }
         //把每个维度可能值的组合查找出来,
         //这里优化成每个为维度全部/非全部组合查找出来,0--全部,1--非全部
         List<Integer []> combins =null;
@@ -44,8 +59,8 @@ public class StatTotalUtil {
         while(it.hasNext())
         {
             Integer [] per=it.next();
-            boolean hasTotal= totalFilter(per,0);
             //0表示全部
+            boolean hasTotal= totalFilter(per,noTotalMap,0);
             if(!hasTotal)
             {
                 it.remove();
@@ -65,19 +80,27 @@ public class StatTotalUtil {
         }
     }
 
-    public static boolean totalFilter(Integer [] combin,int totalValue)
+    public static boolean totalFilter(Integer [] combin,Map<Integer,Integer> noTotalMap,int totalValue)
     {
         boolean hasTotal=false;
+        boolean hasTotalOpt=true;
         int n =combin.length;
         for(int i=0;i<n;i++)
         {
             if( combin[i]==totalValue)
             {
                 hasTotal=true;
+            }
+            int totalOpt=noTotalMap.get(i);
+            //没有全部选项
+            if(totalOpt==0)
+            {
+                hasTotalOpt=false;
                 break;
             }
         }
-        return hasTotal;
+        boolean rt = (hasTotalOpt && hasTotal);
+        return rt;
     }
 
     public static String getArrayStr(Integer [] as)
