@@ -479,6 +479,35 @@ public class MapUtil {
         return true;
     }
 
+    public static Integer extractInt(Map<String,Object> map ,String key)
+    {
+        return extractInt(map,key,null);
+    }
+
+    public static Integer extractInt(Map<String,Object> map ,String key,Integer defNum)
+    {
+        if(map==null)
+        {
+            return null;
+        }
+        String objStr = (map.get(key)==null)?"":map.get(key).toString();
+        Integer rt= defNum;
+        if(!StringUtils.isBlank(objStr))
+        {
+            rt=Integer.parseInt(objStr);
+        }
+        return rt;
+    }
+
+    public static String extractStr(Map<String,Object> map ,String key)
+    {
+        if(map==null)
+        {
+            return null;
+        }
+        String objStr = (map.get(key)==null)?"":map.get(key).toString();
+        return objStr;
+    }
 
     public static Date extractDateTime(Map<String,Object> map ,String key)
     {
