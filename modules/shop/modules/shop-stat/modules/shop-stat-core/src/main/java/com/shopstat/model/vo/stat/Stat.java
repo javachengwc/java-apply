@@ -144,7 +144,7 @@ public class Stat implements Serializable {
             {
                 dynDimenGroupBuf.append(groupFlag).append(",");
             }
-            if(!org.apache.commons.lang.StringUtils.isBlank(dimen.getTotalOption())) {
+            if(!StringUtils.isBlank(dimen.getTotalOption())) {
                 dimenCndBuf.append(" and ").append(dimen.getCndFlagMent());
             }
         }
