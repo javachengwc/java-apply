@@ -66,6 +66,7 @@ public class StatTotalUtil {
                 it.remove();
             }
         }
+        logger.info("StatTotalUtil totalFilter combins count:"+combins.size());
         //遍历组合,进行组合查询汇总
         for(Integer [] combin:combins)
         {
@@ -87,16 +88,16 @@ public class StatTotalUtil {
         int n =combin.length;
         for(int i=0;i<n;i++)
         {
-            if( combin[i]==totalValue)
-            {
-                hasTotal=true;
-            }
             int totalOpt=noTotalMap.get(i);
-            //没有全部选项
-            if(totalOpt==0)
+            //维度没有全部选项，按对应组合列表示全部，需要过滤掉此组合
+            if(totalOpt==0 && combin[i]==totalValue)
             {
                 hasTotalOpt=false;
                 break;
+            }
+            if( combin[i]==totalValue)
+            {
+                hasTotal=true;
             }
         }
         boolean rt = (hasTotalOpt && hasTotal);
