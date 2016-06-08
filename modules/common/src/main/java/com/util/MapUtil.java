@@ -528,7 +528,7 @@ public class MapUtil {
         {
             return null;
         }
-        java.sql.Date date = (map.get(key) == null ? null : (java.sql.Date) map.get(key));
+        java.util.Date date = (map.get(key) == null ? null : (java.util.Date) map.get(key));
         if (date != null) {
             return new Date(date.getTime());
         }
