@@ -1,0 +1,27 @@
+---------------------kafka配置-------------------
+-----kafka多节点集群配置-----
+设置多个broker,配置每个broker,如果是在同一台服务器,创建多个配置文件,如果是在不同服务器,配置每台服务器kafka的配置文件
+    cp config/server.properties config/server-n.properties
+编辑各配置文件
+config/server-1.properties:
+    broker.id=1  #集群中每个节点的唯一名称
+    host.name=192.168.1.2 #本机ip
+    port=9092
+    log.dir=/tmp/kafka-logs-1
+config/server-2.properties:
+    broker.id=2
+    host.name=192.168.1.3
+    port=9093
+    log.dir=/tmp/kafka-logs-2
+启动各broker
+    bin/kafka-server-start.sh config/server-1.properties &
+    bin/kafka-server-start.sh config/server-2.properties &
+创建一个topic
+    bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 3 --partitions 1 --topic rep-topic
+查看topic状态
+    bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic rep-topic
+    Topic:rep-topic	PartitionCount:1	ReplicationFactor:3	Configs:
+    Topic:rep-topic	Partition: 0	Leader: 1	Replicas: 1,2,0	Isr: 1,2,0
+------kafka多节点集群配置------
+
+-------------------------------------------------

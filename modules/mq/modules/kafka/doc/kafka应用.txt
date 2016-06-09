@@ -1,0 +1,32 @@
+------------------------kafka应用-------------------
+kafka java api中生产者是线程安全的，在线程之间共享单个生产者实例，通常单例比多个实例快。
+Properties props = new Properties();
+props.put("bootstrap.servers", "127.0.0.1:9092");
+//ack 配置，控制请求被视为完整的标准,all--会阻塞提交完整的消息，此设置性能最低，但最可靠。
+props.put("acks", "all");
+//如果请求失败，生产者会自动重试，启用多次，会有重复消息的可能性 ,此处指定0次。
+props.put("retries", 0);
+//发送缓冲区中分批处理的批量数据大小
+props.put("batch.size", 10000);
+//默认缓冲批发送是立即发送，及时没到批数据大小，如果想减少发送请求的数量，设置 linger.ms>0。
+//指示生产者发送请求之前等待一段时间，希望更多的消息填补到同一个批次。将会有更少的，更有效的请求，在最大负荷时少量的延迟的成本
+//此处设置逗留时间1毫秒，如果send()没有填满批数据大小，此设置将增加1毫秒的延迟请求来等待更多的消息。
+//在高负载下，相近的时间一般也会组成批，不管linger.ms=0。
+props.put("linger.ms", 1);
+//buffer.memory设置生产者可用内存缓冲的总量，如果消息发送速度比传输到kafka的快，将会耗尽这个缓冲区空间。
+//当缓冲区空间耗尽，其他发送调用将被阻塞。
+//如果不想任何阻塞，可设置block.on.buffer.full=false，但这将会导致发送调用异常BufferExhaustedException。
+props.put("buffer.memory", 300000);
+props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+
+Producer<String, String> producer = new KafkaProducer<>(props);
+for(int i = 0; i < 100; i++)
+{
+    //send()方法是异步的，添加消息到缓冲区等待发送，并立即返回。这使生产者可通过批量发送消息来提高效率
+    producer.send(new ProducerRecord<String, String>("demo-topic", ""+i, ""+i));
+}
+//生产者的缓冲空间池保留尚未发送到kafka的消息，后台I/O线程负责将这些消息转化成请求发送到kafka。
+//如果使用后不关闭生产者，则会泄露(丢失)这些内存
+producer.close();
+--------------------------------------------------------

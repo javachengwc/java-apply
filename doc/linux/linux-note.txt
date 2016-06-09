@@ -3,4 +3,18 @@ date -s 05/15/2016  ---修改日期
 date -s 15:15:00    ---修改时间
 clock -w   ---强制把系统时间写入CMOS
 
+-----linux下安装jdk-----
+1,下载相应版本32或64为jdk压缩包,比如32位1.7版本jdk-7u51-linux-i586.gz
+2,cp jdk-7u51-linux-i586.gz /usr/local/jdk
+  tar -xzvf jdk-7u51-linux-i586.gz
+  rm -rf jdk-7u51-linux-i586.gz
+3,环境变量配置
+  vi /etc/profile
+  JAVA_HOME=/usr/local/jdk/jdk1.7.0_51
+  CLASSPATH=.:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar
+  PATH=$JAVA_HOME/bin:$PATH
+  export JAVA_HOME CLASSPATH PATH
+4,生效及测试
+  source /etc/profile
+  java -version
 ---------------------------------------------------------
