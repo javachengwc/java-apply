@@ -424,7 +424,7 @@ public class ExcelUtil {
         outputStream.flush();
     }
 
-    public class MakeExcelUnit
+    public static class MakeExcelUnit
     {
         private List<Map> dataList;
 
