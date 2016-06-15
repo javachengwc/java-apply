@@ -1,5 +1,7 @@
 package com.fastjson;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.model.SiteAccessInfo;
 
 import java.util.*;
@@ -12,6 +14,18 @@ public class FastMain {
     public static void main(String args [])
     {
         System.out.println("-----------fast json main start-----");
+
+        Map<Integer,Long> aa =new HashMap<Integer,Long>();
+        aa.put(1,200l);
+        aa.put(2,10000l);
+        String aaStr =JSON.toJSONString(aa);
+        System.out.println("aa:" + aaStr);
+        JSONObject jobj =JSON.parseObject(aaStr);
+        Set<String> ids =jobj.keySet();
+        for(String id:ids)
+        {
+            System.out.println("id="+id+",value="+jobj.getString(id));
+        }
 
         Map<String, String> map1 = new HashMap<String, String>();
         map1.put("name", "Alexia");

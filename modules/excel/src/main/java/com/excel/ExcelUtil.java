@@ -13,9 +13,7 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.net.URL;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
   *HSSFWorkbook:是操作Excel2003以前（包括2003）的版本，扩展名是.xls
@@ -366,5 +364,139 @@ public class ExcelUtil {
         return wb;
     }
 
+    public static void download(List<MakeExcelUnit> list, OutputStream outputStream) throws IOException {
 
+        if(list==null)
+        {
+            return;
+        }
+        if(!LinkedList.class.isAssignableFrom(list.getClass()))
+        {
+            Collections.sort(list, new Comparator<MakeExcelUnit>() {
+                public int compare(MakeExcelUnit unit1, MakeExcelUnit unit2) {
+                    int s1 = unit1.getSheetSort();
+                    int s2 = unit2.getSheetSort();
+                    if (s1 < s2) {
+                        return -1;
+                    }
+                    if (s1 > s2) {
+                        return 1;
+                    }
+                    return 0;
+                }
+            });
+        }
+        HSSFWorkbook workbook =new HSSFWorkbook();
+        for(MakeExcelUnit unit:list) {
+            HSSFSheet sheet = workbook.createSheet(unit.getSheetname());
+            String [] title = unit.getFidleNames();
+            String [] key =unit.getKeys();
+            List<Map> values =unit.getDataList();
+            HSSFRow row = null;
+            HSSFCell cell = null;
+            //title
+            row = sheet.createRow((int) 0);
+            for (int i = 0; title != null && i < title.length; i++) {
+                cell = row.createCell(i);
+                cell.setCellType(HSSFCell.CELL_TYPE_STRING);
+                cell.setCellValue(new HSSFRichTextString(title[i]));
+            }
+            if(values!=null) {
+                for (int i = 0; values != null && i < values.size(); i++) {
+                    row = sheet.createRow((int) (i + 1));
+                    Map map = values.get(i);
+                    for (int j = 0; j < key.length; j++) {
+                        cell = row.createCell(j);
+                        if (map.get(key[j]) == null) {
+                            cell.setCellValue(new HSSFRichTextString(""));
+                        } else {
+                            try {
+                                setCellValue(workbook, sheet, cell, map.get(key[j]));
+                            } catch (Exception e) {
+                                System.out.println("download  mult sheet exception");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        workbook.write(outputStream);
+        outputStream.flush();
+    }
+
+    public class MakeExcelUnit
+    {
+        private List<Map> dataList;
+
+        private String[] fidleNames;
+
+        private String[] keys;
+
+        private String sheetname;
+
+        private int sheetSort;
+
+        private String fileName;
+
+        public MakeExcelUnit()
+        {
+
+        }
+
+        public MakeExcelUnit(List<Map> dataList,String[] fidleNames,String keys[],String fileName)
+        {
+            this.dataList=dataList;
+            this.fidleNames=fidleNames;
+            this.keys=keys;
+            this.fileName=fileName;
+        }
+
+        public List<Map> getDataList() {
+            return dataList;
+        }
+
+        public void setDataList(List<Map> dataList) {
+            this.dataList = dataList;
+        }
+
+        public String[] getFidleNames() {
+            return fidleNames;
+        }
+
+        public void setFidleNames(String[] fidleNames) {
+            this.fidleNames = fidleNames;
+        }
+
+        public String[] getKeys() {
+            return keys;
+        }
+
+        public void setKeys(String[] keys) {
+            this.keys = keys;
+        }
+
+        public String getSheetname() {
+            return sheetname;
+        }
+
+        public void setSheetname(String sheetname) {
+            this.sheetname = sheetname;
+        }
+
+        public int getSheetSort() {
+            return sheetSort;
+        }
+
+        public void setSheetSort(int sheetSort) {
+            this.sheetSort = sheetSort;
+        }
+
+        public String getFileName() {
+            return fileName;
+        }
+
+        public void setFileName(String fileName) {
+            this.fileName = fileName;
+        }
+    }
 }
