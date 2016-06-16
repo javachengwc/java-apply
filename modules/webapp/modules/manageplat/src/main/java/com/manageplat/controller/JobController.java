@@ -75,7 +75,8 @@ public class JobController {
             return makeErrorResponse("1","任务名称不能为空",result);
        }
        if(job.getId()==null|| job.getId()<=0){
-           int jobId=jobService.getJobIdByJobName(job.getJobName());
+           JobInfo joba =jobService.getJob(job.getJobName());
+           int jobId= (joba==null)?0:joba.getId();
            if(jobId<=0){
                return new BaseResponse(1,"不存在名称为:"+job.getJobName()+"的任务");
            }
@@ -104,7 +105,8 @@ public class JobController {
     	   return makeErrorResponse("1","任务状态不能为空",result);
        }
        if(job.getId()==null || job.getId()<=0){
-           int jobId=jobService.getJobIdByJobName(job.getJobName());
+           JobInfo joba =jobService.getJob(job.getJobName());
+           int jobId= (joba==null)?0:joba.getId();
            if(jobId<=0){
                return new BaseResponse(1,"不存在名称为:"+job.getJobName()+"的任务");
            }
@@ -124,7 +126,8 @@ public class JobController {
             return makeErrorResponse("1","任务ID,任务名称不能都为空",result);
         }
         if(jobInfo.getId()==null||jobInfo.getId()<=0){
-            int jobId=jobService.getJobIdByJobName(jobInfo.getJobName());
+            JobInfo joba =jobService.getJob(jobInfo.getJobName());
+            int jobId= (joba==null)?0:joba.getId();
             if(jobId<=0){
                 return createJob(jobInfo,request);
             }else
@@ -147,7 +150,8 @@ public class JobController {
             return makeErrorResponse("1","任务ID,任务名称不能都为空",result);
         }
         if(jobInfo.getId()==null || jobInfo.getId()<=0){
-            int jobId=jobService.getJobIdByJobName(jobInfo.getJobName());
+            JobInfo joba =jobService.getJob(jobInfo.getJobName());
+            int jobId= (joba==null)?0:joba.getId();
             if(jobId<=0){
                 return new BaseResponse(1,"不存在名称为:"+jobInfo.getJobName()+"的任务");
             }
@@ -184,7 +188,7 @@ public class JobController {
     	if( jobExecute.getId()<=0 ){
             return new BaseResponse(1,"任务记录ID不能为空");
         }
-        if(jobExecute.getStatus()==null){
+        if(jobExecute.getState()==null){
             return new BaseResponse(1,"此次执行结果不能为空");
         }
         
@@ -194,7 +198,7 @@ public class JobController {
         
         return rsp;
     }
-    
+
     @RequestMapping("uptJobExeNote")
     @ResponseBody
     public Object uptJobExeNote(JobExecute jobExecute,HttpServletRequest request){
@@ -206,11 +210,11 @@ public class JobController {
             return makeErrorResponse("1","备注不能为空",result);
         }
         //warpJobExecute(jobExecute,request);
-        return jobService.updateNote(jobExecute);
+        return jobService.uptJobExecute(jobExecute);
     }
 
     private void warpJobExecute(JobExecute jobExecute,HttpServletRequest request) {
-        jobExecute.setStatus(0); //0--已开始
+        jobExecute.setState(0); //0--已开始
         jobExecute.setIp(RequestUtil.getIpFromRequest(request));
         jobExecute.setStartTime(SysDateTime.getNow());
     }
@@ -302,13 +306,12 @@ public class JobController {
     @RequestMapping("queryJob")
     @ResponseBody
     public Object queryJob(Integer id,String jobName){
-    	
-    	JobInfo info = jobService.queryJobInFo(id,jobName);
+
+        JobInfo job = jobService.queryJobByIdOrName(id,jobName);
         Map<String,Object> result = new HashMap<String,Object>();
     	result.put("error", 0);
-        result.put("data", info);
+        result.put("data", job);
         return result;
-    	
     }
 
     @RequestMapping("queryAllJob")
@@ -416,88 +419,6 @@ public class JobController {
     	jobMonitService.monitJob(jobExecuteId);
     	return new BaseResponse(0 , "success");
     }
-    
-    @RequestMapping("getUnNormalJobs")
-    @ResponseBody
-    public Object getUnNormalJobs(Integer perTime,String format,HttpServletResponse response)
-    {
-    	List<JobInfo> list = jobMonitService.queryUnNormalJobs(perTime);
-    	if(!StringUtils.isBlank(format) && "json".equals(format))
-    	{
-    		Map<String,Object> result = new HashMap<String,Object>(2);
-    		result.put("error", 0);
-        	result.put("data",list);
-        	return result;
-    	}
-    	String text=transToText(list);
-    	HttpRenderUtil.renderText(text, response);
-    	return null;
-    }
-    
-    public String transToText(List<JobInfo> list)
-    {
-    	
-    	if(list==null || list.size()<=0)
-    	{
-    		return "";
-    	}
-    	StringBuffer buf = new StringBuffer("");
-    	for(JobInfo info:list)
-    	{
-    		buf.append(info.getJobName()).append("#").append(info.getLastedMonitTime()).append("#")
-    		   .append(info.getMonitResult()).append("#").append(info.getRelator()).append("\r");
-    	}
-    	return buf.toString();
-    }
-    
-    @RequestMapping("queryJobPage")
-    @ResponseBody
-    public Object queryJobPage(String type,String status,Long pageNo,Long pageSize,Integer monitTime) 
-    {
-    	if(pageNo==null)
-    	{
-    		pageNo=1l;
-    	}
-    	if(pageSize==null)
-    	{
-    		pageSize=50l;
-    	}
-    	long start = (pageNo-1)*pageSize;
-    	
-    	Map<String,Object> result = new HashMap<String,Object>(2);
-    	List<JobInfo> list = jobService.queryJobPage(type,status,start,pageSize,monitTime);
-    	result.put("error", 0);
-    	result.put("data",list);
-    	return result;
-    }
-    
-   @RequestMapping("queryJobExePage")
-   @ResponseBody
-   public Object queryJobExePage(Integer jobId,Integer queryStartTime,Integer queryStartOverTime,
-   		Integer queryCompareEndTime,Integer pageNo,Integer pageSize) {
-	     
-	    if(jobId==null)
-	    {
-	    	return new BaseResponse(1,"参数异常");
-	    }
-	   
-	    if(pageNo==null)
-	   	{
-	   		pageNo=1;
-	   	}
-	   	if(pageSize==null)
-	   	{
-	   		pageSize=50;
-	   	}
-	   	int start = (pageNo-1)*pageSize;
-	   	
-	   	Map<String,Object> result = new HashMap<String,Object>(2);
-	   	List<JobExecute> list = jobService.queryJobExecutePage(jobId,queryStartTime,queryStartOverTime,
-	   			queryCompareEndTime,start,pageSize);
-	   	result.put("error", 0);
-	   	result.put("data",list);
-	   	return result;
-   }
    
    @RequestMapping("getMonitJobsCount")
    @ResponseBody

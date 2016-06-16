@@ -82,7 +82,7 @@ public class HttpJobHandler {
 			}
 			if (pass.getError() == null || 0 != pass.getError().intValue()) {
 				JobExecute jobExecute = new JobExecute();
-				jobExecute.setStatus(2);//未执行--2
+				jobExecute.setState(2);//未执行--2
 				jobExecute.setStartTime(new Long(beginTime).intValue());
 				jobExecute.setEndTime(new Long(
 						System.currentTimeMillis() / 1000).intValue());
@@ -114,7 +114,7 @@ public class HttpJobHandler {
 				if (!"0".equals(loginRt.get("error"))) {
 					// 登陆失败;
 					JobExecute jobExecute = new JobExecute();
-					jobExecute.setStatus(3);//登陆失败--3
+					jobExecute.setState(3);//登陆失败--3
 					jobExecute.setStartTime(new Long(beginTime).intValue());
 					jobExecute.setEndTime(new Long(
 							System.currentTimeMillis() / 1000).intValue());
@@ -187,7 +187,7 @@ public class HttpJobHandler {
 					 logger.error("HttpJobHandler do job return,returnStatus="+returnStatus+",returnBody=" + returnValue);
 					 JobExecute jobExecute = new JobExecute();
 					 jobExecute.setId(jobExecuteId);
-					 jobExecute.setStatus(returnStatus);//http-return code
+					 jobExecute.setState(returnStatus);//http-return code
 					 
 					 int length =( (returnValue.length()>150)?150:returnValue.length());
 					 jobExecute.setNote(returnValue.substring(0,length));
@@ -253,7 +253,7 @@ public class HttpJobHandler {
 		public int recordExecuteInfo() {
 			int jobExeId = 0;
 			JobExecute jobExecute = new JobExecute();
-			jobExecute.setStatus(4);//定时到点执行---4
+			jobExecute.setState(4);//定时到点执行---4
 			jobExecute.setStartTime(new Long(beginTime).intValue());
 			jobExecute.setJobId(jobInfo.getId());
 			jobExecute.setJobName(jobInfo.getJobName());

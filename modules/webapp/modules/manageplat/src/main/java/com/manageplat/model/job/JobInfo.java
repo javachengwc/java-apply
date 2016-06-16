@@ -30,7 +30,7 @@ public class JobInfo implements Serializable {
     private String ip;
     
     //心跳时间
-    private int runTime=0;
+    private Integer runTime;
     
     private String runer;
     
@@ -141,11 +141,11 @@ public class JobInfo implements Serializable {
         this.ip = ip;
     }
 
-    public int getRunTime() {
+    public Integer getRunTime() {
         return runTime;
     }
 
-    public void setRunTime(int runTime) {
+    public void setRunTime(Integer runTime) {
         this.runTime = runTime;
     }
 

@@ -31,6 +31,8 @@ cd ..../bin
    mvn clean  compile dependency:copy-dependencies install  -Dmaven.test.skip=true
 ---maven通过jetty插件启动web
    mvn -Djetty.port=1001  jetty:run
+---查看maven依赖树
+   mvn dependency:tree
 ----------其他相关-------------------------------
 ---移除下载失败的jar包
    find ~/.m2 -name "*.lastUpdated" -exec grep -q "Could not transfer" {} \; -print -exec rm {} \;

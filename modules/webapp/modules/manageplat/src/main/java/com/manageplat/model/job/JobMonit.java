@@ -13,7 +13,7 @@ public class JobMonit {
 	private Integer jobId;
 	
 	//监控时间
-	private int recordTime;
+	private Integer recordTime;
 	
 	private Integer result;//0---正常，1---未正常执行 2---正常执行了但未执行成功
 	
@@ -36,11 +36,11 @@ public class JobMonit {
 		this.jobId = jobId;
 	}
 
-	public int getRecordTime() {
+	public Integer getRecordTime() {
 		return recordTime;
 	}
 
-	public void setRecordTime(int recordTime) {
+	public void setRecordTime(Integer recordTime) {
 		this.recordTime = recordTime;
 	}
 

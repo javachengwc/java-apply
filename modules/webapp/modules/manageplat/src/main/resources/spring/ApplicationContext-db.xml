@@ -65,6 +65,7 @@
         <property name="mapperLocations">
             <array>
                 <value>classpath*:mybatis/sqlmap/*.xml</value>
+                <value>classpath*:mybatis/sqlmap/**/*.xml</value>
             </array>
         </property>
     </bean>
@@ -75,7 +76,7 @@
     </bean>
 
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="com.manageplat.model.mapper"/>
+        <property name="basePackage" value="com.manageplat.model.mapper,com.manageplat.dao"/>
         <property name="sqlSessionTemplateBeanName" value="sqlSessionTemplate"/>
     </bean>
 

@@ -8,17 +8,17 @@ import org.apache.commons.lang.builder.ToStringStyle;
  */
 public class JobExecute {
 	
-	private int    id;
+	private Integer id;
 	
-	private int    jobId;
+	private Integer jobId;
 	
-	private int    startTime;
+	private Integer startTime;
 	
-	private Integer    endTime;
+	private Integer endTime;
 	
-	private Integer status;
+	private Integer state;
     
-	private String opreater;
+	private String operator;
     
     private String ip;
     
@@ -28,29 +28,29 @@ public class JobExecute {
     
     private String expression;
 
-    private transient Integer result;
+    private Integer result;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public int getJobId() {
+    public Integer getJobId() {
         return jobId;
     }
 
-    public void setJobId(int jobId) {
+    public void setJobId(Integer jobId) {
         this.jobId = jobId;
     }
 
-    public int getStartTime() {
+    public Integer getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(int startTime) {
+    public void setStartTime(Integer startTime) {
         this.startTime = startTime;
     }
 
@@ -62,20 +62,20 @@ public class JobExecute {
         this.endTime = endTime;
     }
 
-    public Integer getStatus() {
-        return status;
+    public Integer getState() {
+        return state;
     }
 
-    public void setStatus(Integer status) {
-        this.status = status;
+    public void setState(Integer state) {
+        this.state = state;
     }
 
-    public String getOpreater() {
-        return opreater;
+    public String getOperator() {
+        return operator;
     }
 
-    public void setOpreater(String opreater) {
-        this.opreater = opreater;
+    public void setOperator(String operator) {
+        this.operator = operator;
     }
 
     public String getIp() {

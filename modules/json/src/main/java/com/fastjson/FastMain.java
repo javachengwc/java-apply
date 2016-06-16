@@ -26,6 +26,13 @@ public class FastMain {
         {
             System.out.println("id="+id+",value="+jobj.getString(id));
         }
+        String str ="{\"3-23\":300,7:-700,\"3-22\":\"-33\"}";
+        jobj =JSON.parseObject(str);
+        ids =jobj.keySet();
+        for(String id:ids)
+        {
+            System.out.println("id="+id+",value="+jobj.getString(id));
+        }
 
         Map<String, String> map1 = new HashMap<String, String>();
         map1.put("name", "Alexia");

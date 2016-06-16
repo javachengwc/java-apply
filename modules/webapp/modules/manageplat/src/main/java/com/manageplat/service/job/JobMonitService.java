@@ -69,36 +69,6 @@ public class JobMonitService {
 		//待实现
 		return list;
 	}
-	
-	/**
-	 * 查询近期内不正常的job
-	 * @return
-	 */
-	public List<JobInfo> queryUnNormalJobs(Integer perTime)
-	{
-		int lastedMonitTime = SysDateTime.getNow();
-		if(perTime!=null)
-		{
-			lastedMonitTime =lastedMonitTime-perTime*60;
-		}else
-		{
-			lastedMonitTime =lastedMonitTime-SAMPLING_TINE;
-		}
-		List<JobInfo> list= jobService.queryUnNormalJobs(lastedMonitTime);
-		if(list!=null && list.size()>0)
-		{
-			Iterator<JobInfo> it = list.iterator();
-			while(it.hasNext())
-			{
-				JobInfo info = it.next();
-				if(StringUtils.isBlank(info.getRelator()))
-				{
-					it.remove();
-				}
-			}
-		}
-		return list;
-	}
 
 	/**
 	 * 监控检测任务状况
@@ -109,38 +79,12 @@ public class JobMonitService {
 		int start =now -SAMPLING_TINE;
 		int queryEnd =now;
 		
-        List<JobInfo> list = new ArrayList<JobInfo>();
-		
-		long pageSize=200;
-		long pageStart =0;
-		int addCount =0;
-		while(true)
-		{
-            List<JobInfo> pageList =jobService.queryJobPage(null,null, pageStart,pageSize,null);
-            int count = ( (pageList==null)?0:pageList.size() );
-            addCount+=count;
-            if(count>0)
-            {
-	     	    list.addAll(pageList);
-            }
-            if(addCount>=doPerCount)
-            {
-            	exeJobMonit(list,start,queryEnd);
-            	list = new ArrayList<JobInfo>();
-            	addCount=0;
-            }
-	     	if(count<pageSize)
-	     	{
-	     		break;
-	     	}
-	     	pageStart =pageStart+pageSize; 
-	     	
-		}
+        List<JobInfo> list = jobService.queryAllJobInfo();
 		if(list!=null && list.size()>0)
-		{
-			exeJobMonit(list,start,queryEnd);
-		}
-		
+        {
+            exeJobMonit(list,start,queryEnd);
+        }
+
 		if(jobExecuteId!=null)
 		{   
 			waitTaskComplete();
@@ -148,7 +92,7 @@ public class JobMonitService {
 			int end = SysDateTime.getNow();
 			JobExecute jobExecute = new JobExecute();
 			jobExecute.setId(jobExecuteId);
-			jobExecute.setStatus(1);//成功
+			jobExecute.setState(1);//成功
 			StringBuffer buf = new StringBuffer();
 			buf.append("监控开始:").append(start).append(",");
 			buf.append("结束:").append(end).append(",");
@@ -365,7 +309,7 @@ public class JobMonitService {
     			while(it.hasNext())
     			{
     				JobExecute exeInfo = it.next();
-    				if(2==exeInfo.getStatus())
+    				if(2==exeInfo.getState())
     				{
                         //未执行
     					it.remove();
@@ -407,7 +351,7 @@ public class JobMonitService {
     		{
     			for(JobExecute e:exeList)
     			{
-    				Integer exeStatus =e.getStatus();
+    				Integer exeStatus =e.getState();
     				if(exeStatus!=null && 2==exeStatus)
 					{
                         //2--未执行

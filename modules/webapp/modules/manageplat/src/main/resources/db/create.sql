@@ -98,3 +98,79 @@ values(3,'统计日期','partitiontime',1,1,1),(3,'用户ID','user_id',0,1,2);
 
 insert into ty_entity_item(entity_id,item_name,item_col,sort,format)
 values(2,'ID','id',1,''),(2,'行为名称','name',2,''),(2,'行为标识','name_ch',3,'');
+
+create table job_info
+(
+    id int auto_increment,
+    parent_id int comment '父任务id',
+    job_name varchar(128) comment '任务名',
+    job_status int comment '任务状态',
+    expression varchar(32) comment '任务表达式(crontab)',
+    creater varchar(32) comment '创建者',
+    create_time int comment '创建时间(秒)',
+    type varchar(32) comment '类型',
+    exe_url varchar(128) comment '执行url',
+    run_status varchar(32) comment '执行状态',
+    ip varchar(32) comment '执行应用的ip',
+    run_time int comment '心跳时间',
+    runer varchar(32) comment '执行者',
+    code varchar(32),
+    relator varchar(32) comment '任务联系人',
+    is_call_back int comment '任务是否有回调 0--无  1--有',
+    plan_cost_time int comment '预计执行时间(秒)',
+    lasted_monit_time int comment '监控时间',
+    monit_result int comment '监控结果',
+    primary key (id),
+    key parent_id(parent_id),
+    key job_name(job_name)
+) engine Innodb default charset utf8 comment '任务表';
+
+create table job_drive
+(
+    id int auto_increment,
+    job_id int comment '任务id',
+    record_time int comment '记录时间',
+    opt_flag int comment '操作标记,0--任务驱动开始,1--任务结束',
+    result int comment '结果 0--成功,1--失败',
+    note varchar(128) comment '备注',
+    driver varchar(32) comment '操作人',
+    primary key (id),
+    key job_id(job_id),
+    key record_time(record_time)
+) engine Innodb default charset utf8 comment '任务驱动表';
+
+create table job_execute
+(
+    id int auto_increment,
+    job_id int comment '任务id',
+    job_name varchar(128) comment '任务名',
+    start_time int comment '开始时间',
+    end_time int comment '结束时间',
+    state int comment '状态 0--开始,1---完成',
+    expression varchar(32) comment '任务表达式',
+    operator varchar(32) comment '操作者',
+    ip varchar(32) comment '执行应用的ip',
+    note varchar(128) comment '备注',
+    result int comment '执行结果',
+    primary key (id),
+    key job_id(job_id),
+    key job_name(job_name),
+    key start_time(start_time)
+) engine Innodb default charset utf8 comment '任务执行表';
+
+create table job_monit
+(
+    id int auto_increment,
+    job_id int comment '任务id',
+    record_time int comment '记录时间',
+    result int comment '结果 0--正常,1---未正常执行 2---正常执行了但未执行成功',
+    note varchar(128) comment '备注',
+    primary key (id),
+    key job_id(job_id),
+    key record_time(record_time)
+) engine Innodb default charset utf8 comment '任务监控表';
+
+
+
+
+

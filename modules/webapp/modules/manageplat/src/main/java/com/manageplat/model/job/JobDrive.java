@@ -12,7 +12,7 @@ public class JobDrive {
 	private Integer jobId;
 	
 	//记录时间
-	private int recordTime;
+	private Integer recordTime;
 	
 	//操作标记
 	private Integer optFlag;//0  ---任务驱动开始 1---任务结束
@@ -42,11 +42,11 @@ public class JobDrive {
 		this.jobId = jobId;
 	}
 
-	public int getRecordTime() {
+	public Integer getRecordTime() {
 		return recordTime;
 	}
 
-	public void setRecordTime(int recordTime) {
+	public void setRecordTime(Integer recordTime) {
 		this.recordTime = recordTime;
 	}
 
