@@ -6,7 +6,7 @@
         <id column="id" property="id" jdbcType="INTEGER" />
         <result column="parent_id" property="parentId" jdbcType="INTEGER" />
         <result column="job_name" property="jobName" jdbcType="VARCHAR" />
-        <result column="job_status" property="job_status" jdbcType="INTEGER" />
+        <result column="job_status" property="jobStatus" jdbcType="INTEGER" />
         <result column="expression" property="expression" jdbcType="VARCHAR" />
         <result column="creater" property="creater" jdbcType="VARCHAR" />
         <result column="create_time" property="createTime" jdbcType="INTEGER" />
