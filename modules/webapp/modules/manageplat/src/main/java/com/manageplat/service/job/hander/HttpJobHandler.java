@@ -192,7 +192,7 @@ public class HttpJobHandler {
 					 int length =( (returnValue.length()>150)?150:returnValue.length());
 					 jobExecute.setNote(returnValue.substring(0,length));
 					 
-					 jobService.endJobExecute(jobExecute);
+					 jobService.uptJobExecute(jobExecute);
 				}
 			} catch (Exception e) {
 				logger.error("HttpJobHandler execute htttclient  url=" + exeUrl, e);

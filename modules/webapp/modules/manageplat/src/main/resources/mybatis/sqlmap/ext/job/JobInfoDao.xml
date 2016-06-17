@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.manageplat.dao.job.impl.JobInfoDaoImpl" >
+
+    <resultMap id="BaseResultMap" type="com.manageplat.model.job.JobInfo" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+        <result column="job_name" property="jobName" jdbcType="VARCHAR" />
+        <result column="job_status" property="job_status" jdbcType="INTEGER" />
+        <result column="expression" property="expression" jdbcType="VARCHAR" />
+        <result column="creater" property="creater" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="INTEGER" />
+        <result column="type" property="type" jdbcType="VARCHAR" />
+        <result column="exe_url" property="exeUrl" jdbcType="VARCHAR" />
+        <result column="run_status" property="runStatus" jdbcType="VARCHAR" />
+        <result column="ip" property="ip" jdbcType="VARCHAR" />
+        <result column="run_time" property="runTime" jdbcType="INTEGER" />
+        <result column="runer" property="runer" jdbcType="VARCHAR" />
+        <result column="code" property="code" jdbcType="VARCHAR" />
+        <result column="relator" property="relator" jdbcType="VARCHAR" />
+        <result column="is_call_back" property="isCallBack" jdbcType="INTEGER" />
+        <result column="plan_cost_time" property="planCostTime" jdbcType="INTEGER" />
+        <result column="lasted_monit_time" property="lastedMonitTime" jdbcType="INTEGER" />
+        <result column="monit_result" property="monitResult" jdbcType="INTEGER" />
+    </resultMap>
+
+    <insert id="insert" parameterType="com.manageplat.model.job.JobInfo">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into job_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">
+                parent_id,
+            </if>
+            <if test="jobName != null">
+                job_name,
+            </if>
+            <if test="jobStatus != null">
+                job_status,
+            </if>
+            <if test="expression != null">
+                expression,
+            </if>
+            <if test="creater != null">
+                creater,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="exeUrl != null">
+                exe_url,
+            </if>
+            <if test="runStatus != null">
+                run_status,
+            </if>
+            <if test="ip != null">
+                ip,
+            </if>
+            <if test="runTime != null">
+                run_time,
+            </if>
+            <if test="runer != null">
+                runer,
+            </if>
+            <if test="code != null">
+                code,
+            </if>
+            <if test="relator != null">
+                relator,
+            </if>
+            <if test="isCallBack != null">
+                is_call_back,
+            </if>
+            <if test="planCostTime != null">
+                plan_cost_time,
+            </if>
+            <if test="lastedMonitTime != null">
+                lasted_monit_time,
+            </if>
+            <if test="monitResult != null">
+                monit_result,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">
+                #{parentId},
+            </if>
+            <if test="jobName != null">
+                #{jobName},
+            </if>
+            <if test="jobStatus != null">
+                #{jobStatus},
+            </if>
+            <if test="expression != null">
+                #{expression},
+            </if>
+            <if test="creater != null">
+                #{creater},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="type != null">
+                #{type},
+            </if>
+            <if test="exeUrl != null">
+                #{exeUrl},
+            </if>
+            <if test="runStatus != null">
+                #{runStatus},
+            </if>
+            <if test="ip != null">
+                #{ip},
+            </if>
+            <if test="runTime != null">
+                #{runTime},
+            </if>
+            <if test="runer != null">
+                #{runer},
+            </if>
+            <if test="code != null">
+                #{code},
+            </if>
+            <if test="relator != null">
+                #{relator},
+            </if>
+            <if test="isCallBack != null">
+                #{isCallBack},
+            </if>
+            <if test="planCostTime != null">
+                #{planCostTime},
+            </if>
+            <if test="lastedMonitTime != null">
+                #{lastedMonitTime},
+            </if>
+            <if test="monitResult != null">
+                #{monitResult},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateSelectiveById" parameterType="com.manageplat.model.job.JobInfo">
+        update job_info
+        set
+        <trim prefix="" suffix="" suffixOverrides=",">
+            <if test="parentId != null">
+                parent_id=#{parentId},
+            </if>
+            <if test="jobName != null and jobName!=''">
+                job_name=#{jobName},
+            </if>
+            <if test="jobStatus != null">
+                job_status=#{jobStatus},
+            </if>
+            <if test="expression != null and expression!=''">
+                expression=#{expression},
+            </if>
+            <if test="creater != null  and creater!='' ">
+                creater=#{creater},
+            </if>
+            <if test="createTime != null">
+                create_time=#{createTime},
+            </if>
+            <if test="type != null and type!='' ">
+                type=#{type},
+            </if>
+            <if test="exeUrl != null and exeUrl!=''  ">
+                exe_url=#{exeUrl},
+            </if>
+            <if test="runStatus != null  and runStatus!='' ">
+                run_status=#{runStatus},
+            </if>
+            <if test="ip != null  and ip!=''">
+                ip=#{ip},
+            </if>
+            <if test="runTime != null">
+                run_time=#{runTime},
+            </if>
+            <if test="runer != null and runer!='' ">
+                runer=#{runer},
+            </if>
+            <if test="code != null and code!='' ">
+                code=#{code},
+            </if>
+            <if test="relator != null and relator!=''">
+                relator=#{relator},
+            </if>
+            <if test="isCallBack != null">
+                is_call_back=#{isCallBack},
+            </if>
+            <if test="planCostTime != null">
+                plan_cost_time=#{planCostTime},
+            </if>
+            <if test="lastedMonitTime != null">
+                lasted_monit_time=#{lastedMonitTime},
+            </if>
+            <if test="monitResult != null">
+                monit_result=#{monitResult},
+            </if>
+        </trim>
+        where  id=#{id}
+    </update>
+
+    <select id="queryPage" resultMap="BaseResultMap" parameterType="com.manageplat.model.vo.job.JobQueryVo">
+        select * from job_info
+        <where>
+            <if test="id!=null ">
+                and id = #{id}
+            </if>
+            <if test="jobName!=null and jobName!='' ">
+                and job_name = #{jobName}
+            </if>
+            <if test="jobStatus!=null">
+                and job_status = #{jobStatus}
+            </if>
+            <if test="creater!=null and creater!='' ">
+                and creater = #{creater}
+            </if>
+            <if test="type!=null and type!='' ">
+                and type = #{type}
+            </if>
+            <if test="runStatus!=null and runStatus!='' ">
+                and run_status = #{runStatus}
+            </if>
+            <if test="code!=null and code!='' ">
+                and code = #{code}
+            </if>
+            <if test="relator!=null and relator!='' ">
+                and relator = #{relator}
+            </if>
+            <if test="createTimeBegin!=null and createTimeBegin!=''">
+                and create_time >= #{createTimeBegin}
+            </if>
+            <if test="createTimeEnd!=null  and createTimeEnd!='' ">
+                <![CDATA[ and create_time<= #{createTimeEnd} ]]>
+            </if>
+        </where>
+        <if test="start != null and rows != null">
+            limit ${start},${rows}
+        </if>
+    </select>
+
+    <select id="count" resultType="java.lang.Integer" parameterType="com.manageplat.model.vo.job.JobQueryVo">
+        select count(1) as cnt from job_info
+        <where>
+            <if test="id!=null ">
+                and id = #{id}
+            </if>
+            <if test="jobName!=null and jobName!='' ">
+                and job_name = #{jobName}
+            </if>
+            <if test="jobStatus!=null">
+                and job_status = #{jobStatus}
+            </if>
+            <if test="creater!=null and creater!='' ">
+                and creater = #{creater}
+            </if>
+            <if test="type!=null and type!='' ">
+                and type = #{type}
+            </if>
+            <if test="runStatus!=null and runStatus!='' ">
+                and run_status = #{runStatus}
+            </if>
+            <if test="code!=null and code!='' ">
+                and code = #{code}
+            </if>
+            <if test="relator!=null and relator!='' ">
+                and relator = #{relator}
+            </if>
+            <if test="createTimeBegin!=null and createTimeBegin!=''">
+                and create_time >= #{createTimeBegin}
+            </if>
+            <if test="createTimeEnd!=null  and createTimeEnd!='' ">
+                <![CDATA[ and create_time<= #{createTimeEnd} ]]>
+            </if>
+        </where>
+    </select>
+
+    <select id="getJobById" resultMap="BaseResultMap" parameterType="java.util.Map">
+        select * from job_info
+        where id=#{id}
+    </select>
+
+    <select id="getJobByName" resultMap="BaseResultMap" parameterType="java.util.Map">
+        select * from job_info
+        where name=#{name}
+    </select>
+
+    <select id="querySubJob" resultMap="BaseResultMap" parameterType="java.util.Map">
+        select * from job_info
+        where parent_id=#{parentId}
+    </select>
+
+    <update id="uptLockRunStatus" parameterType="java.util.Map">
+        update job_info
+        set run_status=#{runStatus}
+        where  id=#{id} and run_status=#{cdnRunStatus}
+    </update>
+
+</mapper>

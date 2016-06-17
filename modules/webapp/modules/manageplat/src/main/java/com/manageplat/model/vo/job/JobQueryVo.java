@@ -1,8 +1,11 @@
 package com.manageplat.model.vo.job;
 
+import com.util.date.DateUtil;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * job查询条件类
@@ -25,7 +28,9 @@ public class JobQueryVo implements Serializable {
 
     private String relator;
 
-    private Integer lastedMonitTime;
+    private String createTimeBegin;
+
+    private String createTimeEnd;
 
     private Integer page;
 
@@ -97,12 +102,20 @@ public class JobQueryVo implements Serializable {
         this.relator = relator;
     }
 
-    public Integer getLastedMonitTime() {
-        return lastedMonitTime;
+    public String getCreateTimeBegin() {
+        return createTimeBegin;
     }
 
-    public void setLastedMonitTime(Integer lastedMonitTime) {
-        this.lastedMonitTime = lastedMonitTime;
+    public void setCreateTimeBegin(String createTimeBegin) {
+        this.createTimeBegin = createTimeBegin;
+    }
+
+    public String getCreateTimeEnd() {
+        return createTimeEnd;
+    }
+
+    public void setCreateTimeEnd(String createTimeEnd) {
+        this.createTimeEnd = createTimeEnd;
     }
 
     public Integer getPage() {
@@ -142,6 +155,30 @@ public class JobQueryVo implements Serializable {
         }
         if (start < 0) {
             start = 0;
+        }
+    }
+
+    public void genDate()
+    {
+        if(!StringUtils.isBlank(createTimeBegin))
+        {
+            try {
+                Date begin = DateUtil.getDate(createTimeBegin,DateUtil.FMT_YMD);
+                createTimeBegin = ""+(begin.getTime()/1000);
+            }catch(Exception e)
+            {
+
+            }
+        }
+        if(!StringUtils.isBlank(createTimeEnd))
+        {
+            try {
+                Date end = DateUtil.getDate(createTimeEnd,DateUtil.FMT_YMD);
+                createTimeEnd = ""+(end.getTime()/1000);
+            }catch(Exception e)
+            {
+
+            }
         }
     }
 

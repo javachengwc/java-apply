@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.manageplat.dao.job.impl.JobExecuteDaoImpl" >
+
+    <resultMap id="BaseResultMap" type="com.manageplat.model.job.JobExecute" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="job_id" property="jobId" jdbcType="INTEGER" />
+        <result column="job_name" property="jobName" jdbcType="VARCHAR" />
+        <result column="start_time" property="startTime" jdbcType="INTEGER" />
+        <result column="end_time" property="endTime" jdbcType="INTEGER" />
+        <result column="state" property="state" jdbcType="INTEGER" />
+        <result column="operator" property="operator" jdbcType="VARCHAR" />
+        <result column="ip" property="ip" jdbcType="VARCHAR" />
+        <result column="expression" property="expression" jdbcType="VARCHAR" />
+        <result column="result" property="result" jdbcType="INTEGER" />
+        <result column="note" property="note" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <resultMap id="JobInfoMap" type="com.manageplat.model.job.JobInfo" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+        <result column="job_name" property="jobName" jdbcType="VARCHAR" />
+        <result column="job_status" property="job_status" jdbcType="INTEGER" />
+        <result column="expression" property="expression" jdbcType="VARCHAR" />
+        <result column="creater" property="creater" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="INTEGER" />
+        <result column="type" property="type" jdbcType="VARCHAR" />
+        <result column="exe_url" property="exeUrl" jdbcType="VARCHAR" />
+        <result column="run_status" property="runStatus" jdbcType="VARCHAR" />
+        <result column="ip" property="ip" jdbcType="VARCHAR" />
+        <result column="run_time" property="runTime" jdbcType="INTEGER" />
+        <result column="runer" property="runer" jdbcType="VARCHAR" />
+        <result column="code" property="code" jdbcType="VARCHAR" />
+        <result column="relator" property="relator" jdbcType="VARCHAR" />
+        <result column="is_call_back" property="isCallBack" jdbcType="INTEGER" />
+        <result column="plan_cost_time" property="planCostTime" jdbcType="INTEGER" />
+        <result column="lasted_monit_time" property="lastedMonitTime" jdbcType="INTEGER" />
+        <result column="monit_result" property="monitResult" jdbcType="INTEGER" />
+    </resultMap>
+
+    <insert id="insert" parameterType="com.manageplat.model.job.JobExecute">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into job_execute
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="jobId != null">
+                job_id,
+            </if>
+            <if test="jobName != null">
+                job_name,
+            </if>
+            <if test="startTime != null">
+                start_time,
+            </if>
+            <if test="endTime != null">
+                end_time,
+            </if>
+            <if test="state != null">
+                state,
+            </if>
+            <if test="operator != null">
+                operator,
+            </if>
+            <if test="ip != null">
+                ip,
+            </if>
+            <if test="expression != null">
+                expression,
+            </if>
+            <if test="result != null">
+                result,
+            </if>
+            <if test="note != null">
+                note,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="jobId != null">
+                #{jobId},
+            </if>
+            <if test="jobName != null">
+                #{jobName},
+            </if>
+            <if test="startTime != null">
+                #{startTime},
+            </if>
+            <if test="endTime != null">
+                #{endTime},
+            </if>
+            <if test="state != null">
+                #{state},
+            </if>
+            <if test="operator != null">
+                #{operator},
+            </if>
+            <if test="ip != null">
+                #{ip},
+            </if>
+            <if test="expression != null">
+                #{expression},
+            </if>
+            <if test="result != null">
+                #{result},
+            </if>
+            <if test="note != null">
+                #{note},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateSelectiveById" parameterType="com.manageplat.model.job.JobExecute">
+        update job_execute
+        set
+        <trim prefix="" suffix="" suffixOverrides=",">
+            <if test="endTime != null">
+                end_time=#{endTime},
+            </if>
+            <if test="state != null">
+                state=#{state},
+            </if>
+            <if test="operator != null and operator!='' ">
+                operator=#{operator},
+            </if>
+            <if test="ip != null and ip!=''">
+                ip=#{ip},
+            </if>
+            <if test="expression != null and expression!='' ">
+                expression=#{expression},
+            </if>
+            <if test="result != null ">
+                result=#{reult},
+            </if>
+            <if test="note != null and note !=''">
+                note=#{note},
+            </if>
+        </trim>
+        where  id=#{id}
+    </update>
+
+    <select id="queryPage" resultMap="BaseResultMap" parameterType="com.manageplat.model.vo.job.JobExecuteQueryVo">
+        select * from job_execute
+        where 1=1
+        <if test="jobId!=null ">
+            and job_id = #{jobId}
+        </if>
+        <if test="jobName != null and jobName != ''">
+            and job_name = #{jobName}
+        </if>
+        <if test="startTimeBegin!=null">
+            and start_time >= #{startTimeBegin}
+        </if>
+        <if test="startTimeEnd!=null">
+            <![CDATA[ and start_time<= #{startTimeEnd} ]]>
+        </if>
+        <if test="start != null and rows != null">
+            limit ${start},${rows}
+        </if>
+    </select>
+
+    <select id="queryJobByExecuteId" resultMap="JobInfoMap" parameterType="java.util.Map">
+        select a.* from  job_info a
+        join job_execute b on a.id=b.job_id
+        where b.id=${jobExecutId}
+    </select>
+
+    <select id="queryJobExecuteCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+        select count(1) as cnt from job_execute
+        where 1=1
+        <if test="jobId!=null ">
+            and job_id = #{jobId}
+        </if>
+        <if test="queryStartTime!=null">
+            and start_time >= #{queryStartTime}
+        </if>
+        <if test="queryEndTime!=null">
+            <![CDATA[ and start_time<= #{queryEndTime} ]]>
+        </if>
+    </select>
+
+</mapper>

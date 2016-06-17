@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.manageplat.dao.job.impl.JobMonitDaoImpl" >
+
+    <resultMap id="BaseResultMap" type="com.manageplat.model.job.JobMonit" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="job_id" property="jobId" jdbcType="INTEGER" />
+        <result column="record_time" property="recordTime" jdbcType="INTEGER" />
+        <result column="result" property="result" jdbcType="INTEGER" />
+        <result column="note" property="note" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <insert id="insert" parameterType="com.manageplat.model.job.JobMonit">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into job_monit
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="jobId != null">
+                job_id,
+            </if>
+            <if test="recordTime != null">
+                record_time,
+            </if>
+            <if test="result != null">
+                result,
+            </if>
+            <if test="note != null">
+                note,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="jobId != null">
+                #{jobId},
+            </if>
+            <if test="recordTime != null">
+                #{recordTime},
+            </if>
+            <if test="result != null">
+                #{result},
+            </if>
+            <if test="note != null">
+                #{note},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateSelectiveById" parameterType="com.manageplat.model.job.JobMonit">
+        update job_monit
+        set
+        <trim prefix="" suffix="" suffixOverrides=",">
+            <if test="recordTime != null">
+                record_time=#{recordTime},
+            </if>
+            <if test="result != null ">
+                result=#{reult},
+            </if>
+            <if test="note != null and note !=''">
+                note=#{note},
+            </if>
+        </trim>
+        where  id=#{id}
+    </update>
+
+    <select id="queryPage" resultMap="BaseResultMap" parameterType="com.manageplat.model.vo.job.JobMonitQueryVo">
+        select * from job_monit
+        where 1=1
+        <if test="jobId!=null ">
+            and job_id = #{jobId}
+        </if>
+        <if test="recordTimeBegin!=null">
+            and record_time >= #{recordTimeBegin}
+        </if>
+        <if test="recordTimeEnd!=null">
+            <![CDATA[ and record_time<= #{recordTimeEnd} ]]>
+        </if>
+        <if test="start != null and rows != null">
+            limit ${start},${rows}
+        </if>
+    </select>
+</mapper>

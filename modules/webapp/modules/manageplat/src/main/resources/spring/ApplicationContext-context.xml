@@ -9,7 +9,7 @@
 
     <!--注解说明 -->
     <context:annotation-config/>
-    <context:component-scan base-package="com.manageplat.util,com.manageplat.dao,com.manageplat.service,"/>
+    <context:component-scan base-package="com.manageplat.util,com.manageplat.dao,com.manageplat.service"/>
     <util:properties id="jdbcProps" location="classpath:jdbc.properties"/>
     <util:properties id="memcachedProps" location="classpath:memcached.properties"/>
 </beans>

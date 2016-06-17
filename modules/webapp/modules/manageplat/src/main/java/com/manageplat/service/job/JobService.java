@@ -386,7 +386,7 @@ public class JobService {
      */
     public BaseResponse uptJobExecute(JobExecute jobExecute) {
     	
-    	if(jobExecute.getId()<=0 )
+    	if(jobExecute.getId()==null || jobExecute.getId()<=0 )
     	{
     		 return new BaseResponse(1, "保存失败,无更新条件");
     	}
@@ -715,5 +715,10 @@ public class JobService {
     public List<JobInfo> queryJobPage(JobQueryVo queryVo)
     {
         return jobInfoDao.queryPage(queryVo);
+    }
+
+    public int count(JobQueryVo queryVo)
+    {
+        return jobInfoDao.count(queryVo);
     }
  }

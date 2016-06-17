@@ -25,7 +25,7 @@ public class JobInfo implements Serializable {
     
     private String exeUrl;
     
-    private String runStatus="ready";
+    private String runStatus;//默认"ready";
     
     private String ip;
     

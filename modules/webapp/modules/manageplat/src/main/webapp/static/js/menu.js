@@ -15,4 +15,8 @@ var menusInfos=[
         entityCdn:{name:'实例条件', url: 'tongyong/entityCdn.html'},
         text:'通用列表'
     }}
+    ,{jobManage:{
+        jobList:{name:'任务列表', url: 'job/job.html'},
+        text:'任务管理'
+    }}
 ];

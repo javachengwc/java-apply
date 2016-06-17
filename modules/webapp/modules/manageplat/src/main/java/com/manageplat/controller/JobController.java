@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import com.manageplat.model.job.JobExecute;
 import com.manageplat.model.job.JobInfo;
 import com.manageplat.model.job.JobMonit;
 import com.manageplat.model.vo.job.JobMonitQueryVo;
+import com.manageplat.model.vo.job.JobQueryVo;
 import com.manageplat.model.vo.web.BaseResponse;
 import com.manageplat.model.vo.web.JobResponse;
 import com.manageplat.service.job.JobManager;
@@ -20,7 +20,6 @@ import com.manageplat.service.job.JobMonitor;
 import com.manageplat.service.job.JobService;
 import com.util.ReflectionUtil;
 import com.util.date.SysDateTime;
-import com.util.web.HttpRenderUtil;
 import com.util.web.RequestUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -42,7 +41,38 @@ public class JobController {
     
     @Autowired
     private JobMonitService jobMonitService;
-    
+
+    @RequestMapping("queryJobPage")
+    @ResponseBody
+    public Object queryJobPage(JobQueryVo queryVo)
+    {
+        queryVo.genPage();
+        queryVo.genDate();
+
+        List<JobInfo> list = jobService.queryJobPage(queryVo);
+        int count = jobService.count(queryVo);
+
+        Map<String,Object> result = new HashMap<String,Object>(2);
+        result.put("error", 0);
+        result.put("list",list);
+        result.put("count",count);
+        return result;
+    }
+
+    @RequestMapping("queryJobMonitPage")
+    @ResponseBody
+    public Object queryJobMonitPage(JobMonitQueryVo queryVo)
+    {
+        queryVo.genPage();
+
+        List<JobMonit> list = jobMonitService.queryPage(queryVo);
+
+        Map<String,Object> result = new HashMap<String,Object>(2);
+        result.put("error", 0);
+        result.put("data",list);
+        return result;
+    }
+
     /**
      * 任务创建的接口
      * 如果是http型任务 其他参数 加到exeUrl里面，同时把includeParam的key值加到exeUrl
@@ -58,8 +88,8 @@ public class JobController {
        {
     	   warpJobUrlParam(job,request);
        }
-        
-        warpJboInfo(job,request);
+
+        warpJobInfo(job, request);
         return jobService.saveJob(job);
     }
 	
@@ -161,21 +191,6 @@ public class JobController {
     }
     
     /**
-     * 记录任务到点执行动作开始信息
-     */
-    @RequestMapping("recordJobActBegin")
-    @ResponseBody
-    public BaseResponse recordJobActBegin(JobExecute jobExecute,HttpServletRequest request){
-    	if(StringUtils.isEmpty(jobExecute.getJobName()) && jobExecute.getJobId()<=0) {
-    		
-    		 return new BaseResponse(1,"任务名和任务ID不能同时为空");
-        }
-    	warpJobExecute(jobExecute,request);
-    	
-        return jobService.recordActBegin(jobExecute);
-    }
-    
-    /**
      * 记录任务到点执行动作结束信息
      */
     @RequestMapping("recordJobActOver")
@@ -212,13 +227,7 @@ public class JobController {
         return jobService.uptJobExecute(jobExecute);
     }
 
-    private void warpJobExecute(JobExecute jobExecute,HttpServletRequest request) {
-        jobExecute.setState(0); //0--已开始
-        jobExecute.setIp(RequestUtil.getIpFromRequest(request));
-        jobExecute.setStartTime(SysDateTime.getNow());
-    }
-
-    private void warpJboInfo(JobInfo job,HttpServletRequest request) {
+    private void warpJobInfo(JobInfo job,HttpServletRequest request) {
         if(StringUtils.isBlank(job.getCreater())){
             job.setCreater("me");
         }
@@ -415,17 +424,4 @@ public class JobController {
 	   jobService.traceJob(id);
 	   return new BaseResponse(0 , "success");
    }
-
-    @RequestMapping("queryJobMonitPage")
-    @ResponseBody
-    public Object queryJobMonitPage(JobMonitQueryVo queryVo)
-    {
-        queryVo.genPage();
-        List<JobMonit> list = jobMonitService.queryPage(queryVo);
-
-        Map<String,Object> result = new HashMap<String,Object>(2);
-        result.put("error", 0);
-        result.put("data",list);
-        return result;
-    }
 }

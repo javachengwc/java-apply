@@ -1,0 +1,202 @@
+<style>
+    .tempTable .evenrowcolor{background-color:#FFFFFF;}
+    .tempTable .oddrowcolor{background-color:#FFFFFF;}
+    .tempTable tbody .currentline{background-color:#D1D0CE;}
+</style>
+
+<script type="text/javascript">
+
+    //分页对象
+    var jobPageToolBar;
+    //查询对象
+    var jobSearcher;
+
+    $(document).ready(function(){
+
+        $('#createTimeBegin').datebox();
+        $('#createTimeEnd').datebox();
+
+        jobSearcher={
+            isFirstLoad:1,
+            pageNo:1,
+            pageSize:20
+        };
+
+        listJob();
+    });
+
+    //查询列表
+    function listJob(){
+
+        var params = "page=" + jobSearcher.pageNo + "&rows=" + jobSearcher.pageSize;
+        var queryParams=getQueryParams();
+        if(queryParams!=null)
+        {
+            params = params+"&"+queryParams;
+        }
+
+        $.ajax({
+            url: '/job/queryJobPage.do',
+            type: 'get',
+            dataType: 'json',
+            data: params,
+            success: function(json){
+                if(!json.list || json.list.length==0 ){
+
+                    $("#jobList_tbody").html("");
+                    if(!json.count)
+                    {
+                        $("#jobPageToolBar").html("");
+                    }
+                    return;
+                }
+                if(jobSearcher.isFirstLoad == 1){
+
+                    jobPageToolBarRegist(json)
+
+                }else{
+                    renderJobTable(json);
+                }
+            }
+        });
+    }
+
+    //渲染数据
+    function renderJobTable(json){
+        var html = '';
+        for(var i = 0; i < json.list.length; i ++){
+            var n = json.list[i];
+            html += '<tr id="job_'+n.id+'">'
+                    +   '<td>'+ n.id+'</td>'
+                    +	'<td>' + n.jobName + '</td>'
+                    +	'<td>' + n.parentId + '</td>'
+                    +	'<td>' + n.jobStatus + '</td>'
+                    +	'<td>' + n.expression + '</td>'
+                    +	'<td>' + n.creater + '</td>'
+                    +	'<td>' + n.createTime + '</td>'
+                    +	'<td>' + n.code + '</td>'
+                    +	'<td>' + n.type + '</td>'
+                    +	'<td>' + n.exeUrl + '</td>'
+                    +	'<td>' + n.runStatus + '</td>'
+                    +	'<td>' + n.ip + '</td>'
+                    +	'<td>' + n.runer + '</td>'
+                    +	'<td>' + n.relator + '</td>'
+                    +	'<td>' + n.lastedMonitTime + '</td>'
+                    +	'<td>' + n.monitResult + '</td>'
+                    +   '<td>'
+                    +     '<a href="javascript:void(0);" onclick="uptJob(this,'+n.id+');">修改</a> &nbsp;&nbsp;'
+                    +     '<a href="javascript:void(0);" onclick="doJob(this,'+n.id+');">执行</a> &nbsp;&nbsp;'
+                    +   '</td>'
+                    +	'</tr>';
+        }
+        $("#jobList_tbody").html(html);
+        altRows("jobList_tbody");
+    }
+
+    //给表格的每行增加鼠标移入移出不同的颜色效果
+    function altRows(id){
+
+        var tbody = document.getElementById(id);
+        var rows = tbody.getElementsByTagName("tr");
+        for(var i = 0; i < rows.length; i++){
+            rows[i].className = "evenrowcolor";
+            rows[i].onmouseover = function(){
+                this.className = "currentline";
+            }
+            rows[i].onmouseout = function(){
+                this.className = "evenrowcolor";
+            }
+        }
+    }
+
+    //初始化分页
+    function jobPageToolBarRegist(json){
+
+        jobPageToolBar = $('#jobPageToolBar').pageBar({
+            params: {}//相关查询参数
+            ,totalCount: json.count
+            ,pageSize: jobSearcher.pageSize//每页显示记录条数
+            ,limitPageCount:20
+            ,pageNo: jobSearcher.pageNo
+            ,changePage: function(t){//换页的回调方法
+                jobSearcher.pageNo = t.pageNo;
+                if (t.getLastPage() < t.pageNo && t.totalCount > 0) {
+                    t.getPreEl().click();
+                    return;
+                }
+                if(jobSearcher.isFirstLoad == 1){
+                    jobSearcher.isFirstLoad = 0;
+                    renderJobTable(json);
+                }else{
+                    listJob();
+                }
+            }
+        });
+    }
+
+    //查询参数
+    function getQueryParams(){
+        var id = $('#id').val();
+        var jobName = $('#jobName').val();
+        var jobStatus = $('#jobStatus').val();
+        var creater = $('#creater').val();
+        var type = $('#type').val();
+        var runStatus = $('#runStatus').val();
+        var code = $('#code').val();
+        var relator = $('#relator').val();
+        var createTimeBegin = $("#createTimeBegin").datebox("getValue");
+        var createTimeEnd = $("#createTimeEnd").datebox("getValue");
+
+        var params= 'id=' +id + '&jobName=' + jobName + '&jobStatus=' + jobStatus+"&creater="+creater+"&type="+type+
+                "&runStatus="+runStatus+"&code="+code+"&relator="+relator+"&createTimeBegin="+createTimeBegin+"&createTimeEnd="+createTimeEnd;
+        return params;
+    }
+
+
+</script>
+
+<div class="template_con">
+    <div class="search_con">
+        ID:<input id="id" name="id" style="width:100px;" maxlength="50"/>&nbsp;&nbsp;&nbsp;&nbsp;
+        任务名称:<input id="jobName" name="jobName" style="width:100px;" maxlength="50"/>&nbsp;&nbsp;&nbsp;&nbsp;
+        任务状态:<input id="jobStatus" name="jobStatus" style="width:100px;" maxlength="50"/>&nbsp;&nbsp;&nbsp;&nbsp;
+        创建者:<input id="creater" name="creater" style="width:100px;" maxlength="50"/>&nbsp;&nbsp;&nbsp;&nbsp;
+        类型:<input id="type" name="type" style="width:100px;" maxlength="50"/>&nbsp;&nbsp;&nbsp;&nbsp;
+        <div style="margin-bottom: 5px;"></div>
+        运行状态:<input id="runStatus" name="runStatus" style="width:100px;" maxlength="50"/>&nbsp;&nbsp;&nbsp;&nbsp;
+        业务:<input id="code" name="code" style="width:100px;" maxlength="50"/>&nbsp;&nbsp;&nbsp;&nbsp;
+        联系人:<input id="relator" name="relator" style="width:100px;" maxlength="50"/>&nbsp;&nbsp;&nbsp;&nbsp;
+        创建时间:<input id="createTimeBegin" name="createTimeBegin" style="width:100px;"/>&nbsp;&nbsp;到&nbsp;&nbsp;
+                   <input id="createTimeEnd" name="createTimeEnd" style="width:100px;"/>&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="button" value="查询" onclick="listJob()" style="width:60px;"/>
+    </div>
+
+    <div class="jobDiv" style="width:1000px">
+        <table id="jobTable" class="tempTable" border="0" cellspacing="1" cellpadding="1" >
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>名称</th>
+                <th>父任务Id</th>
+                <th>任务状态</th>
+                <th>表达式</th>
+                <th>创建者</th>
+                <th>创建时间</th>
+                <th>业务</th>
+                <th>类型</th>
+                <th>执行url</th>
+                <th>执行状态</th>
+                <th>执行ip</th>
+                <th>执行者</th>
+                <th>联系人</th>
+                <th>监控时间</th>
+                <th>监控结果</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody id="jobList_tbody">
+            </tbody>
+        </table>
+        <div id="jobPageToolBar" class="page-bar-con"></div>
+    </div>
+</div>
