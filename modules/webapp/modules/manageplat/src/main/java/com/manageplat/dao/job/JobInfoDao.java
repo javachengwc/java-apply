@@ -25,4 +25,5 @@ public interface JobInfoDao {
 
     public int uptLockRunStatus(String runStatus,Integer id,String oldRunStatus);
 
+    public List<JobInfo> querySubJob(int jobId);
 }

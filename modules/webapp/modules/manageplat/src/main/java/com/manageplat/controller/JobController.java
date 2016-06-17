@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.manageplat.model.job.JobExecute;
 import com.manageplat.model.job.JobInfo;
 import com.manageplat.model.job.JobMonit;
+import com.manageplat.model.vo.job.JobMonitQueryVo;
 import com.manageplat.model.vo.web.BaseResponse;
 import com.manageplat.model.vo.web.JobResponse;
 import com.manageplat.service.job.JobManager;
@@ -75,7 +76,7 @@ public class JobController {
             return makeErrorResponse("1","任务名称不能为空",result);
        }
        if(job.getId()==null|| job.getId()<=0){
-           JobInfo joba =jobService.getJob(job.getJobName());
+           JobInfo joba =jobService.getJobByName(job.getJobName());
            int jobId= (joba==null)?0:joba.getId();
            if(jobId<=0){
                return new BaseResponse(1,"不存在名称为:"+job.getJobName()+"的任务");
@@ -104,14 +105,12 @@ public class JobController {
        {
     	   return makeErrorResponse("1","任务状态不能为空",result);
        }
-       if(job.getId()==null || job.getId()<=0){
-           JobInfo joba =jobService.getJob(job.getJobName());
-           int jobId= (joba==null)?0:joba.getId();
-           if(jobId<=0){
-               return new BaseResponse(1,"不存在名称为:"+job.getJobName()+"的任务");
-           }
-           job.setId(jobId);
+       JobInfo oldJob = jobService.queryJobByIdOrName(job.getId(),job.getJobName());
+       if(oldJob==null)
+       {
+           return new BaseResponse(1,"不存在名称为:"+job.getJobName()+"的任务");
        }
+       job.setId(oldJob.getId());
        return jobService.changeJobStatus(job);
     }
     
@@ -126,7 +125,7 @@ public class JobController {
             return makeErrorResponse("1","任务ID,任务名称不能都为空",result);
         }
         if(jobInfo.getId()==null||jobInfo.getId()<=0){
-            JobInfo joba =jobService.getJob(jobInfo.getJobName());
+            JobInfo joba =jobService.getJobByName(jobInfo.getJobName());
             int jobId= (joba==null)?0:joba.getId();
             if(jobId<=0){
                 return createJob(jobInfo,request);
@@ -150,7 +149,7 @@ public class JobController {
             return makeErrorResponse("1","任务ID,任务名称不能都为空",result);
         }
         if(jobInfo.getId()==null || jobInfo.getId()<=0){
-            JobInfo joba =jobService.getJob(jobInfo.getJobName());
+            JobInfo joba =jobService.getJobByName(jobInfo.getJobName());
             int jobId= (joba==null)?0:joba.getId();
             if(jobId<=0){
                 return new BaseResponse(1,"不存在名称为:"+jobInfo.getJobName()+"的任务");
@@ -220,11 +219,10 @@ public class JobController {
     }
 
     private void warpJboInfo(JobInfo job,HttpServletRequest request) {
-        //任务的默认创建者
-        if(StringUtils.isEmpty(job.getCreater())){
+        if(StringUtils.isBlank(job.getCreater())){
             job.setCreater("me");
         }
-        if(job.getCreateTime()==0){
+        if(job.getCreateTime()==null){
             job.setCreateTime(SysDateTime.getNow());
         }
         job.setJobStatus(1);//1--正常
@@ -387,28 +385,7 @@ public class JobController {
     	JobResponse rsp=jobService.directExeTarget(id);
     	return rsp;
     }
-    
-    @RequestMapping("queryJobMonitPage")
-    @ResponseBody
-    public Object queryJobMonitPage(Integer jobId,Integer startTime,Integer endTime ,Integer pageNo ,Integer pageSize)
-    {
-    	Map<String,Object> result = new HashMap<String,Object>(2);
-    	if(pageNo==null)
-    	{
-    		pageNo=1;
-    	}
-    	if(pageSize==null)
-    	{
-    		pageSize=50;
-    	}
-    	int start = (pageNo-1)*pageSize;
-    	
-    	List<JobMonit> list = jobMonitService.queryJobMonitPage(jobId, startTime,endTime, start, pageSize);
-    	result.put("error", 0);
-    	result.put("data",list);
-    	return result;
-    }
-    
+
     /**
      * 监控自动任务定时调用入口
      */
@@ -438,4 +415,17 @@ public class JobController {
 	   jobService.traceJob(id);
 	   return new BaseResponse(0 , "success");
    }
+
+    @RequestMapping("queryJobMonitPage")
+    @ResponseBody
+    public Object queryJobMonitPage(JobMonitQueryVo queryVo)
+    {
+        queryVo.genPage();
+        List<JobMonit> list = jobMonitService.queryPage(queryVo);
+
+        Map<String,Object> result = new HashMap<String,Object>(2);
+        result.put("error", 0);
+        result.put("data",list);
+        return result;
+    }
 }

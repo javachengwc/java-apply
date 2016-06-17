@@ -16,9 +16,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import com.manageplat.dao.job.JobMonitDao;
 import com.manageplat.model.job.JobExecute;
 import com.manageplat.model.job.JobInfo;
 import com.manageplat.model.job.JobMonit;
+import com.manageplat.model.vo.job.JobExecuteQueryVo;
+import com.manageplat.model.vo.job.JobMonitQueryVo;
 import com.util.NumberUtil;
 import com.util.date.SysDateTime;
 import org.apache.commons.lang.math.NumberUtils;
@@ -56,18 +59,22 @@ public class JobMonitService {
 	private static String WEEKSMPNAMES [] = {"sun","mon","tue","wed","thu","fri","sat"};
 	
 	public static int JOB_DO_PERCENT=90;//自动任务执行的百分比闸值，少于这个百分比视为未正常执行
-	
+
+    @Autowired
+    private JobMonitDao jobMonitDao;
+
 	@Autowired
 	private JobService jobService;
+
+    @Autowired
+    private JobExecuteService jobExecuteService;
 
 	/**
 	 * 查询监控详情列表
 	 */
-	public List<JobMonit> queryJobMonitPage(Integer jobId,Integer startTime,Integer endTime ,int start ,int size)
+	public List<JobMonit> queryPage(JobMonitQueryVo queryVo)
 	{
-		List<JobMonit> list = new ArrayList<JobMonit>();
-		//待实现
-		return list;
+        return jobMonitDao.queryPage(queryVo);
 	}
 
 	/**
@@ -297,10 +304,16 @@ public class JobMonitService {
     		
     		int jobFailCount=0;
     		
-    		//*3是因为可能有3个web应用，同一时间点执行会产生3条记录，只有1条是正常的 其他两条都是被排斥掉未执行的
-    		List<JobExecute> exeList = jobService.queryJobExecutePage(job.getId(),start,end,null,0,3*SAMPLING_TINE/60);
+    		//*2是因为可能有2个web应用，同一时间点执行会产生2条记录，只有1条是正常的 其他都是被排斥掉未执行的
+            JobExecuteQueryVo queryVo =new JobExecuteQueryVo();
+            queryVo.setJobId(job.getId());
+            queryVo.setStartTimeBegin(start);
+            queryVo.setStartTimeEnd(end);
+            queryVo.setStart(0);
+            queryVo.setRows(2*SAMPLING_TINE/60);
+    		List<JobExecute> exeList = jobExecuteService.queryPage(queryVo);
+
     		//需要过滤掉被其他线程执行的
-    		
     		int maxExeTime =start;
     		
     		if(exeList!=null && exeList.size()>0)
@@ -746,13 +759,12 @@ public class JobMonitService {
 		jobMonit.setRecordTime(endTime);
 		jobMonit.setResult(result);
 		jobMonit.setNote(note);
-		
 		insertJobMonit(jobMonit);
 		
 		job.setLastedMonitTime(endTime);
 		job.setMonitResult(result);
 		
-		jobService.updateJobMonitInfo(job);
+		jobService.updateJob(job);
     }
     
     public static void main(String args[] )

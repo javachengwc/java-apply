@@ -1,6 +1,7 @@
 package com.manageplat.service.job.hander;
 
 import com.manageplat.model.job.JobInfo;
+import com.manageplat.service.job.JobExecuteService;
 import com.manageplat.service.job.JobMonitService;
 import com.manageplat.service.job.JobService;
 import com.manageplat.service.job.MonitJob;
@@ -31,6 +32,9 @@ public class MonitJobHander {
 	
 	@Autowired
 	private JobMonitService jobMonitService;
+
+    @Autowired
+    private JobExecuteService jobExecuteService;
 
 	public void executeJob(MonitJob job) {
 		
@@ -77,9 +81,8 @@ public class MonitJobHander {
 				
 				int start = now-QUERY_CHECK_TIME;
 				int end = now +QUERY_CHECK_TIME;
-				
-				//
-				Integer count = jobService.getJobExecuteCount(jobInfo.getId(),start,end);
+
+				Integer count = jobExecuteService.queryJobExecuteCount(jobInfo.getId(),start,end);
 	    		
 	    		//System.out.println(delay+" "+start+" "+end+" count="+count);
 	    		//表示未到点执行

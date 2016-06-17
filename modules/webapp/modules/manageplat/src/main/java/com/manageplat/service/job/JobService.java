@@ -1,13 +1,12 @@
 package com.manageplat.service.job;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.manageplat.dao.job.JobExecuteDao;
+import com.manageplat.dao.job.JobDriveDao;
 import com.manageplat.dao.job.JobInfoDao;
 import com.manageplat.model.job.JobDrive;
 import com.manageplat.model.job.JobExecute;
@@ -32,21 +31,24 @@ public class JobService {
     private JobInfoDao jobInfoDao;
 
     @Autowired
-    private JobExecuteDao jobExecuteDao;
+    private JobDriveDao jobDriveDao;
+
+    @Autowired
+    private JobExecuteService jobExecuteService;
 	
 	/**
 	 * 创建任务
 	 */
     public JobResponse saveJob(JobInfo job) {
         //判断任务名是否重读
-        JobInfo joba =getJob(job.getJobName());
+        JobInfo joba =getJobByName(job.getJobName());
         int jobId= (joba==null)?0:joba.getId();
         if(jobId>0){
             return new JobResponse(1,"已经存在同名任务");
         }
         if(!StringUtils.isBlank(job.getParentJobName()) &&  (job.getParentId()==null || job.getParentId()<=0))
         {
-            JobInfo parentJob =getJob(job.getParentJobName());
+            JobInfo parentJob =getJobByName(job.getParentJobName());
         	int parentJobId =  (parentJob==null)?0:parentJob.getId();
         	if(parentJobId<=0)
         	{
@@ -73,7 +75,7 @@ public class JobService {
      * 插入任务记录
      */
     public JobResponse insertJob(JobInfo job) {
-        int rt =jobInfoDao.insert(job);
+        int rt =insert(job);
         boolean isSuccess = (rt==1)?true:false;
         Integer genId=job.getId();
         if (isSuccess) {
@@ -90,7 +92,7 @@ public class JobService {
     {
     	if(!StringUtils.isBlank(job.getParentJobName()) &&  (job.getParentId()==null || job.getParentId()<=0))
         {
-            JobInfo parentJob =getJob(job.getParentJobName());
+            JobInfo parentJob =getJobByName(job.getParentJobName());
         	int parentJobId =  (parentJob==null)?0:parentJob.getId();
         	if(parentJobId<=0)
         	{
@@ -118,7 +120,7 @@ public class JobService {
     {
     	JobResponse rsp = new JobResponse(0,"处理成功");
 		
-		JobInfo newestJob =jobInfoDao.getJobById(job.getId());
+		JobInfo newestJob =getJobById(job.getId());
 		
 		//本没驱动,且不可驱动
 		if(!JobManager.getInstance().hasDrivedJob(newestJob) && !JobManager.getInstance().isCanDriveJob(newestJob))
@@ -137,7 +139,7 @@ public class JobService {
     	{
     		try{
     		    Thread.sleep(5*1000l);
-    		    newestJob = jobInfoDao.getJobById(newestJob.getId());
+    		    newestJob = getJobById(newestJob.getId());
     		}catch(Exception e)
     		{
     			
@@ -166,16 +168,7 @@ public class JobService {
 		}
 		return rsp;
     }
-    
-    /**
-     * 更新任务记录
-     */
-    public boolean updateJob(JobInfo job)
-    {
-        jobInfoDao.updateSelectiveById(job);
-		return true;
-    }
-    
+
     /**
      * 改变任务状态
      */
@@ -193,19 +186,12 @@ public class JobService {
     }
 
     /**
-     * 通过名称获取任务
-     */
-    public JobInfo getJob(String jobName) {
-        return jobInfoDao.getJobByName(jobName);
-    }
-
-    /**
      * 记录任务到点执行动作开始信息
      */
     public BaseResponse recordActBegin(JobExecute jobExecute)
     {
     	 if(jobExecute.getJobId()<=0){
-            JobInfo job =getJob(jobExecute.getJobName());
+            JobInfo job =getJobByName(jobExecute.getJobName());
             int jobId = (job==null)?0:job.getId();
             jobExecute.setJobId(jobId);
             if(jobId<=0)
@@ -233,9 +219,9 @@ public class JobService {
     		JobInfo job =queryJobByExecuteId(jobExecute.getId());
     		if(job!=null)
     		{
-    			 List<JobInfo> subList =querySubJob(job.getId());
-    			 logger.error("JobService recordActOver begin do sub job,parent jobId="+
-    			              job.getId()+", sub job size="+ ((subList==null)?"0":subList.size()) );
+    			 List<JobInfo> subList =jobInfoDao.querySubJob(job.getId());
+                int subCount =  (subList==null)?0:subList.size();
+                logger.info("JobService recordActOver begin do sub job,parent jobId="+job.getId()+", sub job size="+subCount);
     			 Map<String,Map<String,String>> map =doSubJob(subList);
     			 JobResponse rp = new JobResponse(rsp.getError(),rsp.getMsg());
     			 rp.setSubJobInfo(map);
@@ -259,7 +245,7 @@ public class JobService {
     	{
     		return new JobResponse(1,"任务不存在");
     	}
-    	JobInfo info = jobInfoDao.getJobById(jobId);
+    	JobInfo info = getJobById(jobId);
     	return startJob(info);
     }
     
@@ -295,7 +281,7 @@ public class JobService {
         {
         	jobInfo.setRunTime(SysDateTime.getNow());
         	jobInfo.setRuner("runing");
-        	jobInfoDao.updateSelectiveById(jobInfo);
+        	updateJob(jobInfo);
         }
         return driveRsp;
     }
@@ -325,7 +311,7 @@ public class JobService {
      * 保存执行时间点的行动作信息
      */
     public JobResponse saveJobExecute(JobExecute jobExecute) {
-        int rt = jobExecuteDao.insert(jobExecute);
+        int rt = jobExecuteService.insert(jobExecute);
         int genkey=jobExecute.getId();
         if (rt==1) {
             return new JobResponse(0, "保存成功",genkey);
@@ -339,11 +325,7 @@ public class JobService {
      */
     public JobResponse endJob(int jobId)
     {
-    	if(jobId<=0)
-    	{
-    		return new JobResponse(1,"任务不存在");
-    	}
-    	JobInfo info =jobInfoDao.getJobById(jobId);
+    	JobInfo info =getJobById(jobId);
     	return endJob(info);
     }
     
@@ -392,7 +374,7 @@ public class JobService {
         {
         	jobInfo.setRunTime(0);
         	jobInfo.setRuner("over");
-            jobInfoDao.updateSelectiveById(jobInfo);
+            updateJob(jobInfo);
         	doLuckLock(jobInfo);
         }
     	jobRsp.setDriver(JobManager.getInstance().getName());
@@ -408,7 +390,7 @@ public class JobService {
     	{
     		 return new BaseResponse(1, "保存失败,无更新条件");
     	}
-        jobExecuteDao.updateSelectiveById(jobExecute);
+        jobExecuteService.updateSelectiveById(jobExecute);
         return new BaseResponse(0, "保存成功");
 
     }
@@ -428,14 +410,6 @@ public class JobService {
             }
         },1000);
 	}
-
-    /**
-     * 分页查询任务信息
-     */
-    public List<JobInfo> queryJobPage(JobQueryVo queryVo)
-    {
-        return jobInfoDao.queryPage(queryVo);
-    }
 
 	/**
 	 * 真正的驱动任务
@@ -501,7 +475,7 @@ public class JobService {
 	 */
 	public JobInfo queryJobByExecuteId(int executeId)
 	{
-		return  jobExecuteDao.queryJobByExecuteId(executeId);
+		return  jobExecuteService.queryJobByExecuteId(executeId);
 	}
 	
 	/**
@@ -564,31 +538,18 @@ public class JobService {
 	
     /**
 	 * 保存任务驱动信息
-	 * @param jobDrive
-	 * @return
 	 */
 	public JobResponse saveJobDrive(JobDrive jobDrive)
 	{
-        //待实现
-		boolean isSuccess = true;
-        int genKey=0;
-        if (isSuccess) {
+        int rt =jobDriveDao.insert(jobDrive);
+        Integer genKey=jobDrive.getId();
+        if (rt==1) {
             return new JobResponse(0, "保存成功", genKey);
         } else {
-            return new JobResponse(1,"description");
+            return new JobResponse(1,"保存失败");
         }
 	}
-	
-	/**
-	 * 查询子任务列表
-	 */
-	public List<JobInfo> querySubJob(int id)
-	{
-		List<JobInfo> list = new ArrayList<JobInfo>();
-        //待实现
-		return list;
-	}
-	
+
 	/**
 	 * 执行子任务
 	 */
@@ -607,10 +568,9 @@ public class JobService {
 			{
 				try
 				{
-					logger.error("JobService doSubJob start job id="+info.getId());
+					logger.info("JobService doSubJob start job id="+info.getId());
 					
 				    new HttpJob(info).execute(null);
-				    
 				    Map<String,String> subMap = new HashMap<String,String>();
 					subMap.put("id",""+info.getId());
 					subMap.put("error","0");
@@ -619,7 +579,7 @@ public class JobService {
 				    
 				}catch(Exception e)
 				{
-					logger.error("JobService doSubJob has exception,job id="+info.getId(),e);
+					logger.info("JobService doSubJob has exception,job id="+info.getId(),e);
 					
 					Map<String,String> subMap = new HashMap<String,String>();
 					subMap.put("id",""+info.getId());
@@ -648,11 +608,7 @@ public class JobService {
 	 */
 	public JobResponse directExeTarget(Integer id)
 	{
-		if(id==null || id<=0)
-		{
-    		return new JobResponse(1,"任务不存在");
-    	}
-    	JobInfo info = jobInfoDao.getJobById(id);
+    	JobInfo info = getJobById(id);
     	if(info==null)
     	{
     		return new JobResponse(1,"任务不存在");
@@ -675,20 +631,6 @@ public class JobService {
     	}
 	}
 
-    public JobInfo queryJobByIdOrName(Integer id,String jobName)
-    {
-        JobInfo job = null;
-        if(id!=null)
-        {
-            job=jobInfoDao.getJobById(id);
-        }
-        if(job==null && !StringUtils.isBlank(jobName))
-        {
-            job= jobInfoDao.getJobByName(jobName);
-        }
-        return job;
-    }
-	
 	public Map<Integer,Boolean> hasDrivedJob(Integer id,String jobName)
 	{
         JobInfo job =queryJobByIdOrName(id,jobName);
@@ -705,33 +647,6 @@ public class JobService {
 		rt.put(2,c);
 		return rt;
 	}
-	
-	/**
-	 * 获取任务执行次数
-	 */
-	public Integer getJobExecuteCount(int jobId,Integer queryStartTime,Integer queryEndTime )
-	{
-		Integer rt=null;
-    	//待实现
-		return rt;
-	}
-
-	/**
-     * 分页查询任务执行记录
-     */
-    public List<JobExecute> queryJobExecutePage(int jobId,Integer queryStartTime,Integer queryStartOverTime,
-    		Integer queryCompareEndTime,int start,int size) {
-
-    	List<JobExecute> list = new ArrayList<JobExecute>();
-		//待实现
-		return list;
-  	}
-    
-    public boolean updateJobMonitInfo(JobInfo job)
-    {
-    	//待实现
-		return false;
-    }
 
     public void traceJob(int id)
     {
@@ -751,4 +666,54 @@ public class JobService {
     	return value;
     }
 
+    /////以下是jobservie的基本服务方方/////
+
+    public int insert(JobInfo jobInfo)
+    {
+        return jobInfoDao.insert(jobInfo);
+    }
+
+    public JobInfo getJobById(Integer id)
+    {
+        if(id==null ||id<=0)
+        {
+            return null;
+        }
+        return jobInfoDao.getJobById(id);
+    }
+
+    public JobInfo getJobByName(String jobName)
+    {
+        if( !StringUtils.isBlank(jobName))
+        {
+           return jobInfoDao.getJobByName(jobName);
+        }
+        return null;
+    }
+
+    public JobInfo queryJobByIdOrName(Integer id,String jobName)
+    {
+        JobInfo job = null;
+        if(id!=null)
+        {
+            job=getJobById(id);
+        }
+        if(job==null && !StringUtils.isBlank(jobName))
+        {
+            job= getJobByName(jobName);
+        }
+        return job;
+    }
+
+    public boolean updateJob(JobInfo job)
+    {
+        jobInfoDao.updateSelectiveById(job);
+        return true;
+    }
+
+    //分页查询任务信息
+    public List<JobInfo> queryJobPage(JobQueryVo queryVo)
+    {
+        return jobInfoDao.queryPage(queryVo);
+    }
  }

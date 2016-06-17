@@ -181,7 +181,7 @@ public class HttpJobHandler {
 						needTrace=true;
 					}
 				}
-				if(jobInfo.getId()==39 || needTrace)
+				if(needTrace)
 				{
 					 returnValue=request.getResponseBodyAsString();
 					 logger.error("HttpJobHandler do job return,returnStatus="+returnStatus+",returnBody=" + returnValue);
@@ -219,7 +219,7 @@ public class HttpJobHandler {
 
 						try{
 							
-							JobInfo info = jobService.queryJobInFo(jobInfo.getId(),null);
+							JobInfo info = jobService.getJobById(jobInfo.getId());
 	
 							// 驱动相关信息没改变,那就是运行状态变了，被别的进程运行或启动了啥的
 							if (!JobManager.getInstance().hasDriveRelaChange(info)) {

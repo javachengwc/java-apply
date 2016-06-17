@@ -241,7 +241,7 @@ public class JobManager{
 		}
 		if(StringUtils.isBlank(info.getRuner()) || flag==1  )
 		{
-			JobInfo nInfo = jobService.queryJobInFo(info.getId(),null);
+			JobInfo nInfo = jobService.getJobById(info.getId());
 			if(nInfo!=null)
 			{
 				info.setRuner(nInfo.getRuner());
