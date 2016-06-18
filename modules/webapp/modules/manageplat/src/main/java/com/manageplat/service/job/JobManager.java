@@ -97,8 +97,9 @@ public class JobManager{
 	{
 		 filters.clear();
 		 //过滤jog
-	     List<String> allowStatus= new ArrayList<String>();
-	     allowStatus.add("正常");
+         //允许的任务状态 1--正常
+	     List<Integer> allowStatus= new ArrayList<Integer>();
+	     allowStatus.add(1);
 	     List<String> allowTypes = new ArrayList<String>();
 	     allowTypes.add("http");
 	     

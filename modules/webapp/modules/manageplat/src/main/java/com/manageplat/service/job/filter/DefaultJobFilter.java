@@ -8,34 +8,34 @@ import java.util.List;
 
 public class DefaultJobFilter implements IJobFilter{
 	
-	private List<String> allowStatus;
+	private List<Integer> allowStatus;
 	
 	private List<String> allowTypes;
 	
 	private List<String> denyTypes;
 	
-	public DefaultJobFilter(List<String> allowStatus)
+	public DefaultJobFilter(List<Integer> allowStatus)
 	{
 		this.allowStatus = allowStatus;
 	}
 	
-	public DefaultJobFilter(List<String> allowStatus, List<String> allowTypes)
+	public DefaultJobFilter(List<Integer> allowStatus, List<String> allowTypes)
 	{
 		this(allowStatus);
 		this.allowTypes= allowTypes;
 	}
 	
-	public DefaultJobFilter(List<String> allowStatus, List<String> allowTypes, List<String> denyTypes)
+	public DefaultJobFilter(List<Integer> allowStatus, List<String> allowTypes, List<String> denyTypes)
 	{
 		this(allowStatus,allowTypes);
 		this.denyTypes=denyTypes;
 	}
 
-	public List<String> getAllowStatus() {
+	public List<Integer> getAllowStatus() {
 		return allowStatus;
 	}
 
-	public void setAllowStatus(List<String> allowStatus) {
+	public void setAllowStatus(List<Integer> allowStatus) {
 		this.allowStatus = allowStatus;
 	}
 

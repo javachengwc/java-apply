@@ -170,7 +170,20 @@ create table job_monit
     key record_time(record_time)
 ) engine Innodb default charset utf8 comment '任务监控表';
 
+insert into ty_entity(name,table_name,query_sql,page_size) values('任务列表','job_info','',10);
+insert into ty_entity(name,table_name,query_sql,page_size) values('任务驱动信息','job_drive','',10);
+insert into ty_entity(name,table_name,query_sql,page_size) values('任务执行记录','job_execute','',10);
+insert into ty_entity(name,table_name,query_sql,page_size) values('任务监控','job_monit','',10);
 
-
+insert into ty_entity_cdn(entity_id,cdn_name,cdn_col,cdn_type,is_show,sort) values
+(4,'ID','id',0,1,1),
+(4,'名称','job_name',1,1,2);
+insert into ty_entity_cdn(entity_id,cdn_name,cdn_col,cdn_type,is_show,sort) values
+(5,'任务ID','job_id',0,1,1);
+insert into ty_entity_cdn(entity_id,cdn_name,cdn_col,cdn_type,is_show,sort) values
+(6,'任务ID','job_id',0,1,1),
+(6,'任务名称','job_name',1,1,2);
+insert into ty_entity_cdn(entity_id,cdn_name,cdn_col,cdn_type,is_show,sort) values
+(7,'任务ID','job_id',0,1,1);
 
 
