@@ -80,15 +80,13 @@ public class JobController {
 	@RequestMapping("createJob")
     @ResponseBody
     public Object createJob(JobInfo job,HttpServletRequest request){
-        Map<String,Object> result=new HashMap<String,Object>();
-        if(StringUtils.isEmpty(job.getJobName())){
-            return makeErrorResponse("1","任务名不能为空",result);
+        if(StringUtils.isBlank(job.getJobName())){
+            return genResponse("1","任务名为空");
         }
        if(!StringUtils.isBlank(job.getType()) && "http".equalsIgnoreCase(job.getType()) && !StringUtils.isBlank(job.getExeUrl()))
        {
     	   warpJobUrlParam(job,request);
        }
-
         warpJobInfo(job, request);
         return jobService.saveJob(job);
     }
@@ -99,25 +97,19 @@ public class JobController {
 	@RequestMapping("changeJob")
     @ResponseBody
     public Object changeJob(JobInfo job,HttpServletRequest request){
-		
-       Map<String,Object> result=new HashMap<String,Object>();
-       if( StringUtils.isBlank(job.getJobName())){
-    	   
-            return makeErrorResponse("1","任务名称不能为空",result);
-       }
-       if(job.getId()==null|| job.getId()<=0){
-           JobInfo joba =jobService.getJobByName(job.getJobName());
-           int jobId= (joba==null)?0:joba.getId();
-           if(jobId<=0){
-               return new BaseResponse(1,"不存在名称为:"+job.getJobName()+"的任务");
-           }
-           job.setId(jobId);
-       }
-       if(!StringUtils.isBlank(job.getType()) && "http".equalsIgnoreCase(job.getType()) && !StringUtils.isBlank(job.getExeUrl()))
-       {
-    	   warpJobUrlParam(job,request);
-       }
-       return jobService.changeJob(job);
+         if( StringUtils.isBlank(job.getJobName())){
+              return genResponse("1","任务名为空");
+         }
+         JobInfo oJob=jobService.queryJobByIdOrName(job.getId(),job.getJobName());
+         if(oJob==null){
+               return new BaseResponse(1,"任务不存在");
+         }
+         job.setId(oJob.getId());
+         if(!StringUtils.isBlank(job.getType()) && "http".equalsIgnoreCase(job.getType()) && !StringUtils.isBlank(job.getExeUrl()))
+         {
+    	     warpJobUrlParam(job,request);
+         }
+         return jobService.changeJob(job);
     }
 	
 	/**
@@ -126,19 +118,18 @@ public class JobController {
 	@RequestMapping("changeJobStatus")
     @ResponseBody
     public Object changeJobStatus(JobInfo job,HttpServletRequest request){
-	   Map<String,Object> result=new HashMap<String,Object>();
-       if( StringUtils.isBlank(job.getJobName()) && (job.getId()==null|| job.getId()<=0) ){
+	   if( StringUtils.isBlank(job.getJobName()) && (job.getId()==null|| job.getId()<=0) ){
     	   
-            return makeErrorResponse("1","任务ID,任务名称不能都为空",result);
+            return genResponse("1","任务ID,名称都为空");
        }
        if(job.getJobStatus()==null)
        {
-    	   return makeErrorResponse("1","任务状态不能为空",result);
+    	    return genResponse("1","任务状态为空");
        }
        JobInfo oldJob = jobService.queryJobByIdOrName(job.getId(),job.getJobName());
        if(oldJob==null)
        {
-           return new BaseResponse(1,"不存在名称为:"+job.getJobName()+"的任务");
+           return genResponse("1","任务不存在");
        }
        job.setId(oldJob.getId());
        return jobService.changeJobStatus(job);
@@ -150,97 +141,82 @@ public class JobController {
     @RequestMapping("startJob")
     @ResponseBody
     public Object startJob(JobInfo jobInfo,HttpServletRequest request){
-        Map<String,Object> result=new HashMap<String,Object>();
         if( StringUtils.isBlank(jobInfo.getJobName()) && (jobInfo.getId()==null|| jobInfo.getId()<=0) ){
-            return makeErrorResponse("1","任务ID,任务名称不能都为空",result);
+            return genResponse("1","任务ID,名称都为空");
         }
-        if(jobInfo.getId()==null||jobInfo.getId()<=0){
-            JobInfo joba =jobService.getJobByName(jobInfo.getJobName());
-            int jobId= (joba==null)?0:joba.getId();
-            if(jobId<=0){
-                return createJob(jobInfo,request);
-            }else
-            {
-               jobInfo.setId(jobId);
-            }
+        JobInfo oJob=jobService.queryJobByIdOrName(jobInfo.getId(),jobInfo.getJobName());
+        if(oJob==null){
+            return createJob(jobInfo,request);
+        }else
+        {
+            jobInfo.setId(oJob.getId());
+            return jobService.startJob(jobInfo.getId());
         }
-        return jobService.startJob(jobInfo.getId());
     }
     
     /**
      * 结束任务
-     * @param request
      */
     @RequestMapping("endJob")
     @ResponseBody
     public Object endJob(JobInfo jobInfo,HttpServletRequest request){
-    	 Map<String,Object> result=new HashMap<String,Object>();
-        if( (jobInfo.getId()==null || jobInfo.getId()<=0) && StringUtils.isBlank(jobInfo.getJobName())  ){
-            return makeErrorResponse("1","任务ID,任务名称不能都为空",result);
+    	if( (jobInfo.getId()==null || jobInfo.getId()<=0) && StringUtils.isBlank(jobInfo.getJobName())  ){
+            return genResponse("1","任务ID,名称都为空");
         }
-        if(jobInfo.getId()==null || jobInfo.getId()<=0){
-            JobInfo joba =jobService.getJobByName(jobInfo.getJobName());
-            int jobId= (joba==null)?0:joba.getId();
-            if(jobId<=0){
-                return new BaseResponse(1,"不存在名称为:"+jobInfo.getJobName()+"的任务");
-            }
-            jobInfo.setId(jobId);
+        JobInfo oJob=jobService.queryJobByIdOrName(jobInfo.getId(),jobInfo.getJobName());
+        if(oJob==null){
+            return new BaseResponse(1,"任务不存在");
         }
-        logger.info("JobController endJob jobInfo="+jobInfo);
+        jobInfo.setId(oJob.getId());
         return jobService.endJob(jobInfo.getId());
     }
     
     /**
      * 记录任务到点执行动作结束信息
      */
-    @RequestMapping("recordJobActOver")
+    @RequestMapping("recordJobExeOver")
     @ResponseBody
-    public BaseResponse recordJobActOver(JobExecute jobExecute){
-
-    	logger.error("JobController recordJobActOver start param:"+jobExecute);
-
+    public BaseResponse recordJobExeOver(JobExecute jobExecute){
+    	logger.info("JobController recordJobExeOver start param:"+jobExecute);
     	if( jobExecute.getId()<=0 ){
-            return new BaseResponse(1,"任务记录ID不能为空");
+            return new BaseResponse(1,"任务执行记录ID为空");
         }
         if(jobExecute.getState()==null){
-            return new BaseResponse(1,"此次执行结果不能为空");
+            return new BaseResponse(1,"任务执行结果为空");
         }
-        
         BaseResponse rsp= jobService.recordActOver(jobExecute);
-        
-        logger.error("JobController recordActOver end rsp:"+rsp.getError()+" "+rsp.getMsg());
-        
+        logger.info("JobController recordJobExeOver end rsp:"+rsp.getError()+" "+rsp.getMsg());
         return rsp;
     }
 
     @RequestMapping("uptJobExeNote")
     @ResponseBody
     public Object uptJobExeNote(JobExecute jobExecute,HttpServletRequest request){
-        Map<String,Object> result=new HashMap<String,Object>();
-        if(jobExecute.getId()<=0){
-            return makeErrorResponse("1","任务记录ID不能为空",result);
+        if( jobExecute.getId()<=0 ){
+            return new BaseResponse(1,"任务执行记录ID为空");
         }
-        if(StringUtils.isEmpty(jobExecute.getNote())){
-            return makeErrorResponse("1","备注不能为空",result);
+        if(StringUtils.isBlank(jobExecute.getNote())){
+            return new BaseResponse(1,"备注为空");
         }
-        //warpJobExecute(jobExecute,request);
         return jobService.uptJobExecute(jobExecute);
     }
 
     private void warpJobInfo(JobInfo job,HttpServletRequest request) {
         if(StringUtils.isBlank(job.getCreater())){
-            job.setCreater("me");
+            job.setCreater("unknow");
         }
         if(job.getCreateTime()==null){
             job.setCreateTime(SysDateTime.getNow());
         }
         job.setJobStatus(1);//1--正常
+        if(job.getParentId()==null)
+        {
+            job.setParentId(0);
+        }
         job.setIp(RequestUtil.getIpFromRequest(request));
     }
 
-    /**
-     * 给http类型的job组装参数
-     */
+    //http类型的job组装参数
     @SuppressWarnings("unchecked")
 	private void warpJobUrlParam(JobInfo job,HttpServletRequest request) {
     	
@@ -303,12 +279,6 @@ public class JobController {
         }
         job.setExeUrl(url);
     }
-
-    private Object makeErrorResponse(String code, String message, Map<String, Object> result) {
-        result.put("error", code);
-        result.put("msg", message);
-        return result;
-    }
     
     @RequestMapping("queryJob")
     @ResponseBody
@@ -332,10 +302,7 @@ public class JobController {
             return result;
     	}catch(Exception e)
     	{
-    		Map<String,Object> result = new HashMap<String,Object>();
-        	result.put("error", 1);
-            result.put("msg", e.getClass().getName()+","+e.getMessage());
-            return result;
+            return genResponse("1", e.getClass().getName()+","+e.getMessage());
     	}
     }
     
@@ -375,7 +342,6 @@ public class JobController {
     @RequestMapping("driveAllJob")
     @ResponseBody
     public BaseResponse driveAllJob(){
-    	
     	jobService.startAllDriveJobs();
     	return new BaseResponse(0 , "success");
     }
@@ -383,7 +349,6 @@ public class JobController {
     @RequestMapping("stopAllJob")
     @ResponseBody
     public Object stopAllJob(){
-    	
     	jobService.stopAllDriveJobs();
     	return new BaseResponse(0 , "success");
     }
@@ -396,7 +361,7 @@ public class JobController {
     }
 
     /**
-     * 监控自动任务定时调用入口
+     * 监控任务
      */
     @RequestMapping("monitJob")
     @ResponseBody
@@ -424,4 +389,18 @@ public class JobController {
 	   jobService.traceJob(id);
 	   return new BaseResponse(0 , "success");
    }
+
+    private Map<String,Object> genResponse(String code, String message, Map<String, Object> result) {
+        if(result==null)
+        {
+            result =new HashMap<String,Object>();
+        }
+        result.put("error", code);
+        result.put("msg", message);
+        return result;
+    }
+
+    private Map<String,Object> genResponse(String code, String message) {
+        return genResponse(code,message,null);
+    }
 }
