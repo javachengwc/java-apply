@@ -298,7 +298,10 @@
     <update id="uptLockRunStatus" parameterType="java.util.Map">
         update job_info
         set run_status=#{runStatus}
-        where  id=#{id} and run_status=#{cdnRunStatus}
+        where  id=#{id}
+        <if test="cdnRunStatus!=null  and cdnRunStatus!='' ">
+            and run_status=#{cdnRunStatus}
+        </if>
     </update>
 
 </mapper>

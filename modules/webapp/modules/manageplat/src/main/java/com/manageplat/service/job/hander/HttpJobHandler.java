@@ -11,7 +11,8 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,7 @@ import java.util.concurrent.Executors;
 @Service
 public class HttpJobHandler {
 
-	public static final Logger logger = Logger.getLogger(HttpJobHandler.class);
+	public static final Logger logger = LoggerFactory.getLogger(HttpJobHandler.class);
 
 	private static final ExecutorService executors = Executors.newCachedThreadPool();
 
@@ -71,7 +72,6 @@ public class HttpJobHandler {
 
 		public void run() {
 			// 获取参数
-
 			logger.error("HttpJobHandler execute begin,jobName="+ jobInfo.getJobName() + ",url=" + jobInfo.getExeUrl());
 			long begin = System.currentTimeMillis();
 			beginTime = begin / 1000;
@@ -84,8 +84,7 @@ public class HttpJobHandler {
 				JobExecute jobExecute = new JobExecute();
 				jobExecute.setState(2);//未执行--2
 				jobExecute.setStartTime(new Long(beginTime).intValue());
-				jobExecute.setEndTime(new Long(
-						System.currentTimeMillis() / 1000).intValue());
+				jobExecute.setEndTime(new Long(System.currentTimeMillis() / 1000).intValue());
 				jobExecute.setJobId(jobInfo.getId());
 				jobExecute.setJobName(jobInfo.getJobName());
 				if (1 == pass.getError().intValue()) {
@@ -155,9 +154,7 @@ public class HttpJobHandler {
 				client.getHttpConnectionManager().getParams().setConnectionTimeout(60000);
 				client.getHttpConnectionManager().getParams().setSoTimeout(30000);
 			}
-			
 			exeUrl = encodeUrl(exeUrl);
-
 			HttpMethod request = new GetMethod(exeUrl);
 			request.addRequestHeader("Content-type" , "text/html; charset=utf-8");
 			// String cookieStr = request.getHeader("Cookie");
@@ -168,7 +165,6 @@ public class HttpJobHandler {
 			}
 			try {
 				returnStatus=client.executeMethod(request);
-
 				// if (HttpStatus.SC_OK == returnStatus) {
 				String traceJobs = jobService.getTraceJob();
 				boolean needTrace=false;
@@ -184,14 +180,16 @@ public class HttpJobHandler {
 				if(needTrace)
 				{
 					 returnValue=request.getResponseBodyAsString();
-					 logger.error("HttpJobHandler do job return,returnStatus="+returnStatus+",returnBody=" + returnValue);
+					 logger.error("HttpJobHandler do job return,returnStatus=" + returnStatus + ",returnBody=" + returnValue);
 					 JobExecute jobExecute = new JobExecute();
 					 jobExecute.setId(jobExecuteId);
 					 jobExecute.setState(returnStatus);//http-return code
 					 
-					 int length =( (returnValue.length()>150)?150:returnValue.length());
-					 jobExecute.setNote(returnValue.substring(0,length));
-					 
+					 int length =(returnValue==null)?0:returnValue.length();
+                     length=(length>100)?100:length;
+                     if(length>0) {
+                         jobExecute.setNote(returnValue.substring(0, length));
+                     }
 					 jobService.uptJobExecute(jobExecute);
 				}
 			} catch (Exception e) {
@@ -200,7 +198,7 @@ public class HttpJobHandler {
 				request.releaseConnection();
 			}
 
-			logger.error("HttpJobHandler execute end,jobName=" + jobInfo.getJobName()
+			logger.info("HttpJobHandler execute end,jobName=" + jobInfo.getJobName()
 					+ ",status=" + returnStatus + ",value=" + returnValue
 					+ ",cost=" + (System.currentTimeMillis() - begin));
 			// 回调 记录执行结果
@@ -211,32 +209,21 @@ public class HttpJobHandler {
 
 			BaseResponse lock = jobService.doLuckLock(jobInfo);
 			if (lock.getError() == null || 0 != lock.getError().intValue()) {
-				logger.error("HttpJobHandler do job=" + jobInfo
-						+ ",bug jobInfo changeed ,not get exe lock");
+				logger.info("HttpJobHandler do job=" + jobInfo + ",bug jobInfo changeed ,not get exe lock");
 				// 重启动
 				timer.schedule(new TimerTask() {
 					public void run() {
-
 						try{
-							
 							JobInfo info = jobService.getJobById(jobInfo.getId());
-	
-							// 驱动相关信息没改变,那就是运行状态变了，被别的进程运行或启动了啥的
+							//驱动相关信息没改变,那就是运行状态变了，被别的进程运行或启动了
 							if (!JobManager.getInstance().hasDriveRelaChange(info)) {
 								jobInfo.setRunStatus(info.getRunStatus());
 							} else {
-								
-//								if (!JobManager.getInstance().isCanDriveJob(info)) {
-//							         jobService.endJob(info);
-//							         return;
-//						        }
-								
-								logger.error("HttpJobHandler restart job "+info.getId()+", "+info.getJobName());
+								logger.info("HttpJobHandler restart job " + info.getId() + ", " + info.getJobName());
 								// 重启
 								jobService.endJob(info);
 								jobService.startJob(info);
-								
-								logger.error("HttpJobHandler restart end job "+info.getId());
+								logger.info("HttpJobHandler restart end job " + info.getId());
 							}
 						}catch(Exception e)
 						{
@@ -244,8 +231,6 @@ public class HttpJobHandler {
 						}
 					}
 				}, 3 * 1000);// 3秒后
-
-				// return false;
 			}
 			return lock;
 		}

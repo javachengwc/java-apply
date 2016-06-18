@@ -213,6 +213,10 @@ public class JobController {
         {
             job.setParentId(0);
         }
+        if(StringUtils.isBlank(job.getRunStatus()))
+        {
+            job.setRunStatus("ready");
+        }
         job.setIp(RequestUtil.getIpFromRequest(request));
     }
 
