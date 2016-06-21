@@ -1,0 +1,40 @@
+---------------------httpd安装----------------------
+httpd的源码编译安装
+
+httpd的前置依赖
+    1,编译器(一般linux都自带安装了编译器)
+    yum -y install gcc automake autoconf libtool make     ---安装make
+    yum install gcc gcc-c++                               ---安装gcc g++
+
+    2,安装apr,apr-util
+    下载apr-1.5.2.tar.gz与apr-util-1.5.4.tar.gz,http://apr.apache.org
+    tar -zxvf apr-1.5.2.tar.gz
+    cd apr-1.5.2
+    ./configure  --prefix=/usr/local/apr
+    make
+    make instal
+
+    tar -zxvf apr-util-1.5.4.tar.gz
+    cd apr-util-1.5.4
+    ./configure  --prefix=/usr/local/apr-util -with-apr=/usr/local/apr/bin/apr-1-config
+    make
+    make instal
+
+    3,安装pcre-8.38.tar.gz
+    wget ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.38.tar.gz
+    tar -zxvf pcre-8.38.tar.gz
+    cd pcre-8.38
+    ./configure --prefix=/usr/local/pcre
+    make
+    make instal
+
+安装apache
+    下载httpd-2.4.20.tar.gz
+    tar -zxvf httpd-2.4.20.tar.gz
+    cd httpd-2.4.20
+    ./configure --prefix=/usr/local/apache2  --with-pcre=/usr/local/pcre --with-apr=/usr/local/apr --with-apr-util=/usr/local/apr-util
+    make
+    make instal
+
+执行/usr/local/apache2/bin/apachectl start，访问http://localhost,看到It works! 表示安装成功。
+----------------------------------------------------

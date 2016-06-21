@@ -1,0 +1,18 @@
+-----------------------http常用命令--------------------
+./bin/apachectl start                                ---启动httpd
+    eg: ./bin/httpd -f ./conf/httpd.conf start    ---指定配置文件启动httpd
+
+./bin/apachectl stop               ---结束httpd
+killall -9 httpd
+
+./bin/apachectl restart            ---重启httpd
+
+./bin/apachectl configtest         ---测试配置文件是否正常
+./bin/apachectl -t
+
+./bin/apachectl graceful           ---可以向start一样启动，但是不会中断当前正在处理的请求，也不会关闭日志。
+
+./bin/apachectl -v                 ---查看版本号
+./bin/apachectl -V                 ---查看编译参数
+
+--------------------------------------------------------
