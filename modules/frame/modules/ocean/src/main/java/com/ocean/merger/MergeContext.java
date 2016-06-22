@@ -14,9 +14,7 @@ public class MergeContext {
 
     private List<AggregationColumn> aggregationColumns = new ArrayList<AggregationColumn>();
 
-    private int offset;
-
-    private int rowCount;
+    private Limit limit;
 
     public List<OrderByColumn> getOrderByColumns() {
         return orderByColumns;
@@ -42,20 +40,12 @@ public class MergeContext {
         this.aggregationColumns = aggregationColumns;
     }
 
-    public int getOffset() {
-        return offset;
+    public Limit getLimit() {
+        return limit;
     }
 
-    public void setOffset(int offset) {
-        this.offset = offset;
-    }
-
-    public int getRowCount() {
-        return rowCount;
-    }
-
-    public void setRowCount(int rowCount) {
-        this.rowCount = rowCount;
+    public void setLimit(Limit limit) {
+        this.limit = limit;
     }
 
     public MergeContext()

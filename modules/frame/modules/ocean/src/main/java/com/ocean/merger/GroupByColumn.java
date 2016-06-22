@@ -42,6 +42,13 @@ public class GroupByColumn {
 
     }
 
+    public GroupByColumn(String name,String alias,OrderByColumn.OrderByType orderByType)
+    {
+        this.name=name;
+        this.alias=alias;
+        this.orderByType=orderByType;
+    }
+
     public String toString()
     {
         return ToStringBuilder.reflectionToString(this);

@@ -1,5 +1,7 @@
 package com.ocean.merger;
 
+import com.ocean.merger.resultset.IteratorResultSet;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.sql.ResultSet;

@@ -7,6 +7,7 @@ import com.ocean.jdbc.adapter.AbstractPreparedStatementAdapter;
 import com.ocean.jdbc.adapter.AbstractStatementAdapter;
 import com.ocean.merger.ResultSetFactory;
 import com.ocean.router.SqlRouteEngine;
+import com.ocean.router.SqlRouteResult;
 
 import java.sql.*;
 import java.util.*;
@@ -27,6 +28,8 @@ public class ShardPreparedStatement extends AbstractPreparedStatementAdapter {
     private String[] columnNames;
 
     private boolean hasExecuted;
+
+    private SqlRouteEngine sqlRouteEngine;
 
     private List<List<Object>> batchParameters = new ArrayList<List<Object>>();
 
@@ -58,6 +61,10 @@ public class ShardPreparedStatement extends AbstractPreparedStatementAdapter {
     public ShardPreparedStatement(SqlRouteEngine SqlRouteEngine, ShardConnection shardConnection, String sql, String[] columnNames) throws SQLException {
         this(SqlRouteEngine, shardConnection, sql);
         this.columnNames = columnNames;
+    }
+
+    public SqlRouteEngine getSqlRouteEngine() {
+        return sqlRouteEngine;
     }
 
     @Override
@@ -122,7 +129,7 @@ public class ShardPreparedStatement extends AbstractPreparedStatementAdapter {
     }
 
     private List<PreparedStatement> routeSQL(List<Object> parameters) throws SQLException {
-        List<PreparedStatement> result = new ArrayList<>();
+        List<PreparedStatement> result = new ArrayList<PreparedStatement>();
         SqlRouteResult sqlRouteResult = getSqlRouteEngine().route(sql, parameters);
         setMergeContext(sqlRouteResult.getMergeContext());
         for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {

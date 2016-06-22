@@ -1,5 +1,6 @@
 package com.ocean.core.model;
 
+import com.google.common.base.Optional;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import java.io.Serializable;
@@ -17,6 +18,24 @@ public class Table implements Serializable {
 
     //逻辑名
     private String logicName;
+
+    public Table()
+    {
+
+    }
+
+    public Table(String db,String name)
+    {
+        this.db=db;
+        this.name=name;
+    }
+
+    public Table(String db,String name,String logicName)
+    {
+        this.db=db;
+        this.name=name;
+        this.logicName=logicName;
+    }
 
     public String getDb() {
         return db;

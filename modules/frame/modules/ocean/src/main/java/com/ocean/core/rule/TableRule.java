@@ -56,6 +56,11 @@ public class TableRule {
         this.tableShardStrategy = tableShardStrategy;
     }
 
+    public TableRule(String logicTable, List<Table> actualTables) {
+
+        this.logicTable=logicTable;
+        this.actualTables=actualTables;
+    }
 
     public TableRule(String logicTable, List<Table> actualTables,ShardStrategy databaseShardStrategy, ShardStrategy tableShardStrategy) {
 

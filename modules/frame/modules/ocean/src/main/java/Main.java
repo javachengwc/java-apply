@@ -1,3 +1,6 @@
+import com.ocean.core.ShardDataSource;
+import com.ocean.core.model.Table;
+import com.ocean.core.rule.ShardRule;
 import com.ocean.core.rule.TableRule;
 import org.apache.commons.dbcp.BasicDataSource;
 
@@ -5,9 +8,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
@@ -58,18 +59,27 @@ public class Main {
         }
     }
 
-    private static ShardDataSource getShardDataSource() throws {
+    private static ShardDataSource getShardDataSource() throws Exception{
 
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
 
-        TableRule orderTableRule = new TableRule("t_order", Arrays.asList("t_order_0", "t_order_1"));
-        TableRule orderItemTableRule = new TableRule("t_order_item", Arrays.asList("t_order_item_0", "t_order_item_1"));
+        Table order0 = new Table("ds_0","t_order_0","t_order");
+        Table order1 = new Table("ds_1","t_order_1","t_order");
+        List<Table> orderTableList= new ArrayList<Table>();
+        orderTableList.add(order0);
+        orderTableList.add(order1);
 
-        ShardRule shardRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule),
-                Arrays.asList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))),
-                new DatabaseShardingStrategy("user_id", new ModuloDatabaseShardingAlgorithm()),
-                new TableShardingStrategy("order_id", new ModuloTableShardingAlgorithm()));
-        return new ShardingDataSource(shardRule);
+        Table orderItem0 = new Table("ds_0","t_order_item_0","t_order_item");
+        Table orderItem1 = new Table("ds_1","t_order_item_1","t_order_item");
+        List<Table> orderItemList= new ArrayList<Table>();
+        orderItemList.add(orderItem0);
+        orderItemList.add(orderItem1);
+
+        TableRule orderTableRule = new TableRule("t_order",orderTableList);
+        TableRule orderItemTableRule = new TableRule("t_order_item", orderItemList);
+
+        ShardRule shardRule = new ShardRule(dataSourceMap, Arrays.asList(orderTableRule, orderItemTableRule));
+        return new ShardDataSource(shardRule);
     }
 
     private static Map<String, DataSource> createDataSourceMap() {

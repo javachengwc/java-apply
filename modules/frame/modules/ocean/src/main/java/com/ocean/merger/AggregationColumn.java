@@ -71,6 +71,23 @@ public class AggregationColumn {
 
     }
 
+    public AggregationColumn(String expression,AggregationType aggregationType,Optional<String> alias, Optional<String> option)
+    {
+        this.expression=expression;
+        this.aggregationType=aggregationType;
+        this.alias=alias;
+        this.option=option;
+    }
+
+    public AggregationColumn(String expression,AggregationType aggregationType,Optional<String> alias, Optional<String> option,int index)
+    {
+        this.expression=expression;
+        this.aggregationType=aggregationType;
+        this.alias=alias;
+        this.option=option;
+        this.index=index;
+    }
+
     /**
      * 聚合函数类型
      */
