@@ -1,8 +1,9 @@
 ------------------------linux笔记-------------------------
+linux在线资料:http://man.linuxde.net
+
 date -s 05/15/2016  ---修改日期
 date -s 15:15:00    ---修改时间
 clock -w   ---强制把系统时间写入CMOS
-
 -----linux下安装jdk-----
 1,下载相应版本32或64为jdk压缩包,比如32位1.7版本jdk-7u51-linux-i586.gz
 2,cp jdk-7u51-linux-i586.gz /usr/local/jdk
