@@ -185,5 +185,3 @@ tar -zxvf  /aa.tar.gz  ---解压tar.gz文件
 ln -s /home/.../  aa   ---建软连接aa 连向/home/..
 ----------------------------
 
-
-

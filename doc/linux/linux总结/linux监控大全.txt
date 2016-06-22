@@ -1,0 +1,180 @@
+--------------------linux监控-----------------------
+iotop监视磁盘I/O使用状况,可查看每个进程是如何使用IO的。
+iotop            ---查看各进程io
+iotop -p 111     ---查看进程号111的io
+
+apt-get install iotop           ---ubuntu上安装iotop
+yum install iotop               ---centos上安装iotop
+wget http://*iotop-*.tar.gz     ---源码安装iotop
+tar zxf iotop-*.tar.gz
+python setup.py build
+python setup.py install
+
+iotop选项
+-o：只显示有io操作的进程。
+-b：批量显示，无交互，主要用作记录到文件。
+-n NUM：显示NUM次，主要用于非交互式模式。
+-d SEC：间隔SEC秒显示一次。
+-p PID：监控的进程pid。
+-u USER：监控的进程用户。
+-------------------------
+ifstat是一个统计网络接口活动状态的工具
+ifstat -tT             ---统计网络接口活动状态
+time           eth0             eth1             eth2             eth3            Total
+HH:MM:ss KB/s in KB/s out KB/s in KB/s out KB/s in KB/s out KB/s in KB/s out KB/s in KB/s out
+16:53:04  0.82    0.61     1200.27 1100.06  0.15    0.28     0.00    0.00     1202.36 1100.86
+16:53:05  0.57    0.43     0.58    0.77     0.00    0.00     0.00    0.00     1.16    1.21
+
+wget http://gael.roualland.free.fr/ifstat/ifstat-1.1.tar.gz
+tar -zxvf ifstat-1.1.tar.gz                   ---源码安装ifstat
+cd ifstat-1.1
+./configure #默认安装到/usr/local/bin/目录中
+make ;make install
+
+ifstat选项
+-h 显示简短的帮助信息。
+-l 监测所有接口(包括环路网络lo接口)的信息。
+-a 监测能检测到的所有网络接口的状态信息。比加上-l参数还多一个plip0的接口信息，这是并口（网络设备中有一个叫PLIP (Parallel Line Internet Protocol). 它提供了并口）。
+-z 隐藏流量是无的接口。
+-i 指定要监测的接口,后面跟网络接口名
+-s 等于加-d snmp:[comm@][#]host[/nn]] 参数，通过SNMP查询一个远程主机
+-n 关闭显示周期性出现的头部信息
+  （不加-n参数运行ifstat时最顶部会出现网络接口的名称，当一屏显示不下时，会再一次出现接口的名称，提示显示的流量信息具体是哪个网络接口的。
+   加上-n参数把周期性的显示接口名称关闭，只显示一次）。
+-t 在每一行的开头加一个时间戳。
+-T 报告所有监测接口的全部带宽（最后一列有个total，显示所有的接口的in流量和所有接口的out流量，简单的把所有接口的in流量相加,out流量相加）。
+-w 用指定的列宽，而不是为了适应接口名称的长度而去自动放大列宽。
+-W 如果内容比终端窗口的宽度还要宽就自动换行。
+-S 在同一行保持状态更新（不滚动不换行)。
+-q 安静模式，警告信息不出现。
+-v 显示版本信息。
+-d 指定一个驱动来收集状态信息。
+------------------------------
+nethogs用来按进程或程序实时统计网络带宽使用率。如果发生了网络阻塞你可以启动NetHogs立即看到哪个PID造成的这种状况。
+
+yum install nethogs   ---centos中安装nethogs,(需启用linux下的EPEL源)
+nethogs                  ---启用nethogs
+nethogs -d 5             ---启用nethogs刷新频率为5
+nethogs eth0             ---只监控网络设备eth0的网络带宽
+nethogs eth0 eth1        ---同时监控eth0,eth1的网络带宽
+
+netHogs的一些交互命令（键盘快捷键）
+m-->修改单位
+r-->按流量排序
+s-->按发送流量排序
+q-->退出命令提示符
+------------------------------
+ltrace跟踪进程调用库函数的情况
+ltrace [option ...] [command [arg ...]]
+ltrace ./a.out
+ltrace -T ./a.out                ---输出调用时间开销
+ltrace -S ./a.out                ---显示系统调用
+
+ltrace选项
+-h 打印帮助信息。
+-a 对齐具体某个列的返回值。
+-c 计算时间和调用，并在程序退出时打印摘要。
+-C 解码低级别名称（内核级）为用户级名称。
+-d 打印调试信息。
+-e 改变跟踪的事件。
+-f 跟踪子进程。
+-i 打印指令指针，当库调用时。
+-l 只打印某个库中的调用。
+-L 不打印库调用。
+-n, --indent=NR 对每个调用级别嵌套以NR个空格进行缩进输出。
+-o, --output=file 把输出定向到文件。
+-p PID 附着在值为PID的进程号上进行ltrace。
+-r 打印相对时间戳。
+-s STRLEN 设置打印的字符串最大长度。
+-S 显示系统调用。
+-t, -tt, -ttt 打印绝对时间戳。
+-T 输出每个调用过程的时间开销。
+-u USERNAME 使用某个用户id或组ID来运行命令。
+ -V, --version 打印版本信息，然后退出。
+------------------------------
+strace是一个集诊断、调试、统计与一体的工具，可用strace对应用的系统调用和信号传递的跟踪结果来对应用进行分析，以达到解决问题或者是了解应用工作过程的目的。
+strace的最简单的用法就是执行一个指定的命令，在指定的命令结束之后它也就退出。在命令执行的过程中，strace会记录和解析命令进程的所有系统调用以及这个进程所接收到的所有的信号值。
+
+strace ./test                ---跟踪分析test程序的执行
+strace -c ./test             ---统计test程序的系统调用
+strace -c -o test.txt ./test ---把strace结果重定向输出到test.txt
+strace -T ./test             ---将每个系统调用所花费的时间打印出来
+strace -p pid                ---跟踪一个现有的进程
+strace -s 20 ./test          ---指定trace结果的每一行输出的字符串的长度
+strace -tt -s 10 -o out.txt -p 600
+
+strace选项
+-h 输出简要的帮助信息。
+-c 统计每一系统调用的所执行的时间,次数和出错的次数等。
+-d 输出strace关于标准错误的调试信息。
+-f 跟踪由fork调用所产生的子进程。
+-ff 如果提供-o filename,则所有进程的跟踪结果输出到相应的filename.pid中,pid是各进程的进程号。
+-F 尝试跟踪vfork调用.在-f时,vfork不被跟踪。
+-i 输出系统调用的入口指针。
+-q 禁止输出关于脱离的消息。
+-r 打印出相对时间关于,,每一个系统调用。
+-t 在输出中的每一行前加上时间信息。
+-tt 在输出中的每一行前加上时间信息,微秒级。
+-ttt 微秒级输出,以秒了表示时间。
+-T 显示每一调用所耗的时间。
+-v 输出所有的系统调用.一些调用关于环境变量,状态,输入输出等调用由于使用频繁,默认不输出。
+-V 输出strace的版本信息。
+-x 以十六进制形式输出非标准字符串。
+-xx 所有字符串以十六进制形式输出。
+-a column 设置返回值的输出位置.默认为40。
+-e expr 指定一个表达式,用来控制如何跟踪.格式：[qualifier=][!]value1[,value2]...
+   qualifier只能是 trace,abbrev,verbose,raw,signal,read,write其中之一。
+   value是用来限定的符号或数字.默认的 qualifier是 trace.感叹号是否定符号。
+   例如:-eopen等价于 -e trace=open,表示只跟踪open调用.而-etrace!=open 表示跟踪除了open以外的其他调用.有两个特殊的符号 all 和 none。
+   注意有些shell使用!来执行历史记录里的命令,所以要使用\\。
+-e trace=set 只跟踪指定的系统 调用.例如:-e trace=open,close,rean,write表示只跟踪这四个系统调用.默认的为set=all。
+-e trace=file 只跟踪有关文件操作的系统调用。
+-e trace=process 只跟踪有关进程控制的系统调用。
+-e trace=network 跟踪与网络有关的所有系统调用。
+-e strace=signal 跟踪所有与系统信号有关的系统调用。
+-e trace=ipc 跟踪所有与进程通讯有关的系统调用。
+-e abbrev=set 设定strace输出的系统调用的结果集。
+-v 等与 abbrev=none.默认为abbrev=all。
+-e raw=set 将指定的系统调用的参数以十六进制显示。
+-e signal=set 指定跟踪的系统信号.默认为all.如 signal=!SIGIO(或者signal=!io),表示不跟踪SIGIO信号。
+-e read=set 输出从指定文件中读出 的数据.例如: -e read=3,5 -e write=set 输出写入到指定文件中的数据。
+-o filename 将strace的输出写入文件filename。
+-p pid 跟踪指定的进程pid。
+-s strsize 指定输出的字符串的最大长度.默认为32.文件名一直全部输出。
+-u username 以username的UID和GID执行被跟踪的命令。
+------------------------------
+ulimit用来查看和限制系统用户对shell资源的访问
+ulimit -a                  ---查看资源限制
+ulimit -n                  ---查看打开文件最大数
+core file size (blocks, -c) 0              #core文件的最大值为100 blocks。
+data seg size (kbytes, -d) unlimited       #进程的数据段可以任意大。
+scheduling priority (-e) 0
+file size (blocks, -f) unlimited           #文件可以任意大。
+pending signals (-i) 98304                 #最多有98304个待处理的信号。
+max locked memory (kbytes, -l) 32          #一个任务锁住的物理内存的最大值为32KB。
+max memory size (kbytes, -m) unlimited     #一个任务的常驻物理内存的最大值。
+open files (-n) 1024                       #一个任务最多可以同时打开1024的文件。
+pipe size (512 bytes, -p) 8                #管道的最大空间为4096字节。
+POSIX message queues (bytes, -q) 819200    #POSIX的消息队列的最大值为819200字节。
+real-time priority (-r) 0
+stack size (kbytes, -s) 10240              #进程的栈的最大值为10240字节。
+cpu time (seconds, -t) unlimited           #进程使用的CPU时间。
+max user processes (-u) 98304              #当前用户同时打开的进程（包括线程）的最大个数为98304。
+virtual memory (kbytes, -v) unlimited      #没有限制进程的最大地址空间。
+file locks (-x) unlimited                  #所能锁住的文件的最大个数没有限制。
+
+ulimit选项
+-a：显示目前资源限制的设定。
+-c ：设定core文件的最大值，单位为区块。
+-d <数据节区大小>：程序数据节区的最大值，单位为KB。
+-f <文件大小>：shell所能建立的最大文件，单位为区块。
+-H：设定资源的硬性限制，也就是管理员所设下的限制。
+-m <内存大小>：指定可使用内存的上限，单位为KB。
+-n <文件数目>：指定同一时间最多可开启的文件数。
+-p <缓冲区大小>：指定管道缓冲区的大小，单位512字节。
+-s <堆叠大小>：指定堆叠的上限，单位为KB。
+-S：设定资源的弹性限制。
+-t ：指定CPU使用时间的上限，单位为秒。
+-u <程序数目>：用户最多可开启的程序数目。
+-v <虚拟内存大小>：指定可使用的虚拟内存上限，单位为KB。
+----------------------------------------------------------
