@@ -39,10 +39,14 @@ vim /etc/hosts
 以上步骤执行完毕后，如果需要,重启主机 reboot
 ----------------------------------------------------
 下载cloudera-manager.repo,修改baseurl中cm版本为实际版本
+    http://archive.cloudera.com/cm5/redhat/6/x86_64/cm/cloudera-manager.repo
 下载CM installer,获取cloudera-manager-installer.bin文件
+    http://archive-primary.cloudera.com/cm5/installer/5.0.2/
 下载CM rpms
+    http://archive.cloudera.com/cm5/redhat/6/x86_64/cm/5.0.2/RPMS/x86_64/
+    下载列表中所有rpm文件(jdk的rmp只需要下载一个即可,如果服务器已安装jdk,可不下载jdk的rpm文件)
 下载CDH Parcel文件,(只需下载*-el6.parcel,*-el6-parcel.shal,mainfest.json这3个文件即可,.sha1文件后缀需更改为.sha)
-
+    http://archive-primary.cloudera.com/cdh5/parcels/5.0.2/
 Cloudera Manager安装(1,2,3步骤需所有节点上执行)
 1,设置cm相关的yum仓库
     cp cloudera-manager.repo /etc/yum.repos.d/    ---拷贝cloudera-manager.repo文件到/etc/yum.repos.d/下
