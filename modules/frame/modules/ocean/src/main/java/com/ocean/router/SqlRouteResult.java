@@ -15,6 +15,16 @@ public class SqlRouteResult {
 
     private List<SqlExecutionUnit> executionUnits = new ArrayList<SqlExecutionUnit>();
 
+    public SqlRouteResult()
+    {
+
+    }
+
+    public SqlRouteResult(MergeContext mergeContext)
+    {
+        this.mergeContext = mergeContext;
+    }
+
     public SqlRouteResult(MergeContext mergeContext, List<SqlExecutionUnit> executionUnits )
     {
         this.mergeContext = mergeContext;

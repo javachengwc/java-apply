@@ -7,5 +7,5 @@ import java.util.List;
  */
 public interface MergeUnit<I, O> {
 
-    O merge(final List<I> params);
+   public O merge(final List<I> params);
 }

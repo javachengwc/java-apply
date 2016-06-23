@@ -1,6 +1,7 @@
 package com.ocean.jdbc;
 
 import com.ocean.jdbc.adapter.AbstractResultSetAdapter;
+import com.ocean.parser.Limit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,18 +16,15 @@ public class ShardResultSet  extends AbstractResultSetAdapter {
 
     private Logger logger = LoggerFactory.getLogger(ShardResultSet.class);
 
-    private int index;
-
-    private int rows;
+    private Limit limit;
 
     private boolean offsetSkipped;
 
     private int readCount;
 
-    protected ShardResultSet(List<ResultSet> resultSets, int index ,int rows) {
+    protected ShardResultSet(List<ResultSet> resultSets,Limit limit ) {
         this.resultSets=resultSets;
-        this.index = index;
-        this.rows=rows;
+        this.limit = limit;
         setCurrentResultSet(resultSets.get(0));
     }
 
@@ -35,11 +33,11 @@ public class ShardResultSet  extends AbstractResultSetAdapter {
         if (!offsetSkipped) {
             skipOffset();
         }
-        return ++readCount <= rows && nextForShard();
+        return ++readCount <= limit.getRowCount() && nextForShard();
     }
 
     private void skipOffset() {
-        for (int i = 0; i <index; i++) {
+        for (int i = 0; i <limit.getOffset(); i++) {
             try {
                 if (!nextForShard()) {
                     break;

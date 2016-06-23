@@ -2,16 +2,15 @@ package com.ocean.router;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import com.ocean.core.DatabaseType;
-import com.ocean.core.rule.ShardRule;
+import com.ocean.shard.DatabaseType;
+import com.ocean.shard.rule.ShardRule;
 import com.ocean.exception.ShardException;
 import com.ocean.exception.SqlParserException;
-import com.ocean.merger.MergeContext;
-import com.ocean.parser.SqlParsedResult;
-import com.ocean.parser.SqlParserFactory;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import com.ocean.parser.*;
+import com.ocean.router.binding.BindingTablesRouter;
+import com.ocean.router.mixed.MixedTablesRouter;
+import com.ocean.router.single.SingleTableRouter;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -23,6 +22,22 @@ public class SqlRouteEngine {
     private ShardRule shardRule;
 
     private DatabaseType databaseType;
+
+    public ShardRule getShardRule() {
+        return shardRule;
+    }
+
+    public void setShardRule(ShardRule shardRule) {
+        this.shardRule = shardRule;
+    }
+
+    public DatabaseType getDatabaseType() {
+        return databaseType;
+    }
+
+    public void setDatabaseType(DatabaseType databaseType) {
+        this.databaseType = databaseType;
+    }
 
     /**
      * SQL路由
@@ -39,10 +54,9 @@ public class SqlRouteEngine {
     private SqlRouteResult routeSQL(SqlParsedResult parsedResult) {
         SqlRouteResult result = new SqlRouteResult(parsedResult.getMergeContext());
         for (ConditionContext each : parsedResult.getConditionContexts()) {
-            result.getExecutionUnits().addAll(routeSQL(each, Collections2.transform(parsedResult.getRouteContext().getTables(), new Function<Table, String>() {
-
-                @Override
-                public String apply(final Table input) {
+            result.getExecutionUnits().addAll(routeSQL(each, Collections2.transform(parsedResult.getRouteContext().getTables(),
+            new Function<SqlTable, String>() {
+                public String apply(SqlTable input) {
                     return input.getName();
                 }
             }), parsedResult.getRouteContext().getSqlBuilder()));
@@ -50,14 +64,13 @@ public class SqlRouteEngine {
         return result;
     }
 
-    private Collection<SqlExecutionUnit> routeSQL(final ConditionContext conditionContext, final Collection<String> logicTables, final SQLBuilder sqlBuilder) {
+    private Collection<SqlExecutionUnit> routeSQL(ConditionContext conditionContext, Collection<String> logicTables, SqlBuilder sqlBuilder) {
         RoutingResult result;
         if (1 == logicTables.size()) {
             result = new SingleTableRouter(shardRule, logicTables.iterator().next(), conditionContext).route();
         } else if (shardRule.isAllBindingTable(logicTables)) {
             result = new BindingTablesRouter(shardRule, logicTables, conditionContext).route();
         } else {
-            // TODO 可配置是否执行笛卡尔积
             result = new MixedTablesRouter(shardRule, logicTables, conditionContext).route();
         }
         if (null == result) {

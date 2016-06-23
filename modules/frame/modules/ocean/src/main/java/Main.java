@@ -1,7 +1,8 @@
-import com.ocean.core.ShardDataSource;
-import com.ocean.core.model.Table;
-import com.ocean.core.rule.ShardRule;
-import com.ocean.core.rule.TableRule;
+import com.ocean.shard.ShardDataSource;
+import com.ocean.shard.model.Table;
+import com.ocean.shard.rule.DataSourceRule;
+import com.ocean.shard.rule.ShardRule;
+import com.ocean.shard.rule.TableRule;
 import org.apache.commons.dbcp.BasicDataSource;
 
 import javax.sql.DataSource;
@@ -78,7 +79,9 @@ public class Main {
         TableRule orderTableRule = new TableRule("t_order",orderTableList);
         TableRule orderItemTableRule = new TableRule("t_order_item", orderItemList);
 
-        ShardRule shardRule = new ShardRule(dataSourceMap, Arrays.asList(orderTableRule, orderItemTableRule));
+        DataSourceRule dataSourceRule= new DataSourceRule(dataSourceMap);
+
+        ShardRule shardRule = new ShardRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule));
         return new ShardDataSource(shardRule);
     }
 

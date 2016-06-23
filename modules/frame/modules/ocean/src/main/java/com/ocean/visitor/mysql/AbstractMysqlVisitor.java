@@ -5,7 +5,7 @@ import com.alibaba.druid.sql.ast.expr.*;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
-import com.ocean.core.DatabaseType;
+import com.ocean.shard.DatabaseType;
 import com.ocean.parser.ParseContext;
 import com.ocean.parser.SqlBuilder;
 import com.ocean.parser.SqlCondition;

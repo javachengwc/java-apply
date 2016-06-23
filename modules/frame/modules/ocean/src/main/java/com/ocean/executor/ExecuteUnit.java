@@ -5,5 +5,5 @@ package com.ocean.executor;
  */
 public interface ExecuteUnit<I, O> {
 
-    O execute(I input) throws Exception;
+    public O execute(I input) throws Exception;
 }

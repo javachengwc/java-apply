@@ -10,10 +10,10 @@ import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.visitor.SQLEvalVisitorUtils;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Optional;
-import com.ocean.core.DatabaseType;
-import com.ocean.merger.AggregationColumn;
-import com.ocean.merger.GroupByColumn;
-import com.ocean.merger.OrderByColumn;
+import com.ocean.shard.DatabaseType;
+import com.ocean.merger.aggregation.AggregationColumn;
+import com.ocean.merger.groupby.GroupByColumn;
+import com.ocean.merger.orderby.OrderByColumn;
 
 import java.util.ArrayList;
 import java.util.Arrays;

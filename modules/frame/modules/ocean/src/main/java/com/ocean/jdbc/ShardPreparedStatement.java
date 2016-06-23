@@ -5,7 +5,8 @@ import com.google.common.hash.HashCode;
 import com.ocean.executor.PreparedStatementExecutor;
 import com.ocean.jdbc.adapter.AbstractPreparedStatementAdapter;
 import com.ocean.jdbc.adapter.AbstractStatementAdapter;
-import com.ocean.merger.ResultSetFactory;
+import com.ocean.merger.resultset.ResultSetFactory;
+import com.ocean.router.SqlExecutionUnit;
 import com.ocean.router.SqlRouteEngine;
 import com.ocean.router.SqlRouteResult;
 
@@ -132,9 +133,9 @@ public class ShardPreparedStatement extends AbstractPreparedStatementAdapter {
         List<PreparedStatement> result = new ArrayList<PreparedStatement>();
         SqlRouteResult sqlRouteResult = getSqlRouteEngine().route(sql, parameters);
         setMergeContext(sqlRouteResult.getMergeContext());
-        for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
+        for (SqlExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
             PreparedStatement preparedStatement = generatePrepareStatement(getShardConnection().getConnection(each.getDataSource()), each.getSql());
-            replayMethodsInvovation(preparedStatement);
+            doMethodsInvovation(preparedStatement);
             setParameters(preparedStatement, parameters);
             result.add(preparedStatement);
         }

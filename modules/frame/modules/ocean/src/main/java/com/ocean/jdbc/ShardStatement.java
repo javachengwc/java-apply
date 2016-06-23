@@ -1,10 +1,15 @@
 package com.ocean.jdbc;
 
 import com.google.common.hash.HashCode;
+import com.google.common.hash.Hashing;
 import com.ocean.executor.StatementExecutor;
 import com.ocean.jdbc.adapter.AbstractStatementAdapter;
-import com.ocean.merger.ResultSetFactory;
+import com.ocean.merger.MergeContext;
+import com.ocean.merger.resultset.ResultSetFactory;
+import com.ocean.router.SqlExecutionUnit;
 import com.ocean.router.SqlRouteEngine;
+import com.ocean.router.SqlRouteResult;
+import org.apache.commons.codec.Charsets;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -31,6 +36,8 @@ public class ShardStatement extends AbstractStatementAdapter {
 
     private ResultSet currentResultSet;
 
+    private MergeContext mergeContext;
+
     public ShardStatement(SqlRouteEngine sqlRouteEngine, ShardConnection shardConnection) throws SQLException {
         this(sqlRouteEngine, shardConnection, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
@@ -46,6 +53,70 @@ public class ShardStatement extends AbstractStatementAdapter {
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
+    }
+
+    public ShardConnection getShardConnection() {
+        return shardConnection;
+    }
+
+    public void setShardConnection(ShardConnection shardConnection) {
+        this.shardConnection = shardConnection;
+    }
+
+    public SqlRouteEngine getSqlRouteEngine() {
+        return sqlRouteEngine;
+    }
+
+    public void setSqlRouteEngine(SqlRouteEngine sqlRouteEngine) {
+        this.sqlRouteEngine = sqlRouteEngine;
+    }
+
+    public int getResultSetType() {
+        return resultSetType;
+    }
+
+    public void setResultSetType(int resultSetType) {
+        this.resultSetType = resultSetType;
+    }
+
+    public int getResultSetConcurrency() {
+        return resultSetConcurrency;
+    }
+
+    public void setResultSetConcurrency(int resultSetConcurrency) {
+        this.resultSetConcurrency = resultSetConcurrency;
+    }
+
+    public int getResultSetHoldability() {
+        return resultSetHoldability;
+    }
+
+    public void setResultSetHoldability(int resultSetHoldability) {
+        this.resultSetHoldability = resultSetHoldability;
+    }
+
+    public Map<HashCode, Statement> getCachedRoutedStatements() {
+        return cachedRoutedStatements;
+    }
+
+    public void setCachedRoutedStatements(Map<HashCode, Statement> cachedRoutedStatements) {
+        this.cachedRoutedStatements = cachedRoutedStatements;
+    }
+
+    public ResultSet getCurrentResultSet() {
+        return currentResultSet;
+    }
+
+    public void setCurrentResultSet(ResultSet currentResultSet) {
+        this.currentResultSet = currentResultSet;
+    }
+
+    public MergeContext getMergeContext() {
+        return mergeContext;
+    }
+
+    public void setMergeContext(MergeContext mergeContext) {
+        this.mergeContext = mergeContext;
     }
 
     @Override
@@ -106,7 +177,7 @@ public class ShardStatement extends AbstractStatementAdapter {
         StatementExecutor result = new StatementExecutor();
         SqlRouteResult sqlRouteResult = sqlRouteEngine.route(sql, Collections.emptyList());
         mergeContext = sqlRouteResult.getMergeContext();
-        for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
+        for (SqlExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
             result.addStatement(each.getSql(), generateStatement(each.getSql(), each.getDataSource()));
         }
         return result;
@@ -117,14 +188,14 @@ public class ShardStatement extends AbstractStatementAdapter {
         if (cachedRoutedStatements.containsKey(hashCode)) {
             return cachedRoutedStatements.get(hashCode);
         }
-        Connection connection = shardingConnection.getConnection(dataSourceName);
+        Connection connection = shardConnection.getConnection(dataSourceName);
         Statement result;
         if (0 == resultSetHoldability) {
             result = connection.createStatement(resultSetType, resultSetConcurrency);
         } else {
             result = connection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
         }
-        replayMethodsInvovation(result);
+        doMethodsInvovation(result);
         cachedRoutedStatements.put(hashCode, result);
         return result;
     }

@@ -13,7 +13,7 @@ import java.util.List;
 public class IteratorResultSet  extends ShardResultSet {
 
     public IteratorResultSet(List<ResultSet> resultSets, MergeContext mergeContext) {
-        super(resultSets, mergeContext.getOffset(),mergeContext.getRowCount());
+        super(resultSets, mergeContext.getLimit());
     }
 
     protected boolean nextForShard() throws SQLException {

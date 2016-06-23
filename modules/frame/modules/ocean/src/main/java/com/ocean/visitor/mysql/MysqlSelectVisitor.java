@@ -11,10 +11,10 @@ import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlSelectGroupByExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
 import com.google.common.base.Optional;
-import com.ocean.merger.AggregationColumn;
-import com.ocean.merger.GroupByColumn;
-import com.ocean.merger.Limit;
-import com.ocean.merger.OrderByColumn;
+import com.ocean.merger.aggregation.AggregationColumn;
+import com.ocean.merger.groupby.GroupByColumn;
+import com.ocean.parser.Limit;
+import com.ocean.merger.orderby.OrderByColumn;
 
 import java.util.List;
 

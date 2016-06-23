@@ -1,6 +1,6 @@
 package com.ocean.jdbc;
 
-import com.ocean.core.rule.ShardRule;
+import com.ocean.shard.rule.ShardRule;
 import com.ocean.jdbc.adapter.AbstractConnectionAdapter;
 import com.ocean.router.SqlRouteEngine;
 
@@ -38,7 +38,7 @@ public class ShardConnection extends AbstractConnectionAdapter {
             return connectionMap.get(dataSourceName);
         }
 
-        Connection connection = shardRule.getDataSourceMap().get(dataSourceName).getConnection();
+        Connection connection = shardRule.getDataSourceRule().getDataSourceMap().get(dataSourceName).getConnection();
 
         doMethodsInvovation(connection);
         connectionMap.put(dataSourceName, connection);

@@ -14,6 +14,16 @@ public class PreparedStatementExecutor {
 
     private Collection<PreparedStatement> preparedStatements;
 
+    public PreparedStatementExecutor()
+    {
+
+    }
+
+    public PreparedStatementExecutor(Collection<PreparedStatement> preparedStatements)
+    {
+        this.preparedStatements=preparedStatements;
+    }
+
     /**
      * 执行SQL查询
      */
