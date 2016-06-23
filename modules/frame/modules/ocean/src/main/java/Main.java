@@ -18,19 +18,19 @@ public class Main {
 
     public static void main(String[] args) throws Exception{
         DataSource dataSource = getShardDataSource();
-        select(dataSource);
+        //select(dataSource);
         System.out.println("-----------------------------");
         groupBy(dataSource);
     }
 
     private static void select(final DataSource dataSource){
 
-        String sql = "SELECT b.* FROM t_order a JOIN t_order_item b ON a.order_id=b.order_id WHERE a.user_id=? AND a.order_id=?";
+        String sql = "SELECT b.product_id,b.per_price,b.count FROM t_order a JOIN t_order_item b ON a.order_id=b.order_id WHERE a.user_id=? AND a.order_id=?";
         try {
             Connection conn = dataSource.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, 10);
-            pstmt.setInt(2, 1001);
+            pstmt.setInt(1, 1);
+            pstmt.setString(2, "S001");
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 System.out.println(rs.getInt(1));
@@ -46,13 +46,13 @@ public class Main {
 
     private static void groupBy(final DataSource dataSource){
 
-        String sql = "SELECT a.user_id, COUNT(*) FROM t_order a JOIN t_order_item b ON a.order_id=b.order_id GROUP BY a.user_id";
+        String sql = "SELECT a.user_id, COUNT(a.order_id) as cnt,sum(a.amount) as amount  FROM t_order a JOIN t_order_item b ON a.order_id=b.order_id GROUP BY a.user_id";
         try {
             Connection conn = dataSource.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
-                System.out.println("user_id: " + rs.getInt(1) + ", count: " + rs.getInt(2));
+                System.out.println("user_id: " + rs.getInt(1) + ", cnt: " + rs.getInt(2));
             }
         }catch(Exception e)
         {
