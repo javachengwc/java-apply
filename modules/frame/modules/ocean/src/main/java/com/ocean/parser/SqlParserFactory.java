@@ -37,9 +37,9 @@ public class SqlParserFactory {
      * @throws SqlParserException SQL解析异常
      */
     public static SqlParseEngine create(final DatabaseType databaseType, final String sql, final List<Object> parameters, final Collection<String> shardingColumns) throws SqlParserException {
-        logger.debug("Logic SQL: {}", sql);
+        logger.info("SqlParserFactory create,sql="+sql);
         SQLStatement sqlStatement = getSQLStatementParser(databaseType, sql).parseStatement();
-        logger.trace("Get {} SQL Statement", sqlStatement.getClass().getName());
+        logger.info("SqlParserFactory create getSQLStatementParser sqlStatment="+sqlStatement.getClass().getName());
         return new SqlParseEngine(sqlStatement, parameters, getSQLVisitor(databaseType, sqlStatement), shardingColumns);
     }
 

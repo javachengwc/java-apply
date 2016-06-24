@@ -1,5 +1,8 @@
 package com.ocean.executor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,6 +14,8 @@ import java.util.List;
  * 预编译语句对象请求的执行器
  */
 public class PreparedStatementExecutor {
+
+    private static Logger logger= LoggerFactory.getLogger(PreparedStatementExecutor.class);
 
     private Collection<PreparedStatement> preparedStatements;
 
@@ -28,15 +33,17 @@ public class PreparedStatementExecutor {
      * 执行SQL查询
      */
     public List<ResultSet> executeQuery() throws SQLException {
-        List<ResultSet> result;
-        if (1 == preparedStatements.size()) {
+        logger.info("PreparedStatementExecutor executeQuery start.");
+        int count = (preparedStatements==null)?0:preparedStatements.size();
+        logger.info("PreparedStatementExecutor executeQuery,preparedStatements count="+count);
+        List<ResultSet> result=null;
+        if (1 == count) {
             result =  Arrays.asList(preparedStatements.iterator().next().executeQuery());
             return result;
         }
         result = ExecutorEngine.execute(preparedStatements, new ExecuteUnit<PreparedStatement, ResultSet>() {
-
-            @Override
             public ResultSet execute(final PreparedStatement input) throws Exception {
+                logger.info("ExecuteUnit execute input parameterMetaData parameterCount="+input.getParameterMetaData().getParameterCount());
                 return input.executeQuery();
             }
         });

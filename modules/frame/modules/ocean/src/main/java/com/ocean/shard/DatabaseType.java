@@ -12,7 +12,7 @@ public enum DatabaseType {
     /**
      * 获取数据库类型枚举
      */
-    public static DatabaseType valueFrom(final String databaseProductName) {
+    public static DatabaseType valueFrom(String databaseProductName) {
         try {
             return DatabaseType.valueOf(databaseProductName);
         } catch (final IllegalArgumentException ex) {

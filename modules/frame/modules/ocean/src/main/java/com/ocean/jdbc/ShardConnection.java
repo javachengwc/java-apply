@@ -1,8 +1,11 @@
 package com.ocean.jdbc;
 
+import com.ocean.shard.DatabaseType;
 import com.ocean.shard.rule.ShardRule;
 import com.ocean.jdbc.adapter.AbstractConnectionAdapter;
 import com.ocean.router.SqlRouteEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.Collection;
@@ -13,6 +16,8 @@ import java.util.Map;
  * 分片连接
  */
 public class ShardConnection extends AbstractConnectionAdapter {
+
+    private static Logger logger = LoggerFactory.getLogger(ShardConnection.class);
 
     private ShardRule shardRule;
 
@@ -25,7 +30,7 @@ public class ShardConnection extends AbstractConnectionAdapter {
     public ShardConnection(ShardRule shardRule, DatabaseMetaData metaData) throws SQLException {
         this.shardRule = shardRule;
         this.metaData = metaData;
-       // sqlRouteEngine = new SqlRouteEngine(shardRule, DatabaseType.valueFrom(metaData.getDatabaseProductName()));
+        sqlRouteEngine = new SqlRouteEngine(shardRule, DatabaseType.valueFrom(metaData.getDatabaseProductName()));
     }
 
     /**
@@ -52,6 +57,8 @@ public class ShardConnection extends AbstractConnectionAdapter {
 
     @Override
     public PreparedStatement prepareStatement(String sql) throws SQLException {
+
+        logger.info("ShardConnection prepareStatement invoke,sql="+sql);
         return new ShardPreparedStatement(sqlRouteEngine, this, sql);
     }
 
@@ -82,6 +89,7 @@ public class ShardConnection extends AbstractConnectionAdapter {
 
     @Override
     public Statement createStatement() throws SQLException {
+        logger.info("ShardConnection createStatement invoke..");
         return new ShardStatement(sqlRouteEngine, this);
     }
 

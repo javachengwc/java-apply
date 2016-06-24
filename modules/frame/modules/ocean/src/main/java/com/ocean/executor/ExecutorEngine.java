@@ -24,6 +24,8 @@ public class ExecutorEngine {
      * 多线程执行任务
      */
     public static <I, O> List<O> execute(Collection<I> inputs, ExecuteUnit<I, O> executeUnit) {
+
+        logger.info("ExecutorEngine execute...");
         ListenableFuture<List<O>> futures = submitFutures(inputs, executeUnit);
         addCallback(futures);
         return getFutureResults(futures);
@@ -45,6 +47,8 @@ public class ExecutorEngine {
     }
 
     private static <I, O> ListenableFuture<List<O>> submitFutures(final Collection<I> inputs, final ExecuteUnit<I, O> executeUnit) {
+
+        logger.info("ExecutorEngine submitFutures...");
         Set<ListenableFuture<O>> result = new HashSet<ListenableFuture<O>>(inputs.size());
         ListeningExecutorService service = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(inputs.size()));
         for (final I each : inputs) {
@@ -60,12 +64,10 @@ public class ExecutorEngine {
 
     private static <T> void addCallback(ListenableFuture<T> allFutures) {
         Futures.addCallback(allFutures, new FutureCallback<T>() {
-
             @Override
             public void onSuccess(T result) {
                 logger.info("ExecutorEngine execute result success,", result);
             }
-
             @Override
             public void onFailure(Throwable thrown) {
                 logger.error("ExecutorEngine execute result error,", thrown);

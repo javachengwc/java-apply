@@ -4,6 +4,8 @@ import com.ocean.shard.rule.ShardRule;
 import com.ocean.exception.ShardException;
 import com.ocean.jdbc.ShardConnection;
 import com.ocean.jdbc.adapter.AbstractDataSourceAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -16,6 +18,8 @@ import java.util.Map;
  * 分片数据源
  */
 public class ShardDataSource  extends AbstractDataSourceAdapter {
+
+    private static Logger logger = LoggerFactory.getLogger(ShardDataSource.class);
 
     private ShardRule shardRule;
 
@@ -47,6 +51,8 @@ public class ShardDataSource  extends AbstractDataSourceAdapter {
 
     @Override
     public Connection getConnection() throws SQLException {
+
+        logger.info("ShardDataSource getConnection() invoke...");
         return new ShardConnection(shardRule, databaseMetaDataMap.values().toArray(new DatabaseMetaData[ databaseMetaDataMap.size()])[0]);
     }
 

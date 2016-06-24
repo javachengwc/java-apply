@@ -12,7 +12,9 @@ import java.util.Collection;
 import java.util.List;
 
 /**
+ * 此类很重要
  * Sql解析器
+ * 将逻辑sql解析成实际的sql,
  */
 public class SqlParseEngine {
 
@@ -75,6 +77,8 @@ public class SqlParseEngine {
      *  解析SQL
      */
     public SqlParsedResult parse() {
+
+        logger.info("SqlParseEngine parse...");
         Preconditions.checkArgument(visitor instanceof SqlVisitor);
         SqlVisitor sqlVisitor = (SqlVisitor) visitor;
         visitor.setParameters(parameters);
@@ -87,8 +91,8 @@ public class SqlParseEngine {
             sqlVisitor.getParseContext().mergeCurrentConditionContext();
             result = sqlVisitor.getParseContext().getParsedResult();
         }
-        logger.debug("Parsed SQL result: {}", result);
-        logger.debug("Parsed SQL: {}", sqlVisitor.getSqlBuilder());
+        logger.info("SqlParseEngine parsed SQL result: {}", result);
+        logger.info("SqlParseEngine parsed SQL: {}", sqlVisitor.getSqlBuilder());
         result.getRouteContext().setSqlBuilder(sqlVisitor.getSqlBuilder());
         return result;
     }

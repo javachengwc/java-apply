@@ -10,6 +10,8 @@ import com.ocean.parser.*;
 import com.ocean.router.binding.BindingTablesRouter;
 import com.ocean.router.mixed.MixedTablesRouter;
 import com.ocean.router.single.SingleTableRouter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.List;
@@ -19,9 +21,22 @@ import java.util.List;
  */
 public class SqlRouteEngine {
 
+    private static Logger logger = LoggerFactory.getLogger(SqlRouteEngine.class);
+
     private ShardRule shardRule;
 
     private DatabaseType databaseType;
+
+    public SqlRouteEngine()
+    {
+
+    }
+
+    public SqlRouteEngine(ShardRule shardRule,DatabaseType databaseType)
+    {
+        this.shardRule=shardRule;
+        this.databaseType=databaseType;
+    }
 
     public ShardRule getShardRule() {
         return shardRule;
@@ -43,10 +58,13 @@ public class SqlRouteEngine {
      * SQL路由
      */
     public SqlRouteResult route(final String logicSql, final List<Object> parameters) throws SqlParserException {
+
+        logger.info("SqlRouteEngine rount");
         return routeSQL(parseSQL(logicSql, parameters));
     }
 
     private SqlParsedResult parseSQL(final String logicSql, final List<Object> parameters) {
+        logger.info("SqlRouteEngine parseSQL,logicSql= "+logicSql);
         SqlParsedResult result = SqlParserFactory.create(databaseType, logicSql, parameters, shardRule.getAllShardingColumns()).parse();
         return result;
     }
