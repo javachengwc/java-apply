@@ -47,6 +47,8 @@ public class PreparedStatementExecutor {
                 return input.executeQuery();
             }
         });
+        int resultCnt = (result==null)?0:result.size();
+        logger.info("PreparedStatementExecutor executeQuery result,result count="+resultCnt);
         return result;
     }
 

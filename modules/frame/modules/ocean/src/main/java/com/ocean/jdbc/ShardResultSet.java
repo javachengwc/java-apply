@@ -30,10 +30,11 @@ public class ShardResultSet  extends AbstractResultSetAdapter {
 
     @Override
     public boolean next() throws SQLException {
-        if (!offsetSkipped) {
+        logger.info("ShardResultSet next.");
+        if (null != limit && !offsetSkipped) {
             skipOffset();
         }
-        return ++readCount <= limit.getRowCount() && nextForShard();
+        return (null == limit )? nextForShard() : (++readCount <= limit.getRowCount() && nextForShard());
     }
 
     private void skipOffset() {

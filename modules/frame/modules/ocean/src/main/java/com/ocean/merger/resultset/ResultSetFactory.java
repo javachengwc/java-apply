@@ -7,6 +7,8 @@ import com.ocean.merger.groupby.GroupByInvokeHandler;
 import com.ocean.merger.groupby.GroupByResultSet;
 import com.ocean.merger.orderby.OrderByResultSet;
 import com.ocean.merger.resultset.IteratorResultSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
@@ -18,6 +20,8 @@ import java.util.List;
  * 创建归并分片结果集的工厂
  */
 public class ResultSetFactory {
+
+    private static Logger logger = LoggerFactory.getLogger(ResultSetFactory.class);
 
     //获取结果集
     public static ResultSet getResultSet(List<ResultSet> resultSets, MergeContext mergeContext) throws SQLException {
@@ -37,6 +41,7 @@ public class ResultSetFactory {
     }
 
     private static ResultSet createDelegateResultSet(final InvocationHandler handler) {
+        logger.info("ResultSetFactory createDelegateResultSet.");
         return (ResultSet) Proxy.newProxyInstance(ResultSetFactory.class.getClassLoader(), new Class[]{ResultSet.class}, handler);
     }
 }

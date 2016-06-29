@@ -18,24 +18,21 @@ public class Main {
 
     public static void main(String[] args) throws Exception{
         DataSource dataSource = getShardDataSource();
-        //select(dataSource);
+        select(dataSource);
         System.out.println("-----------------------------");
-        groupBy(dataSource);
+        //groupBy(dataSource);
     }
 
     private static void select(final DataSource dataSource){
 
-        String sql = "SELECT b.product_id,b.per_price,b.count FROM t_order a JOIN t_order_item b ON a.order_id=b.order_id WHERE a.user_id=? AND a.order_id=?";
+        String sql = "SELECT b.product_id,b.per_price,b.count FROM t_order a JOIN t_order_item b ON a.order_id=b.order_id WHERE a.user_id=?";
         try {
             Connection conn = dataSource.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, 1);
-            pstmt.setString(2, "S001");
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
-                System.out.println(rs.getInt(1));
-                System.out.println(rs.getInt(2));
-                System.out.println(rs.getInt(3));
+                System.out.println(rs.getInt(1)+" "+rs.getInt(2)+" "+rs.getInt(3));
             }
         }catch(Exception e)
         {
@@ -51,6 +48,7 @@ public class Main {
             Connection conn = dataSource.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery();
+            System.out.println("---------groupBy get resultset");
             while (rs.next()) {
                 System.out.println("user_id: " + rs.getInt(1) + ", cnt: " + rs.getInt(2));
             }

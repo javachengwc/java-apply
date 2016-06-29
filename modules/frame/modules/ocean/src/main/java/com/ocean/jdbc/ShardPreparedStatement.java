@@ -68,7 +68,13 @@ public class ShardPreparedStatement extends AbstractPreparedStatementAdapter {
     public ResultSet executeQuery() throws SQLException {
         logger.info("ShardPreparedStatement executeQuery");
         hasExecuted = true;
-        setCurrentResultSet(ResultSetFactory.getResultSet(new PreparedStatementExecutor(getRoutedPreparedStatements()).executeQuery(), getMergeContext()));
+        List<ResultSet> list =new PreparedStatementExecutor(getRoutedPreparedStatements()).executeQuery();
+        if(getMergeContext()==null)
+        {
+            logger.info("ShardPreparedStatement mergeContext is null");
+        }
+        ResultSet rs =ResultSetFactory.getResultSet(list,getMergeContext());
+        setCurrentResultSet(rs);
         return getCurrentResultSet();
     }
 

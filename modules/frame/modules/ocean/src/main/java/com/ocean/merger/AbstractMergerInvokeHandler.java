@@ -2,6 +2,8 @@ package com.ocean.merger;
 
 import com.ocean.jdbc.ShardResultSet;
 import com.ocean.merger.resultset.ResultSetQueryIndex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -11,6 +13,8 @@ import java.sql.SQLException;
  * 结果归并动态代理抽象类
  */
 public abstract class AbstractMergerInvokeHandler<T extends ShardResultSet> implements InvocationHandler {
+
+    private static Logger logger= LoggerFactory.getLogger(AbstractMergerInvokeHandler.class);
 
     private T resultSet;
 
@@ -29,6 +33,8 @@ public abstract class AbstractMergerInvokeHandler<T extends ShardResultSet> impl
 
     @Override
     public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
+
+        logger.info("AbstractMergerInvokeHandler invoke...");
         if (!isGetDataMethod(method, args)) {
             return method.invoke(resultSet, args);
         }

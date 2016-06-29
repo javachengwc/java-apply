@@ -52,6 +52,8 @@ public class GroupByResultSet extends ShardResultSet {
         resultSetMetaData = getResultSets().iterator().next().getMetaData();
         columnLabels = new ArrayList<String>(resultSetMetaData.getColumnCount());
         fillRelatedColumnNames();
+
+        System.out.println("GroupByResultSet create");
     }
 
     public List<GroupByColumn> getGroupByColumns() {
@@ -118,6 +120,7 @@ public class GroupByResultSet extends ShardResultSet {
 
     @Override
     protected boolean nextForShard() throws SQLException {
+        logger.info("GroupByResultSet nextForShard... ");
         if (null == groupByResultIterator) {
             ResultSetUtil.fillIndexesForDerivedAggregationColumns(getResultSets().iterator().next(), aggregationColumns);
             groupByResultIterator = reduce(map()).iterator();

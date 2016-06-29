@@ -32,8 +32,7 @@ public class ExecutorEngine {
     }
 
     /**
-     * 多线程执行任务并归并结果.
-     *
+     * 多线程执行任务并归并结果
      * @param inputs 执行入参
      * @param executeUnit 执行单元
      * @param mergeUnit 合并结果单元
@@ -43,6 +42,7 @@ public class ExecutorEngine {
      * @return 执行结果
      */
     public static <I, M, O> O execute(Collection<I> inputs, ExecuteUnit<I, M> executeUnit, MergeUnit<M, O> mergeUnit) {
+        logger.info("ExecutorEngine execute..include merge.");
         return mergeUnit.merge(execute(inputs, executeUnit));
     }
 
@@ -54,6 +54,7 @@ public class ExecutorEngine {
         for (final I each : inputs) {
             result.add(service.submit(new Callable<O>() {
                 public O call() throws Exception {
+                    logger.info("ExecutorEngine 多线程异步执行sql task");
                     return executeUnit.execute(each);
                 }
             }));
@@ -79,6 +80,7 @@ public class ExecutorEngine {
         try {
             return futures.get();
         } catch (Exception ex ) {
+            logger.error("ExecutorEngine getFutureResults error,",ex);
             throw new ShardException(ex);
         }
     }
