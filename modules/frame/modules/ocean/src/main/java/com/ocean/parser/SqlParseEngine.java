@@ -78,7 +78,7 @@ public class SqlParseEngine {
      */
     public SqlParsedResult parse() {
 
-        logger.info("SqlParseEngine parse...");
+        logger.info("SqlParseEngine parse start");
         Preconditions.checkArgument(visitor instanceof SqlVisitor);
         SqlVisitor sqlVisitor = (SqlVisitor) visitor;
         visitor.setParameters(parameters);

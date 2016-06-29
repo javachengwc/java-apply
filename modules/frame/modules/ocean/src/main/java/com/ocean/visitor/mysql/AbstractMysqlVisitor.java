@@ -11,6 +11,8 @@ import com.ocean.parser.SqlBuilder;
 import com.ocean.parser.SqlCondition;
 import com.ocean.parser.SqlTable;
 import com.ocean.visitor.SqlVisitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
@@ -18,6 +20,8 @@ import java.util.Arrays;
  * MySQL解析基础访问器
  */
 public abstract class AbstractMysqlVisitor extends MySqlOutputVisitor implements SqlVisitor {
+
+    protected static Logger logger = LoggerFactory.getLogger(MysqlSelectVisitor.class);
 
     private ParseContext parseContext = new ParseContext();
 

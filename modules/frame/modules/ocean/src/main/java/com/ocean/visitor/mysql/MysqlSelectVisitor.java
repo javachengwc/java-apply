@@ -15,6 +15,7 @@ import com.ocean.merger.aggregation.AggregationColumn;
 import com.ocean.merger.groupby.GroupByColumn;
 import com.ocean.parser.Limit;
 import com.ocean.merger.orderby.OrderByColumn;
+import org.apache.log4j.spi.LoggerFactory;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ import java.util.List;
  */
 public class MysqlSelectVisitor  extends AbstractMysqlVisitor {
 
-    private static final String AUTO_GEN_TOKE_KEY = "sharding_auto_gen";
+    private static final String AUTO_GEN_TOKE_KEY = "ocean_auto_gen";
 
     private int itemIndex;
 
@@ -35,6 +36,7 @@ public class MysqlSelectVisitor  extends AbstractMysqlVisitor {
 
     @Override
     public boolean visit(final MySqlSelectQueryBlock x) {
+        logger.info("MysqlSelectVisitor visit start");
         if (x.getFrom() instanceof SQLExprTableSource) {
             SQLExprTableSource tableExpr = (SQLExprTableSource) x.getFrom();
             getParseContext().setCurrentTable(tableExpr.getExpr().toString(), Optional.fromNullable(tableExpr.getAlias()));
@@ -120,6 +122,8 @@ public class MysqlSelectVisitor  extends AbstractMysqlVisitor {
      */
     @Override
     public boolean visit(final MySqlSelectQueryBlock.Limit x) {
+
+        logger.info("MysqlSelectVisitor visit limit start..");
         print("LIMIT ");
         int offset = 0;
         if (null != x.getOffset()) {
