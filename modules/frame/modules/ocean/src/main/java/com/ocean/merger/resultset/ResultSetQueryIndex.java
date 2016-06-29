@@ -21,6 +21,7 @@ public class ResultSetQueryIndex {
         } else {
             throw new IllegalArgumentException(queryParam.getClass().getName());
         }
+        System.out.println("queryIndex="+queryIndex+",queryName="+queryName);
     }
 
     public int getQueryIndex() {

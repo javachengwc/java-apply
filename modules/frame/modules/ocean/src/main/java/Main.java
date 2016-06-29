@@ -25,7 +25,7 @@ public class Main {
 
     private static void select(final DataSource dataSource){
 
-        String sql = "SELECT b.product_id,b.per_price,b.count FROM t_order a JOIN t_order_item b ON a.order_id=b.order_id WHERE a.user_id=?";
+        String sql = "SELECT b.product_id,b.per_price,b.count FROM t_order a JOIN t_order_item b ON a.order_id=b.order_id WHERE a.user_id=? order by b.count desc limit 2,2";
         try {
             Connection conn = dataSource.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -43,14 +43,14 @@ public class Main {
 
     private static void groupBy(final DataSource dataSource){
 
-        String sql = "SELECT a.user_id, COUNT(a.order_id) as cnt,sum(a.amount) as amount  FROM t_order a JOIN t_order_item b ON a.order_id=b.order_id GROUP BY a.user_id";
+        String sql = "SELECT a.user_id, sum(a.amount) as amount  FROM t_order a JOIN t_order_item b ON a.order_id=b.order_id GROUP BY a.user_id";
         try {
             Connection conn = dataSource.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery();
             System.out.println("---------groupBy get resultset");
             while (rs.next()) {
-                System.out.println("user_id: " + rs.getInt(1) + ", cnt: " + rs.getInt(2));
+                System.out.println("--------------user_id: " + rs.getInt(1) +",amount:"+ rs.getInt(3));
             }
         }catch(Exception e)
         {

@@ -24,7 +24,10 @@ public class GroupByInvokeHandler extends AbstractMergerInvokeHandler<GroupByRes
     @Override
     protected Object doMerge(GroupByResultSet groupByResultSet, Method method, ResultSetQueryIndex resultSetQueryIndex) throws ReflectiveOperationException, SQLException {
 
-        logger.info("GroupByInvokeHandler doMerge.");
-        return ResultSetUtil.convertValue(groupByResultSet.getCurrentGroupByResultSet().getValue(resultSetQueryIndex), method.getReturnType());
+        logger.info("GroupByInvokeHandler doMerge start.");
+
+        Object value =groupByResultSet.getCurrentGroupByResultSet().getValue(resultSetQueryIndex);
+        logger.info("GroupByInvokeHandler doMerge value="+value+",type="+method.getReturnType());
+        return ResultSetUtil.convertValue(value, method.getReturnType());
     }
 }

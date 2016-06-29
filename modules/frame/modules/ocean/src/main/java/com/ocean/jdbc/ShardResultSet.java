@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class ShardResultSet  extends AbstractResultSetAdapter {
 
-    private Logger logger = LoggerFactory.getLogger(ShardResultSet.class);
+    protected static Logger logger = LoggerFactory.getLogger(ShardResultSet.class);
 
     private Limit limit;
 

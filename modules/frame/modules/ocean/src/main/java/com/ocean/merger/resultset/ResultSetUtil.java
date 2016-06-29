@@ -103,9 +103,8 @@ public class ResultSetUtil {
      * @param orderByType 排序类型
      * @return 负数，零和正数分别表示小于，等于和大于
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderByColumn.OrderByType orderByType) {
-        return OrderByColumn.OrderByType.ASC == orderByType ? thisValue.compareTo(otherValue) : -thisValue.compareTo(otherValue);
+        return (OrderByColumn.OrderByType.ASC == orderByType) ? thisValue.compareTo(otherValue) : -thisValue.compareTo(otherValue);
     }
 
     /**

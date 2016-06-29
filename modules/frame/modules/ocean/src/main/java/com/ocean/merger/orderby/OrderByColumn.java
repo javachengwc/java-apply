@@ -8,10 +8,13 @@ import com.google.common.base.Optional;
  */
 public class OrderByColumn {
 
+    //列名
     private Optional<String> name;
 
+    //列在结果集的位置(方便获取结果集对应位置的列值)
     private Optional<Integer> index;
 
+    //asc or desc
     private OrderByType orderByType;
 
     public OrderByColumn(String name, OrderByType orderByType) {

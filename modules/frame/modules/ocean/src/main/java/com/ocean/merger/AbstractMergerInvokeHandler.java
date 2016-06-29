@@ -42,7 +42,11 @@ public abstract class AbstractMergerInvokeHandler<T extends ShardResultSet> impl
     }
 
     private boolean isGetDataMethod(final Method method, final Object[] args) {
-        return method.getName().startsWith("get") && null != args && 1 == args.length;
+        if(args==null || args.length!=1)
+        {
+            return false;
+        }
+        return method.getName().startsWith("get");
     }
 
     protected abstract Object doMerge(T resultSet, Method method, ResultSetQueryIndex resultSetQueryIndex) throws ReflectiveOperationException, SQLException;
