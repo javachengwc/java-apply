@@ -18,9 +18,11 @@ public class ShardResultSet  extends AbstractResultSetAdapter {
 
     private Limit limit;
 
-    private boolean offsetSkipped;
+    //是否对结果集移位到limit的start位置
+    private boolean offsetSkipped=false;
 
-    private int readCount;
+    //迭代读取的数据数量
+    private int readCount=0;
 
     protected ShardResultSet(List<ResultSet> resultSets,Limit limit ) {
         this.resultSets=resultSets;
@@ -31,22 +33,36 @@ public class ShardResultSet  extends AbstractResultSetAdapter {
     @Override
     public boolean next() throws SQLException {
         logger.info("ShardResultSet next.");
-        if (null != limit && !offsetSkipped) {
+        if (!offsetSkipped && limit !=null) {
+            //sql语句有limit,在结果第一次迭代中移位到limit的start位置
             skipOffset();
         }
-        return (null == limit )? nextForShard() : (++readCount <= limit.getRowCount() && nextForShard());
+        if(limit==null)
+        {
+            return nextForShard();
+        }
+        //此处就是截取limit的数据片段
+        readCount++;
+        if( readCount>limit.getRowCount())
+        {
+            //读取的数据数量超过limit中的rowCount数量,直接返回false;
+            return false;
+        }
+        return nextForShard();
     }
 
     private void skipOffset() {
+        //对结果集移位到limit的start位置
         for (int i = 0; i <limit.getOffset(); i++) {
             try {
                 if (!nextForShard()) {
                     break;
                 }
-            } catch (SQLException ignored) {
-                logger.warn("skipOffset error", ignored);
+            } catch (SQLException e) {
+                logger.warn("ShardResultSet skipOffset error", e);
             }
         }
+        //标记已移位
         offsetSkipped = true;
     }
 
