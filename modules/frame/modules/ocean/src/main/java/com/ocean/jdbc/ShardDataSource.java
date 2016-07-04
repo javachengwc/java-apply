@@ -1,8 +1,7 @@
-package com.ocean.shard;
+package com.ocean.jdbc;
 
 import com.ocean.shard.rule.ShardRule;
 import com.ocean.exception.ShardException;
-import com.ocean.jdbc.ShardConnection;
 import com.ocean.jdbc.adapter.AbstractDataSourceAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

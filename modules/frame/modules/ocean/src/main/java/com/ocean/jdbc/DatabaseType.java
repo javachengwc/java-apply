@@ -1,4 +1,4 @@
-package com.ocean.shard;
+package com.ocean.jdbc;
 
 import com.ocean.exception.DatabaseTypeUnsupportedException;
 

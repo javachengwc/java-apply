@@ -1,6 +1,5 @@
 package com.ocean.jdbc;
 
-import com.ocean.shard.DatabaseType;
 import com.ocean.shard.rule.ShardRule;
 import com.ocean.jdbc.adapter.AbstractConnectionAdapter;
 import com.ocean.router.SqlRouteEngine;

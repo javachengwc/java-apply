@@ -10,7 +10,7 @@ import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.visitor.SQLEvalVisitorUtils;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Optional;
-import com.ocean.shard.DatabaseType;
+import com.ocean.jdbc.DatabaseType;
 import com.ocean.merger.aggregation.AggregationColumn;
 import com.ocean.merger.groupby.GroupByColumn;
 import com.ocean.merger.orderby.OrderByColumn;

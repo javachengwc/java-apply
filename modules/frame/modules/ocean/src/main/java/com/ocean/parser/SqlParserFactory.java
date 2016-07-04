@@ -11,7 +11,7 @@ import com.alibaba.druid.sql.dialect.oracle.parser.OracleStatementParser;
 import com.alibaba.druid.sql.dialect.sqlserver.parser.SQLServerStatementParser;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
-import com.ocean.shard.DatabaseType;
+import com.ocean.jdbc.DatabaseType;
 import com.ocean.exception.SqlParserException;
 import com.ocean.visitor.VisitorLogProxy;
 import org.slf4j.Logger;

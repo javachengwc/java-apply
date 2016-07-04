@@ -1,4 +1,4 @@
-import com.ocean.shard.ShardDataSource;
+import com.ocean.jdbc.ShardDataSource;
 import com.ocean.shard.model.Table;
 import com.ocean.shard.rule.DataSourceRule;
 import com.ocean.shard.rule.ShardRule;

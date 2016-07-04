@@ -1,6 +1,6 @@
 package com.ocean.visitor;
 
-import com.ocean.shard.DatabaseType;
+import com.ocean.jdbc.DatabaseType;
 import com.ocean.parser.ParseContext;
 import com.ocean.parser.SqlBuilder;
 

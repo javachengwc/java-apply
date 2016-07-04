@@ -2,7 +2,7 @@ package com.ocean.router;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import com.ocean.shard.DatabaseType;
+import com.ocean.jdbc.DatabaseType;
 import com.ocean.shard.rule.ShardRule;
 import com.ocean.exception.ShardException;
 import com.ocean.exception.SqlParserException;

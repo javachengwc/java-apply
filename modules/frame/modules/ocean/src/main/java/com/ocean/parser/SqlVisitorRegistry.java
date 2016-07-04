@@ -1,7 +1,7 @@
 package com.ocean.parser;
 
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
-import com.ocean.shard.DatabaseType;
+import com.ocean.jdbc.DatabaseType;
 import com.ocean.exception.DatabaseTypeUnsupportedException;
 import com.ocean.visitor.mysql.MysqlDeleteVisitor;
 import com.ocean.visitor.mysql.MysqlInsertVisitor;
