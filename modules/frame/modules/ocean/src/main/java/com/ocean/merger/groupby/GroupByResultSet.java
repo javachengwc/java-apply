@@ -14,9 +14,6 @@ import com.ocean.merger.aggregation.AggregationUnitFactory;
 import com.ocean.merger.orderby.OrderByColumn;
 import com.ocean.merger.resultset.ResultSetQueryIndex;
 import com.ocean.merger.resultset.ResultSetUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -27,8 +24,6 @@ import java.util.*;
  * 分组结果集
  */
 public class GroupByResultSet extends ShardResultSet {
-
-    private static Logger logger = LoggerFactory.getLogger(GroupByResultSet.class);
 
     private List<GroupByColumn> groupByColumns;
 

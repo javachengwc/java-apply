@@ -17,6 +17,9 @@ public class IteratorResultSet  extends ShardResultSet {
     }
 
     protected boolean nextForShard() throws SQLException {
+
+        logger.info("IteratorResultSet nextForShard start");
+
         if (getCurrentResultSet().next()) {
             return true;
         }

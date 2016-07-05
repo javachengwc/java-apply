@@ -14,6 +14,8 @@ import com.ocean.jdbc.DatabaseType;
 import com.ocean.merger.aggregation.AggregationColumn;
 import com.ocean.merger.groupby.GroupByColumn;
 import com.ocean.merger.orderby.OrderByColumn;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,11 +27,11 @@ import java.util.List;
  */
 public class ParseContext {
 
-    private static final String SHARDING_GEN_ALIAS = "sharding_gen_%s";
+    private static final String OCEAN_GEN_ALIAS = "ocean_alias_%s";
 
     private SqlParsedResult parsedResult = new SqlParsedResult();
 
-    private Collection<String> shardingColumns;
+    private Collection<String> shardColumns;
 
     private boolean hasOrCondition;
 
@@ -41,10 +43,6 @@ public class ParseContext {
 
     public SqlParsedResult getParsedResult() {
         return parsedResult;
-    }
-
-    public Collection<String> getShardingColumns() {
-        return shardingColumns;
     }
 
     public boolean isHasOrCondition() {
@@ -67,10 +65,6 @@ public class ParseContext {
         this.parsedResult = parsedResult;
     }
 
-    public void setShardingColumns(Collection<String> shardingColumns) {
-        this.shardingColumns = shardingColumns;
-    }
-
     public void setHasOrCondition(boolean hasOrCondition) {
         this.hasOrCondition = hasOrCondition;
     }
@@ -85,6 +79,14 @@ public class ParseContext {
 
     public void setSelectItemsCount(int selectItemsCount) {
         this.selectItemsCount = selectItemsCount;
+    }
+
+    public Collection<String> getShardColumns() {
+        return shardColumns;
+    }
+
+    public void setShardColumns(Collection<String> shardColumns) {
+        this.shardColumns = shardColumns;
     }
 
     /**
@@ -145,7 +147,7 @@ public class ParseContext {
     }
 
     private void addCondition(final SqlCondition.Column column, final SqlCondition.BinaryOperator operator, final List<Comparable<?>> values) {
-        if (!shardingColumns.contains(column.getColumnName())) {
+        if (!shardColumns.contains(column.getColumnName())) {
             return;
         }
         Optional<SqlCondition> optionalCondition = currentConditionContext.find(column.getTableName(), column.getColumnName(), operator);
@@ -289,12 +291,11 @@ public class ParseContext {
     }
 
     /**
-     * 生成补列别名.
-     *
+     * 生成补列别名
      * @return 补列的别名
      */
     public String generateDerivedColumnAlias() {
-        return String.format(SHARDING_GEN_ALIAS, ++selectItemsCount);
+        return String.format(OCEAN_GEN_ALIAS, ++selectItemsCount);
     }
 
     /**
@@ -312,5 +313,10 @@ public class ParseContext {
      */
     public void mergeCurrentConditionContext() {
         parsedResult.getConditionContexts().add(currentConditionContext);
+    }
+
+    public String toString()
+    {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
     }
 }

@@ -112,4 +112,28 @@ public class SqlCondition {
             return expression;
         }
     }
+
+    public String toString()
+    {
+        StringBuffer buf = new StringBuffer();
+        buf.append("column:");
+        if(column!=null)
+        {
+            buf.append(column.getColumnName() +" "+column.getTableName());
+        }
+        buf.append(",operator:");
+        if(operator!=null)
+        {
+            buf.append(operator.getExpression());
+        }
+        buf.append(",values:");
+        if(values!=null && values.size()>0)
+        {
+            for(Comparable<?> s:values)
+            {
+                buf.append(s).append(" ");
+            }
+        }
+        return buf.toString();
+    }
 }

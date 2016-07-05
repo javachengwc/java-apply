@@ -23,7 +23,7 @@ public class OrVisitor extends AbstractMysqlVisitor {
         SqlVisitor visitor = (SqlVisitor) dependencyVisitor;
         String currentTableName = null == visitor.getParseContext().getCurrentTable() ? "" : visitor.getParseContext().getCurrentTable().getName();
         getParseContext().setCurrentTable(currentTableName, Optional.<String>absent());
-        getParseContext().setShardingColumns(visitor.getParseContext().getShardingColumns());
+        getParseContext().setShardColumns(visitor.getParseContext().getShardColumns());
     }
 
     /**

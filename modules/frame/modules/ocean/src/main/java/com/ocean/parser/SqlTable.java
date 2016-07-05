@@ -1,6 +1,7 @@
 package com.ocean.parser;
 
 import com.google.common.base.Optional;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * 表解析对象
@@ -41,5 +42,10 @@ public class SqlTable {
 
     public void setAlias(Optional<String> alias) {
         this.alias = alias;
+    }
+
+    public String toString()
+    {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

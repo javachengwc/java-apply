@@ -18,9 +18,9 @@ public class Main {
 
     public static void main(String[] args) throws Exception{
         DataSource dataSource = getShardDataSource();
-        select(dataSource);
+        //select(dataSource);
         System.out.println("-----------------------------");
-        //groupBy(dataSource);
+        groupBy(dataSource);
     }
 
     private static void select(final DataSource dataSource){
@@ -50,7 +50,7 @@ public class Main {
             ResultSet rs = pstmt.executeQuery();
             System.out.println("---------groupBy get resultset");
             while (rs.next()) {
-                System.out.println("--------------user_id: " + rs.getInt(1) +",amount:"+ rs.getInt(3));
+                System.out.println("--------------user_id: " + rs.getInt(1) +",amount:"+ rs.getInt(2));
             }
         }catch(Exception e)
         {

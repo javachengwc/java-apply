@@ -40,6 +40,7 @@ public class MysqlSelectVisitor  extends AbstractMysqlVisitor {
         if (x.getFrom() instanceof SQLExprTableSource) {
             SQLExprTableSource tableExpr = (SQLExprTableSource) x.getFrom();
             getParseContext().setCurrentTable(tableExpr.getExpr().toString(), Optional.fromNullable(tableExpr.getAlias()));
+            logger.info("MysqlSelectVisitor visit tableExpr expr="+tableExpr.getExpr()+",alias="+tableExpr.getAlias());
         }
         return super.visit(x);
     }
@@ -57,6 +58,7 @@ public class MysqlSelectVisitor  extends AbstractMysqlVisitor {
 
     @Override
     public boolean visit(final SQLAggregateExpr x) {
+        logger.info("MysqlSelectVisitor visit  aggregate expr start");
         if (!(x.getParent() instanceof SQLSelectItem)) {
             return super.visit(x);
         }
@@ -79,6 +81,7 @@ public class MysqlSelectVisitor  extends AbstractMysqlVisitor {
     }
 
     public boolean visit(final SQLOrderBy x) {
+        logger.info("MysqlSelectVisitor visit  order by  start");
         for (SQLSelectOrderByItem each : x.getItems()) {
             SQLExpr expr = each.getExpr();
             OrderByColumn.OrderByType orderByType = null == each.getType() ? OrderByColumn.OrderByType.ASC : OrderByColumn.OrderByType.valueOf(each.getType());
@@ -101,6 +104,7 @@ public class MysqlSelectVisitor  extends AbstractMysqlVisitor {
      */
     @Override
     public boolean visit(final MySqlSelectGroupByExpr x) {
+        logger.info("MysqlSelectVisitor visit  group by  start");
         String alias = getParseContext().generateDerivedColumnAlias();
         OrderByColumn.OrderByType orderByType = null == x.getType() ? OrderByColumn.OrderByType.ASC : OrderByColumn.OrderByType.valueOf(x.getType());
         if (x.getExpr() instanceof SQLPropertyExpr) {
@@ -122,7 +126,6 @@ public class MysqlSelectVisitor  extends AbstractMysqlVisitor {
      */
     @Override
     public boolean visit(final MySqlSelectQueryBlock.Limit x) {
-
         logger.info("MysqlSelectVisitor visit limit start..");
         print("LIMIT ");
         int offset = 0;
@@ -150,7 +153,9 @@ public class MysqlSelectVisitor  extends AbstractMysqlVisitor {
     }
 
     @Override
-    public void endVisit(final SQLSelectStatement x) {
+    public void endVisit(SQLSelectStatement x) {
+        logger.info("MysqlSelectVisitor endVisit start..");
+
         StringBuilder derivedSelectItems = new StringBuilder();
         for (AggregationColumn aggregationColumn : getParseContext().getParsedResult().getMergeContext().getAggregationColumns()) {
             for (AggregationColumn derivedColumn : aggregationColumn.getDerivedColumns()) {
@@ -163,6 +168,8 @@ public class MysqlSelectVisitor  extends AbstractMysqlVisitor {
         if (0 != derivedSelectItems.length()) {
             getSqlBuilder().buildSQL(AUTO_GEN_TOKE_KEY, derivedSelectItems.toString());
         }
+        logger.info("MysqlSelectVisitor parseContext="+getParseContext().toString());
+        logger.info("MysqlSelectVisitor sqlBuilder="+getSqlBuilder().toString());
         super.endVisit(x);
     }
 }

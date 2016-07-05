@@ -56,5 +56,21 @@ public class ConditionContext {
     public Collection<SqlCondition> getAllConditions() {
         return conditions.values();
     }
+
+    public String toString()
+    {
+        StringBuffer buf = new StringBuffer("conditions:");
+        int cdnCnt = (conditions==null)?0:conditions.size();
+        buf.append(" count-->"+cdnCnt);
+        if(cdnCnt>0)
+        {
+            buf.append("\r\n");
+            for(SqlCondition.Column column:conditions.keySet())
+            {
+                buf.append("\r\n").append(column.getColumnName() +" "+column.getTableName()+":").append(conditions.get(column).toString());
+            }
+        }
+        return buf.toString();
+    }
 }
 

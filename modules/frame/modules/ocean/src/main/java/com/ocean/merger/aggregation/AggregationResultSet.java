@@ -3,6 +3,7 @@ package com.ocean.merger.aggregation;
 import com.ocean.jdbc.ShardResultSet;
 import com.ocean.merger.MergeContext;
 import com.ocean.merger.resultset.ResultSetUtil;
+import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -53,6 +54,9 @@ public class AggregationResultSet extends ShardResultSet {
 
     @Override
     public boolean nextForShard() throws SQLException {
+
+        logger.info("AggregationResultSet nextForShard start");
+
         if (!hasIndexesForAggregationColumns) {
             ResultSetUtil.fillIndexesForDerivedAggregationColumns(getResultSets().iterator().next(), aggregationColumns);
             hasIndexesForAggregationColumns = true;

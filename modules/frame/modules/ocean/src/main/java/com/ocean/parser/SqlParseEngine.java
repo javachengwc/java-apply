@@ -82,7 +82,7 @@ public class SqlParseEngine {
         Preconditions.checkArgument(visitor instanceof SqlVisitor);
         SqlVisitor sqlVisitor = (SqlVisitor) visitor;
         visitor.setParameters(parameters);
-        sqlVisitor.getParseContext().setShardingColumns(shardingColumns);
+        sqlVisitor.getParseContext().setShardColumns(shardingColumns);
         sqlStatement.accept(visitor);
         SqlParsedResult result;
         if (sqlVisitor.getParseContext().isHasOrCondition()) {

@@ -22,7 +22,7 @@ public class JmsReceiver {
         // Session： 一个发送或接收消息的线程
         Session session = connection.createSession(Boolean.TRUE, Session.AUTO_ACKNOWLEDGE);
         // Destination ：消息的目的地;消息发送给谁.
-        // 获取session注意参数值xingbo.xu-queue是一个服务器的queue，须在在ActiveMq的console配置
+        // 获取session注意参数值my-queue是一个服务器的queue，须在在ActiveMq的console配置
         Destination destination = session.createQueue("my-queue");
         // 消费者，消息接收者
         MessageConsumer consumer = session.createConsumer(destination);
