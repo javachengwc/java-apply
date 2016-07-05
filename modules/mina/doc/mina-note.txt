@@ -1,0 +1,40 @@
+-----------------------mina note----------------------
+服务端代码片段:
+//初始化Acceptor—可以不指定线程数量，MINA2里面默认是CPU数量+2
+NioSocketAcceptor acceptor = new NioSocketAcceptor(5);
+//建立线程池
+java.util.concurrent.Executor threadPool = newFixedThreadPool(1500);
+//加入过滤器（Filter）到Acceptor
+acceptor.getFilterChain().addLast(“exector”, new ExecutorFilter(threadPool));
+//编码解码器
+acceptor.getFilterChain().addLast(“codec”,new ProtocolCodecFilter(new WebDecoder(),new XmlEncoder()));
+//日志
+LoggingFilter filter = new LoggingFilter();
+filter.setExceptionCaughtLogLevel(LogLevel.DEBUG);
+filter.setMessageReceivedLogLevel(LogLevel.DEBUG);
+filter.setMessageSentLogLevel(LogLevel.DEBUG);
+filter.setSessionClosedLogLevel(LogLevel.DEBUG);
+filter.setSessionCreatedLogLevel(LogLevel.DEBUG);
+filter.setSessionIdleLogLevel(LogLevel.DEBUG);
+filter.setSessionOpenedLogLevel(LogLevel.DEBUG);
+acceptor.getFilterChain().addLast(“logger”, filter);
+//设置的是主服务监听的端口可以重用
+acceptor.setReuseAddress(true);
+//设置每一个非主监听连接的端口可以重用
+acceptor.getSessionConfig().setReuseAddress(true);
+//MINA2中，当启动一个服务端的时候，要设定初始化缓冲区的长度，如果不设置这个值，系统默认为2048，当客户端发过来的消息超过设定值的时候，
+//MINA2的机制是分段接受的，将字符是放入缓冲区中读取，所以在读取消息的时候，需要判断有多少次。这样的好处就是可以节省通讯的流量。
+//设置输入缓冲区的大小
+acceptor.getSessionConfig().setReceiveBufferSize(1024);
+//设置输出缓冲区的大小
+acceptor.getSessionConfig().setSendBufferSize(10240);
+//设置为非延迟发送，为true则不组装成大包发送，收到东西马上发出
+acceptor.getSessionConfig().setTcpNoDelay(true);
+//设置主服务监听端口的监听队列的最大值为100，如果当前已经有100个连接，再新的连接来将被服务器拒绝
+acceptor.setBacklog(100);
+acceptor.setDefaultLocalAddress(new InetSocketAddress(port));
+//加入处理器（Handler）到Acceptor
+acceptor.setHandler(new YourHandler());
+acceptor.bind();
+
+----------------------------------------------------------
