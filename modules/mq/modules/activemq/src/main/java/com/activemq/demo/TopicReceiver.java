@@ -52,6 +52,7 @@ public class TopicReceiver {
             // 创建消息制作者
             TopicSubscriber subscriber = session.createSubscriber(topic);
 
+            //异步接收消息
             subscriber.setMessageListener(new MessageListener() {
 
                 public void onMessage(Message msg) {
@@ -69,9 +70,6 @@ public class TopicReceiver {
 
             // 休眠10s再关闭
             Thread.sleep(1000 * 10);
-
-            // 提交会话
-            session.commit();
 
         } catch (Exception e) {
             throw e;

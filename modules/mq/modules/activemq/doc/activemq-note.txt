@@ -37,7 +37,6 @@ MessageConsumer         QueueReceiver                 TopicSubscriber
 
 (5)、使用消息生产者MessageSender发送消息
 
-
 消息接收者从JMS接受消息的步骤
 
 (1)、创建连接使用的工厂类JMS ConnectionFactory
@@ -50,41 +49,88 @@ MessageConsumer         QueueReceiver                 TopicSubscriber
 
 (5)、使用消息接收者MessageReceiver接受消息，需要用setMessageListener将MessageListener接口绑定到MessageReceiver消息接收者必须实现了MessageListener接口，需要定义onMessage事件方法。
 
-
 JMS消息类型
-
     JMS API 定义了五种消息正文类型：
-
     Stream（流）- StreamMessage 对象的消息正文包含 Java 编程语言原始值流（“Java 基本类型”）。按顺序填充和读取。
-
     Map（映射）- MapMessage 对象的消息正文包含一组名称-值对，其中名称是 String 对象，值是 Java 基本类型。可以根据名称按顺序或随机访问这些条目。条目的顺序是不确定的。
-
     Text（文本）- TextMessage 对象的消息正文包含 java.lang.String 对象。此消息类型可用于传输纯文本消息和 XML 消息。
-
     Object（对象）- ObjectMessage 对象的消息正文包含 Serializable Java 对象。
-
     Byte（字节）- BytesMessage 对象的消息正文包含未解释的字节流。此消息类型可以按字面意义编码正文，以匹配现有的消息格式。
     在大多数情况下，可以使用更易用的其他正文类型。尽管 JMS API 允许将消息属性用于字节消息，但一般不使用它们，因为包含属性可能会影响格式。
 
+Consumer消费消息的风格有2种: 同步/异步
+使用consumer.receive()是同步，使用messageListener是异步。在同一个consumer中，不能使用使用这2种风格。
+比如在使用listener的情况下，当调用receive()方法将会获得一个Exception。两种风格下，消息确认时机有所不同
+同步调用时，在消息从receive方法返回之前，就已经调用了ACK；因此如果Client端没有处理成功，此消息将丢失(可能重发，与ACK_MODE有关)。
+异步调用时，消息的确认是在onMessage方法返回之后，如果onMessage方法异常，会导致消息重发。
 
 ACK_MODE确认模式
-
     确认模式用来指示会话如何确认收到消息，在使用Connection的createSession方法时需要指定此选项，在JMS的Session接口中包含下面四个选项
-
 　　1 AUTO_ACKNOWLEDGE = 1    自动确认
-
-　　      当会话从对 receive 的调用成功返回时，或在会话已调用的用于处理消息的消息侦听器成功返回时，会话会自动确认客户端的消息接收。
+          自动确认,意味着消息的确认时机将由consumer择机确认."择机确认"似乎充满了不确定性,开发者必须明确知道"择机确认"的具体时机,否则将有可能导致消息的丢失,或者消息的重复接受.
+          在ActiveMQ中,AUTO_ACKNOWLEDGE是如何运作的呢?
+              1) 对于consumer而言，如果开启了optimizeACK,optimizeAcknowledge属性只会在AUTO_ACK模式下有效。
+              2) 其中DUPS_ACKNOWLEGE也是一种潜在的AUTO_ACK,只是确认消息的条数和时间上有所不同。
+              3) 在“同步”(receive)方法返回message之前,会检测optimizeACK选项是否开启，如果没有开启，此单条消息将立即确认，
+              所以在这种情况下，message返回之后，如果程序在处理message过程中出现异常，此消息也不会重发,即"潜在的消息丢失"。
+              如果开启了optimizeACK，则会在unAck数量达到prefetch * 0.65时确认，当然我们可以指定prefetchSize = 1来实现逐条消息确认。
+              4) 在"异步"(messageListener)方式中,将会首先调用listener.onMessage(message),此后再ACK,如果onMessage方法异常,将导致client端补充发送一个ACK_TYPE为REDELIVERED_ACK_TYPE确认指令，
+              如果onMessage方法正常,消息将会正常确认(STANDARD_ACK_TYPE)。此外需要注意，消息的重发次数是有限制的，每条消息中都会包含“redeliveryCounter”计数器，用来表示此消息已经被重发的次数，
+              如果重发次数达到阀值，将会导致发送一个ACK_TYPE为POSION_ACK_TYPE确认指令,这就导致broker端认为此消息无法消费,此消息将会被删除或者迁移到"dead letter"通道中。
+              因此当使用messageListener方式消费消息时，通常建议在onMessage方法中使用try-catch,这样可以在处理消息出错时记录一些信息，而不是让consumer不断去重发消息。
+              如果没有使用try-catch,就有可能会因为异常而导致消息重复接收的问题,需要注意onMessage方法中逻辑是否能够兼容对重复消息的判断。
 
 　　2  CLIENT_ACKNOWLEDGE = 2    客户端手动确认
-
 　　      通过此确认模式，客户端通过调用消息的 acknowledge 方法确认已使用的消息。 确认已使用的消息将确认该会话已使用的所有消息。
+          此模式下，需要关注几个方法：1) message.acknowledge()，2) ActiveMQMessageConsumer.acknowledege()，3) ActiveMQSession.acknowledge()；
+          其1)和3)是等效的，将当前session中所有consumer中尚未ACK的消息都一起确认，2)只会对当前consumer中那些尚未确认的消息进行确认。程序可以在合适的时机必须调用一次上述方法。
+          通常会在基于Group(消息分组)情况下会使用CLIENT_ACKNOWLEDGE，程序将在一个group的消息序列接受完毕之后确认消息(组)；不过当消息很重要，只有当消息被正确处理之后才能确认时，也很可以使用此ACK_MODE。
+          如果程序忘记调用acknowledge方法，将会导致当consumer重启后，会接受到重复消息，因为对于broker而言，那些尚未真正ACK的消息被视为“未消费”。
+          程序可以在当前消息处理成功之后，立即调用message.acknowledge()方法来"逐个"确认消息，这样可以尽可能的减少因网络故障而导致消息重发的个数；
+          当然也可以处理多条消息之后，间歇性的调用acknowledge方法来一次确认多条消息，减少ack的次数来提升consumer的效率，不过这仍然是一个利弊权衡的问题。
+          除了message.acknowledge()方法之外，ActiveMQMessageConumser.acknowledge()和ActiveMQSession.acknowledge()也可以确认消息，只不过ActiveMQMessageConumser.acknowledge()只会确认当前consumer中的消息。
+          其中sesson.acknowledge()和message.acknowledge()是等效的。
+          无论是“同步”/“异步”，ActiveMQ都不会发送STANDARD_ACK_TYPE，直到message.acknowledge()调用。
+          如果在client端未确认的消息个数达到prefetchSize * 0.5时，会补充发送一个ACK_TYPE为DELIVERED_ACK_TYPE的确认指令，这会触发broker端可以继续push消息到client端。
+          在broker端，针对每个Consumer，都会保存一个因为"DELIVERED_ACK_TYPE"而“拖延”的消息个数，这个参数为prefetchExtension，事实上这个值不会大于prefetchSize * 0.5,
+          因为Consumer端会严格控制DELIVERED_ACK_TYPE指令发送的时机(参见ActiveMQMessageConsumer.ackLater方法)，broker端通过“prefetchExtension”与prefetchSize互相配合，来决定即将push给client端的消息个数，
+          count = prefetchExtension + prefetchSize - dispatched.size()，其中dispatched表示已经发送给client端但是还没有“STANDARD_ACK_TYPE”的消息总量；
+          由此可见，在CLIENT_ACK模式下，足够快速的调用acknowledge()方法是决定consumer端消费消息的速率；如果client端因为某种原因导致acknowledge方法未被执行，将导致大量消息不能被确认，broker端将不会push消息，
+          事实上client端将处于“假死”状态，而无法继续消费消息。所以要求client端在消费1.5*prefetchSize个消息之前，必须acknowledge()一次；通常每消费一个消息调用一次，这是一种良好的设计。
+          注意：所有ACK指令都是依次发送给broker端，在CLIET_ACK模式下，消息在交付给listener之前，都会首先创建一个DELIVERED_ACK_TYPE的ACK指令，直到client端未确认的消息达到"prefetchSize * 0.5"时才会发送此ACK指令，
+          如果在此之前，开发者调用了acknowledge()方法，会导致消息直接被确认(STANDARD_ACK_TYPE)。
+          broker端通常会认为“DELIVERED_ACK_TYPE”确认指令是一种“slow consumer”信号，如果consumer不能及时的对消息进行acknowledge而导致broker端阻塞，那么此consumer将会被标记为“slow”,此后queue中的消息将会转发给其他Consumer。
 
 　　3  DUPS_OK_ACKNOWLEDGE = 3    自动批量确认
-
 　　      此确认模式指示会话延迟确认消息的传送。这可能在 JMS 提供者失败的情况下导致传送某些重复消息，因此只有能允许重复消息的使用方才应使用此模式。使用此模式可以通过最大限度地减少会话为防止重复所做的工作，从而减少会话开销。
+          它是一种潜在的"AUTO_ACK"确认机制，为批量确认而生，而且具有“延迟”确认的特点。对于开发者而言，这种模式下的代码结构和AUTO_ACKNOWLEDGE一样，不需要像CLIENT_ACKNOWLEDGE那样调用acknowledge()方法来确认消息。
+          在ActiveMQ中，如果在Destination是Queue通道，可以认为DUPS_OK_ACK就是“AUTO_ACK + optimizeACK + (prefetch > 0)”这种情况，在确认时机上几乎完全一致；此外在此模式下，如果prefetchSize =1 或者没有开启optimizeACK，也会导致消息逐条确认，从而失去批量确认的特性。
+          如果Destination为Topic，DUPS_OK_ACKNOWLEDGE才会产生JMS规范中诠释的意义，即无论optimizeACK是否开启，都会在消费的消息个数>=prefetch * 0.5时，批量确认(STANDARD_ACK_TYPE),
+          在此过程中，不会发送DELIVERED_ACK_TYPE的确认指令。这意味着，当consumer故障重启后，那些尚未ACK的消息会重新发送过来。
 
 　　4  SESSION_TRANSACTED = 0    事务提交并确认
+          如果会话是事务的则使用此模式，忽略设置的其他模式值。在事务开启之后，和session.commit()之前，所有消费的消息，要么全部正常确认，要么全部redelivery。这种严谨性，通常在基于GROUP(消息分组)或者其他场景下特别适合。
+          因为Session非线程安全，那么当前session下所有的consumer都会共享同一个transactionContext；所以建议，一个事务类型的Session中只有一个Consumer，已避免rollback()或者commit()方法被多个consumer调用而造成的消息混乱。
+          当consumer接受到消息之后，首先检测TransactionContext是否已经开启，如果没有，就会开启并生成新的transactionId，并把信息发送给broker；此后将检测事务中已经消费的消息个数是否 >= prefetch * 0.5,如果大于则补充发送一个“DELIVERED_ACK_TYPE”的确认指令，
+          这时就开始调用onMessage()方法，如果是同步(receive),那么即返回message。上述过程，和其他确认模式没有任何特殊的地方。
+          当程序提交事务时，必须调用session.commit()方法，commit方法会让当前session的事务中所有消息立即被确认；事务的确认过程中，首先把本地的deliveredMessage队列中尚未确认的消息全部确认(STANDARD_ACK_TYPE)；
+          此后向broker发送transaction提交指令并等待broker反馈，如果broker端事务操作成功，那么将会把本地deliveredMessage队列清空，新的事务开始；
+          如果broker端事务操作失败(此时broker已经rollback)，那么对于session而言，将执行inner-rollback，这个rollback所做的事情，就是将当前事务中的消息清空并要求broker重发(REDELIVERED_ACK_TYPE),同时commit方法将抛出异常。
+          当session.commit方法异常时，对于程序而言通常是调用session.rollback()回滚事务(事实上不调用也没有问题)，当然可以在事务开始之后的任何时机调用rollback(),rollback意味着当前事务的结束，事务中所有的消息都将被重发。
+          注意，无论是inner-rollback还是调用session.rollback()而导致消息重发，都会导致message.redeliveryCounter计数器增加，最终都会受限于brokerUrl中配置的"jms.redeliveryPolicy.maximumRedeliveries",
+          如果rollback的次数过多，而达到重发次数的上限时，消息将会被DLQ(dead letter)
+    此外AcitveMQ补充了一个自定义的ACK_MODE,只有ActiveMQ支持
+         INDIVIDUAL_ACKNOWLEDGE = 4    单条消息确认
+         它的确认时机和CLIENT_ACKNOWLEDGE几乎一样，当消息消费成功之后，需要调用message.acknowledege来确认此消息(单条)，而CLIENT_ACKNOWLEDGE模式下message.acknowledge()方法将导致整个session中所有消息被确认(批量确认)。
 
-　　      如果会话是事务的则使用此模式，忽略设置的其他模式值。在事务开启之后，和session.commit()之前，所有消费的消息，要么全部正常确认，要么全部redelivery。这种严谨性，通常在基于GROUP(消息分组)或者其他场景下特别适合。
-
+Client端指定了ACK_MODE,但是在Client与broker在交换ACK指令的时候,还需要告知ACK_TYPE,ACK_TYPE表示此确认指令的类型，不同的ACK_TYPE将传递着消息的状态，broker可以根据不同的ACK_TYPE对消息进行不同的操作。
+比如Consumer消费消息时出现异常,就需要向broker发送ACK指令,ACK_TYPE为"REDELIVERED_ACK_TYPE",那么broker就会重新发送此消息。
+在JMS API中并没有定义ACT_TYPE,因为它通常是一种内部机制,并不会面向开发者。ActiveMQ中定义了如下几种ACK_TYPE(参看MessageAck类):
+    DELIVERED_ACK_TYPE = 0            消息"已接收"，但尚未处理结束
+    STANDARD_ACK_TYPE = 2            "标准"类型,通常表示为消息"处理成功"，broker端可以删除消息了
+    POSION_ACK_TYPE = 1               消息"错误",通常表示"抛弃"此消息，比如消息重发多次后，都无法正确处理时，消息将会被删除或者DLQ(死信队列)
+    REDELIVERED_ACK_TYPE = 3          消息需"重发"，比如consumer处理消息时抛出了异常，broker稍后会重新发送此消息
+    INDIVIDUAL_ACK_TYPE = 4           表示只确认"单条消息",无论在任何ACK_MODE下
+    UNMATCHED_ACK_TYPE = 5            BROKER间转发消息时,接收端"拒绝"消息
+Client端在不同的ACK_MODE时,将意味着在不同的时机发送ACK指令,每个ACK Command中会包含ACK_TYPE,那么broker端就可以根据ACK_TYPE来决定此消息的后续操作。
 --------------------------------------------------------------------------------------------------------------------------------------

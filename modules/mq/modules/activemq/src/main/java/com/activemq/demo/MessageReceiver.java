@@ -62,8 +62,6 @@ public class MessageReceiver {
 //                    break;
 //                }
             }
-            // 提交会话
-            session.commit();
 
         } catch (Exception e) {
             throw e;
