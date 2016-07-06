@@ -38,6 +38,12 @@ public class MessageReceiver {
             connection.start();
 
             // 创建一个session会话
+            /**
+             * 通过connection创建QueueSession对象；
+             * 其中第一个参数为是否支持事务，TRUE为支持，false为不支持；
+             * 若设为true,则需要手动COMMIT;
+             * 第二个参数为响应的模式，一般情况下就设为QueueSession.AUTO_ACKNOWLEDGE
+             * */
             session = connection.createSession(Boolean.TRUE, Session.AUTO_ACKNOWLEDGE);
 
             // 创建一个消息队列
@@ -55,6 +61,9 @@ public class MessageReceiver {
                     break;
                 }
                 System.out.println(message);
+
+                // 提交会话
+                session.commit();
 //                TextMessage text = (TextMessage) message;
 //                if (text != null) {
 //                    System.out.println("接收：" + text.getText());

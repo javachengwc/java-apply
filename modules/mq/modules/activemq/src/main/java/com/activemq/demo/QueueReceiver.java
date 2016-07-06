@@ -42,7 +42,13 @@ public class QueueReceiver {
             connection.start();
 
             // 创建一个session会话
-            session = connection.createQueueSession(Boolean.TRUE, Session.AUTO_ACKNOWLEDGE);
+            /**
+             * 通过connection创建QueueSession对象；
+             * 其中第一个参数为是否支持事务，TRUE为支持，false为不支持；
+             * 若设为true,则需要手动COMMIT;
+             * 第二个参数为响应的模式，一般情况下就设为QueueSession.AUTO_ACKNOWLEDGE
+             * */
+            session = connection.createQueueSession(Boolean.FALSE, Session.AUTO_ACKNOWLEDGE);
 
             // 创建一个消息队列
             Queue queue = session.createQueue(TARGET);
