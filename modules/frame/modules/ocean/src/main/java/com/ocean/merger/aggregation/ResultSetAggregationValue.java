@@ -24,7 +24,6 @@ public class ResultSetAggregationValue implements AggregationValue {
 
     @Override
     public Comparable<?> getValue(ResultSetQueryIndex resultSetQueryIndex) throws SQLException {
-        return resultSetQueryIndex.isQueryBySequence()
-                ? (Comparable<?>) resultSet.getObject(resultSetQueryIndex.getQueryIndex()) : (Comparable<?>) resultSet.getObject(resultSetQueryIndex.getQueryName());
+        return resultSetQueryIndex.isQueryBySequence()? (Comparable<?>) resultSet.getObject(resultSetQueryIndex.getQueryIndex()) : (Comparable<?>) resultSet.getObject(resultSetQueryIndex.getQueryName());
     }
 }

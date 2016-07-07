@@ -1,6 +1,8 @@
 package com.ocean.merger.aggregation;
 
 import com.ocean.merger.resultset.ResultSetQueryIndex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -11,8 +13,11 @@ import java.util.Collection;
  */
 public abstract class AbstractAggregationUnit implements AggregationUnit {
 
+    private static Logger logger = LoggerFactory.getLogger(AbstractAggregationUnit.class);
+
     @Override
     public final void merge(AggregationColumn aggregationColumn, AggregationValue aggregationValue, ResultSetQueryIndex resultSetQueryIndex) throws SQLException {
+        logger.info("AbstractAggregationUnit merge start");
         if (!aggregationColumn.getDerivedColumns().isEmpty()) {
             Collection<Comparable<?>> paramList = new ArrayList<Comparable<?>>(aggregationColumn.getDerivedColumns().size());
             for (AggregationColumn each : aggregationColumn.getDerivedColumns()) {

@@ -47,13 +47,13 @@ public class ComparableAggregationUnit extends AbstractAggregationUnit {
     protected void doMerge(@SuppressWarnings("rawtypes") final Comparable... values) {
         if (null == result) {
             result = values[0];
-            logger.trace("Comparable result: {}", result);
+            logger.info("ComparableAggregationUnit doMerge comparable result: {}", result);
             return;
         }
         int comparedValue = values[0].compareTo(result);
         if (asc && comparedValue < 0 || !asc && comparedValue > 0) {
             result = values[0];
-            logger.trace("Comparable result: {}", result);
+            logger.trace("ComparableAggregationUnit doMerge comparable result: {}", result);
         }
     }
 

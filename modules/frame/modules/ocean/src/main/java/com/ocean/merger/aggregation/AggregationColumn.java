@@ -1,6 +1,7 @@
 package com.ocean.merger.aggregation;
 
 import com.google.common.base.Optional;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,7 @@ public class AggregationColumn {
 
     private Optional<String> option;
 
-    private final List<AggregationColumn> derivedColumns = new ArrayList<AggregationColumn>(2);
+    private List<AggregationColumn> derivedColumns = new ArrayList<AggregationColumn>(2);
 
     private int index = -1;
 
@@ -93,5 +94,10 @@ public class AggregationColumn {
      */
     public enum AggregationType {
         MAX, MIN, SUM, COUNT, AVG
+    }
+
+    public String toString()
+    {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

@@ -8,8 +8,10 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  */
 public class GroupByColumn {
 
+    //分组列名
     private String name;
 
+    //分组列别名
     private String alias;
 
     private OrderByColumn.OrderByType orderByType;

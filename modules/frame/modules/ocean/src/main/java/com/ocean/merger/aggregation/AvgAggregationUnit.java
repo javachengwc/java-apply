@@ -41,7 +41,7 @@ public class AvgAggregationUnit extends AbstractAggregationUnit {
     public void doMerge(final Comparable<?>... values) {
         count = count.add(new BigDecimal(values[0].toString()));
         sum = sum.add(new BigDecimal(values[1].toString()));
-        logger.trace("AVG result COUNT: {} SUM: {}", count, sum);
+        logger.info("AvgAggregationUnit doMerge avg result cont: {} sum: {}", count, sum);
     }
 
     @Override

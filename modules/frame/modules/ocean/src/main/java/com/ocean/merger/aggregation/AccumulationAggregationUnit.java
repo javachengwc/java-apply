@@ -30,7 +30,7 @@ public class AccumulationAggregationUnit extends AbstractAggregationUnit {
     @Override
     public void doMerge(final Comparable<?>... values) {
         result = result.add(new BigDecimal(values[0].toString()));
-        logger.trace("Accumulation result: {}", result.toString());
+        logger.info("AccumulationAggregationUnit sum result: {}", result.toString());
     }
 
     @Override
