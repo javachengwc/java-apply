@@ -16,6 +16,8 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -26,8 +28,11 @@ import java.util.Map;
 
 /**
  * httpclient4.3.5工具类
+ * httpclient4使用 ReentrantLock（默认非公平） + Condition（每个线程一个）
  */
 public class HttpClientUtil {
+
+    private static Logger logger = LoggerFactory.getLogger(HttpClientUtil.class);
 
     /**连接超时时间*/
     public static final int CONNECTION_TIMEOUT_MS = 10*1000;//10秒
@@ -83,7 +88,18 @@ public class HttpClientUtil {
 
         HttpResponse response = httpClient.execute(get);
 
-        assertStatus(response);
+        int rtCode= (response==null)?0:response.getStatusLine().getStatusCode();
+        if( HttpStatus.SC_OK!=rtCode)
+        {
+            logger.info("HttpClientUtil getInvoke rt code="+rtCode+",thread name="+Thread.currentThread().getName());
+            get.abort();
+            //如果程序逻辑是返回码是非200而抛错,必须关闭连接后再抛错,通过get.abort()能够关闭连接。
+            //HttpClient4使用InputStream.close()来确认连接关闭，如果非200的连接直接抛错而莫有关闭此链接，此连接将永远僵死在连接池里头，
+            //CLOST_WAIT数目将递增直到最大数MaxPerRouteCount，那时对一个路由的连接已经完全被僵死连接占满。
+            //如果在请求中出现异常而没有关闭连接以及上面的逻辑非200莫关闭连接就直接抛错退出方法都可能导致连接池卡住问题
+            //就是在连接全部僵死后，后续的请求将一致卡在那里而莫有响应。
+            throw new IOException("服务器响应状态异常,失败.");
+        }
 
         HttpEntity entity = response.getEntity();
         if (entity != null) {
@@ -115,7 +131,13 @@ public class HttpClientUtil {
 
         HttpResponse response = httpClient.execute(postMethod);
 
-        assertStatus(response);
+        int rtCode= (response==null)?0:response.getStatusLine().getStatusCode();
+        if( HttpStatus.SC_OK!=rtCode)
+        {
+            logger.info("HttpClientUtil postInvoke rt code="+rtCode+",thread name="+Thread.currentThread().getName());
+            postMethod.abort();
+            throw new IOException("服务器响应状态异常,失败.");
+        }
 
         HttpEntity entity = response.getEntity();
 
@@ -185,17 +207,5 @@ public class HttpClientUtil {
                 .setSocketTimeout(SO_TIMEOUT_MS)
                 .setConnectTimeout(CONNECTION_TIMEOUT_MS).build();
         return requestConfig;
-    }
-
-    /**
-     * 强验证必须是200状态否则报异常
-     */
-    static void assertStatus(HttpResponse res) throws IOException {
-        switch (res.getStatusLine().getStatusCode()) {
-            case HttpStatus.SC_OK:
-                break;
-            default:
-                throw new IOException("服务器响应状态异常,失败.");
-        }
     }
 }

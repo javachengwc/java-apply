@@ -6,6 +6,7 @@ import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 
 import java.io.BufferedReader;
@@ -16,6 +17,9 @@ import java.nio.charset.Charset;
 
 /**
  * httpclient3.1多线程客户端
+ * 如果是http1.1且没有设置相关参数；那么socket其实是没有关闭的；可能造成很多TIME_WAIT；
+ * 因此如果是走http1.1短连接建议设置postMethod.setParameter("Connection", "close")
+ * httpclient 3.1 使用synchronized+wait+notifyAll，存在两个问题，量大synchronized慢和notifyAll可能造成线程饥饿
  */
 public class GeneralHttpExecutor {
 
@@ -35,12 +39,12 @@ public class GeneralHttpExecutor {
         connectionManager.setParams(params);
         connectionManager.closeIdleConnections(MAX_IDLE_TIME_OUT);
 
-        //HttpClientParams httpClientParams = new HttpClientParams();
-        // 设置httpClient的连接超时，对连接管理器设置的连接超时是无用的
-        //httpClientParams.setConnectionManagerTimeout(5000);
+        HttpClientParams httpClientParams = new HttpClientParams();
+        // 设置httpClient的连接超时，对连接管理器设置的连接超时是无用的,此值是连接不够用的时候等待超时时间
+        httpClientParams.setConnectionManagerTimeout(5000);
 
         httpClient = new HttpClient(connectionManager);
-        //httpClient.setParams(httpClientParams);
+        httpClient.setParams(httpClientParams);
     }
 
     public static String get(String url) throws HttpException, IOException {
