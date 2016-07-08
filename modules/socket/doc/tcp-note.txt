@@ -1,0 +1,116 @@
+----------------------tcp-note---------------------
+TCP的状态:
+1)、LISTEN:首先服务端需要打开一个socket进行监听，状态为LISTEN.
+    /* The socket is listening for incoming connections. 侦听来自远方TCP端口的连接请求 */
+2)、SYN_SENT:客户端通过应用程序调用connect进行active open.于是客户端tcp发送一个SYN以请求建立一个连接.之后状态置为SYN_SENT.
+    /*The socket is actively attempting to establish a connection. 在发送连接请求后等待匹配的连接请求 */
+3)、SYN_RECV:服务端应发出ACK确认客户端的SYN,同时自己向客户端发送一个SYN.之后状态置为SYN_RECV
+    /* A connection request has been received from the network. 在收到和发送一个连接请求后等待对连接请求的确认 */
+4)、ESTABLISHED: 代表一个打开的连接，双方可以进行或已经在数据交互了。
+    /* The socket has an established connection. 代表一个打开的连接，数据可以传送给用户 */
+5)、FIN_WAIT1:主动关闭(active close)端应用程序调用close，于是其TCP发出FIN请求主动关闭连接，之后进入FIN_WAIT1状态.
+    /* The socket is closed, and the connection is shutting down. 等待远程TCP的连接中断请求，或先前的连接中断请求的确认 */
+6)、CLOSE_WAIT:被动关闭(passive close)端TCP接到FIN后，就发出ACK以回应FIN请求(它的接收也作为文件结束符传递给上层应用程序),并进入CLOSE_WAIT.
+    CLOSE_WAIT是被动关闭连接是形成的。根据TCP状态机，服务器端收到客户端发送的FIN，则按照TCP实现发送ACK，因此进入CLOSE_WAIT状态。
+    但如果服务器端不执行close()，就不能由CLOSE_WAIT迁移到LAST_ACK，则系统中会存在很多CLOSE_WAIT状态的连接。
+    此时，可能是系统忙于处理读、写操作，而未将已收到FIN的连接，进行close。此时，recv/read已收到FIN的连接socket，会返回0。
+    /* The remote end has shut down, waiting for the socket to close. 等待从本地用户发来的连接中断请求 */
+7)、FIN_WAIT2:主动关闭端接到ACK后，就进入了FIN-WAIT-2 .
+    /* Connection is closed, and the socket is waiting for a shutdown from the remote end. 从远程TCP等待连接中断请求 */
+8)、LAST_ACK:被动关闭端一段时间后，接收到文件结束符的应用程序将调用CLOSE关闭连接。这导致它的TCP也发送一个 FIN,等待对方的ACK.就进入了LAST-ACK .
+    /* The remote end has shut down, and the socket is closed. Waiting for acknowledgement. 等待原来发向远程TCP的连接中断请求的确认 */
+9)、TIME_WAIT:在主动关闭端接收到FIN后，TCP就发送ACK包，并进入TIME-WAIT状态。
+    TIME_WAIT是主动关闭链接时形成的，等待2MSL时间，约4分钟。主要是防止最后一个ACK丢失。  由于TIME_WAIT 的时间会非常长，因此server端应尽量减少主动关闭连接
+    假设最终的ACK丢失，server将重发FIN，client必须维护TCP状态信息以便可以重发最终的ACK，否则会发送RST，结果server认为发生错误。
+    TCP实现必须可靠地终止连接的两个方向(全双工关闭)，client必须进入TIME_WAIT 状态，因为client可能面临重发最终ACK的情形。
+    如果TIME_WAIT状态保持时间不足够长(比如小于2MSL)，第一个连接就正常终止了。第二个拥有相同相关五元组的连接出现，而第一个连接的重复报文到达，干扰了第二个连接。
+    TCP实现必须防止某个连接的重复报文在连接终止后出现，所以让TIME_WAIT状态保持时间足够长(2MSL)，连接相应方向上的TCP报文要么完全响应完毕，要么被丢弃。建立第二个连接的时候，不会混淆。
+    /* The socket is waiting after close to handle packets still in the network.等待足够的时间以确保远程TCP接收到连接中断请求的确认 */
+10)、CLOSING: 比较少见.
+    /* Both sockets are shut down but we still don't have all our data sent. 等待远程TCP对连接中断的确认 */
+11)、CLOSED: 被动关闭端在接受到ACK包后，就进入了closed的状态。连接结束.
+    /* The socket is not being used. 没有任何连接状态 */
+
+CLOSED：表示初始状态。对服务端和C客户端双方都一样。
+LISTEN：表示监听状态。服务端调用了listen函数，可以开始accept连接了。
+SYN_SENT：表示客户端已经发送了SYN报文。当客户端调用connect函数发起连接时，首先发SYN给服务端，然后自己进入SYN_SENT状态，并等待服务端发送ACK+SYN。
+SYN_RCVD：表示服务端收到客户端发送SYN报文。服务端收到这个报文后，进入SYN_RCVD状态，然后发送ACK+SYN给客户端。
+ESTABLISHED：表示连接已经建立成功了。服务端发送完ACK+SYN后进入该状态，客户端收到ACK后也进入该状态。
+FIN_WAIT_1：表示主动关闭连接。无论哪方调用close函数发送FIN报文都会进入这个这个状态。
+FIN_WAIT_2：表示被动关闭方同意关闭连接。主动关闭连接方收到被动关闭方返回的ACK后，会进入该状态。
+TIME_WAIT：表示收到对方的FIN报文并发送了ACK报文，就等2MSL后即可回到CLOSED状态了。如果FIN_WAIT_1状态下，收到对方同时带FIN标志和ACK标志的报文时，可以直接进入TIME_WAIT状态，而无须经过FIN_WAIT_2状态。
+CLOSING：表示双方同时关闭连接。如果双方几乎同时调用close函数，那么会出现双方同时发送FIN报文的情况，此时就会出现CLOSING状态，表示双方都在关闭连接。
+CLOSE_WAIT：表示被动关闭方等待关闭。当收到对方调用close函数发送的FIN报文时，回应对方ACK报文，此时进入CLOSE_WAIT状态。
+LAST_ACK：表示被动关闭方发送FIN报文后，等待对方的ACK报文状态，当收到ACK后进入CLOSED状态。
+
+注意:为什么TIME_WAIT状态还需要等待2MSL才能回到CLOSED状态？或者为什么TCP要引入TIME_WAIT状态？
+《TCP/IP详解》中如此解释：当TCP执行一个主动关闭，并发回最后一个ACK后，该连接必须在TIME_WAIT状态停留的时间为2倍的MSL，这样可以让TCP再次发送最后的ACK以防止这个ACK丢失（另一端超时重发最后的FIN）。
+MSL（Maximum Segment Lifetime）即最大生存时间，RFC 793中指出MSL为2分钟，但是实现中的常用值为30秒、1分钟或者2分钟。
+
+如果服务器出了异常，百分之八九十都是下面两种情况：
+1.服务器保持了大量TIME_WAIT状态
+2.服务器保持了大量CLOSE_WAIT状态，简单来说CLOSE_WAIT数目过大是由于被动关闭连接处理不当导致的。
+因为linux分配给一个用户的文件句柄是有限的，而TIME_WAIT和CLOSE_WAIT两种状态如果一直被保持，那么意味着对应数目的通道就一直被占着，而且是“占着茅坑不使劲”，
+一旦达到句柄数上限，新的请求就无法被处理了，接着就是大量Too Many Open Files异常，服务崩溃。
+
+TCP正常关闭连接的状态变化
+根据《TCP/IP详解》中的TCP的建立和终止中有关"TCP的终止"的讲解
+TCP的终止通过双方的四次握手实现。发起终止的一方执行主动关闭，响应的另一方执行被动关闭。
+1. 发起方更改状态为FIN_WAIT_1，关闭应用程序进程，发出一个TCP的FIN段；
+2. 接收方收到FIN段，返回一个带确认序号的ACK，同时向自己对应的进程发送一个文件结束符EOF，同时更改状态为CLOSE_WAIT，发起方接到ACK后状态更改为FIN_WAIT_2；
+3. 接收方关闭应用程序进程，更改状态为LAST_ACK，并向对方发出一个TCP的FIN段；
+4. 发起方接到FIN后状态更改为TIME_WAIT，并发出这个FIN的ACK确认。ACK发送成功后(2MSL内)双方TCP状态变为CLOSED。
+
+Time_Wait状态解释:
+根据TCP协议，主动发起关闭的一方，会进入TIME_WAIT状态(TCP实现必须可靠地终止连接的两个方向(全双工关闭))，持续2*MSL(Max Segment Lifetime)，缺省为240秒.
+TIME_WAIT的等待时间为2MSL，即最大段生存时间.如果 TIME_WAIT 状态保持时间不足够长(比如小于2MSL)，第一个连接就正常终止了。
+第二个拥有相同相关五元组的连接出现(因为连接终止前发起的一方可能需要重发 ACK，所以停留在该状态的时间必须为MSL的2倍。)，而第一个连接的重复报文到达，干扰了第二个连接。
+TCP实现必须防止某个连接的重复报文在连接终 止后出现，所以让TIME_WAIT态保持时间足够长(2MSL)，连接相应方向上的TCP报文要么完全响应完毕，要么被丢弃。建立第二个连接的时候，不 会混淆。
+为什么TIME_WAIT 状态 停留2MSL（max segment lifetime）时间
+也就是TCP/IP设计者本来是这么设计的
+主要有两个原因
+1。防止上一次连接中的包，迷路后重新出现，影响新连接（经过2MSL，上一次连接中所有的重复包都会消失）
+2。可靠的关闭TCP连接
+在主动关闭方发送的最后一个 ack(fin) ，有可能丢失，这时被动方会重新发fin, 如果这时主动方处于 CLOSED 状态 ，就会响应 rst 而不是 ack。所以主动方要处于 TIME_WAIT 状态，而不能是 CLOSED 。
+修改Time_Wait参数的方法
+Windows下在HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Services/Tcpip/Parameters,添加名为TcpTimedWaitDelay的DWORD键,设置为60,以缩短TIME_WAIT的等待时间
+Linux下修改vi /etc/sysctl.conf
+net.ipv4.tcp_syncookies = 1
+net.ipv4.tcp_tw_reuse = 1
+net.ipv4.tcp_tw_recycle = 1
+net.ipv4.tcp_fin_timeout = 30
+然后执行 /sbin/sysctl -p 让参数生效。
+net.ipv4.tcp_syncookies = 1 表示开启SYN Cookies。当出现SYN等待队列溢出时，启用cookies来处理，可防范少量SYN攻击，默认为0，表示关闭；
+net.ipv4.tcp_tw_reuse = 1 表示开启重用。允许将TIME-WAIT sockets重新用于新的TCP连接，默认为0，表示关闭；
+net.ipv4.tcp_tw_recycle = 1 表示开启TCP连接中TIME-WAIT sockets的快速回收，默认为0，表示关闭。
+net.ipv4.tcp_fin_timeout 修改系統默认的 TIMEOUT 时间
+Time_Wait引发的问题:
+Timewait是正常的现象，但是比较多的时候（比如3000）则可能引发CPU利用率高需要有效降低
+
+Close_Wait状态:
+通过TCP的状态图可以看出只有被动关闭的一端才有CLOSE_WAIT状态，当收到Fin并发送了Ack后服务器状态就变成了CLOSE_WAIT状态，
+如果我们的服务器一直处于CLOSE_WAIT状态的话，说明套接字是被动关闭的！，并且没有发送Fin信令，原因往往是没有调用TCP的CloseSocket。
+
+解决CLOSE_WAIT的方法:
+1 一般原因都是TCP连接没有调用关闭方法。需要应用来处理网络链接关闭。
+2 对于Web请求出现这个原因，经常是因为Response的BodyStream没有调用Close.
+比如Widnows下,使用HttpWebRequest 一定要保证GetRequestStream和GetResponse对象关闭，否则容易造成连接处于CLOSE_WAIT状态
+3 TCP的KeepLive功能，可以让操作系统替我们自动清理掉CLOSE_WAIT的连接。
+但是KeepLive在Windows操作系统下默认是7200秒，也就是2个小时才清理一次。往往满足不了要求。可以调小该数值。
+Windows下的调整方法为
+HKEY_LOCAL_MACHINE/CurrentControlSet/Services/Tcpip/Parameters下的以下三个参数：
+KeepAliveInterval,设置其值为1000
+KeepAliveTime,设置其值为300000(单位为毫秒，300000代表5分钟)
+TcpMaxDataRetransmissions,设置其值为5
+
+Close_Wait引发的问题:
+Close_Wait会占用一个连接，网络可用连接小。数量过多，可能会引起网络性能下降，并占用系统非换页内存。
+尤其是在有连接池的情况下(比如HttpRequest),会耗尽连接池的网络连接数，导致无法建立网络连接
+
+关于长连接和短连接
+短连接就是一次TCP请求得到结果后,连接马上结束.而长连接并不马上断开,而一直保持着,直到长连接TIMEOUT.
+长连接可以避免不断的进行TCP三次握手和四次挥手.长连接(keepalive)是需要靠双方不断的发送探测包来维持的,
+keepalive期间服务端和客户端的TCP连接状态是ESTABLISHED。
+HTTP1.0需要加上keep-alive的请求首部，否则默认一个请求一个连接。
+HTTP1.1是keep-alive（持久连接）被默认启用，除非在响应中指定connection：close，否则webserver会假定所有连接都是持久的。
+---------------------------------------------------

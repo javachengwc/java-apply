@@ -1,0 +1,43 @@
+-----------------网络连接无法释放—CLOSE_WAIT-----------------------
+
+问题描述：最近性能测试碰到的一个问题。客户端使用NIO，服务器还是一般的Socket连接。当测试进行一段时间以后，发现服务器端的系统出现大量未释放的网络连接。
+用netstat -na查看，连接状态为CLOSE_WAIT。这就奇怪了，为什么Socket已经关闭而连接依然未释放。
+
+解决：一端的Socket调用close后，另一端的Socket没有调用close.检查一下代码，果然发现Server端在某些异常情况时，没有关闭Socket。改正后问题解决。
+
+分析：
+个问题主要因为TCP的结束流程未走完，造成连接未释放。现设客户端主动断开连接，流程如下
+
+        Client                            消息                                    Server
+
+        close()
+                                      ------ FIN ------->
+        FIN_WAIT1                                                                 CLOSE_WAIT
+                                      <----- ACK -------
+        FIN_WAIT2
+                                                                                  close()
+                                       <------ FIN ------
+        TIME_WAIT                                                                 LAST_ACK
+
+                                      ------ ACK ------->
+                                                                                   CLOSED
+        CLOSED
+
+如上所示，由于Server的Socket在客户端已经关闭时而没有调用关闭，造成服务器端的连接处在“挂起”状态，而客户端则处在等待应答的状态上。
+此问题的典型特征是：一端处于FIN_WAIT2 ，而另一端处于CLOSE_WAIT. 不过，根本问题还是程序写的不好，有待提高。
+
+TIME_WAIT状态
+根据TCP协议，主动发起关闭的一方，会进入TIME_WAIT状态，持续2*MSL(Max Segment Lifetime)，缺省为240秒，在这个post中简洁的介绍了为什么需要这个状态。
+值得一说的是，对于基于TCP的HTTP协议，关闭TCP连接的是Server端，这样，Server端会进入TIME_WAIT状态，可想而知，对于访问量大的Web Server，会存在大量的TIME_WAIT状态，
+假如server一秒钟接收1000个请求，那么就会积压240*1000=240，000个 TIME_WAIT的记录，维护这些状态给Server带来负担。当然现代操作系统都会用快速的查找算法来管理这些TIME_WAIT，
+所以对于新的 TCP连接请求，判断是否hit中一个TIME_WAIT不会太费时间，但是有这么多状态要维护总是不好。
+
+HTTP协议1.1版规定default行为是Keep-Alive，也就是会重用TCP连接传输多个request/response，一个主要原因就是发现了这个问题。
+还有一个方法减缓TIME_WAIT压力就是把系统的2*MSL时间减少，因为240秒的时间实在是忒长了点，
+对于Windows，修改注册表，在HKEY_LOCAL_MACHINE\ SYSTEM\CurrentControlSet\Services\ Tcpip\Parameters上添加一个DWORD类型的值TcpTimedWaitDelay，一般认为不要少于60，不然可能会有麻烦。
+对于大型的服务，一台server搞不定，需要一个LB(Load Balancer)把流量分配到若干后端服务器上，如果这个LB是以NAT方式工作的话，可能会带来问题。
+假如所有从LB到后端Server的IP包的 source address都是一样的(LB的对内地址），那么LB到后端Server的TCP连接会受限制，
+因为频繁的TCP连接建立和关闭，会在server上留 下TIME_WAIT状态，而且这些状态对应的remote address都是LB的，
+LB的source port撑死也就60000多个(2^16=65536,1~1023是保留端口，还有一些其他端口缺省也不会用），每个LB上的端口一旦进入 Server的TIME_WAIT黑名单，就有240秒不能再用来建立和Server的连接，
+这样LB和Server最多也就能支持300个左右的连接。 如果没有LB，不会有这个问题，因为这样server看到的remote address是internet上广阔无垠的集合，对每个address，60000多个port实在是够用了。
+----------------------------------------------
