@@ -5,18 +5,25 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -130,6 +137,60 @@ public class Main {
         {
             httpget.abort();
             httpclient.close();
+        }
+    }
+
+    //传送文件
+    public static String transFile(String [] args) throws Exception
+    {
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        HttpPost httppost = new HttpPost("http://www.cc.com");
+        File file = new File(args[0]);
+        InputStreamEntity reqEntity = new InputStreamEntity(
+                new FileInputStream(file), -1);
+        reqEntity.setContentType("binary/octet-stream");
+        reqEntity.setChunked(true);
+        // FileEntity entity = new FileEntity(file, "binary/octet-stream");
+        httppost.setEntity(reqEntity);
+        System.out.println("executing request " + httppost.getRequestLine());
+        HttpResponse response = httpclient.execute(httppost);
+        HttpEntity entity = response.getEntity();
+
+        if (entity != null) {
+            String returnStr = EntityUtils.toString(entity, "UTF-8");
+            return returnStr;
+        }
+        return null;
+    }
+
+    public static void getCookie () throws Exception
+    {
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        // 创建一个本地Cookie存储的实例
+        CookieStore cookieStore = new BasicCookieStore();
+        //创建一个本地上下文信息
+        HttpContext localContext = new BasicHttpContext();
+        //在本地上下问中绑定一个本地存储
+        localContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+        //设置请求的路径
+        HttpGet httpget = new HttpGet("http://www.cc.com/");
+        //传递本地的http上下文给服务器
+        HttpResponse response = httpclient.execute(httpget, localContext);
+        //获取本地信息
+        HttpEntity entity = response.getEntity();
+        System.out.println(response.getStatusLine());
+        if (entity != null) {
+            System.out.println("Response content length: " + entity.getContentLength());
+        }
+        //获取cookie中的各种信息
+        List<Cookie> cookies = cookieStore.getCookies();
+        for (int i = 0; i < cookies.size(); i++) {
+            System.out.println("Local cookie: " + cookies.get(i));
+        }
+        //获取消息头的信息
+        Header[] headers = response.getAllHeaders();
+        for (int i = 0; i<headers.length; i++) {
+            System.out.println(headers[i]);
         }
     }
 }

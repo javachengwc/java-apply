@@ -1,5 +1,6 @@
 package com.httpclient.util;
 
+import com.util.RunTimeUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -45,7 +46,7 @@ public class HttpClientUtil {
      */
     public static final String UTF8 = "UTF-8";
 
-    public static HttpClient httpClient;
+    public static CloseableHttpClient  httpClient;
 
     static {
 
@@ -64,6 +65,24 @@ public class HttpClientUtil {
                 .build();
 
         httpClient=client;
+
+        RunTimeUtil.addShutdownHook(new Runnable()
+        {
+            public void run()
+            {
+                if(httpClient!=null)
+                {
+                    try {
+                        //httpClient不在需要时释放资源
+                        httpClient.close();
+                    }catch(Exception e)
+                    {
+                        logger.error("HttpClientUtil shutdownHook httpClient.close() error,",e);
+                    }
+                }
+            }
+        });
+
     }
 
     /**
