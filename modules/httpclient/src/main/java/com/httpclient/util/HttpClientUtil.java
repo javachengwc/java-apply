@@ -8,6 +8,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -73,7 +74,7 @@ public class HttpClientUtil {
                 if(httpClient!=null)
                 {
                     try {
-                        //httpClient不在需要时释放资源
+                        //httpClient在不需要时释放资源
                         httpClient.close();
                     }catch(Exception e)
                     {
@@ -105,7 +106,7 @@ public class HttpClientUtil {
         HttpGet get = buildHttpGet(url, params);
         get.setConfig(buildRequestConfig());
 
-        HttpResponse response = httpClient.execute(get);
+        CloseableHttpResponse response = httpClient.execute(get);
 
         int rtCode= (response==null)?0:response.getStatusLine().getStatusCode();
         if( HttpStatus.SC_OK!=rtCode)
@@ -117,15 +118,17 @@ public class HttpClientUtil {
             //CLOST_WAIT数目将递增直到最大数MaxPerRouteCount，那时对一个路由的连接已经完全被僵死连接占满。
             //如果在请求中出现异常而没有关闭连接以及上面的逻辑非200莫关闭连接就直接抛错退出方法都可能导致连接池卡住问题
             //就是在连接全部僵死后，后续的请求将一致卡在那里而莫有响应。
-            throw new IOException("服务器响应状态异常,失败.");
+            throw new IOException("服务器响应状态异常,失败.rtCode="+rtCode);
         }
 
         HttpEntity entity = response.getEntity();
+        String returnStr=null;
         if (entity != null) {
-            String returnStr = EntityUtils.toString(entity, charset);
-            return returnStr;
+            returnStr = EntityUtils.toString(entity, charset);
         }
-        return null;
+        EntityUtils.consume(entity);
+        response.close();
+        return returnStr;
     }
 
     /**
@@ -148,24 +151,24 @@ public class HttpClientUtil {
         HttpPost postMethod = buildHttpPost(url, params);
         postMethod.setConfig(buildRequestConfig());
 
-        HttpResponse response = httpClient.execute(postMethod);
+        CloseableHttpResponse response = httpClient.execute(postMethod);
 
         int rtCode= (response==null)?0:response.getStatusLine().getStatusCode();
         if( HttpStatus.SC_OK!=rtCode)
         {
             logger.info("HttpClientUtil postInvoke rt code="+rtCode+",thread name="+Thread.currentThread().getName());
             postMethod.abort();
-            throw new IOException("服务器响应状态异常,失败.");
+            throw new IOException("服务器响应状态异常,失败.rtCode="+rtCode);
         }
 
         HttpEntity entity = response.getEntity();
-
+        String returnStr=null;
         if (entity != null) {
-            String returnStr = EntityUtils.toString(entity, charset);
-            return returnStr;
+            returnStr = EntityUtils.toString(entity, charset);
         }
-
-        return null;
+        EntityUtils.consume(entity);
+        response.close();
+        return returnStr;
     }
 
 
