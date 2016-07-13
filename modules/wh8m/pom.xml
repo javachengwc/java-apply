@@ -18,6 +18,7 @@
     
 	<modules>
         <module>modules/newrelic-pointcut</module>
+		<module>modules/newrelic-maven-plugin</module>
 		<module>modules/task</module>
 	</modules>	
 </project>
