@@ -1,9 +1,9 @@
 ---------------------kafka安装-------------------
 1,下载kafka
-  wget -q http://apache.fayea.com/apache-mirror/kafka/0.8.1/kafka_2.8.0-0.8.1.tgz
+  wget -q wget -q http://apache.fayea.com/kafka/0.8.2.2/kafka_2.9.1-0.8.2.2.tgz
 2,压缩后微调
-  tar -xzvf kafka_2.8.0-0.8.1.tgz
-  rm kafka_2.8.0-0.8.1.tgz
+  tar -xzvf kafka_2.9.1-0.8.2.2.tgz
+  rm kafka_2.9.1-0.8.2.2.tgz
   kafka默认开启jvm压缩指针，但只是64位jvm支持，32位jvm需要修改./bin/kafka-run-class.sh文件,去除-XX:+UseCompressedOops参数
 3,启动kafka应用
   启动zookeeper  bin/zookeeper-server-start.sh config/zookeeper.properties &
