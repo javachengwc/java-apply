@@ -91,7 +91,7 @@ update persondata set age=age+1;
 update items,month set items.price=month.price where items.id=month.id
 
 --多表
-upate goods a
+update goods a
 join goods_act b on a.goods_id=b.goods_id
 join act c on b.act_id=c.act_id
 set a.discount=if(b.privilege_price<>0,b.privilege_price,0)
@@ -110,6 +110,20 @@ delete a from a left join b on a.id=b.aid where b.aid is null
 3,从两个表中找出相同记录的数据并把两个表中的数据都删除掉
 
 delte a,b from a join b on a.id =b.aid
+
+注:修改(增删改)一个表的时候，子查询不能是同一个表,否则会报1093错误，
+解决办法：把子查询再套一层，变成原来表的子子查询即可。
+ep:
+delete from seller_part where seller_id in (
+    select a.seller_id from seller_part  a
+    where EXISTS (select 1 from  product b where b.seller_id=a.seller_id and  b.state=2 )
+)  //此语句将报错1093 - You can't specify target table 'shop_seller_part' for update in FROM clause。
+delete from seller_part   where seller_id in (
+    select y.* from (
+        select a.seller_id from seller_part  a
+        where EXISTS (select 1 from  product b where b.seller_id=a.seller_id and  b.state=2 )
+     ) y
+ ) //对子查询多套一层，执行正确。
 
 ----------------------复杂查询------------------------------
 select a.*,b.name as style_name,c.name as price_interval_name,d.name as house_type_name ,d.type as house_type ,
