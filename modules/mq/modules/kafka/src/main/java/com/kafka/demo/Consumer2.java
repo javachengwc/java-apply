@@ -14,14 +14,13 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * 消费者1
- * 先启动消费者程序，再启动生产者程序
+ * 消费者2
  */
-public class Consumer1 {
-
+public class Consumer2 {
     public static void main(String[] args) throws Exception {
 
         Properties props = PropertiesLoader.load("consumer.properties");
+        props.put("group.id","ab");
         ConsumerConnector connector = Consumer.createJavaConsumerConnector(new ConsumerConfig(props));
 
         HashMap<String, Integer> topicConnect = new HashMap<String, Integer>();
@@ -32,13 +31,13 @@ public class Consumer1 {
 
         List<KafkaStream<byte[], byte[]>> list = streams.get(topic);
         int cnt = (list==null)?0:list.size();
-        System.out.println("Consumer1 list size="+cnt);
+        System.out.println("Consumer2 list size="+cnt);
         for (KafkaStream<byte[], byte[]> stream : list) {
             new Thread(new Workers( stream.iterator() )).start();
         }
     }
 
-    static class Workers implements Runnable{
+    private static class Workers implements Runnable{
 
         private ConsumerIterator<byte[], byte[]> iterator ;
 
@@ -52,6 +51,8 @@ public class Consumer1 {
                 MessageAndMetadata<byte[], byte[]> next = iterator.next();
                 String key = (next.key() == null)?"": new String(next.key());
                 String message = (next.message() == null)?"": new String(next.message());
+                //分区
+                int partition = next.partition();
 
                 System.out.println("Workers key:"+key+",msg:"+message+
                         ",partition="+next.partition()+",offset="+next.offset()+","+Thread.currentThread().getName() );
@@ -59,5 +60,4 @@ public class Consumer1 {
             }
         }
     }
-
 }

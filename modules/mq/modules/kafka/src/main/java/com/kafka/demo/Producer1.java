@@ -26,6 +26,8 @@ public class Producer1 {
         props.put("zk.connect", "127.0.0.1:2181");
         props.put("serializer.class", "kafka.serializer.StringEncoder");
         props.put("metadata.broker.list", "127.0.0.1:9092");
+        //如果broker是多分区的话，制定分区规则
+        // props.put("partitioner.class","com.kafka.demo.DemoPartitioner");
         ProducerConfig config = new ProducerConfig(props);
         Producer<String, String> producer = new Producer<String, String>(config);
         for (int i = 0; i < 10; i++) {
@@ -44,6 +46,11 @@ public class Producer1 {
         list.add( message2 );
         list.add(message3);
         producer.send( list );
+
+        for (int i = 0; i < 1000; i++) {
+            KeyedMessage<String,String> msg = new KeyedMessage<String, String>(topic, "tt" + i);
+            producer.send(msg);
+        }
 
         ThreadUtil.sleep(2*1000l);
         //关闭

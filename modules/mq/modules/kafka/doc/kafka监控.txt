@@ -1,0 +1,39 @@
+------------------------------kafka监控-----------------------------
+Kafka开源的监控系统：KafkaOffsetMonitor和Kafka Web Console
+
+KafkaOffsetMonitor--来实时监控Kafka集群的consumers以及它们在partition中的offset(偏移量)。可以监控当前的消息消费者组，每个topic队列的所有partition的消费情况。
+从这些监控中可以很快地知道每个partition中的消息是否很快被消费以及相应的队列消息增长速度等信息。
+KafkaOffsetMonitor保留partition offset和consumer滞后的历史数据（具体数据保存多少天可以在启动的时候配置），所以可以很轻易了解这几天consumer消费情况。
+KafkaOffsetMonitor是用Scaka代码编写的，消息等历史数据是保存在名为offsetapp.db数据库文件中，该数据库是SQLLite文件，非常的轻量级。
+虽然可以在启动KafkaOffsetMonitor程序的时候指定数据更新的频率和数据保存的时间，但是不建议更新很频繁，或者保存大量的数据，
+因为在KafkaOffsetMonitor图形展示的时候会出现图像展示过慢，或者是直接导致内存溢出了。
+所有的关于消息的偏移量、kafka集群的台数等信息都是从Zookeeper中获取到的，日志大小是通过计算得到的。
+
+KafkaOffsetMonitor源码编译命令：
+# sbt assembly
+
+编译完之后，将会在KafkaOffsetMonitor根目录下生成一个类似KafkaOffsetMonitor-assembly-0.2.1-SNAPSHOT.jar的jar文件。此文件包含了所有的依赖，可以直接启动它：
+# java -cp KafkaOffsetMonitor-assembly-0.2.1-SNAPSHOT.jar \
+     com.quantifind.kafka.offsetapp.OffsetGetterWeb \
+     --zk zk-server1,zk-server2 \
+     --port 8080 \
+     --refresh 10.seconds \
+     --retain 2.days
+访问该监控：http://localhost:8080
+--------------------------------------------------
+Kafka Web Console--源码的地址https://github.com/claudemamo/kafka-web-console。Kafka Web Console是用Scala语言编写的Java web程序用于监控Apache Kafka。
+此系统的功能和KafkaOffsetMonitor很类似，从源码角度来看，此系统实现比KafkaOffsetMonitor要复杂很多，编译配置比KafkaOffsetMonitor较麻烦。
+系统运行条件:
+    Play Framework 2.2.x
+    Apache Kafka 0.8.x
+    Zookeeper 3.3.3 or 3.3.4
+从https://github.com/claudemamo/kafka-web-console上面下载源码，然后用sbt进行编译，在编译前需要做如下的修改：
+　　1、Kafka Web Console默认用的数据库是H2，需要修改配置把它改成mysql,
+    a,找到conf/application.conf文件，并修改db.default.driver, db.default.url,db.default.user,db.default.password项
+    b,找到build.sbt,加入对Mysql的依赖:"mysql" % "mysql-connector-java" % "5.1.31"
+    2、执行conf/evolutions/default/bak目录下面的1.sql、2.sql和3.sql三个文件。注:这三个sql文件不能直接运行，有语法错误，需要做一些修改
+编译包# sbt package 如果在编译中报少包错误，可手动下载相关依赖包放到相应目录下，然后再编译即可。
+运行  # sbt run
+访问该监控:http://localhost:9000
+
+----------------------------------------------------------------------
