@@ -1,0 +1,16 @@
+FreeMarker是会缓存模板的。当调用getTemplate方法时，FreeMarker不但返回了Template对象的结果，而且还会将它存储在缓存中，
+当下一次再以相同路径调用getTemplate方法时，那么它只返回缓存的Tempalte实例，而不会再次加载和解析模板文件。
+如果更改了模板文件，当下次调用模板时，FreeMarker会自动重新载入和解析模板。
+要检查模板文件是否改变内容了是需要时间的，有一个Configuration级别的设置被称作“更新延迟”可以用来设置这个时间，默认是5秒。
+如果想要看到模板立即更新的效果，那么就要把它设置为0.
+cfg.setSetting(Configuration.TEMPLATE_UPDATE_DELAY_KEY, "10");
+此外，还可以使用Configuration对象的clearTemplateCache()方法手动清空缓存。
+何时将一个被缓存了的模板清除的应用策略是由配置的属性cache_storage来确定的，通过这个属性可以配置任何CacheStorage的实现。
+对于大多数用来来说，使用freemarker.cache.MruCacheStorage就足够了。这个缓存存储实现了二级最近使用的缓存。
+在第一级缓存中，组件都被强烈引用到特定的最大数目。当超过最大数量时，最近最少使用的组件将被送至二级缓存中。
+引用强度的大小可以由构造方法来指定。例如：设置强烈部分为20，轻微部分为250：
+cfg.setCacheStorage(new freemarker.cache.MruCacheStorage(20, 250))
+或者，使用MruCacheStorage缓存，它是默认缓存存储实现：
+cfg.setSetting(Configuration.CACHE_STORAGE_KEY, "strong:20, soft:250");
+当创建了一个新的Configuration对象时，它使用一个maxStrongSize值为0的MruCacheStorage缓存来初始化，maxSoftSize的值是Integer.MAX_VALUE（也就是说在实际中，是无限大的）。
+但是使用非0的maxStrongSize对于高负载的服务器来说也许是一个更好的策略。

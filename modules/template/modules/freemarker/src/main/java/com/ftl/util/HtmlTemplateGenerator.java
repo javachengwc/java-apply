@@ -76,6 +76,9 @@ public class HtmlTemplateGenerator
      */
     public static String build(String ftlTemplate, Map<String, Object> params) {
         Configuration cfg = new Configuration();
+        //从其他资源加载模板
+        //如果内建的加载器都不适合使用，那么就需要编写自己的类加载器,这个类需要实现freemarker.cacke.TemplateLoader接口
+        //然后将它传递给Configuration对象的setTemplateLoader方法
         StringTemplateLoader templateLoader = new StringTemplateLoader();
         String tmpId = System.currentTimeMillis() + "";
         templateLoader.putTemplate(tmpId, ftlTemplate);
