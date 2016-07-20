@@ -4,11 +4,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.kafka.KafkaConstant;
 import com.kafka.mode.*;
+import com.util.RunTimeUtil;
 import kafka.api.PartitionOffsetRequestInfo;
 import kafka.cluster.Broker;
 import kafka.common.TopicAndPartition;
 import kafka.javaapi.*;
 import kafka.javaapi.consumer.SimpleConsumer;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,11 +25,29 @@ public class KafkaClient {
 
     private static String clientName = String.valueOf(new Date().getTime());
 
+    private static KafkaClient inst=null;
+
     private SimpleConsumer simpleConsumer;
 
     private int timeout;
 
     private int bufferSize;
+
+    public static KafkaClient getInstance()
+    {
+        if(inst==null)
+        {
+            synchronized (KafkaClient.class)
+            {
+                if(inst==null)
+                {
+                    inst=new KafkaClient();
+                    inst.init(6000,10000);
+                }
+            }
+        }
+        return inst;
+    }
 
     public KafkaClient() {
 
@@ -39,6 +59,18 @@ public class KafkaClient {
 
     public void setBufferSize(int bufferSize) {
         this.bufferSize = bufferSize;
+    }
+
+    public void init(int timeout,int bufferSize)
+    {
+        this.timeout=timeout;
+        this.bufferSize=bufferSize;
+        createSimpleConsumer();
+        RunTimeUtil.addShutdownHook(new Runnable() {
+            public void run() {
+                KafkaClient.getInstance().destory();
+            }
+        });
     }
 
     private void createSimpleConsumer() {
@@ -86,34 +118,46 @@ public class KafkaClient {
     }
 
     public List<KafkaTopic> getTopics() throws Exception {
-        final List<String> topics = ZookeeperClient.getInstance().getChildren(KafkaConstant.TOPIC_PATH);
+        List<String> topics = ZookeeperClient.getInstance().getChildren(KafkaConstant.TOPIC_PATH);
         return getTopicDetail(topics);
     }
 
     public List<KafkaConsumerGroup> getConsumerGroup() throws Exception {
         List<String> groups =  ZookeeperClient.getInstance().getChildren(KafkaConstant.CONSUMER_PATH);
-       List<KafkaConsumerGroup> kafkaConsumerGroups = new ArrayList<KafkaConsumerGroup>();
+        if(groups==null)
+        {
+            return null;
+        }
+
+        List<KafkaConsumerGroup> kafkaConsumerGroups = new ArrayList<KafkaConsumerGroup>();
         for (String group : groups) {
-            List<String> topics =  ZookeeperClient.getInstance().getChildren(KafkaConstant.CONSUMER_PATH + "/" + group + "/offsets");
+            logger.info("KafkaClient group "+group);
             KafkaConsumerGroup kafkaConsumerGroup = new KafkaConsumerGroup();
-            ArrayList<KafkaTopicOffset> kafkaTopicOffsets = new ArrayList<KafkaTopicOffset>();
-            for (String topic : topics) {
-                KafkaTopicOffset kafkaTopicOffset = new KafkaTopicOffset();
-                ArrayList<KafkaPartitionOffset> kafkaPartitionOffsets = new ArrayList<KafkaPartitionOffset>();
-                List<String> partitions =  ZookeeperClient.getInstance().getChildren(KafkaConstant.CONSUMER_PATH + "/" + group + "/offsets/" + topic);
-                for (String partition : partitions) {
-                    KafkaPartitionOffset kafkaPartitionOffset = new KafkaPartitionOffset();
-                    String offset = ZookeeperClient.getInstance().getData(KafkaConstant.CONSUMER_PATH + "/" + group + "/offsets/" + topic + "/"+ partition);
-                    kafkaPartitionOffset.setId(Integer.parseInt(partition));
-                    kafkaPartitionOffset.setLatest(Integer.parseInt(offset));
-                    kafkaPartitionOffsets.add(kafkaPartitionOffset);
-                }
-                kafkaTopicOffset.setName(topic);
-                kafkaTopicOffset.setKafkaPartitionOffsets(kafkaPartitionOffsets);
-                kafkaTopicOffsets.add(kafkaTopicOffset);
-            }
             kafkaConsumerGroup.setName(group);
-            kafkaConsumerGroup.setOwners(kafkaTopicOffsets);
+
+            List<String> topics =  ZookeeperClient.getInstance().getChildren(KafkaConstant.CONSUMER_PATH + "/" + group + "/offsets");
+            int topicCnt =(topics==null)?0:topics.size();
+            kafkaConsumerGroup.setTopicCnt(topicCnt);
+
+            List<KafkaTopicOffset> kafkaTopicOffsetList = new ArrayList<KafkaTopicOffset>();
+            if(topicCnt>0) {
+                for (String topic : topics) {
+                    KafkaTopicOffset kafkaTopicOffset = new KafkaTopicOffset();
+                    List<KafkaPartitionOffset> kafkaPartitionOffsetList = new ArrayList<KafkaPartitionOffset>();
+                    List<String> partitions = ZookeeperClient.getInstance().getChildren(KafkaConstant.CONSUMER_PATH + "/" + group + "/offsets/" + topic);
+                    for (String partition : partitions) {
+                        KafkaPartitionOffset kafkaPartitionOffset = new KafkaPartitionOffset();
+                        String offset = ZookeeperClient.getInstance().getData(KafkaConstant.CONSUMER_PATH + "/" + group + "/offsets/" + topic + "/" + partition);
+                        kafkaPartitionOffset.setId(Integer.parseInt(partition));
+                        kafkaPartitionOffset.setLatest(Integer.parseInt(offset));
+                        kafkaPartitionOffsetList.add(kafkaPartitionOffset);
+                    }
+                    kafkaTopicOffset.setName(topic);
+                    kafkaTopicOffset.setKafkaPartitionOffsets(kafkaPartitionOffsetList);
+                    kafkaTopicOffsetList.add(kafkaTopicOffset);
+                }
+            }
+            kafkaConsumerGroup.setOwners(kafkaTopicOffsetList);
             kafkaConsumerGroups.add(kafkaConsumerGroup);
         }
         return kafkaConsumerGroups;
@@ -163,25 +207,6 @@ public class KafkaClient {
         return new KafkaBroker();
     }
 
-    public List<KafkaTopicOffset> getEarliestOffset(List<String> topic) {
-        List<KafkaTopic> topicDetail = getTopicDetail(topic);
-        List<KafkaTopicOffset> kafkaTopicOffsets = new ArrayList<KafkaTopicOffset>();
-        for (KafkaTopic kafkaTopic : topicDetail) {
-            KafkaTopicOffset kafkaTopicOffset = new KafkaTopicOffset();
-            ArrayList<KafkaPartitionOffset> kafkaPartitionOffsets = new ArrayList<KafkaPartitionOffset>();
-            for (KafkaPartition kafkaPartition : kafkaTopic.getPartitions()) {
-                KafkaPartitionOffset kafkaPartitionOffset = new KafkaPartitionOffset();
-                kafkaPartitionOffset.setEarliest(getEarliestOffset(kafkaTopic.getName(), kafkaPartition.getId()));
-                kafkaPartitionOffset.setLatest(getLatestOffset(kafkaTopic.getName(), kafkaPartition.getId()));
-                kafkaPartitionOffsets.add(kafkaPartitionOffset);
-            }
-            kafkaTopicOffset.setName(kafkaTopic.getName());
-            kafkaTopicOffset.setKafkaPartitionOffsets(kafkaPartitionOffsets);
-            kafkaTopicOffsets.add(kafkaTopicOffset);
-        }
-        return kafkaTopicOffsets;
-    }
-
     public long getEarliestOffset(String topic, int partition) {
         return execOffsetRequest(topic, partition, kafka.api.OffsetRequest.EarliestTime());
     }
@@ -203,6 +228,25 @@ public class KafkaClient {
             return 0;
         }
         return offsetResponse.offsets(topic, partition)[0];
+    }
+
+    //获取某consumer group的offset
+    public long getOffset(String topic,int partition,String group) throws Exception
+    {
+        String offsetStr = ZookeeperClient.getInstance().getData(KafkaConstant.CONSUMER_PATH + "/" + group + "/offsets/" + topic + "/" + partition);
+        if(StringUtils.isBlank(offsetStr))
+        {
+            return getEarliestOffset(topic,partition);
+        }
+        return  Long.parseLong(offsetStr);
+    }
+
+    //重置某consumer group的offset
+    public long setOffset(String topic,int partition,String group,long offset) throws Exception
+    {
+        String path =KafkaConstant.CONSUMER_PATH + "/" + group + "/offsets/" + topic + "/" + partition;
+        ZookeeperClient.getInstance().writeData(path,""+offset);
+        return getOffset(topic,partition,group);
     }
 
     public KafkaBroker convertBroker(Broker broker){

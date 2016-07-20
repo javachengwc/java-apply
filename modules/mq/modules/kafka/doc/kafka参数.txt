@@ -34,7 +34,7 @@ message.max.bytes = 1000000
 
 ############################# ZooKeeper #############################
 # Zookeeper quorum设置。如果有多个使用逗号分割
-zookeeper.connect=debugo01:2181,debugo02,debugo03
+zookeeper.connect=aa:2181,bb:2181
 # 连接zk的超时时间
 zookeeper.connection.timeout.ms=1000000
 # ZooKeeper集群中leader和follower之间的同步实际
@@ -89,7 +89,8 @@ controlled.shutdown.max.retries = 3
 # 每次关闭尝试的时间间隔
 controlled.shutdown.retry.backoff.ms = 5000
 
-# 如果relicas落后太多,将会认为此partition relicas已经失效。而一般情况下,因为网络延迟等原因,总会导致replicas中消息同步滞后。如果消息严重滞后,leader将认为此relicas网络延迟较大或者消息吞吐能力有限。在broker数量较少,或者网络不足的环境中,建议提高此值.
+# 如果relicas落后太多,将会认为此partition relicas已经失效。而一般情况下,因为网络延迟等原因,总会导致replicas中消息同步滞后。
+#如果消息严重滞后,leader将认为此relicas网络延迟较大或者消息吞吐能力有限。在broker数量较少,或者网络不足的环境中,建议提高此值.
 replica.lag.max.messages = 4000
 #leader与relicas的socket超时时间
 replica.socket.timeout.ms= 30 * 1000
@@ -125,7 +126,7 @@ consumer.id
 client.id = <group_id>
 
 # 对于zookeeper集群的指定，必须和broker使用同样的zk配置
-zookeeper.connect=debugo01:2182,debugo02:2182,debugo03:2182
+zookeeper.connect=aa:2182,bb:2182,cc:2182
 # zookeeper的心跳超时时间，查过这个时间就认为是无效的消费者
 zookeeper.session.timeout.ms = 6000
 # zookeeper的等待连接时间

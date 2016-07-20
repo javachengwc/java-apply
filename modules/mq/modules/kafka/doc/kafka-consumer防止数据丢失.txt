@@ -1,0 +1,14 @@
+kafka最初是被LinkedIn设计用来处理log的分布式消息系统，因此它的着眼点不在数据的安全性（log偶尔丢几条无所谓）。
+尽管kafka声称能够保证at-least-once，但如果consumer进程数小于partition_num，这个结论不一定成立。
+比如这样一个case，partiton_num=2，启动一个consumer进程订阅这个topic，对应的，stream_num设为2，也就是说启两个线程并行处理message。
+如果auto.commit.enable=true，当consumer fetch了一些数据但还没有完全处理掉的时候，刚好到commit interval出发了提交offset操作，接着consumer crash掉了。
+这时已经fetch的数据还没有处理完成但已经被commit掉，因此没有机会再次被处理，数据丢失。
+如果auto.commit.enable=false，假设consumer的两个fetcher各自拿了一条数据，并且由两个线程同时处理，这时线程t1处理完partition1的数据，手动提交offset，
+这里需要着重说明的是，当手动执行commit的时候，实际上是对这个consumer进程所占有的所有partition进行commit，kafka暂时还没有提供更细粒度的commit方式，
+也就是说，即使t2没有处理完partition2的数据，offset也被t1提交掉了。如果这时consumer crash掉，t2正在处理的这条数据就丢失了。
+
+如果希望能够严格的不丢数据，解决办法有两个：
+手动commit offset，并针对partition_num启同样数目的consumer进程，这样就能保证一个consumer进程占有一个partition，commit offset的时候不会影响别的partition的offset。
+但这个方法比较局限，因为partition和consumer进程的数目必须严格对应。
+另一个方法同样需要手动commit offset，另外在consumer端再将所有fetch到的数据缓存到queue里，当把queue里所有的数据处理完之后，再批量提交offset，这样就能保证只有处理完的数据才被commit。
+-----------------------------------------------

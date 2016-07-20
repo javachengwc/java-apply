@@ -8,6 +8,8 @@ public class KafkaConsumerGroup {
 
     private String name;
 
+    private Integer topicCnt;
+
     private List<KafkaTopicOffset> owners;
 
     public String getName() {
@@ -16,6 +18,14 @@ public class KafkaConsumerGroup {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getTopicCnt() {
+        return topicCnt;
+    }
+
+    public void setTopicCnt(Integer topicCnt) {
+        this.topicCnt = topicCnt;
     }
 
     public List<KafkaTopicOffset> getOwners() {

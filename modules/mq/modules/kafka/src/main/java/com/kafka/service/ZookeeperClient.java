@@ -1,10 +1,8 @@
 package com.kafka.service;
 
+import com.util.RunTimeUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.Transaction;
-import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,9 +58,23 @@ public class ZookeeperClient {
         this.port=port;
         this.timeout=timeout;
         try {
-            zooKeeper = new ZooKeeper(host + ":" + port, timeout, null);
+            zooKeeper = new ZooKeeper(host + ":" + port, timeout, new Watcher() {
+                public void process(WatchedEvent event) {
+
+                    if (event.getState() == Event.KeeperState.SyncConnected) {
+                        logger.info("ZookeeperClient zookeeper connected..");
+                    }
+                }
+            });
+
+            RunTimeUtil.addShutdownHook(new Runnable() {
+                public void run() {
+                    ZookeeperClient.getInstance().destory();
+                }
+            });
         } catch (Exception e) {
-            throw new RuntimeException("CREATE ZOOKEEPER CONNECTION FAIL!");
+            logger.error("ZookeeperClient init error,", e);
+            throw new RuntimeException("ZookeeperClient init error");
         }
     }
 
@@ -75,11 +87,19 @@ public class ZookeeperClient {
     }
 
     public String getData(String path) throws Exception {
+        if(!isExistNode(path))
+        {
+            return null;
+        }
         byte[] data = zooKeeper.getData(path, false, null);
         return new String(data);
     }
 
     public List<String> getChildren(String path) throws Exception {
+        if(!isExistNode(path))
+        {
+            return null;
+        }
         return zooKeeper.getChildren(path, false);
     }
 
@@ -100,6 +120,27 @@ public class ZookeeperClient {
             transaction.create(path, data.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
             transaction.commit();
         }
+    }
+
+    //写入数据
+    public boolean writeData(String path,String data)
+    {
+        //写节点数据，首先得节点存在，节点只能一级一级创建
+        try {
+            Stat stat = zooKeeper.exists(path, false);
+            if (stat == null) {
+                // 创建
+                createNode(path, data);
+            }else {
+                //更新
+                zooKeeper.setData(path, data.getBytes(), -1);
+            }
+            return true;
+        }catch(Exception e)
+        {
+            logger.error("ZookeeperClient writeData error,path="+path, e);
+        }
+        return false;
     }
 
     private List<String> recursiveChildren(String path, List<String> children) throws Exception {

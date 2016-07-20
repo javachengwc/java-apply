@@ -17,6 +17,7 @@ import java.util.Properties;
  * 消费者2
  */
 public class Consumer2 {
+
     public static void main(String[] args) throws Exception {
 
         Properties props = PropertiesLoader.load("consumer.properties");
@@ -35,6 +36,7 @@ public class Consumer2 {
         for (KafkaStream<byte[], byte[]> stream : list) {
             new Thread(new Workers( stream.iterator() )).start();
         }
+        System.out.println("Consumer2 thread receive message");
     }
 
     private static class Workers implements Runnable{
