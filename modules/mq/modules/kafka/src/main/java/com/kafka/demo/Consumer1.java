@@ -37,8 +37,12 @@ public class Consumer1 {
         ConsumerConnector connector = Consumer.createJavaConsumerConnector(new ConsumerConfig(props));
 
         HashMap<String, Integer> topicConnect = new HashMap<String, Integer>();
-        String topic = "hello";
-        topicConnect.put(topic,1); //设置topic和消费者数量
+        String topic = "mult";
+        //只有一个consumer消费多分区topic的消息时候，下面设置的消费数量(其实就是消费线程数量)会均匀分配多分区消息
+        //如果消费数量跟分区数量相等，那每个消费线程将获取固定对应一个分区的消息
+        //如果是同一个消费组有多个consumer(每个consumer一个进程)消费一个多分区的topic消息的时候,
+        //分区消息会均匀分配到各个consumer,如果consumer数量等于分区数，每个consumer将独立消费一个分区的消息。
+        topicConnect.put(topic,2); //设置topic和消费者数量
 
         Map<String, List<KafkaStream<byte[], byte[]>>> streams= connector.createMessageStreams(topicConnect);
 

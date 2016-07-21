@@ -30,13 +30,12 @@ public class Producer1 {
         props.put("serializer.class", "kafka.serializer.StringEncoder");
         props.put("metadata.broker.list", "127.0.0.1:9092");
         //如果broker是多分区的话，制定分区规则
-        // props.put("partitioner.class","com.kafka.demo.DemoPartitioner");
+        props.put("partitioner.class","com.kafka.demo.DemoPartitioner");
 
         //0（默认）表示生产者不用等待broker返回ack
         //1表示当有复本（该复本节点不一定是同步）收到了消息后发回ack给生产者（如果leader挂掉且刚好收到消息的复本也挂掉则消息丢失）。
         // -1表示所有已同步的复本收到了消息后发回ack给生产者（可以保证只要有一个已同步的复本存活就不会有数据丢失)
         //props.put("request.required.acks", "1");
-
 
         ProducerConfig config = new ProducerConfig(props);
         Producer<String, String> producer = new Producer<String, String>(config);
@@ -59,6 +58,15 @@ public class Producer1 {
 
         for (int i = 0; i < 1000; i++) {
             KeyedMessage<String,String> msg = new KeyedMessage<String, String>(topic, "tt" + i);
+            producer.send(msg);
+        }
+
+        //4分区的一个topic
+        //kafka-topics.sh --create --zookeeper 127.0.0.1:2181 --replication-factor 1 --partitions 4 --topic mult
+        String multTopic="mult";
+
+        for (int i = 0; i < 1000; i++) {
+            KeyedMessage<String,String> msg = new KeyedMessage<String, String>(multTopic, ""+i,"mult" + i);
             producer.send(msg);
         }
 

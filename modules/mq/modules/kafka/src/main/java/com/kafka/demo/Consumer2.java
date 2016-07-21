@@ -25,8 +25,8 @@ public class Consumer2 {
         ConsumerConnector connector = Consumer.createJavaConsumerConnector(new ConsumerConfig(props));
 
         HashMap<String, Integer> topicConnect = new HashMap<String, Integer>();
-        String topic = "hello";
-        topicConnect.put(topic,1); //设置topic和消费者数量
+        String topic = "mult";
+        topicConnect.put(topic,2); //设置topic和消费者数量
 
         Map<String, List<KafkaStream<byte[], byte[]>>> streams= connector.createMessageStreams(topicConnect);
 

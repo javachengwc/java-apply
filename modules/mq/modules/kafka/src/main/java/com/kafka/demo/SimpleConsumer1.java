@@ -32,7 +32,7 @@ public class SimpleConsumer1 {
 
     public static void main(String args[]) throws Exception
     {
-        String topic = "hello";
+        String topic = "mult";
         int partition = 0;
         String brokers = "127.0.0.1:9092";
 
