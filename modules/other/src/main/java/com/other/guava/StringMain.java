@@ -1,5 +1,6 @@
 package com.other.guava;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 
 /**
@@ -25,6 +26,15 @@ public class StringMain {
         String d = "com.jd.Hello";
         String ourSuffix = Strings.commonSuffix(c,d);
         System.out.println("c,d common suffix is " + ourSuffix);
+
+        Optional<String> kaka= Optional.fromNullable("kaka");
+        System.out.println(kaka.isPresent());
+        System.out.println(kaka.get().toString());
+
+        Optional<String> nullStr= Optional.absent();
+        //nullStr=Optional.fromNullable(null);
+        System.out.println(nullStr.isPresent());
+
     }
 
 }

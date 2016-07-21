@@ -64,4 +64,46 @@ public class Table implements Serializable {
     {
         return ToStringBuilder.reflectionToString(this);
     }
+
+    @Override
+    public int hashCode()
+    {
+        int code=0;
+        code+=((db==null)?0:db.hashCode());
+        code+=((name==null)?0:name.hashCode());
+        code+=((logicName==null)?0:logicName.hashCode());
+        return code;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if(obj==null)
+        {
+            return false;
+        }
+        if(obj instanceof Table)
+        {
+            Table other =(Table)obj;
+            if(!strEquals(db,other.getDb()) || !strEquals(name,other.getName()) || !strEquals(logicName,other.getLogicName()) )
+            {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public boolean strEquals(String a,String b)
+    {
+        if(a==null && b!=null)
+        {
+            return false;
+        }
+        if(a!=null && !a.equals(b))
+        {
+            return false;
+        }
+        return true;
+    }
 }

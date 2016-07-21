@@ -130,11 +130,12 @@ public class GroupByResultSet extends ShardResultSet {
         }
     }
 
-    private Multimap<GroupByKey, GroupByValue> map() throws SQLException {
+    private Map<GroupByKey, List<GroupByValue>> map() throws SQLException {
 
         logger.info("GroupByResultSet map  data start... ");
         ExecuteUnit<ResultSet, Map<GroupByKey, GroupByValue>> executeUnit = new ExecuteUnit<ResultSet, Map<GroupByKey, GroupByValue>>() {
 
+            //查询
             public Map<GroupByKey, GroupByValue> execute(final ResultSet resultSet) throws SQLException {
                 //应该可以根据limit判断result的初始size，避免size满了重分配
                 Map<GroupByKey, GroupByValue> result = new HashMap<GroupByKey, GroupByValue>();
@@ -154,27 +155,35 @@ public class GroupByResultSet extends ShardResultSet {
             }
         };
 
-        MergeUnit<Map<GroupByKey, GroupByValue>, Multimap<GroupByKey, GroupByValue>> mergeUnit = new MergeUnit<Map<GroupByKey, GroupByValue>, Multimap<GroupByKey, GroupByValue>>() {
+        //分组
+        MergeUnit<Map<GroupByKey, GroupByValue>, Map<GroupByKey, List<GroupByValue>>> mergeUnit = new MergeUnit<Map<GroupByKey, GroupByValue>, Map<GroupByKey, List<GroupByValue>>>() {
 
             @Override
-            public Multimap<GroupByKey, GroupByValue> merge(List<Map<GroupByKey, GroupByValue>> values) {
-                Multimap<GroupByKey, GroupByValue> result = HashMultimap.create();
+            public Map<GroupByKey, List<GroupByValue>> merge(List<Map<GroupByKey, GroupByValue>> values) {
+                Map<GroupByKey, List<GroupByValue>> result = new HashMap<GroupByKey, List<GroupByValue>>();
                 for (Map<GroupByKey, GroupByValue> each : values) {
                     for (Map.Entry<GroupByKey, GroupByValue> entry : each.entrySet()) {
-                        result.put(entry.getKey(), entry.getValue());
+                        GroupByKey key = entry.getKey();
+                        List<GroupByValue> list = result.get(key);
+                        if(list==null)
+                        {
+                            list = new ArrayList<GroupByValue>();
+                            result.put(key,list);
+                        }
+                        list.add(entry.getValue());
                     }
                 }
                 return result;
             }
         };
-        Multimap<GroupByKey, GroupByValue> result = ExecutorEngine.execute(getResultSets(), executeUnit, mergeUnit);
+        Map<GroupByKey, List<GroupByValue>> result = ExecutorEngine.execute(getResultSets(), executeUnit, mergeUnit);
         int  cnt = (result==null)?0:result.size();
         logger.info("GroupByResultSet map  end, result count="+cnt);
         printMapResult(result);
         return result;
     }
 
-    public void printMapResult( Multimap<GroupByKey, GroupByValue> result)
+    public void printMapResult(  Map<GroupByKey, List<GroupByValue>> result)
     {
         StringBuffer buf = new StringBuffer("");
         int  cnt = (result==null)?0:result.size();
@@ -210,7 +219,7 @@ public class GroupByResultSet extends ShardResultSet {
         return buf.toString();
     }
 
-    private Collection<GroupByValue> reduce(Multimap<GroupByKey, GroupByValue> mappedResult) throws SQLException {
+    private Collection<GroupByValue> reduce(Map<GroupByKey, List<GroupByValue>>  mappedResult) throws SQLException {
 
         //列数
         int columnLabelsCnt =(columnLabels==null)?0:columnLabels.size();

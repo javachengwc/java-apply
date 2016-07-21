@@ -29,7 +29,8 @@ public class StringMain {
 
         System.out.println("-------------------");
 
-        //System.out.println(String.valueOf(null));
+        //System.out.println(String.valueOf(null));//报错
+        System.out.println("aa".equals(null));//false;
 
         System.out.println("-------------------");
 

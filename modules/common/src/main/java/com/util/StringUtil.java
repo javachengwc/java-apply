@@ -18,6 +18,22 @@ public class StringUtil {
     private static Pattern abcPattern = Pattern.compile("^[a-z|A-Z]+$");
 
     /**
+     * 判断字符串是否相等
+     */
+    public static boolean strEquals(String a,String b)
+    {
+        if(a==null && b!=null)
+        {
+            return false;
+        }
+        if(a!=null && !a.equals(b))
+        {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * 判断是否纯字母组合
      */
     public static boolean isAbc(String src) {
