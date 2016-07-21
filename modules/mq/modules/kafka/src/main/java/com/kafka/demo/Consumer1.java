@@ -50,7 +50,7 @@ public class Consumer1 {
         int cnt = (list==null)?0:list.size();
         System.out.println("Consumer1 list size="+cnt);
         for (KafkaStream<byte[], byte[]> stream : list) {
-            new Thread(new Workers( stream.iterator() )).start();
+            new Thread(new Workers( connector,stream.iterator() )).start();
         }
     }
 
@@ -58,7 +58,10 @@ public class Consumer1 {
 
         private ConsumerIterator<byte[], byte[]> iterator ;
 
-        public Workers(ConsumerIterator<byte[], byte[]> iterator) {
+        private ConsumerConnector connector;
+
+        public Workers(ConsumerConnector connector,ConsumerIterator<byte[], byte[]> iterator) {
+            this.connector=connector;
             this.iterator = iterator;
         }
 
@@ -66,9 +69,14 @@ public class Consumer1 {
             System.out.println("Workers run start,thread-->"+Thread.currentThread().getName());
             //线程一直不会退出，因为如果莫有消息，iterator.hasNext()会阻塞
             while ( iterator.hasNext() ){
+
                 MessageAndMetadata<byte[], byte[]> next = iterator.next();
                 String key = (next.key() == null)?"": new String(next.key());
                 String message = (next.message() == null)?"": new String(next.message());
+
+                //手动提交offset,当autocommit.enable=false时使用,
+                //一定要在iterator.next()执行后在commitOffsets(),如果在之前提交，最后一次迭代的消息的offset将漏提交
+                //connector.commitOffsets();
 
                 System.out.println("Workers key:"+key+",msg:"+message+
                         ",partition="+next.partition()+",offset="+next.offset()+","+Thread.currentThread().getName() );
