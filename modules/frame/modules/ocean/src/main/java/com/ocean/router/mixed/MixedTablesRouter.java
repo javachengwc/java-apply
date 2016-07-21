@@ -68,17 +68,25 @@ public class MixedTablesRouter {
         Collection<String> bindingTables = shardRule.filterAllBindingTables(logicTables);
         Collection<String> remainingTables = new ArrayList<String>(logicTables);
         Collection<SingleRoutingResult> result = new ArrayList<SingleRoutingResult>(logicTables.size());
-        if (1 < bindingTables.size()) {
+
+        int bindingCnt =(bindingTables==null)?0:bindingTables.size();
+        logger.info("MixedTablesRouter route bindingTables count="+bindingCnt);
+
+        if (bindingCnt>1) {
             result.add(new BindingTablesRouter(shardRule, bindingTables, conditionContext).route());
             remainingTables.removeAll(bindingTables);
         }
+
+        int remainingCnt =(remainingTables==null)?0:remainingTables.size();
+        logger.info("MixedTablesRouter route remainingTables count="+remainingCnt);
+
         for (String each : remainingTables) {
             SingleRoutingResult routingResult = new SingleTableRouter(shardRule, each, conditionContext).route();
             if (null != routingResult) {
                 result.add(routingResult);
             }
         }
-        logger.trace("mixed tables sharding result: {}", result);
+        logger.info("MixedTablesRouter route mixed tables sharding result: {}", result);
         if (result.isEmpty()) {
             return null;
         }

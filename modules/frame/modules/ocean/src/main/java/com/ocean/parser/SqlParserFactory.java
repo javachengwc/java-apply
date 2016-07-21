@@ -40,7 +40,9 @@ public class SqlParserFactory {
         logger.info("SqlParserFactory create,sql="+sql);
         SQLStatement sqlStatement = getSQLStatementParser(databaseType, sql).parseStatement();
         logger.info("SqlParserFactory create getSQLStatementParser sqlStatment="+sqlStatement.getClass().getName());
-        return new SqlParseEngine(sqlStatement, parameters, getSQLVisitor(databaseType, sqlStatement), shardingColumns);
+        SQLASTOutputVisitor visitor=getSQLVisitor(databaseType, sqlStatement);
+        logger.info("SqlParserFactory create getSQLVisitor visitor="+visitor.getClass().getName());
+        return new SqlParseEngine(sqlStatement, parameters, visitor, shardingColumns);
     }
 
     private static SQLStatementParser getSQLStatementParser(final DatabaseType databaseType, final String sql) {

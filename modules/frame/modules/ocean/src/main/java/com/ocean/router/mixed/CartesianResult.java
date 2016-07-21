@@ -3,6 +3,8 @@ package com.ocean.router.mixed;
 import com.ocean.parser.SqlBuilder;
 import com.ocean.router.RoutingResult;
 import com.ocean.router.SqlExecutionUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,6 +14,8 @@ import java.util.List;
  * 笛卡尔积路由结果
  */
 public class CartesianResult implements RoutingResult {
+
+    private static Logger logger= LoggerFactory.getLogger(CartesianResult.class);
 
     private List<CartesianDataSource> routingDataSources = new ArrayList<CartesianDataSource>();
 
@@ -41,6 +45,8 @@ public class CartesianResult implements RoutingResult {
 
     public Collection<SqlExecutionUnit> getSqlExecutionUnits(SqlBuilder sqlBuilder) {
         Collection<SqlExecutionUnit> result = new ArrayList<SqlExecutionUnit>();
+        int routCnt =(routingDataSources==null)?0:routingDataSources.size();
+        logger.info("CartesianResult getSqlExecutionUnits routingDataSources count="+routCnt);
         for (CartesianDataSource each : routingDataSources) {
             result.addAll(each.getSqlExecutionUnits(sqlBuilder));
         }

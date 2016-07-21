@@ -22,12 +22,22 @@ public class ShardDataSource  extends AbstractDataSourceAdapter {
 
     private ShardRule shardRule;
 
+    //数据库名-->数据库metadata 其实只有一条记录
+    //MySQL-->org.apache.commons.dbcp.DelegatingDatabaseMetaData@xxx
     private Map<String,DatabaseMetaData> databaseMetaDataMap;
 
     public ShardDataSource(ShardRule shardRule) {
 
         this.shardRule = shardRule;
         this.databaseMetaDataMap =genDatabaseMetaData();
+    }
+
+    public ShardRule getShardRule() {
+        return shardRule;
+    }
+
+    public Map<String, DatabaseMetaData> getDatabaseMetaDataMap() {
+        return databaseMetaDataMap;
     }
 
     private Map<String,DatabaseMetaData> genDatabaseMetaData() {
@@ -40,8 +50,8 @@ public class ShardDataSource  extends AbstractDataSourceAdapter {
             try {
                 metaData = each.getConnection().getMetaData();
                 databaseProductName = metaData.getDatabaseProductName();
-            } catch (final SQLException ex) {
-                throw new ShardException("Can not get data source DatabaseProductName", ex);
+            } catch ( SQLException ex) {
+                throw new ShardException("ShardDataSource genDatabaseMetaData can not get data source DatabaseProductName", ex);
             }
             map.put(databaseProductName,metaData);
         }

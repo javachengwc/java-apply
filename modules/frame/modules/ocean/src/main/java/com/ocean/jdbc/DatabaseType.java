@@ -15,7 +15,7 @@ public enum DatabaseType {
     public static DatabaseType valueFrom(String databaseProductName) {
         try {
             return DatabaseType.valueOf(databaseProductName);
-        } catch (final IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             throw new DatabaseTypeUnsupportedException(databaseProductName);
         }
     }

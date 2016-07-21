@@ -30,6 +30,7 @@ public class ShardConnection extends AbstractConnectionAdapter {
         this.shardRule = shardRule;
         this.metaData = metaData;
         sqlRouteEngine = new SqlRouteEngine(shardRule, DatabaseType.valueFrom(metaData.getDatabaseProductName()));
+        System.out.println("ShardConnection create sqlRouteEngine");
     }
 
     /**

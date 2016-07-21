@@ -7,6 +7,7 @@ import org.apache.commons.dbcp.BasicDataSource;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.*;
@@ -17,7 +18,13 @@ import java.util.*;
 public class Main {
 
     public static void main(String[] args) throws Exception{
-        DataSource dataSource = getShardDataSource();
+        ShardDataSource dataSource = getShardDataSource();
+        Map<String, DatabaseMetaData> metaDataMap =dataSource.getDatabaseMetaDataMap();
+        System.out.println("----------------metaData-------------");
+        for(String key:metaDataMap.keySet())
+        {
+            System.out.println(key+"-->"+metaDataMap.get(key));
+        }
         //select(dataSource);
         System.out.println("-----------------------------");
         groupBy(dataSource);

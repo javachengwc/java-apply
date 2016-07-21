@@ -83,12 +83,15 @@ public class SingleTableRouter {
      */
     public SingleRoutingResult route() {
         if (!tableRule.isPresent()) {
-            logger.trace("Can not find table rule of [{}]", logicTable);
+            logger.info("SingleTableRouter route can not find table rule of {}", logicTable);
             return null;
         }
         Collection<String> routedDataSources = routeDataSources();
         Collection<String> routedTables = routeTables(routedDataSources);
-        return generateRoutingResult(routedDataSources, routedTables);
+        SingleRoutingResult result = generateRoutingResult(routedDataSources, routedTables);
+
+        logger.info("SingleTableRouter route result ="+result);
+        return result;
     }
 
     private Collection<String> routeDataSources() {

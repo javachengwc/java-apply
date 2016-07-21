@@ -1,11 +1,15 @@
 package com.ocean.router.single;
 
 import com.ocean.parser.SqlBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 单表路由表单元
  */
 public class SingleRoutingTableFactor {
+
+    private static Logger logger = LoggerFactory.getLogger(SingleRoutingTableFactor.class);
 
     private String logicTable;
 
@@ -43,5 +47,6 @@ public class SingleRoutingTableFactor {
      */
     public void buildSQL(SqlBuilder builder) {
         builder.buildSQL(logicTable, actualTable);
+        logger.info("SingleRoutingTableFactor buildSQL, logicTable="+logicTable+",actualTable="+actualTable+".................." );
     }
 }

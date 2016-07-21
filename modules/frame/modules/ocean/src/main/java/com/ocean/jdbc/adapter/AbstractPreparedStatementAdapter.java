@@ -236,6 +236,9 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractNofrillsP
 
     private void setParameter(final int index, final Object x) {
         int extendedSize = index - parameters.size();
+
+        //这里这样判断处理，是为了占位
+        //可能代码调用是先setObject(2,2)在setObject(1,1),在setObject(2,2)的时候，需要对parameters这个list填充前面还莫有的下标数据
         if (extendedSize > 1) {
             while (--extendedSize > 0) {
                 parameters.add(null);

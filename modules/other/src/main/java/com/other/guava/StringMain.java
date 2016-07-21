@@ -31,7 +31,7 @@ public class StringMain {
         System.out.println(kaka.isPresent());
         System.out.println(kaka.get().toString());
 
-        Optional<String> nullStr= Optional.absent();
+        Optional<String> nullStr= Optional.absent(); //空值
         //nullStr=Optional.fromNullable(null);
         System.out.println(nullStr.isPresent());
 

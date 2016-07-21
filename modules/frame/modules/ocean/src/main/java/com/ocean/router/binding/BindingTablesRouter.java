@@ -47,7 +47,7 @@ public class BindingTablesRouter {
                 result.bind(bindingTableRule, each);
             }
         }
-        logger.trace("binding table sharding result: {}", result);
+        logger.info("BindingTablesRouter route binding table sharding result: {}", result);
         return result;
     }
 }

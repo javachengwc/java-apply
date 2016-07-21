@@ -45,7 +45,7 @@ public class CartesianTablesRouter {
             List<Set<SingleRoutingTableFactor>> routingTableFactorGroups = toRoutingTableFactorGroups(entry.getKey(), actualTableGroups);
             result.merge(entry.getKey(), getCartesianTableReferences(Sets.cartesianProduct(routingTableFactorGroups)));
         }
-        logger.trace("cartesian tables sharding result: {}", result);
+        logger.info("CartesianTablesRouter cartesian tables sharding result: {}", result);
         return result;
     }
 

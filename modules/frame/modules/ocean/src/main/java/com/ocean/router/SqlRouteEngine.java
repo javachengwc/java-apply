@@ -13,6 +13,7 @@ import com.ocean.router.single.SingleTableRouter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -59,40 +60,55 @@ public class SqlRouteEngine {
      */
     public SqlRouteResult route(final String logicSql, final List<Object> parameters) throws SqlParserException {
 
-        logger.info("SqlRouteEngine rount");
+        logger.info("SqlRouteEngine route start ");
         return routeSQL(parseSQL(logicSql, parameters));
     }
 
     private SqlParsedResult parseSQL(final String logicSql, final List<Object> parameters) {
         logger.info("SqlRouteEngine parseSQL,logicSql= "+logicSql);
-        SqlParsedResult result = SqlParserFactory.create(databaseType, logicSql, parameters, shardRule.getAllShardingColumns()).parse();
+        Collection<String> shardColumns =shardRule.getAllShardingColumns();
+        int shardColCnt = (shardColumns==null)?0:shardColumns.size();
+        String shardColumnStr = "";
+        if(shardColCnt>0)
+        {
+            shardColumnStr= Arrays.toString(shardColumns.toArray());
+        }
+        logger.info("SqlRouteEngine shardColumns count="+shardColCnt+",shardColumnStr="+shardColumnStr);
+        SqlParsedResult result = SqlParserFactory.create(databaseType, logicSql, parameters,shardColumns ).parse();
         return result;
     }
 
     private SqlRouteResult routeSQL(SqlParsedResult parsedResult) {
+        logger.info("SqlRouteEngine routeSQL parsedResult start ");
         SqlRouteResult result = new SqlRouteResult(parsedResult.getMergeContext());
         for (ConditionContext each : parsedResult.getConditionContexts()) {
-            result.getExecutionUnits().addAll(routeSQL(each, Collections2.transform(parsedResult.getRouteContext().getTables(),
-            new Function<SqlTable, String>() {
-                public String apply(SqlTable input) {
-                    return input.getName();
-                }
-            }), parsedResult.getRouteContext().getSqlBuilder()));
+
+            Collection<SqlExecutionUnit> units =routeSQL(each, Collections2.transform(parsedResult.getRouteContext().getTables(),
+                    new Function<SqlTable, String>() {
+                        public String apply(SqlTable input) {
+                            return input.getName();
+                        }
+                    }), parsedResult.getRouteContext().getSqlBuilder());
+            result.getExecutionUnits().addAll(units);
         }
+        int exeUnitsCnt = (result.getExecutionUnits()==null)?0:result.getExecutionUnits().size();
+        logger.info("SqlRouteEngine routeSQL parsedResult sqlRouteResult executionUnits count= "+exeUnitsCnt);
         return result;
     }
 
     private Collection<SqlExecutionUnit> routeSQL(ConditionContext conditionContext, Collection<String> logicTables, SqlBuilder sqlBuilder) {
+        logger.info("SqlRouteEngine routeSQL conditionContext  start ,conditionContext="+conditionContext);
         RoutingResult result;
         if (1 == logicTables.size()) {
             result = new SingleTableRouter(shardRule, logicTables.iterator().next(), conditionContext).route();
         } else if (shardRule.isAllBindingTable(logicTables)) {
             result = new BindingTablesRouter(shardRule, logicTables, conditionContext).route();
         } else {
+            logger.info("SqlRouteEngine routeSQL conditionContext  create MixedTablesRouter ");
             result = new MixedTablesRouter(shardRule, logicTables, conditionContext).route();
         }
         if (null == result) {
-            throw new ShardException("cannot route any result, please check your shard rule.");
+            throw new ShardException("SqlRouteEngine routeSQL cannot route any result, please check your shard rule.");
         }
         return result.getSqlExecutionUnits(sqlBuilder);
     }
