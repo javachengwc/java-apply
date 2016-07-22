@@ -27,13 +27,13 @@ public class CartesianResult implements RoutingResult {
         this.routingDataSources = routingDataSources;
     }
 
-    public void merge(final String dataSource, final Collection<CartesianTableReference> routingTableReferences) {
+    public void merge(String dataSource, final Collection<CartesianTableReference> routingTableReferences) {
         for (CartesianTableReference each : routingTableReferences) {
             merge(dataSource, each);
         }
     }
 
-    private void merge(final String dataSource, final CartesianTableReference routingTableReference) {
+    private void merge(String dataSource,CartesianTableReference routingTableReference) {
         for (CartesianDataSource each : routingDataSources) {
             if (each.getDataSource().equals(dataSource)) {
                 each.getRoutingTableReferences().add(routingTableReference);

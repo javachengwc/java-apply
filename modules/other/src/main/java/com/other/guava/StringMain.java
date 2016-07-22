@@ -1,5 +1,6 @@
 package com.other.guava;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 
@@ -31,9 +32,17 @@ public class StringMain {
         System.out.println(kaka.isPresent());
         System.out.println(kaka.get().toString());
 
+        Optional<String> kaka2= Optional.of("kaka2");
+        System.out.println(kaka2.get().toString());
+
         Optional<String> nullStr= Optional.absent(); //空值
         //nullStr=Optional.fromNullable(null);
         System.out.println(nullStr.isPresent());
+
+        String value="what";
+        //字符串拼接，on("?")是join中各字串的连接符号
+        String joinStr =Joiner.on("").join("[Token(", value, ")]");
+        System.out.println(joinStr);
 
     }
 

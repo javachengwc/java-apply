@@ -11,8 +11,10 @@ public class SingleRoutingTableFactor {
 
     private static Logger logger = LoggerFactory.getLogger(SingleRoutingTableFactor.class);
 
+    //逻辑表名
     private String logicTable;
 
+    //实际表名
     private String actualTable;
 
     public SingleRoutingTableFactor()

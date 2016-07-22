@@ -40,13 +40,52 @@ public class CartesianTablesRouter {
 
     public CartesianResult route() {
         CartesianResult result = new CartesianResult();
-        for (Map.Entry<String, Set<String>> entry : getDataSourceLogicTablesMap().entrySet()) {
-            List<Set<String>> actualTableGroups = getActualTableGroups(entry.getKey(), entry.getValue());
-            List<Set<SingleRoutingTableFactor>> routingTableFactorGroups = toRoutingTableFactorGroups(entry.getKey(), actualTableGroups);
-            result.merge(entry.getKey(), getCartesianTableReferences(Sets.cartesianProduct(routingTableFactorGroups)));
+        Map<String, Set<String>> logicTableMap =getDataSourceLogicTablesMap();
+        logger.info("CartesianTablesRouter route logicTableMap:");
+        if(logicTableMap!=null)
+        {
+            for(String key:logicTableMap.keySet())
+            {
+                Set<String> vlu =logicTableMap.get(key);
+                String vluStr = (vlu==null)?"":Arrays.toString(vlu.toArray());
+                logger.info("----"+key+"-->"+vluStr );
+            }
         }
-        logger.info("CartesianTablesRouter cartesian tables sharding result: {}", result);
+        for (Map.Entry<String, Set<String>> entry : logicTableMap.entrySet()) {
+            String db=entry.getKey();
+            Set<String> logicTables=entry.getValue();
+            List<Set<String>> actualTableGroups = getActualTableGroups(db,logicTables );
+            logger.info("CartesianTablesRouter route getActualTableGroups result="+listSet2Str(actualTableGroups)+",db:"+db);
+            List<Set<SingleRoutingTableFactor>> routingTableFactorGroups = toRoutingTableFactorGroups(db, actualTableGroups);
+            //对真实表进行笛卡尔积组合=各维度值组合
+            Set<List<SingleRoutingTableFactor>> tableCombin=Sets.cartesianProduct(routingTableFactorGroups);
+            result.merge(db, getCartesianTableReferences(tableCombin));
+        }
+        logger.info("CartesianTablesRouter route cartesian tables sharding result: {}", result);
         return result;
+    }
+
+    public String listSet2Str(List<Set<String>> list)
+    {
+        int count = (list==null)?0:list.size();
+        if(count<=0)
+        {
+            return "";
+        }
+        StringBuffer buf = new StringBuffer();
+        for(Set<String> perSet:list)
+        {
+            buf.append("[");
+            if(perSet!=null && perSet.size()>0)
+            {
+                for(String per:perSet)
+                {
+                    buf.append(per).append(",");
+                }
+            }
+            buf.append("],");
+        }
+        return buf.toString();
     }
 
     private Map<String, Set<String>> getDataSourceLogicTablesMap() {
@@ -75,7 +114,8 @@ public class CartesianTablesRouter {
         return result;
     }
 
-    private List<Set<String>> getActualTableGroups(final String dataSource, final Set<String> logicTables) {
+    //获取逻辑表对应的实际表名
+    private List<Set<String>> getActualTableGroups(String dataSource,Set<String> logicTables) {
         List<Set<String>> result = new ArrayList<Set<String>>(logicTables.size());
         for (SingleRoutingResult each : routingResults) {
             result.addAll(each.getActualTableGroups(dataSource, logicTables));
@@ -83,16 +123,16 @@ public class CartesianTablesRouter {
         return result;
     }
 
-    private List<Set<SingleRoutingTableFactor>> toRoutingTableFactorGroups(final String dataSource, final List<Set<String>> actualTableGroups) {
+    private List<Set<SingleRoutingTableFactor>> toRoutingTableFactorGroups(final String dataSource, List<Set<String>> actualTableGroups) {
         List<Set<SingleRoutingTableFactor>> result = new ArrayList<Set<SingleRoutingTableFactor>>(actualTableGroups.size());
         for (Set<String> each : actualTableGroups) {
-            result.add(new HashSet<SingleRoutingTableFactor>(Lists.transform(new ArrayList<String>(each), new Function<String, SingleRoutingTableFactor>() {
-
-                @Override
-                public SingleRoutingTableFactor apply(final String input) {
-                    return findRoutingTableFactor(dataSource, input);
-                }
-            })));
+            result.add(new HashSet<SingleRoutingTableFactor>(Lists.transform(new ArrayList<String>(each),
+                new Function<String, SingleRoutingTableFactor>() {
+                    public SingleRoutingTableFactor apply(final String input) {
+                        return findRoutingTableFactor(dataSource, input);
+                    }
+                })
+            ));
         }
         return result;
     }
@@ -107,7 +147,7 @@ public class CartesianTablesRouter {
         throw new IllegalStateException(String.format("Cannot found routing table factor, data source: %s, actual table: %s", dataSource, actualTable));
     }
 
-    private List<CartesianTableReference> getCartesianTableReferences(final Set<List<SingleRoutingTableFactor>> cartesianRoutingTableFactorGroups) {
+    private List<CartesianTableReference> getCartesianTableReferences(Set<List<SingleRoutingTableFactor>> cartesianRoutingTableFactorGroups) {
         List<CartesianTableReference> result = new ArrayList<CartesianTableReference>(cartesianRoutingTableFactorGroups.size());
         for (List<SingleRoutingTableFactor> each : cartesianRoutingTableFactorGroups) {
             result.add(new CartesianTableReference(each));

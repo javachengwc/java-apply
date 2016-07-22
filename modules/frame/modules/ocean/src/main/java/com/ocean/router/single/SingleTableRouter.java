@@ -90,26 +90,26 @@ public class SingleTableRouter {
         Collection<String> routedTables = routeTables(routedDataSources);
         SingleRoutingResult result = generateRoutingResult(routedDataSources, routedTables);
 
-        logger.info("SingleTableRouter route result ="+result);
+        logger.info("SingleTableRouter route logicTable="+logicTable+",result ="+result);
         return result;
     }
 
     private Collection<String> routeDataSources() {
         ShardStrategy strategy = shardRule.getDatabaseShardStrategy(tableRule.get());
         List<ShardValue<?>> databaseShardingValues = getShardingValues(strategy.getShardObjs());
-        logBeforeRoute("database", logicTable, shardRule.getDataSourceRule().getDataSourceNames(), strategy.getShardObjs(), databaseShardingValues);
+        //logBeforeRoute("database", logicTable, shardRule.getDataSourceRule().getDataSourceNames(), strategy.getShardObjs(), databaseShardingValues);
         Collection<String> result = new HashSet<String>(strategy.doShard(shardRule.getDataSourceRule().getDataSourceNames(), databaseShardingValues));
-        logAfterRoute("database", logicTable, result);
+        //logAfterRoute("database", logicTable, result);
         Preconditions.checkState(!result.isEmpty(), "no database route info");
         return result;
     }
 
     private Collection<String> routeTables(final Collection<String> routedDataSources) {
         ShardStrategy strategy = shardRule.getTableShardingStrategy(tableRule.get());
-        List<ShardValue<?>> tableShardingValues = getShardingValues(strategy.getShardObjs());
-        logBeforeRoute("table", logicTable, tableRule.get().getActualTables(), strategy.getShardObjs(), tableShardingValues);
-        Collection<String> result = new HashSet<String>(strategy.doShard(tableRule.get().getActualTableNames(routedDataSources), tableShardingValues));
-        logAfterRoute("table", logicTable, result);
+        List<ShardValue<?>> tableShardValues = getShardingValues(strategy.getShardObjs());
+        //logBeforeRoute("table", logicTable, tableRule.get().getActualTables(), strategy.getShardObjs(), tableShardValues);
+        Collection<String> result = new HashSet<String>(strategy.doShard(tableRule.get().getActualTableNames(routedDataSources), tableShardValues));
+        //logAfterRoute("table", logicTable, result);
         Preconditions.checkState(!result.isEmpty(), "no table route info");
         return result;
     }
@@ -141,18 +141,18 @@ public class SingleTableRouter {
         }
     }
 
-    private void logBeforeRoute(final String type, final String logicTable, final Collection<?> targets, final Collection<String> shardingColumns, final List<ShardValue<?>> shardingValues) {
-        logger.trace("Before {}", type);
-        logger.trace("sharding {}", logicTable);
-        logger.trace("routes db names: {}", targets);
-        logger.trace("sharding columns: {}", targets);
-        logger.trace("sharding values: {}", targets);
+    private void logBeforeRoute(String type, String logicTable, Collection<?> targets, Collection<String> shardColumns,List<ShardValue<?>> shardValues) {
+        logger.info("SingleTableRouter rount before {}", type);
+        logger.info("SingleTableRouter route logicTable {}", logicTable);
+        logger.info("SingleTableRouter route  db names: {}", targets);
+        logger.info("SingleTableRouter route  columns: {}", shardColumns);
+        logger.info("SingleTableRouter route  values: {}", shardValues);
     }
 
-    private void logAfterRoute(final String type, final String logicTable, final Collection<String> shardingResults) {
-        logger.trace("After {} ", type);
-        logger.trace("sharding {}", logicTable);
-        logger.trace("result: {}", shardingResults);
+    private void logAfterRoute(String type, String logicTable, Collection<String> shardResults) {
+        logger.info("SingleTableRouter route after {} ", type);
+        logger.info("SingleTableRouter route logicTable {}", logicTable);
+        logger.info("SingleTableRouter route result: {}", shardResults);
     }
 
     private SingleRoutingResult generateRoutingResult(final Collection<String> routedDataSources, final Collection<String> routedTables) {

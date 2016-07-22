@@ -45,12 +45,12 @@ public abstract class AbstractMysqlVisitor extends MySqlOutputVisitor implements
     }
 
     @Override
-    public final SqlBuilder getSqlBuilder() {
+    public SqlBuilder getSqlBuilder() {
         return (SqlBuilder) appender;
     }
 
     @Override
-    public final void printToken(final String token) {
+    public void printToken(String token) {
         getSqlBuilder().appendToken(parseContext.getExactlyValue(token));
     }
 
@@ -60,7 +60,7 @@ public abstract class AbstractMysqlVisitor extends MySqlOutputVisitor implements
      * @return false 终止遍历AST
      */
     @Override
-    public final boolean visit(final SQLVariantRefExpr x) {
+    public boolean visit(SQLVariantRefExpr x) {
         print(x.getName());
         return false;
     }
@@ -93,7 +93,7 @@ public abstract class AbstractMysqlVisitor extends MySqlOutputVisitor implements
      * @return true表示继续遍历AST, false表示终止遍历AST
      */
     @Override
-    public final boolean visit(final SQLPropertyExpr x) {
+    public boolean visit(final SQLPropertyExpr x) {
         if (!(x.getParent() instanceof SQLBinaryOpExpr) && !(x.getParent() instanceof SQLSelectItem)) {
             return super.visit(x);
         }

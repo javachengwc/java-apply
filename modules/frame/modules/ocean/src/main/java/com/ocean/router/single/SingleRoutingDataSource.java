@@ -13,15 +13,17 @@ import java.util.*;
  */
 public class SingleRoutingDataSource {
 
-    private final String dataSource;
+    //数据库
+    private String dataSource;
 
+    //路由的数据表
     private List<SingleRoutingTableFactor> routingTableFactors = new ArrayList<SingleRoutingTableFactor>();
 
-    public SingleRoutingDataSource(final String dataSource) {
+    public SingleRoutingDataSource(String dataSource) {
         this.dataSource = dataSource;
     }
 
-    public SingleRoutingDataSource(final String dataSource, final SingleRoutingTableFactor routingTableFactor) {
+    public SingleRoutingDataSource(String dataSource, SingleRoutingTableFactor routingTableFactor) {
         this(dataSource);
         routingTableFactors.add(routingTableFactor);
     }
@@ -38,7 +40,7 @@ public class SingleRoutingDataSource {
         this.routingTableFactors = routingTableFactors;
     }
 
-    Collection<SqlExecutionUnit> getSQLExecutionUnits(final SqlBuilder sqlBuilder) {
+    public Collection<SqlExecutionUnit> getSQLExecutionUnits(final SqlBuilder sqlBuilder) {
         Collection<SqlExecutionUnit> result = new ArrayList<SqlExecutionUnit>();
         for (SingleRoutingTableFactor each : routingTableFactors) {
             each.buildSQL(sqlBuilder);
@@ -47,7 +49,7 @@ public class SingleRoutingDataSource {
         return result;
     }
 
-    Set<String> getLogicTables() {
+    public Set<String> getLogicTables() {
         Set<String> result = new HashSet<String>(routingTableFactors.size());
         result.addAll(Lists.transform(routingTableFactors, new Function<SingleRoutingTableFactor, String>() {
 
@@ -59,7 +61,8 @@ public class SingleRoutingDataSource {
         return result;
     }
 
-    List<Set<String>> getActualTableGroups(final Set<String> logicTables) {
+    //根据逻辑表名批量获取实际表名
+    public List<Set<String>> getActualTableGroups(Set<String> logicTables) {
         List<Set<String>> result = new ArrayList<Set<String>>();
         for (String logicTable : logicTables) {
             Set<String> actualTables = getActualTables(logicTable);
@@ -70,7 +73,8 @@ public class SingleRoutingDataSource {
         return result;
     }
 
-    private Set<String> getActualTables(final String logicTable) {
+    //根据逻辑表名获取实际表名
+    private Set<String> getActualTables(String logicTable) {
         Set<String> result = new HashSet<String>();
         for (SingleRoutingTableFactor each : routingTableFactors) {
             if (each.getLogicTable().equals(logicTable)) {
@@ -80,7 +84,7 @@ public class SingleRoutingDataSource {
         return result;
     }
 
-    Optional<SingleRoutingTableFactor> findRoutingTableFactor(final String actualTable) {
+    public Optional<SingleRoutingTableFactor> findRoutingTableFactor(final String actualTable) {
         for (SingleRoutingTableFactor each : routingTableFactors) {
             if (each.getActualTable().equals(actualTable)) {
                 return Optional.of(each);

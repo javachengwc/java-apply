@@ -6,6 +6,8 @@ import com.google.common.collect.Lists;
 import com.ocean.parser.SqlBuilder;
 import com.ocean.router.RoutingResult;
 import com.ocean.router.SqlExecutionUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -14,6 +16,9 @@ import java.util.*;
  */
 public class SingleRoutingResult implements RoutingResult {
 
+    private static Logger logger = LoggerFactory.getLogger(SingleRoutingResult.class);
+
+    //路由的数据库
     private List<SingleRoutingDataSource> routingDataSources = new ArrayList<SingleRoutingDataSource>();
 
     public List<SingleRoutingDataSource> getRoutingDataSources() {
@@ -79,12 +84,38 @@ public class SingleRoutingResult implements RoutingResult {
      * @param logicTables 逻辑表名称集合
      * @return 真实表集合组
      */
-    public List<Set<String>> getActualTableGroups(final String dataSource, final Set<String> logicTables) {
+    public List<Set<String>> getActualTableGroups(String dataSource, Set<String> logicTables) {
         Optional<SingleRoutingDataSource> routingDataSource = findRoutingDataSource(dataSource);
         if (!routingDataSource.isPresent()) {
             return Collections.emptyList();
         }
-        return routingDataSource.get().getActualTableGroups(logicTables);
+        List<Set<String>> rt = routingDataSource.get().getActualTableGroups(logicTables);
+        logger.info("SingleRoutingResult getActualTableGroups dataSource="+dataSource+", result="+listSet2Str(rt));
+
+        return rt;
+    }
+
+    public String listSet2Str(List<Set<String>> list)
+    {
+        int count = (list==null)?0:list.size();
+        if(count<=0)
+        {
+            return "";
+        }
+        StringBuffer buf = new StringBuffer();
+        for(Set<String> perSet:list)
+        {
+            buf.append("[");
+            if(perSet!=null && perSet.size()>0)
+            {
+                for(String per:perSet)
+                {
+                    buf.append(per).append(",");
+                }
+            }
+            buf.append("],");
+        }
+        return buf.toString();
     }
 
     /**
@@ -102,7 +133,7 @@ public class SingleRoutingResult implements RoutingResult {
         return routingDataSource.get().findRoutingTableFactor(actualTable);
     }
 
-    private Optional<SingleRoutingDataSource> findRoutingDataSource(final String dataSource) {
+    private Optional<SingleRoutingDataSource> findRoutingDataSource(String dataSource) {
         for (SingleRoutingDataSource each : routingDataSources) {
             if (each.getDataSource().equals(dataSource)) {
                 return Optional.of(each);

@@ -97,7 +97,7 @@ public class SqlRouteEngine {
     }
 
     private Collection<SqlExecutionUnit> routeSQL(ConditionContext conditionContext, Collection<String> logicTables, SqlBuilder sqlBuilder) {
-        logger.info("SqlRouteEngine routeSQL conditionContext  start ,conditionContext="+conditionContext);
+        logger.info("SqlRouteEngine routeSQL conditionContext  start ,conditionContext="+conditionContext+",sqlBuilder="+sqlBuilder);
         RoutingResult result;
         if (1 == logicTables.size()) {
             result = new SingleTableRouter(shardRule, logicTables.iterator().next(), conditionContext).route();

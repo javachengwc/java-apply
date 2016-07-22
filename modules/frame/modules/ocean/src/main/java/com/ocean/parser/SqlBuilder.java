@@ -12,10 +12,13 @@ import java.util.*;
  */
 public class SqlBuilder implements Appendable {
 
+    //组建语句的片段列表(必须有序)
     private List<Object> segments = new LinkedList<Object>();
 
+    //可替代值的map
     private Map<String, StringToken> tokenMap = new HashMap<String, StringToken>();
 
+    //当前片段
     private StringBuilder currentSegment;
 
     public SqlBuilder() {
@@ -26,14 +29,14 @@ public class SqlBuilder implements Appendable {
     /**
      * 增加占位符
      */
-    public SqlBuilder appendToken(final String token) {
+    public SqlBuilder appendToken(String token) {
         return appendToken(token, true);
     }
 
     /**
      * 增加占位符
      */
-    public SqlBuilder appendToken(final String token, final boolean isSetValue) {
+    public SqlBuilder appendToken(String token, boolean isSetValue) {
         StringToken stringToken;
         if (tokenMap.containsKey(token)) {
             stringToken = tokenMap.get(token);
@@ -55,7 +58,8 @@ public class SqlBuilder implements Appendable {
      * @param originToken 占位符
      * @param newToken 实际的值
      */
-    public SqlBuilder buildSQL(final String originToken, final String newToken) {
+    public SqlBuilder buildSQL( String originToken, String newToken) {
+        //此处比较巧妙，改变StringToken的value值同时也改变了segments对应片段的值，因为segments对应片段其实就是StringToken
         if (tokenMap.containsKey(originToken)) {
             tokenMap.get(originToken).value = newToken;
         }
@@ -74,18 +78,18 @@ public class SqlBuilder implements Appendable {
     }
 
     @Override
-    public Appendable append(final CharSequence sql) throws IOException {
+    public Appendable append(CharSequence sql) throws IOException {
         currentSegment.append(sql);
         return this;
     }
 
     @Override
-    public Appendable append(final CharSequence sql, final int start, final int end) throws IOException {
+    public Appendable append(CharSequence sql, int start, int end) throws IOException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Appendable append(final char c) throws IOException {
+    public Appendable append(char c) throws IOException {
         currentSegment.append(c);
         return this;
     }
@@ -108,12 +112,12 @@ public class SqlBuilder implements Appendable {
         private String value;
 
         public String toToken() {
-            return null == value ? "" : Joiner.on("").join("[Token(", value, ")]");
+            return (null == value)?"":Joiner.on("").join("[Token(", value, ")]");
         }
 
         @Override
         public String toString() {
-            return null == value ? "" : value;
+            return (null == value)?"":value;
         }
     }
 }

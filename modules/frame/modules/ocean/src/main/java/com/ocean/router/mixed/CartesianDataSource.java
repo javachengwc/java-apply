@@ -2,6 +2,8 @@ package com.ocean.router.mixed;
 
 import com.ocean.parser.SqlBuilder;
 import com.ocean.router.SqlExecutionUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +14,8 @@ import java.util.List;
  * 笛卡尔积路由数据源
  */
 public class CartesianDataSource {
+
+    private static Logger logger = LoggerFactory.getLogger(CartesianDataSource.class);
 
     private String dataSource;
 
@@ -45,10 +49,16 @@ public class CartesianDataSource {
 
     public Collection<SqlExecutionUnit> getSqlExecutionUnits(SqlBuilder sqlBuilder) {
         Collection<SqlExecutionUnit> result = new ArrayList<SqlExecutionUnit>();
+        //产生各对应数据库真正的sql语句
         for (CartesianTableReference each : routingTableReferences) {
             each.buildSQL(sqlBuilder);
-            result.add(new SqlExecutionUnit(dataSource, sqlBuilder.toSql()));
+            String sql = sqlBuilder.toSql();
+            result.add(new SqlExecutionUnit(dataSource, sql));
+            logger.info("----------------------------------------------");
+            logger.info("CartesianDataSource getSqlExecutionUnits result add one,dataSource="+dataSource+",sql="+sql);
+            logger.info("----------------------------------------------");
         }
+        logger.info("CartesianDataSource getSqlExecutionUnits run end ");
         return result;
     }
 }

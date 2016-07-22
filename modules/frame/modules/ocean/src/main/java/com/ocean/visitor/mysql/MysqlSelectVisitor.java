@@ -35,7 +35,7 @@ public class MysqlSelectVisitor  extends AbstractMysqlVisitor {
     }
 
     @Override
-    public boolean visit(final MySqlSelectQueryBlock x) {
+    public boolean visit(MySqlSelectQueryBlock x) {
         logger.info("MysqlSelectVisitor visit start");
         if (x.getFrom() instanceof SQLExprTableSource) {
             SQLExprTableSource tableExpr = (SQLExprTableSource) x.getFrom();
