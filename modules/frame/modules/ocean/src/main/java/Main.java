@@ -25,7 +25,7 @@ public class Main {
         {
             System.out.println(key+"-->"+metaDataMap.get(key));
         }
-        //select(dataSource);
+        select(dataSource);
         System.out.println("-----------------------------");
         groupBy(dataSource);
     }

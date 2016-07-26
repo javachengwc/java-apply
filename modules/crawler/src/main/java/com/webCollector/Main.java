@@ -1,4 +1,4 @@
-package com.webCollector;
+package com.webcollector;
 
 public class Main {
 }

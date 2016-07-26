@@ -53,6 +53,16 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 
+    <!-- druid监控页面 -->
+    <servlet>
+        <servlet-name>DruidStatView</servlet-name>
+        <servlet-class>com.alibaba.druid.support.http.StatViewServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DruidStatView</servlet-name>
+        <url-pattern>/druid/*</url-pattern>
+    </servlet-mapping>
+
 	<servlet-mapping>
 		<servlet-name>springMvc</servlet-name>
 		<url-pattern>*.do</url-pattern>
