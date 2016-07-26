@@ -7,7 +7,7 @@
 
     <classPathEntry location="F:\Maven\repository\mysql\mysql-connector-java\5.1.13\mysql-connector-java-5.1.13.jar"/>
 
-    <context id="datacenter" targetRuntime="MyBatis3" introspectedColumnImpl="org.mybatis.generator.api.IntrospectedColumn">
+    <context id="shop-manage" targetRuntime="MyBatis3" introspectedColumnImpl="org.mybatis.generator.api.IntrospectedColumn">
 
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
                         connectionURL="jdbc:mysql://127.0.0.1/shop?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=utf8"

@@ -53,9 +53,8 @@
     </tx:advice>
 
     <aop:config proxy-target-class="true">
-        <aop:pointcut id="interceptorPointCutsDatacenter"
-                      expression="execution(* com.manageplat.service.*.*(..))"/>
-        <aop:advisor advice-ref="txAdvice" pointcut-ref="interceptorPointCutsDatacenter"/>
+        <aop:pointcut id="interceptorPointCut" expression="execution(* com.manageplat.service.*.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="interceptorPointCut"/>
     </aop:config>
 
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
