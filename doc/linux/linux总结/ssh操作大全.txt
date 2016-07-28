@@ -41,6 +41,11 @@ ssh-keygen选项
 -q：静默模式。
 -t：指定要创建的密钥类型。
 ----------------------
+ssh-copy-id命令可以把本地主机的公钥复制到远程主机的authorized_keys文件上，ssh-copy-id命令也会给远程主机的用户主目录（home）和~/.ssh, 和~/.ssh/authorized_keys设置合适的权限。
+ssh-copy-id -i ~/.ssh/id_rsa.pub user@server    ---把本地的ssh公钥文件安装到远程主机对应的账户下
+ep: ssh-copy-id -i .ssh/id_rsa.pub root@192.168.1.2
+
+----------------------
 ssh-agent是一个密钥管理器，一种控制用来保存公钥身份验证所使用的私钥的程序。ssh-agent在X会话或登录会话之初启动
 ssh-agent   ---运行ssh-agent程序
 

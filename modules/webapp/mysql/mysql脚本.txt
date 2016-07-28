@@ -125,6 +125,9 @@ delete from seller_part   where seller_id in (
      ) y
  ) //对子查询多套一层，执行正确。
 
+---查询结果集放入临时表
+ create table t_temp as select .......
+
 ----------------------复杂查询------------------------------
 select a.*,b.name as style_name,c.name as price_interval_name,d.name as house_type_name ,d.type as house_type ,
 REPLACE(GROUP_CONCAT(eas.space_name SEPARATOR ';'),';',' ') as space_name ,

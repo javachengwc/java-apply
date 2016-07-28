@@ -1,0 +1,221 @@
+----------------------------------------mysql高可用-----------------------------------
+MySQL高可用方案最常见的就是基于主从复制的方案，其次是基于Galera的方案。
+MySQL的各种高可用方案，大多是基于以下几种基础来部署的：
+基于主从复制;
+    双节点主从+keepalived/heartbeat
+    多节点主从+MHA/MMM
+    多节点主从+etcd/zookeeper
+基于Galera协议;
+基于NDB引擎;
+基于中间件/proxy;
+基于共享存储;
+基于主机高可用;
+------------------------------
+MHA是用Perl写的一套Mysql故障切换方案以保障数据库的高可用性，它的功能是能在0-30s之内实现主Mysql故障转移（failover）。
+MHA故障转移可以很好的解决从库数据的一致性问题，同时最大化挽回故障发生后的数据。
+MHA里有两个角色一个是node节点 一个是manager节点，要实现这个MHA，必须最少要三台数据库服务器，一主多备，即一台充当master，一台充当master的备份机，另外一台是从属机。
+一旦主服务器宕机，备份机即开始充当master提供服务，如果主服务器上线也不会再成为master了，因为如果这样数据库的一致性就被改变了。
+
+系统环境: vm12,centos6.6
+部署步骤:
+1 关闭selinux和配置IP地址和本地yum源
+    修改 vim /etc/selinux/config 下的SELINUX=disabled (重启后永久生效)
+    vim /etc/sysconfig/network-scripts/ifcfg-eth0
+       DEVICE="eth0"
+       BOOTPROTO="static"
+       IPADDR=192.168.1.110
+       .......             ----配置ip
+
+2 配置epel源
+    epel是一个软件仓库项目，为RHEL/CentOS提供它们默认不提供的软件包
+    yum install http://mirrors.hustunique.com/epel//6/i386/epel-release-6-8.noarch.rpm或
+    wget http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+    sudo rpm -ivh epel-release-6-8.noarch.rpm
+    yum repolist --检查是否添加到源列表
+    epel源的配置安装到了 /etc/yum.repos.d/epel.repo 文件
+
+3 建立ssh公钥免登录环境
+    主Mysql--192.168.1.1
+    #ssh-keygen -t rsa
+    #ssh-copy-id -i .ssh/id_rsa.pub root@192.168.1.1 ----------------------为什么要在本机也要设置呢，因为manager节点安装在这上面，如不设置在下面ssh检查时会通不过
+    #ssh-copy-id -i .ssh/id_rsa.pub root@192.168.1.2
+    #ssh-copy-id -i .ssh/id_rsa.pub root@192.168.1.3
+    #ssh-copy-id -i .ssh/id_rsa.pub root@192.168.1.4
+    主备Mysql--192.168.1.2
+    #ssh-keygen -t rsa
+    #ssh-copy-id -i .ssh/id_rsa.pub root@192.168.1.1
+    #ssh-copy-id -i .ssh/id_rsa.pub root@192.168.1.3
+    #ssh-copy-id -i .ssh/id_rsa.pub root@192.168.1.4
+    从Mysql1--192.168.1.3
+    #ssh-keygen -t rsa
+    #ssh-copy-id -i .ssh/id_rsa.pub root@192.168.1.1
+    #ssh-copy-id -i .ssh/id_rsa.pub root@192.168.1.2
+    #ssh-copy-id -i .ssh/id_rsa.pub root@192.168.1.4
+    从Mysql2--192.168.1.4
+    #ssh-keygen -t rsa
+    #ssh-copy-id -i .ssh/id_rsa.pub root@192.168.1.1
+    #ssh-copy-id -i .ssh/id_rsa.pub root@192.168.1.2
+    #ssh-copy-id -i .ssh/id_rsa.pub root@192.168.1.3
+
+    #ssh 192.168.1.1  --测试ssh登录
+4 修改hostname
+    从内存中和文件中修改，不重启系统（内存中位置 /etc/sysconfig/network）
+    192.168.1.1 hostname为mastersql
+    192.168.1.2 hostname为backupsql
+    192.168.1.3 hostname为slavesql1
+    192.168.1.4 hostname为slavesql2
+    a,使用 hostname newname 设置主机名
+    b,在/etc/hosts中修改或增加 ip fqdn newname 行，并检查调整原来127.0.0.1行的设置
+    c,在/etc/sysconfig/network中修改HOSTNAME=newname
+5 配置hosts文件
+    vi /etc/hosts
+    192.168.1.1 mastersql
+    192.168.1.2 backupsql
+    192.168.1.3 slavesql1
+    192.168.1.4 slavesql2
+    每台服务器都同样设置
+6 配置Mysql的主从同步关系并通过grant命令赋权
+    在各服务器配置mysql主从(略) 192.168.1.1是主，其他3个都是从，其中备份服务器192.168.1.2的mysql需要配置上二进制日志，其他2个从服务配置成只读read_only=1
+    主从搭建完后，在4台服务器上如下操作:
+    mysql> grant all privileges on *.* to 'root'@'%' identified by '123';
+    mysql> flush privileges;
+7 安装MHA的node包
+    yum install perl-DBD-MySQL -----------------安装依赖包，MHA是perl编写的软件需要perl支持
+    rpm -Uvh http://mysql-master-ha.googlecode.com/files/mha4mysql-node-0.52-0.noarch.rpm
+8 在管理机安装MHA的manager包并配置
+    yum –y install perl-DBD-MySQL perl-Config-Tiny perl-Log-Dispatch perl-Parallel-ForkManager  -----------安装依赖包
+    rpm -Uvh http://mysql-master-ha.googlecode.com/files/mha4mysql-manager-0.52-0.noarch.rpm
+    vi /etc/app1.cnf                       ---配置
+        [server default]
+        user=root                          ---之前创建的赋权的账号
+        password=123
+        repl_user=repl
+        repl_password=repl
+        manager_workdir=/var/log/masterha/app1
+        manager_log=/var/log/masterha/app1/app1.log
+        remote_workdir=/var/log/masterha/app1
+        #master_ip_failover_script=/tmp/master_ip_failover --脚本实现failover（故障转移）
+        [server1]
+        hostname=192.168.1.1
+        candidate_master=1
+        [server2]
+        hostname=192.168.1.2
+        candidate_master=1
+        [server3]
+        hostname=192.168.1.3
+        no_master=1
+        [server4]
+        hostname=192.168.1.4
+        no_master=1
+    masterha_check_ssh --conf=/etc/app1.cnf      ---检查下SSH公钥免密码登录
+    masterha_check_repl --conf=/etc/app1.cnf     ---检查下MySQL复制
+9 测试及排错
+    a,开启MHA进程
+    masterha_manager ..conf=/etc/app1.cnf
+    b,模拟主Mysql宕机，看看数据库是否能够切换到备份机上
+    service mysqld stop   ---在master机上关掉mysql
+    c,在从机上查看Master_Host是否改变
+    mysql>show slave status \G
+    如果Master_Host变成192.168.1.2就是备份机的ip,说明mysql已经成功的切换到备份机上。
+    注意:这个切换过程不会立即切换，需要花费几秒时间，也就是说数据在这个空档是不能写入的，
+    这对于要求数据的查询和写入实时性要求较高的应用带来了困难，解决这个问题，主要有两个思路：
+    1 通过脚本实现failover（故障转移）
+        a,在/etc/app1.cnf中开启或配置上master_ip_failover_script=/tmp/master_ip_failover
+        然后在/tmp/master_ip_failover写入一段php如下代码,并给此个文件可执行权限。
+
+        #!/usr/bin/env php
+        <?php
+        $longopts = array(
+            'command:',
+            'ssh_user:',
+            'orig_master_host:',
+            'orig_master_ip:',
+            'orig_master_port:',
+            'new_master_host::',
+            'new_master_ip::',
+            'new_master_port::',  );
+        $options = getopt(null, $longopts);
+        if ($options['command'] == 'start') {
+            $params = array(
+                'ip'   => $options['new_master_ip'],
+                'port' => $options['new_master_port'],
+            );
+            $string = '<?php return ' . var_export($params, true) . '; ?>';
+            file_put_contents('config.php', $string, LOCK_EX);  }
+        exit(0);
+        ?>
+
+        如果机器中没装php模块的话要执行 yum –y install php安装php。
+        再开启MHA进程，再模拟主mysql宕机来查看切换过程花费的时间。
+    2 通过keepalived实现虚拟IP 虚拟IP的地址随着master的改变而漂移
+        a,在mastersql--192.168.1.1和backupsql--192.168.1.2中都安装keepalived软件
+        tar -zvxf keepalived-1.1.17.tar.gz
+        yum -y install  kernel-devel
+        ln -s /usr/src/kernels/2.6.18-164.el5-i686/ /usr/src/linux
+        cd keepalived-1.1.17/
+        yum –y install openssl-*
+        ./configure --prefix=/usr/local/keepalived
+        编译后看到三个yes才算成功 如果出现两个yes或者一个应该要检查下内核软连接做对了没有
+        make
+        make install
+        cp /usr/local/keepalived/etc/rc.d/init.d/keepalived /etc/init.d/
+        cp /usr/local/keepalived/etc/sysconfig/keepalived /etc/sysconfig/
+        mkdir -pv /etc/keepalived
+        cp /usr/local/keepalived/etc/keepalived/keepalived.conf /etc/keepalived/
+        ln -s /usr/local/keepalived/sbin/keepalived /sbin/
+        service keepalived restart
+
+        b,编辑mastersql的keepalived配置文件
+        vi /etc/keepalived/keepalived.conf
+            global_defs {
+                router_id LVS_DEVEL
+            }
+            vrrp_script check_mysql {
+                script sh /tmp/check_mysql.sh
+                interval 2
+            }
+            vrrp_instance VI_1 {
+                state MASTER
+                interface eth0
+                virtual_router_id 51
+                priority 100
+                advert_int 1
+                authentication {
+                    auth_type PASS
+                    auth_pass 1111
+                }
+                virtual_ipaddress {
+                    192.168.1.100
+                }
+            }
+        创建/tmp/check_mysql.sh可执行脚本文件，脚本大致意思是只要检测到mysql服务停止keepalived服务也停止。
+        因为keepalived是通过组播方式告诉本网段自己还活着，当mysql服务停止后keepalived还依然运行，这时就需要停止keepalived让另一个主机获得虚拟IP。
+        c,编辑backupsql的配置文件
+            global_defs {
+                router_id LVS_DEVEL
+            }
+            vrrp_instance VI_1 {
+                state MASTER
+                interface eth0
+                virtual_router_id 51
+                priority 100
+                advert_int 1
+                authentication {
+                    auth_type PASS
+                    auth_pass 1111
+                }
+                virtual_ipaddress {
+                    192.168.1.100
+                }
+            }
+        d,在mastersql上重启keepalived服务后看ip addr
+          service keepalived restart
+          ip addr
+          正常情况下在eth0上有了另一个ip即虚拟ip。
+
+        e,再开启MHA进程，再模拟主mysql宕机，在backupsql上看ip addr看看虚拟ip--192.168.1.100是否出现在eth0上,
+        再另一台slavesql1上查看slave status,如果Master_Host变成192.168.1.2，切换成功。
+
+        通过keepalived虚拟IP地址实现高效率的故障转移，实现mysql的高可用，mysql对外的ip为此虚拟ip。
+
+-------------------------------------------------------------------------------------------------
