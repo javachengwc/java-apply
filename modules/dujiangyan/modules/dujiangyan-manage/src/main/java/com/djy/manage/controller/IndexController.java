@@ -19,14 +19,12 @@ import java.util.List;
 @RequestMapping(value = "/djy")
 public class IndexController {
 
-    private static final String PREFIX = "/djy/";
-
     @Autowired
     private ResourceService resourceService;
 
     @RequestMapping(value = "/index")
     public String indexView() {
-        return  PREFIX+"index";
+        return  "index";
     }
 
     @RequestMapping(value = "/menuList")
