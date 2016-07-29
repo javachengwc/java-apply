@@ -1,0 +1,62 @@
+--------------------------mha-note-----------------------------------
+mha是众多使用MySQL数据库企业高可用的不二选择，它简单易用，功能强大，实现了基于MySQL replication架构的自动主从故障转移。
+
+一、MHA的主要脚本(perl)
+1.manager端
+masterha_check_ssh              检查MHA的SSH配置状况
+masterha_check_repl             检查MySQL复制状况
+masterha_manger                 启动MHA
+masterha_check_status           检测当前MHA运行状态
+masterha_master_monitor         检测master是否宕机
+masterha_master_switch          控制故障转移（自动或者手动）
+masterha_conf_host              添加或删除配置的server信息
+
+2.node端
+save_binary_logs                保存和复制master的二进制日志
+apply_diff_relay_logs           识别差异的中继日志事件并将其差异的事件应用于其他的slave
+filter_mysqlbinlog              去除不必要的ROLLBACK事件（MHA已不再使用这个工具）
+purge_relay_logs                清除中继日志（不会阻塞SQL线程）
+
+二、日常操作
+1.校验ssh等效验证
+$ masterha_check_ssh --conf=/etc/masterha/app1.cnf
+
+2.校验mysql复制
+$ masterha_check_repl --conf=/etc/masterha/app1.cnf
+
+3.启动mha监控，在master故障时开启自动转移
+$ nohup masterha_manager --conf=/etc/masterha/app1.cnf > /tmp/mha_manager.log  < /dev/null 2>&1 &
+
+#当有slave节点宕掉的情况是启动不了的，加上--ignore_fail_on_start即使有节点宕掉也能启动mha
+$ nohup masterha_manager --conf=/etc/masterha/app1.cnf  --ignore_fail_on_start > /tmp/mha_manager.log  < /dev/null 2>&1 &
+
+4.检查启动的状态
+$ masterha_check_status --conf=/etc/masterha/app1.cnf
+
+5.停止mha
+$ masterha_stop  --conf=/etc/masterha/app1.cnf
+
+6.多次failover
+MHA在每次failover切换后会在管理目录生成文件app1.failover.complete ，下次在切换的时候如果由于间隔时间太短导致切换不成功，应手动清理掉。
+rm -rf /var/log/masterha/app1/app1.failover.complete
+或者通过加上参数--ignore_last_failover来忽略
+
+7.手工failover
+手工failover场景，适用于在master死掉，而masterha_manager未开启情形，如下，指定--master_state=dead
+masterha_master_switch --conf=/etc/masterha/app1.cnf --dead_master_host=192.168.1.1 --master_state=dead --new_master_host=192.168.1.2 --ignore_last_failover
+
+8.手动在线切换,如下，指定--master_state=alive
+masterha_master_switch --conf=/etc/masterha/app1.cnf --master_state=alive --new_master_host=192.168.1.1 --orig_master_is_new_slave
+
+masterha_master_switch --conf=/etc/masterha/app1.cnf --master_state=alive --new_master_host=192.168.1.1 --orig_master_is_new_slave--running_updates_limit=10000
+
+--orig_master_is_new_slave 表明在切换时原master变为新master的slave节点
+
+--running_updates_limit=10000 切换时候选master如果有延迟的话，mha切换不能成功，加上此参数表示延迟在此时间范围内都可切换（单位为s）,但是切换的时间长短是由recover时relay日志的大小决定
+
+其他注意事项
+  手动在线切换mha，切换时需要将在运行的mha停掉后才能切换。
+  在备库先执行DDL，一般先stop slave，一般不记录mysql日志，可以通过set SQL_LOG_BIN = 0实现。
+  然后进行一次主备切换操作，再在原来的主库上执行DDL。这种方法适用于增减索引，如果是增加字段就需要额外注意。
+
+------------------------------------------------------------------------
