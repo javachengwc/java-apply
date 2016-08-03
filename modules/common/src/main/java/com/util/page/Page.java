@@ -65,9 +65,6 @@ public class Page<T> implements Serializable, Iterable<T> {
 		this.pageNo = pageNo;
 	}
 
-	/**
-	 * 分页里面的具体列表，因为是用到泛型，此列表的具体类型见Controller接口,已注明
-	 */
 	public List<T> getResult() {
 		return this.result;
 	}

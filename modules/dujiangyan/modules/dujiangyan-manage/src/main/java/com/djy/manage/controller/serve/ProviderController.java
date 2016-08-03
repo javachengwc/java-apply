@@ -3,7 +3,10 @@ package com.djy.manage.controller.serve;
 import com.alibaba.fastjson.JSONObject;
 import com.djy.manage.controller.BaseController;
 import com.djy.manage.model.vo.QueryVo;
+import com.djy.manage.model.vo.ServiceVo;
+import com.djy.manage.service.serve.ProviderService;
 import com.util.web.HttpRenderUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -19,6 +22,9 @@ public class ProviderController extends BaseController {
 
     private static final String PREFIX = "/dujiangyan/serve/";
 
+    @Autowired
+    private ProviderService providerService;
+
     @RequestMapping(value = "/provider")
     public String provider() {
         return  PREFIX+"provider";
@@ -29,8 +35,9 @@ public class ProviderController extends BaseController {
 
         queryVo.genPage();
 
-        List<Object> list = null;
-        int count = 0;
+
+        List<ServiceVo> list = providerService.queryList(queryVo);
+        int count = ;
 
         JSONObject map = new JSONObject();
         map.put(DATAGRID_ROWS,list);

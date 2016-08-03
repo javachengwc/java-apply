@@ -1,4 +1,3 @@
-<script>
 var editor = '';
 var publicUuid ='';
 var publicPath = '';
@@ -249,4 +248,3 @@ function deleteNotice(obj){
     }
     });
     }
-</script>
