@@ -2,6 +2,9 @@ package com.djy.manage.service.serve;
 
 import com.djy.manage.model.vo.QueryVo;
 import com.djy.manage.model.vo.ServiceVo;
+import com.util.BeanCopyUtil;
+import com.util.page.CollectionPage;
+import com.util.page.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,9 +16,11 @@ import java.util.List;
 @Service
 public class ProviderService {
 
-    public List<ServiceVo> queryList(QueryVo queryVo)
+    public Page<ServiceVo> queryList(QueryVo queryVo)
     {
-        return testData();
+        List<ServiceVo> list = testData();
+        Page<ServiceVo> page = new CollectionPage<ServiceVo>(list,queryVo.getPage(),queryVo.getRows());
+        return page;
     }
 
     public List<ServiceVo> testData()
@@ -42,7 +47,7 @@ public class ProviderService {
         vo2.setApplication("tt-aa-bb-app");
         vo2.setUrl("provider://172.0.0.1:20002/tt-aa-bb-server");
         vo2.setOwner("aa开发");
-        vo2.setUseable(true);
+        vo2.setUseable(false);
         vo2.setWeight(100);
         vo2.setAddress("172.0.0.1:20002");
         vo2.setParameters("application=tt-aa-bb-app&category=providers&owner=aa开发&pid=3322&timestamp=1459679206966&version=1.1");
@@ -53,6 +58,13 @@ public class ProviderService {
 
         list.add(vo);
         list.add(vo2);
+
+        for(int i=0;i<20;i++) {
+            ServiceVo vo3 = new ServiceVo();
+            BeanCopyUtil.copyProperties(vo3, vo2);
+            vo3.setId(i+3);
+            list.add(vo3);
+        }
         return list;
     }
 }
