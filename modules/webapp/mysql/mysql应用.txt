@@ -47,6 +47,10 @@ WHERE (SELECT COUNT(1)FROM b b2 WHERE b1.aid=b2.aid AND b1.id>b2.id)<2
 -----mysql获取字符串中某子字符串出现的次数
  select round(((length('1,2,3,4')-length(replace('1,2,3,4',',', ''))))/ length(',')) as times from dual;
 
+-----mysql死锁
+show processlist 或 show full processlist
+kill id  #杀死sql线程
+
 -----mysql锁
 
 GET_LOCK(name,3) RELEASE_LOCK

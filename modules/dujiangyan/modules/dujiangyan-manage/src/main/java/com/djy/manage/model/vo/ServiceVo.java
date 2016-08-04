@@ -40,10 +40,10 @@ public class ServiceVo implements Serializable {
     //服务备注
     private String note;
 
-    //调用成功数
+    //每分钟调用成功数
     private Long invokeSuccessCnt;
 
-    //调用失败数
+    //每分钟调用失败数
     private Long invokeFailCnt;
 
     //总的调用成功数

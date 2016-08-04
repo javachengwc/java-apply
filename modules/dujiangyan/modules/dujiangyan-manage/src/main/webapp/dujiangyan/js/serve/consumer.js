@@ -7,7 +7,7 @@ $(function () {
     $("#assignValue").val(assignValue);
 
     //加载数据
-    $('#tbProvider').datagrid({
+    $('#tbConsumer').datagrid({
         pageSize:20,
         fit:true,   //自动大小,有固定表头作用
         rownumbers:true,
@@ -16,37 +16,26 @@ $(function () {
         singleSelect:true,
         showFooter:true,
         pagination:true,
-        toolbar:'#toolbarProvider',
+        toolbar:'#toolbarConsumer',
         method:'get',
         defaultFilterType:'text',
         checkOnSelect:false,
         selectOnCheck:false,
         queryParams:{dimenType:dimenType,assignValue:assignValue},
-        url:'/djy/serve/queryProviderPage.do',
+        url:'/djy/serve/queryConsumerPage.do',
         view: detailview,
         detailFormatter: function (rowIndex, rowData) {
             var info = '<table style="border: 0;font-size: 12;line-height:150%">';
-            var adds=rowData.url + '?' + rowData.parameters;
-            info += '<tr><td width="100px" style="border:0">服务地址:</td><td style="border:0">'+adds+ '</td></tr>';
-            info += '<tr><td style="border:0">进程号:<td style="border:0">' + rowData.pid + '</td></tr>';
-            info += '<tr><td style="border:0">备注:<td style="border:0">' + strValue(rowData.note) + '</td></tr></table>';
+            info += '<tr><td width="100px" style="border:0">消费地址:</td><td style="border:0">'+rowData.url+ '</td></tr>';
+            info += '<tr><td style="border:0">进程号:<td style="border:0">' + rowData.pid + '</td></tr></table>';
             return info;
         }
     });
 });
 
-function strValue(value)
+function reloadConsumer()
 {
-    if(value==null || value==undefined)
-    {
-        return "";
-    }
-    return value;
-}
-
-function reloadProvider()
-{
-    $('#tbProvider').datagrid('reload');
+    $('#tbConsumer').datagrid('reload');
 }
 
 function search() {
@@ -58,28 +47,24 @@ function search() {
 
     var data ={dimenType:dimenType,assignValue:assignValue,queryValue:queryValue,state:state};
 
-    $('#tbProvider').datagrid('reload',data);
+    $('#tbConsumer').datagrid('reload',data);
 }
 
 function formatStatus(value, row, index) {
     if (value == true) {
         return "启用";
     } else {
-        return '<span style="color:red;">禁用</span>';
+        return '<span style="color:red;">屏蔽</span>';
     }
 }
 
 function formatButton(value, row, index) {
     var str = "";
     if (row.useable == true) {
-        str += '<a href="javascript:void(0);"  onclick="singleDo(' + row.id + ',2)">禁用</a>';
+        str += '<a href="javascript:void(0);"  onclick="singleDo(' + row.id + ',2)">屏蔽</a>';
     } else {
         str += '<a href="javascript:void(0);"  onclick="singleDo(' + row.id + ',1)">启用</a>';
     }
-    str+="&nbsp;|&nbsp;";
-    str+='<a href="javascript:void(0);" onclick="singleDo(' + row.id + ',3)">倍权</a>';
-    str+="&nbsp;|&nbsp;";
-    str+='<a href="javascript:void(0);" onclick="singleDo(' + row.id + ',4)">半权</a>';
     return str;
 }
 
@@ -134,7 +119,7 @@ function postUrl(url, data) {
         data,
         function (json) {
             if (json.result == 0) {
-                reloadProvider();
+                reloadConsumer();
             } else {
                 tipMsg("错误", json.msg);
             }
@@ -145,7 +130,7 @@ function postUrl(url, data) {
 
 function getCheckedIds() {
 
-    var rows = $("#tbProvider").datagrid("getChecked");
+    var rows = $("#tbConsumer").datagrid("getChecked");
     if (rows == null || rows.length == 0) {
         tipNoSelect()
         return;
@@ -164,6 +149,6 @@ function exportData() {
     var queryValue =$("#queryValue").val();
     var state= $("input[name='state']:checked").val();
 
-    window.location.href = "/djy/serve/exportProvider.do?dimenType="+dimenType+ "&assignValue=" + assignValue+"&queryValue=" + queryValue+ "&state=" + state;
+    window.location.href = "/djy/serve/exportConsumer.do?dimenType="+dimenType+ "&assignValue=" + assignValue+"&queryValue=" + queryValue+ "&state=" + state;
 
 }

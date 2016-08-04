@@ -1,11 +1,14 @@
 package com.main;
 
+import org.apache.commons.lang.math.NumberUtils;
+
 import java.math.BigDecimal;
 
 public class NumberMain {
 	
 	public static void main(String args [])
 	{
+        System.out.println("null to number:"+ NumberUtils.toLong(null) );
         //经典的带小数的值计算为非精准计算
         double ad=2.3d;
         System.out.println(new Double(ad*100).intValue());
