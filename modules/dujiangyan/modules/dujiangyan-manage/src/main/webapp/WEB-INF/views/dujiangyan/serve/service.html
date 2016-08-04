@@ -15,11 +15,12 @@
 
     <script type="text/javascript" src="/dujiangyan/thirdpart/jquery-easyui/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="/dujiangyan/thirdpart/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="/dujiangyan/thirdpart/jquery-easyui/extension/datagrid-filter.js"></script>
     <script type="text/javascript" src="/dujiangyan/js/serve/service.js"></script>
 </head>
 <body>
 <div class="easyui-layout" fit="true">
-    <div data-options="region:'west',title:'服务列表',split:true" style="width:210px;">
+    <div data-options="region:'west',title:'服务列表',split:true" style="width:220px;">
         <table id="serviceTable" method="post" url="/djy/serve/serviceList.do" style="width:100%;" fit="true" rownumbers="true" singleSelect="true">
             <thead>
             <tr>
