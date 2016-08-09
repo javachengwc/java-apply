@@ -85,7 +85,13 @@ public static String paramPatternString ="[\\?|&]param=([^\\?&]*)";
         int i = u.indexOf("/");
         if(i>=0)
         {
-            return u.substring(i);
+            u= u.substring(i);
+            i= u.indexOf("?");
+            if(i>0)
+            {
+                u=u.substring(0,i);
+            }
+            return u;
         }
         return "";
     }

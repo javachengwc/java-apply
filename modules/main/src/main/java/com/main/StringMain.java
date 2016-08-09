@@ -28,6 +28,7 @@ public class StringMain {
 	{
 
         System.out.println("-------------------");
+        System.out.println(Pattern.compile("\\s*[,]+\\s*").split("aa,,bb,cc")[1]);
 
         //System.out.println(String.valueOf(null));//报错
         System.out.println("aa".equals(null));//false;

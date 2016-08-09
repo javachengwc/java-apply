@@ -35,7 +35,7 @@ public class AppUtil {
      * 获取程序的进程号
      */
     public static int getPid() {
-        if (PID < 0) {
+        if (PID <= 0) {
             try {
                 RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
                 String name = runtime.getName(); // format: "pid@hostname"

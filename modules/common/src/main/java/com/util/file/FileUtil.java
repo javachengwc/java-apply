@@ -11,7 +11,7 @@ import java.util.Properties;
 
 public final class FileUtil {
 
-    private static Logger m_logger  =  LoggerFactory.getLogger(FileUtil.class);
+    private static Logger logger  =  LoggerFactory.getLogger(FileUtil.class);
 
     /**
      * 读取指定文件的数据，并返回字符串
@@ -27,10 +27,10 @@ public final class FileUtil {
             }
             return result;
         }catch(FileNotFoundException e){
-            m_logger.error("File ["+fileName+"] not found, read failure,return null");
+            logger.error("File ["+fileName+"] not found, read failure,return null");
             return null;
         }catch(IOException e){
-            m_logger.error("IOException: "+e.getMessage()+" during reading file ["+fileName+"],return null");
+            logger.error("IOException: "+e.getMessage()+" during reading file ["+fileName+"],return null");
             return null;
         }finally {
             try {
@@ -39,7 +39,7 @@ public final class FileUtil {
                 }
             }catch(Exception e)
             {
-                m_logger.error("reader close error,",e);
+                logger.error("reader close error,",e);
             }
         }
 
@@ -49,12 +49,12 @@ public final class FileUtil {
      * 将content写入指定文件，模式为追加
      */
     public static void writeFile(String fileName,String content,boolean isAppend) {
-        m_logger.debug("write content ["+content+"] to file ["+fileName);
+        logger.debug("write content ["+content+"] to file ["+fileName);
         if(!isAppend){
             File file = new File(fileName);
             if(file.exists()){
-                m_logger.debug("mode is not append");
-                m_logger.debug("file ["+fileName+"] exists, delete the file...");
+                logger.debug("mode is not append");
+                logger.debug("file ["+fileName+"] exists, delete the file...");
                 file.delete();
             }
         }
@@ -64,9 +64,9 @@ public final class FileUtil {
             writer.write(content);
             writer.flush();
         }catch(FileNotFoundException e){
-            m_logger.error("File ["+fileName+"] not found, write data failure");
+            logger.error("File ["+fileName+"] not found, write data failure");
         }catch(IOException e){
-            m_logger.error("IOException: "+e.getMessage()+" during write to file ["+fileName+"]");
+            logger.error("IOException: "+e.getMessage()+" during write to file ["+fileName+"]");
         }finally{
             try {
                 if (writer != null) {
@@ -74,7 +74,7 @@ public final class FileUtil {
                 }
             }catch(Exception e)
             {
-                m_logger.error("writer close error,",e);
+                logger.error("writer close error,",e);
             }
         }
     }

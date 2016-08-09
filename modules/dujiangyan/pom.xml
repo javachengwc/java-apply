@@ -19,8 +19,6 @@
 	<modules>
         <module>modules/dujiangyan-core</module>
 		<module>modules/dujiangyan-config</module>
-		<module>modules/dujiangyan-registry</module>
-		<module>modules/dujiangyan-cluster</module>
 		<module>modules/dujiangyan-client</module>
 		<module>modules/dujiangyan-manage</module>
 	</modules>

@@ -22,11 +22,9 @@ import org.apache.log4j.Logger;
 /**
  * 文件读取类
  */
-public final class FileManage implements Serializable
+public final class FileManage
 {
-	private static final long serialVersionUID = -3842384283482299L;
-	
-	private static final Logger log = Logger.getLogger(FileManage.class);
+	private static final Logger logger = Logger.getLogger(FileManage.class);
 	
 	private static FileManage fileManage;
 	
@@ -38,14 +36,13 @@ public final class FileManage implements Serializable
 		}
 		return fileManage;
 	}
-	
-	
+
 	public boolean isFileExist(String url) throws Exception{
 		URL serverUrl = new URL(url);
 		HttpURLConnection urlcon = (HttpURLConnection) serverUrl.openConnection();
 	    String message = urlcon.getHeaderField(0);//文件存在‘HTTP/1.1 200 OK’ 文件不存在 ‘HTTP/1.1 404 Not Found’
 	    if (!StringUtils.isBlank(message) && message.startsWith("HTTP/1.1 404")) {
-	    	log.info("serverUrl aacConvert this downUrl is not found! downUrl:"+url);
+            logger.info("FileManage isFileExist serverUrl aacConvert this downUrl is not found! downUrl:"+url);
 			return false;
 	    }
 	    return true;
@@ -91,15 +88,15 @@ public final class FileManage implements Serializable
 		
 		catch(FileNotFoundException e)
 		{
-			log.warn("getContent error:" + e.getMessage());
+            logger.warn("getContent error:" + e.getMessage());
 		}
 		catch(IOException e)
 		{
-			log.warn("getContent error:" + e.getMessage());
+            logger.warn("getContent error:" + e.getMessage());
 		}
 		catch(NullPointerException e)
 		{
-			log.warn("getContent NullPointerException:" + e.getMessage());
+            logger.warn("getContent NullPointerException:" + e.getMessage());
 		}
 		finally
 		{
@@ -166,15 +163,15 @@ public final class FileManage implements Serializable
 		
 		catch(FileNotFoundException e)
 		{
-			log.warn("getContent error:" + e.getMessage());
+            logger.warn("getContent error:" + e.getMessage());
 		}
 		catch(IOException e)
 		{
-			log.warn("getContent error:" + e.getMessage());
+            logger.warn("getContent error:" + e.getMessage());
 		}
 		catch(NullPointerException e)
 		{
-			log.warn("getContent NullPointerException:" + e.getMessage());
+            logger.warn("getContent NullPointerException:" + e.getMessage());
 		}
 		finally
 		{
@@ -192,7 +189,7 @@ public final class FileManage implements Serializable
 			}
 			catch(IOException e)
 			{
-				log.error("getContent(),error:",e);
+                logger.error("getContent(),error:",e);
 			}
 		}
 		return list;
@@ -217,7 +214,7 @@ public final class FileManage implements Serializable
 		}
 		catch(IOException e)
 		{
-			log.error("appendContent(),error:",e);
+            logger.error("FileManage appendContent error,fileName="+fileName,e);
 		}
 	}
 	
@@ -240,7 +237,7 @@ public final class FileManage implements Serializable
 		}
 		catch(IOException e)
 		{
-			log.error("setContent(),error:",e);
+            logger.error("setContent(),error:",e);
 		}
 		finally
 		{
@@ -274,7 +271,7 @@ public final class FileManage implements Serializable
 			excelFile.createNewFile();
 			return true;
 		} catch (IOException e1) {
-			log.error("createFile()删除文件失败,fullFilePath---->" + fullFilePath);
+            logger.error("createFile()删除文件失败,fullFilePath---->" + fullFilePath);
 			return false;
 		}
 	}
@@ -296,7 +293,7 @@ public final class FileManage implements Serializable
 			file.delete();
 			return true;
 		} catch (Exception e1) {
-			log.error("deleteFile()删除文件失败,fullFilePath---->" + fullFilePath);
+            logger.error("deleteFile()删除文件失败,fullFilePath---->" + fullFilePath);
 			return false;
 		}
 	}
@@ -327,8 +324,8 @@ public final class FileManage implements Serializable
 		}
 		catch(Exception ex)
 		{
-			log.error("renameFile()重命名文件失败,fullFilePath1---->" + fullFilePath1);
-			log.error("renameFile()重命名文件失败,fullFilePath2---->" + fullFilePath2);
+            logger.error("renameFile()重命名文件失败,fullFilePath1---->" + fullFilePath1);
+            logger.error("renameFile()重命名文件失败,fullFilePath2---->" + fullFilePath2);
 			return false;
 		}
 	}
@@ -380,29 +377,29 @@ public final class FileManage implements Serializable
 	 * @return 返回本地完整的路径名 ,比如 F:\http_download\2hDjulAT_xEAAAAAADGKJiWpBJk680.apk
 	 */
 	public static String downloadFromUrl(String url, String dir) 
-	{                                                                                                 
-		log.info("downloadFromUrl(),url:" + url);
+	{
+        logger.info("downloadFromUrl(),url:" + url);
 		dir = dir.replace("\\", "/");
 		if(!dir.endsWith("/")){
 			dir = dir + "/";
 		}
-		log.info("downloadFromUrl(),url:" + url);
+        logger.info("downloadFromUrl(),url:" + url);
 		String fileName = getFileNameFromUrl(url);
-		log.info("downloadFromUrl(),fileName:" + fileName);
+        logger.info("downloadFromUrl(),fileName:" + fileName);
 		try {
 			URL httpurl = new URL(url);
 			System.out.println("fileName--->" + fileName);
 			File f = new File(dir + fileName);
 			if(null != f && f.exists()){
 				//System.out.println("fileName--->" + fileName + ",已存在,删除掉...");
-				log.error("dir:"+dir+" ,fileName--->" + fileName + ",已存在,删除掉...");
+                logger.error("dir:"+dir+" ,fileName--->" + fileName + ",已存在,删除掉...");
 				f.delete();
 			}
 			f.createNewFile();
 			System.out.println("fileName--->" + fileName + ",创建成功!");
 			FileUtils.copyURLToFile(httpurl, f);
 		} catch (Exception e) {
-			log.error("downloadFromUrl() error --->",e);
+            logger.error("downloadFromUrl() error --->",e);
 			//e.printStackTrace();
 			return null;
 		}
