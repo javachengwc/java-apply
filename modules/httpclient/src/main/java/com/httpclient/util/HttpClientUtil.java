@@ -1,11 +1,7 @@
 package com.httpclient.util;
-
+import org.apache.http.HttpHost;
 import com.util.RunTimeUtil;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
+import org.apache.http.*;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -14,6 +10,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
@@ -227,7 +224,13 @@ public class HttpClientUtil {
         // 设置请求和传输超时时间
         RequestConfig requestConfig = RequestConfig.custom()
                 .setSocketTimeout(SO_TIMEOUT_MS)
+        // .setProxy(new HttpHost("127.0.0.1",222)) 设置代理
                 .setConnectTimeout(CONNECTION_TIMEOUT_MS).build();
         return requestConfig;
+    }
+
+    //只是个设置代理的简单例子
+    public void setProxy() {
+        httpClient = HttpClients.custom().setProxy(new HttpHost("127.0.0.1",222)).build();
     }
 }
