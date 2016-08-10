@@ -50,6 +50,9 @@ public class DateTimeUtil {
     public static void main(String args [])
     {
 
+        DateTime now = new DateTime();
+        System.out.println(now.getYear()+" "+now.getWeekOfWeekyear()+" "+now.getWeekyear()+" "+now.getDayOfWeek());
+
         DateTime beginDate =new DateTime().withDate(2016,3,31).withTime(0,0,0,0);
         DateTime endDate =new DateTime().withDate(2016,4,5).withTime(0,0,0,0);
 
