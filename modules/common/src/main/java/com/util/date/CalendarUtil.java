@@ -618,5 +618,9 @@ public class CalendarUtil
     	System.out.println(tt);
     	tt = CalendarUtil.getMilliSecondsFromDate("2012-07-08");
     	System.out.println(tt);
+
+
+        Date d1 =getFirstDayOfWeek(new Date());
+        System.out.println(SysDateTime.getDatetime(d1));
     }
 }
