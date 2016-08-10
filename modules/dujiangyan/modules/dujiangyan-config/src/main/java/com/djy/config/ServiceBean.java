@@ -238,7 +238,7 @@ public class ServiceBean implements InitializingBean {
         logger.info("ServiceBean registryService service["+getId()+"]注册成功,url=" + urlStr );
         //服务备注
         try {
-            registry.getZookeeperClient().writeData("/loom/" + getId(), EncodeUtil.urlEncode(getNote()));
+            registry.getZookeeperClient().writeData("/djy/" + getId(), EncodeUtil.urlEncode(getNote()));
         } catch (Exception e) {
             logger.error("ServiceBean registryService service["+getId()+"]备注失败.",e);
         }

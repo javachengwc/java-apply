@@ -48,7 +48,7 @@ public class ApplicationBean implements InitializingBean ,ApplicationContextAwar
     public void init() {
         applicationName = this.id;
         applicationOwner = this.owner;
-        logger.info("Loom application [" + applicationName + "] 加载设置成功, 这是唯一的应用名,他很重要, 请不要和其他应用的名字起的一样, 应用负责人 ["+applicationOwner+"] !");
+        logger.info("ApplicationBean init application [" + applicationName + "] 加载设置成功, 这是唯一的应用名,他很重要, 请不要和其他应用的名字起的一样, 应用负责人 ["+applicationOwner+"] !");
     }
 
     @Override
