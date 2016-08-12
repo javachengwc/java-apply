@@ -2,6 +2,7 @@ package com.djy.model;
 
 import com.djy.constant.Constant;
 import com.djy.util.SpecUrlUtil;
+import com.util.DeepCopyUtil;
 import com.util.StringUtil;
 import com.util.encrypt.EncodeUtil;
 import com.util.net.NetUtil;
@@ -38,6 +39,8 @@ public class SpecUrl implements Serializable {
     private String username;
 
     private String password;
+
+    private String ip;
 
     public SpecUrl() {
     }
@@ -156,6 +159,13 @@ public class SpecUrl implements Serializable {
         }
     }
 
+    public String getIp() {
+        if (ip == null) {
+            ip = NetUtil.getIpByHost(host);
+        }
+        return ip;
+    }
+
     public String getAbsPath() {
         if (path != null && !path.startsWith("/")) {
             return "/" + path;
@@ -268,7 +278,16 @@ public class SpecUrl implements Serializable {
         return urlObj;
     }
 
-    private String buildString(boolean appendUser, boolean appendParameter, boolean useIP, boolean useService, String... parameters) {
+    public String toUrlStr()
+    {
+        if(StringUtils.isBlank(urlStr))
+        {
+            urlStr=buildString(true, true, false, false);
+        }
+        return urlStr;
+    }
+
+    public String buildString(boolean appendUser, boolean appendParameter, boolean useIP, boolean useService, String... parameters) {
         StringBuilder buf = new StringBuilder();
         //协议
         if (protocol != null && protocol.length() > 0) {
@@ -364,6 +383,61 @@ public class SpecUrl implements Serializable {
             }
         }
         return address;
+    }
+
+    public SpecUrl genUrlWithParamAdd(String key,Object value)
+    {
+        Map<String,String> param = new HashMap<String,String>();
+        param.put(key,(value==null)?"":value.toString());
+
+        return genUrlWithParamAdd(param);
+    }
+
+    public SpecUrl genUrlWithParamAdd(Map<String,String> addParam)
+    {
+        if(addParam==null || addParam.size()<=0 )
+        {
+            SpecUrl newUrl=null;
+            try {
+                newUrl= DeepCopyUtil.deepCopy(this);
+            }catch(Exception e)
+            {
+                newUrl = new SpecUrl(getProtocol(), getHost(), getPort(), getPath(), getParameters(),getUsername(),getPassword());
+            }
+            return newUrl;
+        }
+        Map<String,String> newParam = new HashMap<String,String>();
+        if(getParameters()!=null)
+        {
+            newParam.putAll(getParameters());
+        }
+        newParam.putAll(addParam);
+        SpecUrl newUrl = new SpecUrl(getProtocol(), getHost(), getPort(), getPath(), newParam,getUsername(),getPassword());
+        return newUrl;
+    }
+
+    public SpecUrl genUrlWithParamDel(String ...params )
+    {
+        Map<String,String> paramMap = getParameters();
+        if(params==null || params.length==0 || paramMap==null || paramMap.size()<=0 )
+        {
+            SpecUrl newUrl=null;
+           try {
+               newUrl= DeepCopyUtil.deepCopy(this);
+           }catch(Exception e)
+           {
+               newUrl = new SpecUrl(getProtocol(), getHost(), getPort(), getPath(), paramMap,getUsername(),getPassword());
+           }
+            return newUrl;
+        }
+
+        Map<String,String> newParam = new HashMap<String,String>(paramMap);
+        for(String per:params)
+        {
+            newParam.remove(per);
+        }
+        SpecUrl newUrl = new SpecUrl(getProtocol(), getHost(), getPort(), getPath(), newParam,getUsername(),getPassword());
+        return newUrl;
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.djy.model.SpecUrl;
 import com.djy.registry.Registry;
 import com.util.AppUtil;
 import com.util.NumberUtil;
+import com.util.RunTimeUtil;
 import com.util.StringUtil;
 import com.util.encrypt.EncodeUtil;
 import com.util.net.NetUtil;
@@ -36,6 +37,16 @@ public class ServiceBean implements InitializingBean {
 
     //提供的service
     public static List<SpecUrl> providerUrlList = new ArrayList<SpecUrl>();
+
+    static {
+        RunTimeUtil.addShutdownHook(new Thread(new Runnable() {
+            public void run() {
+                logger.info("ServiceBean shutdown hook 回收service资源。");
+                //回收Service资源
+                ServiceBean.destroyAll();
+            }
+        }, "ServiceBeanShutdownHook"));
+    }
 
     //服务id
     private String id;

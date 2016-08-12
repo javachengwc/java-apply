@@ -1,13 +1,13 @@
 -----------------------------------c3p0异常解决----------------------------
 异常:An attempt by a client to checkout a Connection has timed out
 分析:从连接池获取连接超时，连接池中连接不够用
-解决方式:增大连接池，增大获取连接超时时间，减少缓存statment的连接数。
+解决方式:增大连接池，增大获取连接超时时间，减少缓存statment的连接数为0。
 (如果对数据库的访问，获取连接跟关闭连接是自己写的程序来执行的，可能是关闭连接的代码部分有问题，
 在某系情况下未必真正关闭连接。)
 配置优化如:
 优化前                            优化后
 c3p0.maxPoolSize=100              c3p0.maxPoolSize=200
-c3p0.maxStatements=100            c3p0.maxStatements=20
+c3p0.maxStatements=100            c3p0.maxStatements=0
 c3p0.checkoutTimeout=10000        c3p0.checkoutTimeout=20000
 
 ----------------------------

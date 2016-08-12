@@ -19,6 +19,7 @@ public class RegistryBean  implements InitializingBean {
 
     private static Logger logger = LoggerFactory.getLogger(RegistryBean.class);
 
+    //注册中心map id-->url
     public static ConcurrentMap<String,Registry> zookeeperRegistryMap = new ConcurrentHashMap<String,Registry>();
 
     //注册中心id(只是个标记)

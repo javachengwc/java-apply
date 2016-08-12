@@ -98,7 +98,7 @@ public class RandomUtil {
         propMap.put(10000, 10);
         propMap.put(20000, 20);
         propMap.put(10020, 10);
-        propMap.put(13330, 20);
+        propMap.put(13330, 60);
         for(int i=0;i<4000;i++){
             Integer result=randomGetInIntMap(propMap, 100);
             Integer val=resultMap.get(result);

@@ -70,12 +70,14 @@ public class FinagleServerHandler  implements InvocationHandler {
         ExecutorService executorService = Executors.newFixedThreadPool(provider.getThreads());
         futurePool = new ExecutorServiceFuturePool(executorService);
 
+        //ServiceToClient的代理类
         Object proxy = Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), serviceImpl.getInterfaces(), this);
-        //获取构造函数
+        //Service的构造方法
         Constructor construct = serviceClass.getConstructor(serviceIface, TProtocolFactory.class);
         TBinaryProtocol.Factory factory = new TBinaryProtocol.Factory();
+        //service实例
         Service service = (Service)construct.newInstance(proxy, factory);
-
+        //service绑定参数
         ServerBuilder serverBuilder = ServerBuilder.get()
                 .name(provider.getServiceName())
                 .codec(ThriftServerFramedCodec.get())
@@ -84,7 +86,6 @@ public class FinagleServerHandler  implements InvocationHandler {
                 .bindTo(new InetSocketAddress(provider.getPort()));
 
         ServerBuilder.safeBuild(service, serverBuilder);
-
         logger.info("FinagleServerHandler start thrift[" + provider.getApi() + "]启动成功,provider:["+provider+"]");
     }
 
@@ -146,6 +147,4 @@ public class FinagleServerHandler  implements InvocationHandler {
             return result;
         }
     }
-
-
 }
