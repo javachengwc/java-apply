@@ -37,6 +37,43 @@ public class QuerySliceUtil {
         return all;
     }
 
+    public static <T,I> List<T> query(QueryUnit<T,I> queryUnit,List<I> paramIns,int perSize)
+    {
+        int count= (paramIns==null)?0:paramIns.size();
+        if(count<=0)
+        {
+            return null;
+        }
+        int times = count/perSize;
+        if((count%perSize)>0)
+        {
+            times++;
+        }
+        List<T> rtList = new ArrayList<T>();
+        for(int i=0;i<times;i++) {
+
+            int start = i*perSize;
+            int end = (i+1)*perSize;
+            if((i+1)>=times)
+            {
+                end=count;
+            }
+            List<I> per = paramIns.subList(start,end);
+            List<T> list =queryUnit.queryUnit(per);
+            if(list!=null && list.size()>0)
+            {
+                rtList.addAll(list);
+                list.clear();
+            }
+        }
+        return rtList;
+    }
+
+    public interface  QueryUnit<T,I>
+    {
+        public List<T> queryUnit(List<I> paramIns);
+    }
+
     public interface QueryPage<T>
     {
         public List<T> queryPage(int start, int perSize);

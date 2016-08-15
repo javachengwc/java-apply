@@ -3,8 +3,11 @@ package com.z7z8.controller;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -70,6 +73,17 @@ public class WebController {
             }
         }
         return null;
+    }
+
+    @RequestMapping(value = "redirect", method = RequestMethod.GET)
+    public String redirectStat(@RequestParam(value = "url") String url, HttpServletRequest request)
+    {
+        if(!StringUtils.isBlank(url) && (url.startsWith("http") ||  url.startsWith("www")))
+        {
+            return "redirect:" + url;
+        } else {
+            return "";
+        }
     }
 
 }
