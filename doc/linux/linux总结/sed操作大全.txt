@@ -1,0 +1,74 @@
+----------------------sed操作大全-----------------------
+sed是一种流编辑器，处理时，把当前处理的行存储在临时缓冲区中，称为“模式空间”(pattern space)，接着用sed命令处理缓冲区中的内容，
+处理完成后，把缓冲区的内容送往屏幕。接着处理下一行，这样不断重复，直到文件末尾。
+文件内容并没有改变，除非你使用重定向存储输出或者选项-i。
+
+命令格式:sed [options] 'command' file(s)
+sed '表达式1' | sed '表达式2' 等价于 sed '表达式1; 表达式2'
+
+------查询(显示)
+sed -n 'p;n' tt.txt                       ---显示tt.txt文件中的奇数行
+sed -n 'p;n' tt.txt                       ---显示tt.txt文件中的偶数行
+sed -n '1p'  tt.txt                       ---显示第一行
+sed -n '$p'  tt.txt                       ---显示最后一行
+sed -n '1,2p' tt.txt                      ---显示第一行到第二行
+sed -n '2,$p' tt.txt                      ---显示第二行到最后一行
+sed -n '/ruby/p' tt.txt                   ---查询包括关键字ruby所在所有行
+sed -n  l cc.txt                          ---查看cc.txt内容，可以让制表符区别于空格而原形毕露。
+                                             如果是制表符（TAB），那么会显示为\t符号，如果是空格，就会原样显示。
+
+------替换
+sed 's/abc/abcd/' tt.txt                  ---把tt.txt文件中每行的第一次出现的abc替换成abcd后输出(文件本身内容不会改变)。
+sed 's/abc/abcd/2' tt.txt                 ---把tt.txt文件中每行的第二次出现的abc替换成abcd后输出(文件本身内容不会改变)。
+sed 's/abc/abcd/g' tt.txt                 ---把tt.txt文件中每行的所有abc替换成abcd后输出(文件本身内容不会改变)。
+sed '1,20s/abc/abcd/g' tt.txt             ---把tt.txt文件中第1到20行中的所有abc替换成abcd后输出(文件本身内容不会改变)。
+sed 's/abc/abcd/2g' tt.txt                ---把tt.txt文件中每行的第二次以及后面出现的abc替换成abcd后输出(文件本身内容不会改变)。
+sed -n 's/abc/abcd/gp' tt.txt             ---把tt.txt文件中每行的所有abc替换成abcd后输出那些发生替换的行。
+sed -i 's/abc/abcd/g' tt.txt              ---把tt.txt文件中每行的所有abc替换成abcd并将改动写入文件(文件本身内容改变)。
+sed 's/\/bin/\/usr\/local\/bin/g' tt.txt  ---把tt.txt文件中每行的所有/bin替换成/usr/local/bin后输出。
+                                             /在sed中是一个定界符,当定界符出现在表达式内时候，需要转义,用\在转义。
+sed '1,5c haha' tt.txt                    ---把tt.txt文件中第一行到第五行内容代替为一行内容haha后输出(文件本身内容不会改变)。
+
+------删除
+sed '2d' tt.txt                           ---删除tt.txt文件中第二行后输出(文件本身内容不会改变)。
+sed '/^$/d' tt.txt                        ---删除tt.txt文件中的空行
+sed '2,$d' tt.txt                         ---删除tt.txt文件的第2行到末尾所有行
+sed '$d' tt.txt                           ---删除tt.txt文件最后一行
+sed '/^test/'d tt.txt                     ---删除tt.txt文件中所有开头是test的行
+
+------追加
+sed '/^test/a\this is a test' tt.txt       ---把tt.txt文件中以test开头的行增加下一行，下一行内容为this is a test，输出改变后的内容(文件本身内容不会改变)。
+sed '/^test/i\this is a test' tt.txt       ---把tt.txt文件中以test开头的行增加上一行，上一行内容为this is a test，输出改变后的内容(文件本身内容不会改变)。
+sed '1a this is a test' tt.txt            ---对tt.txt文件中第一行后增加下一行，下一行内容this is a test,输出改变后的内容(文件本身内容不会改变)。
+
+------写入
+sed -n '/^echo/w cc.txt' tt.txt           ---把tt.txt文件中依echo开头的行写入到cc.txt文件中
+sed -i 's/abc/abcd/g' tt.txt              ---把tt.txt文件中每行的所有abc替换成abcd并将改动写入文件(文件本身内容改变)。
+
+------匹配
+echo "this is a test" | sed 's/\w\+/[&]/g'     ---正则表达式 \w\+ 匹配每一个单词，使用 [&] 替换它，&对应于之前所匹配到的单词
+[this] [is] [a] [test]
+
+------子串匹配
+echo "this is digit 7" | sed 's/digit \([0-9]\)/\1/'
+this is 7                                      ---digit 7，被替换成了7。样式匹配到的子串是7，\(..\) 用于匹配子串，
+                                                  对于匹配到的第一个子串就标记为\1，匹配到的第二个自串就是\2。
+
+echo aa BB | sed 's/\([a-z]\+\) \([A-Z]\+\)/\2 \1/'
+BB aa
+-------------------------------------------------------------
+常用选项：
+        -n∶使用安静(silent)模式。加上-n参数，则只有经过sed处理的行才会被输出出来。
+        -e∶直接在指令列模式上进行sed的动作编辑。
+        -f∶直接将se 的动作写在一个档案内， -f filename 则可以执行filename内的sed动作。
+        -r∶sed的动作支援的是延伸型正规表示法的语法。
+        -i∶直接修改读取的文档内容，而不是输出。
+
+常用命令：
+        s   ∶替换，通常s的动作搭配正规表达式。
+        d   ∶删除。
+        i   ∶插入， i的后面可以接字串，这些字串会在新的一行出现(目前的上一行)。
+        a   ∶新增， a的后面可以接字串，这些字串会在新的一行出现(目前的下一行)。
+        c   ∶取代， c的后面可以接字串，这些字串可以取代n1,n2之间的行。
+        p   ∶列印， 即将某个选择的资料印出。通常p会与sed -n 一起使用。
+----------------------------------------------------------------
