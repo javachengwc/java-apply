@@ -57,8 +57,6 @@
                                 <includes>
                                     <include>com.app:dujiangyan-core</include>
                                     <include>com.app:dujiangyan-config</include>
-                                    <include>com.app:dujiangyan-registry</include>
-                                    <include>com.app:dujiangyan-cluster</include>
                                 </includes>
                             </artifactSet>
                         </configuration>

@@ -1,0 +1,146 @@
+------------------------------awk操作----------------------------------
+awk是一种编程语言，用于在linux/unix下对文本和数据进行处理。它在命令行中使用，但更多是作为脚本来使用。
+它支持用户自定义函数和动态正则表达式等先进功能，是linux/unix下的一个强大编程工具。
+awk有很多内建的功能，比如数组、函数等，这是它和C语言的相同之处，灵活性是awk最大的优势。
+
+命令格式:
+awk [options] 'script' var=value file(s)
+awk [options] -f scriptfile var=value file(s)
+
+常用选项：
+   -F fs fs指定分隔符，fs可以是字符串或正则表达式，如-F:
+   -v var=value 赋值一个用户定义变量，将外部变量传递给awk
+   -f scripfile 从脚本文件中读取awk命令
+
+awk内置变量
+    $0 这个变量包含执行过程中当前行的文本内容。
+    $n 当前行的第n个字段，比如n为1表示第一个字段，n为2表示第二个字段。
+    FILENAME 当前输入文件的名。
+    FS 字段分隔符（默认是任何空格）。
+    NF 表示字段数，在执行过程中对应于当前的字段数。
+    NR 表示记录数，在执行过程中对应于当前的行号。
+    OFMT 数字的输出格式（默认值是%.6g）。
+    OFS 输出字段分隔符（默认值是一个空格）。
+    ORS 输出记录分隔符（默认值是一个换行符）。
+    RS 记录分隔符（默认是一个换行符）。
+
+外部变量值传递给awk:
+1,-v选项，可以将外部值传递给awk
+$ ab=1000
+$ echo | awk -v haha=$ab '{ print haha }'
+1000
+
+2,变量之间用空格分隔作为awk的命令行参数跟随在BEGIN、{}和END语句块之后。
+$ var1="aaa"
+$ var2="bbb"
+$ echo | awk '{ print v1,v2 }' v1=$var1 v2=$var2
+aaa bbb
+
+awk脚本基本结构
+awk 'BEGIN{ commands } pattern{ commands } END{ commands }' file
+awk脚本通常由：BEGIN语句块、能够使用模式匹配的通用语句块、END语句块3部分组成，这三个部分是可选的。任意一个部分都可以不出现在脚本中。
+在实际的awk脚本中，pattern是不需要写的。
+第一步：执行BEGIN{ commands }语句块中的语句。
+第二步：从文件或标准输入(stdin)读取行，然后执行pattern{ commands }语句块，逐行重复这个过程，直到文件全部被读取完毕。
+第三步：当读至输入流末尾时，执行END{ commands }语句块。
+BEGIN语句块在awk开始从输入流中读取行之前被执行，比如变量初始化、打印输出表格的表头等语句通常可以写在BEGIN语句块中。
+END语句块在awk从输入流中读取完所有的行之后即被执行，比如打印所有行的分析结果这类汇总信息都是在END语句块中完成。
+pattern语句块中的通用命令是最重要的部分。如果没有提供pattern语句块，则默认执行{ print }，即打印每一个读取到的行，awk读取的每一行都会执行该语句块。
+
+$ echo -e "line 1\nline 2" | awk 'BEGIN{ print "---begin---" } { print } END{ print "---end---" }'
+---begin---
+line 1
+line 2
+---end---
+#当使用不带参数的print时，它就打印当前行，当print的参数是以逗号进行分隔时，打印时则以空格作为定界符。在awk的print语句块中双引号是被当作拼接符使用。
+
+$ awk -F: '{ print $NF }' /etc/passwd | sed -n '1p' 或
+$ awk 'BEGIN{ FS=":" } { print $NF }' /etc/passwd  |sed -n '1p'
+/bin/bash
+#使用-F "定界符" 明确指定一个定界符为":",默认的字段定界符是空格。
+
+$ echo | awk '{ var1="v1"; var2="v2"; var3="v3"; print var1,var2,var3; }'
+v1 v2 v3
+
+$ echo | awk '{ var1="v1"; var2="v2"; var3="v3"; print var1"="var2"="var3; }'
+v1=v2=v3
+
+$ echo -e "line1 f1 f2\nline2 f3 f5\nline3 f6 f7" | awk '{print "Line No:"NR", No of fields:"NF, "$0="$0, "$1="$1, "$2="$2, "$3="$3}'
+Line No:1, No of fields:3 $0=line1 f1 f2 $1=line1 $2=f1 $3=f2
+Line No:2, No of fields:3 $0=line2 f3 f5 $1=line2 $2=f3 $3=f5
+Line No:3, No of fields:3 $0=line3 f6 f7 $1=line3 $2=f6 $3=f7
+
+$ echo -e "line1 f1 f2 f3\n line2 f5 f6 f7" | awk '{print $(NF-1)" "$NF}'
+f2 f3
+f6 f7
+#打印每行倒数第二，倒数第一个字段
+
+$ echo -e "line1 f1 f2 f3\n line2 f5 f6 f7" | awk 'END{ print NR }'
+2
+#统计文本中的行数
+
+$ seq 3 | awk 'BEGIN{ sum=0; print "求和:" } { print $1"+"; sum+=$1 } END{ print "等于"; print sum }'
+求和:
+1+
+2+
+3+
+等于
+6
+#累计求和
+
+$ cat aa.txt
+a
+b
+c
+$ awk 'NR%2==1{next}{print NR,$0;}' aa.txt
+2 b
+#awk中next语句使用:在循环逐行匹配，如果遇到next，就会跳过当前行，直接忽略下面语句。而进行下一行匹配。
+
+$ awk 'BEGIN{ "date" | getline out; print out }' 或
+$ echo | awk '{ "date" | getline out; print out }'
+XXX XXX 19 17:51:42 CST 2016
+#输出重定向需用到getline函数。getline从输入获得下一行的内容，并给变量赋值以及NF,NR和FNR等内建变量赋值。
+
+------------awk运算------------
+awk支持多种运算，这些运算与C语言提供的基本相同。
+$ awk 'BEGIN{a=0;print a++,++a;}' 或
+$ awk 'BEGIN{a="b";print a++,++a;}'
+0 2
+#注意：所有用作算术运算符进行操作，操作数自动转为数值，所有非数值都变为0。
+
+$ awk 'BEGIN{a=1;b=2;print (a>2 && b<=2),(a>2 || b<=2);}'
+0 1
+
+$ awk 'BEGIN{a="acb";if(a~/^ac/){print "ok";}}'
+ok
+
+$ awk 'BEGIN{a="b";arr[0]="b";arr["b"]="c";print (a in arr);}'
+1
+#in 表示数组中是否存在某键而不是存在某值
+
+------------awk流程控制(条件,循环)---------
+awk的流程控制语句，语法结构，与c语言类似。
+awk的while、do-while和for语句中允许使用break,continue语句来控制流程走向，也允许使用exit这样的语句来退出。
+条件判断语句：
+if(表达式) 语句1 else 语句2
+if(表达式) {语句1} else if(表达式) {语句2} else {语句3}
+
+$ awk 'BEGIN{ a=3; if(a>2){ print "a>2"; } else if(a>1){ print "a>1"; } else{ print a; } }'
+a>2
+
+循环语句:
+while(表达式) {语句}
+for(变量 in 数组) {语句}
+for(变量;条件;表达式) {语句}
+do {语句} while(条件)
+break    当break语句用于 while 或 for 语句时，导致退出程序循环。
+continue 当 continue 语句用于 while 或 for 语句时，使程序循环移动到下一个迭代。
+next     能能够导致读入下一个输入行，并返回到脚本的顶部。这可以避免对当前输入行执行其他的操作过程。
+exit     语句使主输入循环退出并将控制转移到END,如果END存在的话。如果没有定义END规则，或在END中应用exit语句，则终止脚本的执行
+
+
+------------awk函数---------
+awk内置函数，主要分3种：算数函数、字符串函数、其它一般函数、时间函数
+
+
+-----------------------------------------------------------------------
