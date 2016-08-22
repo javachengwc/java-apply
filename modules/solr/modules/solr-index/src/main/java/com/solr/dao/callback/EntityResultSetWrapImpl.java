@@ -19,7 +19,6 @@ import org.springframework.jdbc.core.RowMapper;
 
 /**
  * 结果包装类 只支持简单类型
- * @author chengwenchao
  */
 public class EntityResultSetWrapImpl<T> implements ResultSetExtractor<T>,RowMapper<T>
 {
