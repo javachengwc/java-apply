@@ -138,9 +138,54 @@ continue 当 continue 语句用于 while 或 for 语句时，使程序循环移�
 next     能能够导致读入下一个输入行，并返回到脚本的顶部。这可以避免对当前输入行执行其他的操作过程。
 exit     语句使主输入循环退出并将控制转移到END,如果END存在的话。如果没有定义END规则，或在END中应用exit语句，则终止脚本的执行
 
+$ awk 'BEGIN{i=0; top=100; total=0; while(i<=top){ total+=i; i++; } print total; }' 或
+$ awk 'BEGIN{ total=0; for(i=0;i<=100;i++){ total+=i; } print total; }' 或
+$ awk 'BEGIN{ total=0; i=0; do {total+=i;i++;} while(i<=100) print total; }'
+5050
+
+$ awk 'BEGIN{ for(k in ENVIRON){ print k"="ENVIRON[k]; } }'
+LANG=en_US.UTF-8
+PWD=/home/cc
+HOME=/home/cc
+USER=cc
+JAVA_HOME=/usr/local/java/jdk1.7
+....
+#ENVIRON是awk常量，是一个环境变量数组
 
 ------------awk函数---------
-awk内置函数，主要分3种：算数函数、字符串函数、其它一般函数、时间函数
+算术函数
+exp(x)              返回 x 幂函数。
+log(x)              返回 x 的自然对数。
+sqrt(x)             返回 x 平方根。
+int(x)              返回 x 的截断至整数的值。
+rand()              返回任意数字n，其中 0 <= n < 1。
+srand([exp])        将rand函数的种子值设置为exp参数的值,如果exp参数为空，则rand含糊的种子值为当前时间。
+$ awk 'BEGIN{srand();rd=int(100*rand());print rd;}'
+69
+#获得随机数,srand()不能少，少了srand()后，获取的随机数每次都一样。
 
+字符串函数
+gsub( Ere, Repl, [ In ] )            
+sub( Ere, Repl, [ In ] )
+index( a, b)                         返回b在a中的位置，从1开始编号。如果b不在a中,返回 0。
+length[(a)]                          返回a的长度。如果参数为空，则返回整个记录的长度（$0 记录变量）。
+blength [(String)]                   返回a的长度（以字节为单位）。如果参数为空，则返回整个记录的长度（$0 记录变量）。
+substr( String, M, [ N ] )
+match( String, Ere )
+split( String, A, [Ere] )
+tolower( a )                         转换成小写
+toupper( a )                         转换成大写
+sprintf(Format, Expr, Expr, . . . )
+
+时间函数
+mktime( YYYY MM dd HH MM ss[ DST])          生成时间格式
+strftime([format [, timestamp]])            格式化时间输出，将时间戳转为时间字符串。
+systime()                                   当前时间戳,返回从1970年1月1日开始到当前时间的整秒数
+
+$ awk 'BEGIN{tt=mktime("2016 6 6 7 7 7");print strftime("%c",tt);}'
+Mon 06 Jun 2016 07:07:07 AM CST
+
+$ awk 'BEGIN{t1=mktime("2016 6 6 7 7 7");t2=systime();print strftime("%Y-%m-%d %H:%M:%S",t2)"-"strftime("%Y-%m-%d %H:%M:%S",t1)"="(t2-t1);}'
+2016-08-23 18:38:27-2016-06-06 07:07:07=6780680
 
 -----------------------------------------------------------------------
