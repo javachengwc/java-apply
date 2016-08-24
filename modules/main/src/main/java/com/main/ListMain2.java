@@ -8,9 +8,11 @@ public class ListMain2 {
 	{
         testRemove();
 
-        listSetSub();
+        checkClear();
 
-		checkSubList();
+        //listSetSub();
+
+		//checkSubList();
 
 	}
 	
@@ -62,11 +64,17 @@ public class ListMain2 {
 	{
 		List<String> listA = new ArrayList<String>();
     	List<String> listB = new ArrayList<String>();
+        List<String> listC = new ArrayList<String>();
+        List<String> listD = new ArrayList<String>();
     	String abc= new String("abc");
     	listB.add(abc);
     	listA.addAll(listB);
         listB.clear();
         System.out.println(listA.size()+" "+listB.size());
+        listC=listA;
+        listD =new ArrayList<String>(listA);
+        listA.clear();
+        System.out.println(listA.size()+" "+listB.size()+" "+listC.size()+" "+listD.size());
 	}
 
     public static void checkSubList2(List<String> all )
