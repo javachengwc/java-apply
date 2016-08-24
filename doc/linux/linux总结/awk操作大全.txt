@@ -151,6 +151,7 @@ USER=cc
 JAVA_HOME=/usr/local/java/jdk1.7
 ....
 #ENVIRON是awk常量，是一个环境变量数组
+##注:awk for …in循环，是一个无序的循环。 并不是从数组下标1…n
 
 ------------awk函数---------
 算术函数
@@ -165,17 +166,41 @@ $ awk 'BEGIN{srand();rd=int(100*rand());print rd;}'
 #获得随机数,srand()不能少，少了srand()后，获取的随机数每次都一样。
 
 字符串函数
-gsub( Ere, Repl, [ In ] )            
-sub( Ere, Repl, [ In ] )
+sub(exp,replace2,orgstr)             将orgstr中匹配正则表达式exp的第一个字串用replace2替换,如果有匹配的字串,返回1,否则返回0。
+gsub(exp,replace2,orgstr)            将orgstr中匹配正则表达式exp的所有字串用replace2替换,并返回匹配个数。
+match(a,exp)                         返回orgstr中匹配正则表达式exp的匹配个数。
 index( a, b)                         返回b在a中的位置，从1开始编号。如果b不在a中,返回 0。
 length[(a)]                          返回a的长度。如果参数为空，则返回整个记录的长度（$0 记录变量）。
-blength [(String)]                   返回a的长度（以字节为单位）。如果参数为空，则返回整个记录的长度（$0 记录变量）。
-substr( String, M, [ N ] )
-match( String, Ere )
-split( String, A, [Ere] )
+substr(a, start, [ len ])            返回截取a字串以start位置开始len长度的子串，如果len为空，则子串的长度是start位置到a的末尾的长度。
+split(orgstr, ay, splitstr)          将orgstr用splitstr分隔成数组,保存到ay中。
 tolower( a )                         转换成小写
 toupper( a )                         转换成大写
-sprintf(Format, Expr, Expr, . . . )
+sprintf(Format, Expr, Expr, . . . )  格式化字符串输出
+
+awk 'BEGIN{info="t10t20";ab=sub(/[0-9]+/,"*",info);print ab" "info}'
+1 t*t20
+
+$ awk 'BEGIN{info="t10t20";ab=gsub(/[0-9]+/,"*",info);print ab" "info}'
+2 t*t*
+#sub与gsub的区别是sub只替换第一个匹配的字串,gsub是替换所有匹配的字串。
+
+$ awk 'BEGIN{a="t1t2";print match(a,/[0-9]+/);}'
+2
+
+$ awk 'BEGIN{a="abcde";b="bcd";print index(a,b)?"find":"not find";}'
+find
+
+$ awk 'BEGIN{a="this is a test";split(a,b," ");print length(b);for(c in b){print c,b[c];}}'
+4
+4 test
+1 this
+2 is
+3 a
+#注:awk for …in循环，是一个无序的循环。 并不是从数组下标1…n
+
+$ awk 'BEGIN{a="this is a test";print substr(a,3,10);}'
+is is a te
+#substr方法的start参数是将字串中第一个字符的下标做为1来定为位置的，与java语言中的下标(依0开始)是不一样的。
 
 时间函数
 mktime( YYYY MM dd HH MM ss[ DST])          生成时间格式
