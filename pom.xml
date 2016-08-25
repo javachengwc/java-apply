@@ -42,7 +42,7 @@
 		<module>modules/main</module>
 		<module>modules/configcenter</module>
 		<module>modules/shop</module>
-		<module>modules/mountain</module>
+		<module>modules/dujiangyan</module>
     </modules>
 
 </project>
