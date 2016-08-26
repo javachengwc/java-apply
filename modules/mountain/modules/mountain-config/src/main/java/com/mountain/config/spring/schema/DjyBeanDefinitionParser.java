@@ -29,10 +29,12 @@ public class DjyBeanDefinitionParser extends AbstractSingleBeanDefinitionParser 
         this.beanClass = beanClass;
     }
 
-    protected Class<?> getBeanClass() {
-        return beanClass;
+    @Override
+    protected Class<?> getBeanClass(Element element) {
+        return this.beanClass;
     }
 
+    @Override
     protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder bean) {
         logger.info("DjyBeanDefinitionParser doParse start.........");
 

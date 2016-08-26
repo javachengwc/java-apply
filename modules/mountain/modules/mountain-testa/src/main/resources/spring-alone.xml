@@ -11,10 +11,10 @@
     <context:annotation-config/>
     <context:component-scan base-package="com.mountain.ta.service"/>
 
-    <djy:application id="monutain-testa"/>
-
     <!--zookeeper注册中心-->
-    <djy:registry id="zk01" protocol="zookeeper" address="127.0.0.1" timeout="20000"/>
+    <djy:registry id="zk01" protocol="zookeeper" address="127.0.0.1:2181" timeout="20000"/>
+
+    <djy:application id="monutain-testa"/>
 
     <djy:service id="testa-trans-server"
           ref="transServiceImpl"
