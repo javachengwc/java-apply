@@ -9,13 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
+import java.io.Serializable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
  * 注册节点
  */
-public class RegistryBean  implements InitializingBean {
+public class RegistryBean  implements Serializable,InitializingBean {
 
     private static Logger logger = LoggerFactory.getLogger(RegistryBean.class);
 

@@ -21,6 +21,8 @@
 		<module>modules/mountain-config</module>
 		<module>modules/mountain-client</module>
 		<module>modules/mountain-manage</module>
+		<module>modules/mountain-testa</module>
+		<module>modules/mountain-testb</module>
 	</modules>
 
 </project>
