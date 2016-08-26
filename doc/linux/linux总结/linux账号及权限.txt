@@ -1,0 +1,44 @@
+------------------------linux账号及权限---------------------
+/etc/group  存放系统所有用户组
+/etc/gshadow
+/etc/passwd 存在系统所有用户
+/etc/shadow
+
+who                        ---显示目前登录系统的所有用户信息
+whoami 或  logname         ---查看当前登录用户名
+id                         ---显示当前用户的用户ID(UID)和组ID(GID)
+id  ab                     ---显示用户ab的uid,gid信息
+
+groupadd -g 333 tt         ---创建用户组tt，并指定gid为333
+groupadd damon             ---创建damon用户组
+groupdel damon             ---删除damon用户组
+groupmod -g 201 -n newgroup oldgroup
+                           ---修改oldgroup重命名成newgroup,且把gid改成201
+groups                     ---查看当前登录用户的组内成员
+groups cc                  ---查看cc用户所在的组,以及组内成员
+
+useradd xx                 ---添加用户xx
+useradd ta -u 300          ---添加用户ta,并指定uid为300
+useradd aa -g tt –G tk    ---添加用户aa,指定主用户组为tt,次用户组为tk
+userdel aa                 ---删除用户aa，但不删除其用户目录及文件
+userdel -r aa              ---删除用户aa，其用户目录及文件一并删除
+userdel -f aa              ---强制删除用户aa，即使用户当前已登录
+usermod -g groupa -u 333 aa
+                           ---修改用户aa的所属组为groupa,且把uid改成333
+usermod -l ab aa           ---用户aa改名成ab
+usermod -L ab              ---锁定用户ab
+usermod -U ab              ---解锁用户ab
+passwd                     ---修改当前用户密码
+passwd ab                  ---修改用户ab的密码
+passwd -l ab               ---锁定用户ab不能更改密码
+passwd -u ab               ---解开用户ab,使其能又该密码
+passwd -d ab               ---清除用户ab的密码
+passwd -S ab               ---查询用户ab的密码状态
+
+chown root:root aa.txt     ---改变文件的拥有者和群组为root:root
+chown root aa.txt          ---只改变文件的拥有者为root
+chown root: aa.txt         ---改变文件的拥有者为root,文件的群组为root用户所属的组
+chown :root aa.txt         ---只改变文件的群组为root
+chown -R root:root /data/tt
+                           ---改变目录/data/tt以及其子目录下的所有文件的拥有者和群组为root:root
+------------------------------------------------------------
