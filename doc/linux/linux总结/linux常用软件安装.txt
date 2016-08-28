@@ -99,6 +99,7 @@ yum install libaio
 ./bin/mysqld --initialize --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data
    [Note] A temporary password is generated for root@localhost: f4(t0cvr*Dtq #此临时密码需要记住
 ./bin/mysql_ssl_rsa_setup  --datadir=/usr/local/mysql/data
+chown -R mysql:mysql ./
 cp support-files/my-default.cnf  /etc/my.cnf
 cp support-files/mysql.server /etc/init.d/mysql  #启动脚本放到开机初始化目录
 chmod 755 /etc/init.d/mysql
@@ -117,6 +118,8 @@ vim /etc/my.cnf
    basedir=/usr/local/mysql
    datadir=/usr/local/mysql/data
    tmpdir=/usr/local/mysql/data
+   log-error=/usr/local/mysql/error.log
+   pid-file=/usr/local/mysql/mysql.pid
    max_connections=500
    default-storage-engine=InnoDB
    binlog_format=mixed
