@@ -14,6 +14,9 @@ supervisord                                              ---启动supersord服�
 
 supervisorctl                                            ---进入supervisor的命令控制模式
 
+#注:执行supervisord的时候如果提示：Unlinking stale socket /tmp/supervisor.sock，
+需要安装python的功能组件python-meld3,不然其他用户莫办法使用supervisorctl。
+或则把/tmp/supervisor.sock文件权限改成777,让所有用户都可访问。
 -------------------supervisor配置--------------------------
 
 配置文件:/etc/supervisord.conf

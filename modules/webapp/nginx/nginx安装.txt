@@ -4,8 +4,8 @@ nginx的源码编译安装
 
 nginx的前置依赖
     1,编译器(一般linux都自带安装了编译器)
-    yum -y install gcc automake autoconf libtool make     ---安装make
-    yum install gcc gcc-c++                               ---安装gcc g++
+    yum -y install gcc automake autoconf libtool make     ---安装gcc automake autoconf libtool make
+    yum -y install gcc-c++                                ---安装gcc-c++
 
     2,pcre:支持地址重写rewrite功能
     wget ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.38.tar.gz

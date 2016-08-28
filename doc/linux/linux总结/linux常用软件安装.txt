@@ -1,0 +1,160 @@
+--------------------------linux常用软件下载安装------------------------
+---------------gcc automake autoconf libtool make gcc-c++
+yum -y install gcc automake autoconf libtool make     ---安装gcc automake autoconf libtool make
+yum -y install gcc-c++                                ---安装gcc-c++
+
+---------------telnet vim
+yun -y install telnet vim
+
+---------------scp
+scp不直接安装,通过安装openssh-clients来安装scp
+yum install openssh-clients
+
+---------------wget
+wget安装:
+    (源码安装)
+    wget下载:ftp://ftp.gnu.org/gnu/wget 或 http://ftp.gnu.org/gnu/wget
+    # tar -zxvf wget-1.14.tar.gz
+    # cd wget-1.14
+    # ./configure
+    # make
+    # make install
+    (yum安装)
+    yum -y install wget
+wget使用:
+wget --limit-rate=300k http://www.cc.com/cc.zip     ---下载cc.zip,且限制速度为300k/s
+wget -O name.zip http://www.cc.com/download.aspx?id=100  ---下载内容保存为name.zip,wget默认以最后一个/的后面的字符来命令文件名
+wget -P /tmp/dd/  http://www.cc.com/cc.zip          ---下载cc.zip到指定目录/tmp/dd/中
+wget -c http://www.cc.com/cc.zip                    ---断点续传cc.zip文件
+wget -b http://www.cc.com/cc.zip                    ---后台下载cc.zip文件
+wget --spider http://www.cc.com/cc.zip              ---测试资源是否可下载
+wget --tries=40 http://www.cc.com/cc.zip            ---下载cc.zip文件,重试次数设为40
+wget --ftp-user=aa --ftp-password=bb ftp://ftp.cc.com/f/cc.zip
+                                                    ---带账号的ftp下载文件
+wget --user-agent="Mozilla/5.0 Chrome..." http://www.cc.com/cc.zip
+                                                    ---伪装代理下载
+
+--------------java
+1,下载相应版本32或64为jdk压缩包,比如32位1.7版本jdk-7u51-linux-i586.gz
+2,cp jdk-7u51-linux-i586.gz /usr/local/jdk/
+  tar -xzvf jdk-7u51-linux-i586.gz
+  rm -rf jdk-7u51-linux-i586.gz
+3,环境变量配置
+  vi /etc/profile
+  JAVA_HOME=/usr/local/jdk/jdk1.7.0_51
+  CLASSPATH=.:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar
+  PATH=$JAVA_HOME/bin:$PATH
+  export JAVA_HOME CLASSPATH PATH
+4,生效及测试
+  source /etc/profile
+  java -version
+
+---------------maven
+在http://maven.apache.org/download.cgi下载apache-maven-3.3.9-bin.tar.gz
+tar -zxvf apache-maven-3.3.9-bin.tar.gz
+vi /etc/profile 设置全局变量
+    M2_HOME=/opt/maven/apache-maven-3.2.1
+    export M2_HOME
+    PATH=$PATH:$M2_HOME/bin
+    export PATH
+source /etc/profile
+mvn -v #显示了版本信息表示maven安装成功。
+
+---------------git
+yum install curl-devel expat-devel gettext-devel openssl-devel zlib-devel perl-ExtUtils-MakeMaker #安装依赖包
+wget https://github.com/git/git/archive/v2.7.0-rc3.tar.gz
+tar -zxvf v2.7.0-rc3.tar.gz
+cd git-2.7.0-rc3
+make prefix=/usr/local/git all
+make prefix=/usr/local/git install
+vim /etc/profile
+    export PATH=/usr/local/git/bin:$PATH
+source /etc/profile
+git --version   #查看git版本，能显示出版本,安装成功。
+git config --global user.name "ccc"
+git config --global user.email "ccc@ccc.com"  #设置git账号
+ssh-keygen -t rsa -C "ccc@ccc.com"    #创建SSH key
+vim ~/.ssh/id_rsa.pub                 #将id_rsa.pub文件内容，添加到github或gitlab代码服务器自己帐号的SSH key模块中。
+ssh -T git@github.com                 #测试git是否可连接到github服务器。
+
+---------------tomcat
+wget -P /soft/ http://mirrors.tuna.tsinghua.edu.cn/apache/tomcat/tomcat-7/v7.0.70/bin/apache-tomcat-7.0.70.tar.gz
+cd /soft
+tar -zxvf apache-tomcat-7.0.70.tar.gz
+直接下载后解压就完成了
+
+---------------mysql
+rpm -qa | grep  mysql
+    mysql-libs-5.1.73-3.el6_5.i686
+rpm -e mysql-libs-5.1.73-3.el6_5.i686 --nodeps   #卸载自带的低版本mysql
+wget http://mirrors.sohu.com/mysql/MySQL-5.7/mysql-5.7.14-linux-glibc2.5-i686.tar.gz
+tar -zxvf mysql-5.7.14-linux-glibc2.5-i686.tar.gz
+cp -r mysql-5.7.14-linux-glibc2.5-i686 /usr/local/mysql
+groupadd mysql
+useradd -r -g mysql mysql
+cd /usr/local/mysql
+mkdir data                 #创建mysql数据目录
+chown -R mysql:mysql ./
+yum install libaio
+./bin/mysqld --initialize --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data
+   [Note] A temporary password is generated for root@localhost: f4(t0cvr*Dtq #此临时密码需要记住
+./bin/mysql_ssl_rsa_setup  --datadir=/usr/local/mysql/data
+cp support-files/my-default.cnf  /etc/my.cnf
+cp support-files/mysql.server /etc/init.d/mysql  #启动脚本放到开机初始化目录
+chmod 755 /etc/init.d/mysql
+vim /etc/init.d/mysql
+   basedir=/usr/local/mysql
+   datadir=/usr/local/mysql/data
+vim /etc/my.cnf
+   [client]
+   port=3306
+   default-character-set=utf8
+   socket=/usr/local/mysql/mysql.sock
+   [mysqld]
+   port=3306
+   character-set-server=utf8
+   socket=/usr/local/mysql/mysql.sock
+   basedir=/usr/local/mysql
+   datadir=/usr/local/mysql/data
+   tmpdir=/usr/local/mysql/data
+   max_connections=500
+   default-storage-engine=InnoDB
+   binlog_format=mixed
+   log_bin=/usr/local/mysql/mysql-bin.log
+   max_binlog_size=100M
+   slow_query_log
+   long_query_time=2
+   slow_query_log_file=/usr/local/mysql/slow.log
+   server-id=1
+   sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
+bin/mysqld_safe --user=mysql &  #启动mysql
+bin/mysql -uroot -pf4(t0cvr*Dtq  #密码是之前生成的临时密码
+    mysql>set password=password('root');
+    mysql>grant all privileges on *.* to root@'%' identified by 'root';  #改root密码
+    mysql>flush privileges;
+    mysql>quit;
+bin/mysqladmin shutdown -uroot -proot  #关闭mysql
+vim /etc/profile
+    export PATH=/usr/local/mysql/bin:$PATH
+source /etc/profile
+chkconfig --add mysql
+chkconfig --level 345 mysql on   #mysql加入启动项
+
+---------------nginx
+参见本工程中nginx安装.txt文件。
+
+---------------zookeeper
+参见本工程中zookeeper配置安装.txt文件。
+
+---------------redis
+参见本工程中redis安装启动.txt文件。
+
+---------------memcache
+
+---------------fastdfs
+
+---------------solr
+
+---------------------------------------------------------------
+
+
