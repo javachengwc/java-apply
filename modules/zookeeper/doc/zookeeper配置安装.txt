@@ -3,6 +3,8 @@
 安装配置过程:
 
 1,下载解压zookeeper
+    wget https://mirrors.tuna.tsinghua.edu.cn/apache/zookeeper/zookeeper-3.3.6/zookeeper-3.3.6.tar.gz
+    tar -zxvf zookeeper-3.3.6.tar.gz
 2,复制一份zoo_sample.cfg，命名为zoo.cfg。编辑zoo.cfg，
   ep:准备部署3个节点，配置如下:
 

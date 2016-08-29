@@ -153,11 +153,54 @@ chkconfig --level 345 mysql on   #mysql加入启动项
 参见本工程中redis安装启动.txt文件。
 
 ---------------memcache
+wget https://github.com/libevent/libevent/releases/download/release-2.0.22-stable/libevent-2.0.22-stable.tar.gz
+tar -zxvf libevent-2.0.22-stable.tar.gz
+cd libevent-2.0.22-stable
+./configure  --prefix=/usr/local/libevent
+make
+make install                              #编译安装libevent
+wget http://www.memcached.org/files/memcached-1.4.25.tar.gz
+tar -zxvf memcached-1.4.25.tar.gz
+cd memcached-1.4.25
+./configure --prefix=/usr/local/memcached --with-libevent=/usr/local/libevent
+make
+make install                              #编译安装memcached
+/usr/local/memcached/bin/memcached -d -m 2048 -u root -c 1024  -t 4 -p 11211 -P /tmp/memcached.pid #启动memcached
+
+memcached启动参数
+-p 指定端口号（默认11211）
+-m 指定最大使用内存大小（默认64MB）
+-t 线程数（默认4）
+-c 最大同时连接数，默认是1024
+-l 连接的IP地址, 默认是本机
+-d start 启动memcached服务
+-d restart 重起memcached服务
+-d stop|shutdown 关闭正在运行的memcached服务
+-M 内存耗尽时返回错误，而不是删除项
+-f 块大小增长因子，默认是1.25
+-n 最小分配空间，key+value+flags默认是48
 
 ---------------fastdfs
 
 ---------------solr
+---------------------------------------
+#安装过程中找不到相应库解决
+vi /etc/ld.so.conf  #添加相应的库路径在里面
+/sbin/ldconfig
 
+/etc/ld.so.conf文件记录了编译时使用的动态链接库的路径。
+默认情况下，编译器只会使用/lib和/usr/lib这两个目录下的库文件
+如果安装了某些库，比如在安装gtk+-2.4.13时它会需要glib-2.0,安装好glib后没有指定 --prefix=/usr。
+这样glib库就装到了/usr/local下，而又没有在/etc/ld.so.conf中添加/usr/local/lib。安装gtk的时候就会报错找不到相应的库。
+将/usr/local/lib加入到/etc/ld.so.conf中，这样安装gtk时就会去搜索/usr/local/lib,就可以找到需要的库。
+库文件的路径如 /usr/lib 或 /usr/local/lib 应该在 /etc/ld.so.conf 文件中，这样ldd才能找到这个库。
+添加以后，要以 root 的身份运行 /sbin/ldconfig才能生效 。
+
+ldconfig是一个程序，通常它位于/sbin下，是root用户使用的。
+它的作用就是将/etc/ld.so.conf列出的路径下的库文件缓存到/etc/ld.so.cache 以供使用
+因此当安装完一些库文件，(例如刚安装好glib)，或者修改ld.so.conf增加新的库路径后，需要运行一下/sbin/ldconfig
+使所有的库文件都被缓存到ld.so.cache中，如果没做，即使库文件明明就在/usr/lib下的，也是不会被使用的，
+结果编译过程中抱错，缺少xxx库。
 ---------------------------------------------------------------
 
 
