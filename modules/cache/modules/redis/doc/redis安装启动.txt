@@ -4,10 +4,10 @@ redis高性能很大程度上源于它是个内存型数据库，它的高性能
 
 1,下载安装
 
-[root@xsf003 tool]# wget -c http://redis.googlecode.com/files/redis-2.4.17.tar.gz    #下载
+[root@xsf003 tool]# wget http://download.redis.io/releases/redis-3.0.6.tar.gz    #下载
 [root@xsf003 tool]# tar -zxvf redis-2.4.17.tar.gz   #解压
 [root@xsf003 tool]# cd redis-2.4.17
-[root@xsf003 redis-2.4.17]# make  #编译
+[root@xsf003 redis-2.4.17]# make  #编译 编译完成后二进制文件是在./src目录下
 [root@xsf003 redis-2.4.17]# make install #安装
 
 #把redis设置成开机自启动
