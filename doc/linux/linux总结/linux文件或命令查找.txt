@@ -1,0 +1,77 @@
+----------------------------linux文件或命令查找----------------------------
+-----------------which
+which命令用于查找并显示给定命令的绝对路径，环境变量PATH中保存了查找命令时需要遍历的目录。
+which指令会在环境变量$PATH设置的目录里查找符合条件的文件。
+
+ep:   which wget           ---查找wget命令的绝对路径
+
+-----------------whereis
+whereis命令用来定位命令的二进制程序、源代码文件和man手册页等相关文件的路径。
+whereis命令只能用于程序名的搜索，而且只搜索二进制文件（参数-b）、man说明文件（参数-m）和源代码文件（参数-s）。
+如果省略参数，则返回所有信息。
+where查找程序信息是通过搜索一个数据库(同locate一样),这个数据库中含有本地所有文件信息。所以查询数据非常快。
+
+whereis wget              ---查找wget程序的二进制文件，源代码文件和man手册页等相关文件的路径
+
+-----------------locate
+locate命令查找目录或文件,它相当于是find -name的类似的查询，但是要比后者快得多，
+因为它搜索一个数据库/var/lib/locatedb，这个数据库中含有本地所有文件信息。
+Linux系统自动创建这个数据库，并且每天自动更新一次，所以使用locate命令查不到最新变动过的文件。
+为了避免这种情况，可以在使用locate之前，先使用updatedb命令，手动更新数据库。
+
+locate -d /home  cc.txt   ---查找/home目录下cc.txt文件
+locate -i ~/m             ---查找用户主目录下，所有以m开头的文件，并且忽略大小写
+updatedb -U /usr/local/   ---更新指定目录的slocate数据库
+#如果在linux系统中找不到locate,updatedb命令,可安装mlocate程序，mlocate是新型的locate，updatedb速度更快。
+
+-----------------find
+ind命令用来在指定目录以及子目录下查找文件。任何位于参数之前的字符串都将被视为欲查找的目录名。
+如果使用该命令时，不设置任何参数，则find命令将在当前目录下查找子目录与文件。
+
+find /home -name "*.txt"                         ---在/home目录及子目录下查找以.txt结尾的文件
+find /home -iname "*.txt"                        ---在/home目录下查找依忽略.txt大小写并以此结尾的文件
+find /home ! -name "*.txt"                       ---在/home目录下查找不以.txt结尾的文件
+find . -name "*.txt" -o -name "*.tar.gz"         ---在当前目录下查找.txt结尾和.tar.gz结尾的文件
+find -path "*local*"                             ---在当前目录下查找路径包含local的目录或文件
+find . -regex ".*\(\.txt\|\.pdf\)$"              ---在当前目录下查找正则匹配.txt或.pdf结尾的文件
+find . -maxdepth 2 -type f -name "*.txt"         ---在当前目录下查找以.txt结尾的文件,文件所在目录层级相对当前目录小于等于2，当前目录层级为1。
+find . -empty                                    ---在当前目录下查找有长度为零的文件
+find . -path "./aa"  -prune -o -name "*.txt" -print
+                                                 ---在当前目录下跳过子目录aa查找以.txt结尾的文件
+find . -type f -perm 777 -user aa -group bb      ---在当前目录下查找权限为777且用户为aa,用户组为bb的文件
+find . -type f -user root -exec chown aa {} \;   ---在当前目录下查找用户为root的文件,把这些文件的拥有者改成aa
+find . -type f -name "*.txt" -delete 或 find . -type f -name "*.txt"  -exec rm {} \;
+                                                 ---在当前目录下所有以.txt结尾的文件都删除
+find . -type f -mtime +30 -name "*.log" -exec cp {} old \;
+                                                 ---在当前目录下将30天前的.log文件移动到old目录中
+find . -type 类型参数                            ---在当前目录下根据文件类型查找
+文件类型:
+f            ---普通文件
+l            ---符号连接
+d            ---目录
+c            ---字符设备
+b            ---块设备
+s            ---套接字
+p            ---Fifo
+
+find . -type f -size 文件大小单元               ---在当前目录下根据文件大小查找文件
+文件大小单元：
+b            ---块（512字节）
+c            ---字节
+w            ---字（2字节）
+k            ---千字节
+M            ---兆字节
+G            ---吉字节
+find . -type f -size +10k                       ---在当前目录下查询大于10KB的文件
+find . -type f -size -10k                       ---在当前目录下查询小于10KB的文件
+
+find . -type f 时间戳                           ---根据文件时间戳进行搜索
+Linux文件系统每个文件都有三种时间戳：
+访问时间（-atime/天，-amin/分钟）：用户最近一次访问时间。
+修改时间（-mtime/天，-mmin/分钟）：文件最后一次修改时间。
+变化时间（-ctime/天，-cmin/分钟）：文件数据元（例如权限等）最后一次修改时间。
+find . -type f -atime -7                        ---在当前目录下查找最近七天内被访问过的所有文件
+find . -type f -mmin +10                        ---在当前目录下查找修改时间超过10分钟的所有文件
+find . -type f -newer file.log                  ---在当前目录下查找比file.log修改时间更长的所有文件
+
+---------------------------------------------------------------------------
