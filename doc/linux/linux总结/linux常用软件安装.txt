@@ -153,12 +153,24 @@ chkconfig --level 345 mysql on   #mysql加入启动项
 参见本工程中redis安装启动.txt文件。
 
 ---------------memcache
+#卸载系统自带的老版本的libevent
+rpm -qa libevent
+libevent-1.4.13-1.el6.x86_64
+rpm -e --nodeps libevent
+
+#安装一个较新的稳定版的libevent
 wget https://github.com/libevent/libevent/releases/download/release-2.0.22-stable/libevent-2.0.22-stable.tar.gz
 tar -zxvf libevent-2.0.22-stable.tar.gz
 cd libevent-2.0.22-stable
 ./configure  --prefix=/usr/local/libevent
 make
 make install                              #编译安装libevent
+
+#为libevent创建软链接到/lib库下，64位系统对应/lib64
+ln -s /usr/local/libevent/lib/libevent* /lib/
+ln -s /usr/local/libevent/lib/libevent* /lib64/
+
+#安装memcached
 wget http://www.memcached.org/files/memcached-1.4.25.tar.gz
 tar -zxvf memcached-1.4.25.tar.gz
 cd memcached-1.4.25
@@ -181,6 +193,66 @@ memcached启动参数
 -n 最小分配空间，key+value+flags默认是48
 
 ---------------fastdfs
+同安装memcached一样,先要安装libevent
+
+#安装libfastcommon,不然在编译高版本的fastdfs时候会报错make: *** [../common/fdfs_global.o] Error 1
+wget https://github.com/happyfish100/libfastcommon/archive/V1.0.7.tar.gz
+tar -zxvf V1.0.7
+cd libfastcommon-1.0.7
+./make.sh
+./make.sh install
+#安装fastdfs
+wget https://github.com/happyfish100/fastdfs/archive/V5.04.tar.gz
+tar -zxvf V5.04
+cd fastdfs-5.04
+./make.sh
+./make.sh install
+#配置fastdfs
+#先配置tracker
+cd /etc/fdfs
+cp tracker.conf.sample tracker.conf
+vim tracker.conf
+    disabled=false
+    port=22122   #设置tracker的端口号
+    base_path=/data/fastdfs/tracker  #设置tracker的数据文件和日志目录（需预先创建）
+    http.server_port=18080    #设置http端口号
+mkdir -p  /data/fastdfs/tracker
+#配置storage,(一般storage与tracker分别安装部署在不同的服务器上，此处为了方便，就同机器部署)
+cd /etc/fdfs
+cp storage.conf.sample storage1.conf
+cp storage.conf.sample storage2.conf
+vim storage1.conf
+    disabled=false
+    group_name=group1
+    port=23000                          #设置storage的端口号
+    base_path=/data/fastdfs/storage1    #设置storage的日志目录（需预先创建）
+    store_path_count=1                  #存储路径个数，需要和store_path个数匹配
+    store_path0=/data/fastdfs/storage1  #存储路径
+    tracker_server=192.168.100.20:22122 #tracker服务器的IP地址和端口号,不能是127.0.0.1,不然启动storage会报错,启不起来
+    http.server_port=18888              #设置http端口号
+vim storage2.conf
+    disabled=false
+    group_name=group2
+    port=23001                          #设置storage的端口号
+    base_path=/data/fastdfs/storage2    #设置storage的日志目录（需预先创建）
+    store_path_count=1                  #存储路径个数，需要和store_path个数匹配
+    store_path0=/data/fastdfs/storage2  #存储路径
+    tracker_server=192.168.100.20:22122 #tracker服务器的IP地址和端口号,不能是127.0.0.1,不然启动storage会报错,启不起来
+    http.server_port=18889              #设置http端口号
+mkdir -p  /data/fastdfs/storage1
+mkdir -p  /data/fastdfs/storage2
+#启动fdfs
+/usr/bin/fdfs_trackerd /etc/fdfs/tracker.conf restart  #启动tracker
+/usr/bin/fdfs_storaged /etc/fdfs/storage1.conf restart  #启动storage1
+/usr/bin/fdfs_storaged /etc/fdfs/storage2.conf restart  #启动storage2
+
+#设置开机启动
+echo '/usr/bin/fdfs_trackerd /etc/fdfs/tracker.conf restart' >> /etc/rc.d/rc.local
+echo '/usr/bin/fdfs_storaged /etc/fdfs/storage1.conf restart' >> /etc/rc.d/rc.local
+echo '/usr/bin/fdfs_storaged /etc/fdfs/storage2.conf restart' >> /etc/rc.d/rc.local
+
+#查看storage状态
+/usr/bin/fdfs_monitor /etc/fdfs/storage1.conf
 
 ---------------solr
 ---------------------------------------
@@ -189,7 +261,7 @@ vi /etc/ld.so.conf  #添加相应的库路径在里面
 /sbin/ldconfig
 
 /etc/ld.so.conf文件记录了编译时使用的动态链接库的路径。
-默认情况下，编译器只会使用/lib和/usr/lib这两个目录下的库文件
+默认情况下，编译器只会使用/lib和/usr/lib这两个目录下的库文件,64位系统还会使用/usr/lib64这个目录。
 如果安装了某些库，比如在安装gtk+-2.4.13时它会需要glib-2.0,安装好glib后没有指定 --prefix=/usr。
 这样glib库就装到了/usr/local下，而又没有在/etc/ld.so.conf中添加/usr/local/lib。安装gtk的时候就会报错找不到相应的库。
 将/usr/local/lib加入到/etc/ld.so.conf中，这样安装gtk时就会去搜索/usr/local/lib,就可以找到需要的库。
