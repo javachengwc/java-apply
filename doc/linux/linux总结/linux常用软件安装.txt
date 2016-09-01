@@ -149,6 +149,12 @@ chkconfig --level 345 mysql on   #mysql加入启动项
 ---------------zookeeper
 参见本工程中zookeeper配置安装.txt文件。
 
+---------------activemq
+参见本工程中activemq安装.txt文件。
+
+---------------kafka
+参见本工程中kafka安装.txt文件。
+
 ---------------redis
 参见本工程中redis安装启动.txt文件。
 
