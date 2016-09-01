@@ -1,0 +1,61 @@
+-----------------------------mysql安装-------------------------------
+rpm -qa | grep  mysql
+    mysql-libs-5.1.73-3.el6_5.i686
+rpm -e mysql-libs-5.1.73-3.el6_5.i686 --nodeps   #卸载自带的低版本mysql
+wget http://mirrors.sohu.com/mysql/MySQL-5.7/mysql-5.7.14-linux-glibc2.5-i686.tar.gz
+tar -zxvf mysql-5.7.14-linux-glibc2.5-i686.tar.gz
+cp -r mysql-5.7.14-linux-glibc2.5-i686 /usr/local/mysql
+groupadd mysql
+useradd -r -g mysql mysql
+cd /usr/local/mysql
+mkdir data                 #创建mysql数据目录
+chown -R mysql:mysql ./
+yum install libaio
+./bin/mysqld --initialize --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data
+   [Note] A temporary password is generated for root@localhost: f4(t0cvr*Dtq #此临时密码需要记住
+./bin/mysql_ssl_rsa_setup  --datadir=/usr/local/mysql/data
+chown -R mysql:mysql ./
+cp support-files/my-default.cnf  /etc/my.cnf
+cp support-files/mysql.server /etc/init.d/mysql  #启动脚本放到开机初始化目录
+chmod 755 /etc/init.d/mysql
+vim /etc/init.d/mysql
+   basedir=/usr/local/mysql
+   datadir=/usr/local/mysql/data
+vim /etc/my.cnf
+   [client]
+   port=3306
+   default-character-set=utf8
+   socket=/usr/local/mysql/mysql.sock
+   [mysqld]
+   port=3306
+   character-set-server=utf8
+   socket=/usr/local/mysql/mysql.sock
+   basedir=/usr/local/mysql
+   datadir=/usr/local/mysql/data
+   tmpdir=/usr/local/mysql/data
+   log-error=/usr/local/mysql/error.log
+   pid-file=/usr/local/mysql/mysql.pid
+   max_connections=500
+   default-storage-engine=InnoDB
+   binlog_format=mixed
+   log_bin=/usr/local/mysql/mysql-bin.log
+   max_binlog_size=100M
+   slow_query_log
+   long_query_time=2
+   slow_query_log_file=/usr/local/mysql/slow.log
+   server-id=1
+   sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
+bin/mysqld_safe --user=mysql &  #启动mysql
+bin/mysql -uroot -pf4(t0cvr*Dtq  #密码是之前生成的临时密码
+    mysql>set password=password('root');
+    mysql>grant all privileges on *.* to root@'%' identified by 'root';  #改root密码
+    mysql>flush privileges;
+    mysql>quit;
+bin/mysqladmin shutdown -uroot -proot  #关闭mysql
+vim /etc/profile
+    export PATH=/usr/local/mysql/bin:$PATH
+source /etc/profile
+chkconfig --add mysql
+chkconfig --level 345 mysql on   #mysql加入启动项
+
+-------------------------------------------------------------
