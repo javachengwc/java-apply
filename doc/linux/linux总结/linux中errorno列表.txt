@@ -12,29 +12,29 @@ int main(int argc, char ** argv)
   return 0;
 }
 /*****************************************************************/
-errno.00 is: Success
-errno.01 is: Operation not permitted
-errno.02 is: No such file or directory
-errno.03 is: No such process
-errno.04 is: Interrupted system call
-errno.05 is: Input/output error
-errno.06 is: No such device or address
-errno.07 is: Argument list too long
-errno.08 is: Exec format error
-errno.09 is: Bad file descriptor
-errno.10 is: No child processes
+errno.00 is: Success[成功]
+errno.01 is: Operation not permitted[操作不允许]
+errno.02 is: No such file or directory[没有此文件或目录]
+errno.03 is: No such process[没有此进程]
+errno.04 is: Interrupted system call[中断的系统调用]
+errno.05 is: Input/output error[IO错误]
+errno.06 is: No such device or address[没有这样的设备或地址]
+errno.07 is: Argument list too long[参数列表太长]
+errno.08 is: Exec format error[执行格式错误]
+errno.09 is: Bad file descriptor[坏的文件描述符]
+errno.10 is: No child processes[没有子进程]
 errno.11 is: Resource temporarily unavailable[资源临时不可用](连续发送数据时候会出此错，加延时)
-errno.12 is: Cannot allocate memory
-errno.13 is: Permission denied
-errno.14 is: Bad address
-errno.15 is: Block device required
-errno.16 is: Device or resource busy
-errno.17 is: File exists
-errno.18 is: Invalid cross-device link
-errno.19 is: No such device
-errno.20 is: Not a directory
-errno.21 is: Is a directory
-errno.22 is: Invalid argument
+errno.12 is: Cannot allocate memory[不能分配内存]
+errno.13 is: Permission denied[执行拒绝]
+errno.14 is: Bad address[错误的地址]
+errno.15 is: Block device required[需要块设备]
+errno.16 is: Device or resource busy[设备或资源繁忙]
+errno.17 is: File exists[文件已存在]
+errno.18 is: Invalid cross-device link[无效的交叉设备链接]
+errno.19 is: No such device[无此设备]
+errno.20 is: Not a directory[不是一个目录]
+errno.21 is: Is a directory[是一个目录]
+errno.22 is: Invalid argument[无效的参数]
 errno.23 is: Too many open files in system
 errno.24 is: Too many open files
 errno.25 is: Inappropriate ioctl for device
