@@ -261,6 +261,11 @@ echo '/usr/bin/fdfs_storaged /etc/fdfs/storage2.conf restart' >> /etc/rc.d/rc.lo
 /usr/bin/fdfs_monitor /etc/fdfs/storage1.conf
 
 ---------------solr
+
+
+---------------es
+参见本工程中es安装.txt文件。
+
 ---------------------------------------
 #安装过程中找不到相应库解决
 vi /etc/ld.so.conf  #添加相应的库路径在里面

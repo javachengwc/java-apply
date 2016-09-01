@@ -1,1 +1,10 @@
-eofexception  tomcat问题，删除tomcat下work目录中的内容，删除webapp下对应的工程，重部署
+----------------------------tomcat-note.txt----------------------------
+eofexception  tomcat问题，删除tomcat下work目录中的内容，删除webapp下对应的工程，重部署。
+tomcat下应用访问路径和参数支持中文配置
+vim tomcat\conf\server.xml
+      <Connector port="8080" protocol="HTTP/1.1"
+        connectionTimeout="20000"
+        URIEncoding="utf-8"
+        redirectPort="8443" />
+       #增加URIEncoding="utf-8" 中文支持
+-----------------------------------------------------------------------
