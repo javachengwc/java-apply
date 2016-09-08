@@ -9,7 +9,7 @@ import java.util.Date;
 /**
  * 数据库工具类
  */
-public class DbUtil {
+public class DbExportUtil {
 
     /**
      * 备份数据库
