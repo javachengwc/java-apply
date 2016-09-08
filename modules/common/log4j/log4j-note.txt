@@ -13,5 +13,13 @@ log4j.logger.com.test.tool=info,outfile2
 
 Test1将输出到stdout,outfile1
 Test2将输出到stdout,outfile1,outfile2
+这个输出结果的前提是stdout这个Appender的日志输出级别要大于等于后面2个的日志输出级别。
+如果stdout的日志输出级别设置成ERROR,log4j.appender.stdout.Threshold = ERROR,
+那只有Test1,Test2类或其他包类产生的error信息才在stdout中输出。
 
+FATAL     0
+ERROR     3
+WARN      4
+INFO      6
+DEBUG     7
 ------------------------------------------------------------------------
