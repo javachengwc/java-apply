@@ -261,7 +261,28 @@ echo '/usr/bin/fdfs_storaged /etc/fdfs/storage2.conf restart' >> /etc/rc.d/rc.lo
 /usr/bin/fdfs_monitor /etc/fdfs/storage1.conf
 
 ---------------solr
-
+#需先安装tomcat,tomcat的安装见上面，此处略
+wget http://archive.apache.org/dist/lucene/solr/4.5.1/solr-4.5.1.zip
+unzip solr-4.5.1.zip                               #解压
+cd solr-4.5.1/dist
+cp solr-4.5.1.war solr.war                         #重命名
+cp solr.war /home/cc/tomcat-solr/webapp/           #拷贝到tomcat/webapp下
+sh /home/cc/tomcat-solr/bin/startup.sh             #启动tomcat,自动解压出solr目录
+mkdir -p /home/cc/solrdata                         #创建solr存放索引的目录
+cp -rf solr-4.5.1/example/solr/* /home/cc/solrdata #复制示例索引到索引目录
+cd /home/cc/tomcat-solr/webapps/solr/WEB-INF
+vim web.xml                                        #修改solr home配置(原文件已有一个注释掉的demo片段,直接去掉注释在那配置)
+    <env-entry>
+      <env-entry-name>solr/home</env-entry-name>
+      <env-entry-value>/home/cc/solrdata</env-entry-value>
+      <env-entry-type>java.lang.String</env-entry-type>
+    </env-entry>
+mkdir classes                                      #创建classes目录,为了放日志配置文件
+cp -/solr-4.5.1/example/resources/log4j.properties ./classes   #从解压目录复制log4j配置到solr对应目录
+cp -/solr-4.5.1/example/lib/ext/* ./lib           #复制部分jar到solr下lib目录中
+sh /home/cc/tomcat-solr/bin/shutdown.sh
+sh /home/cc/tomcat-solr/bin/startup.sh            #重启tomcat
+http://127.0.0.1:8080/solr                        #访问solr
 
 ---------------es
 参见本工程中es安装.txt文件。
