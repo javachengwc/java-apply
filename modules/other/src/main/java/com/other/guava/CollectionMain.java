@@ -11,6 +11,14 @@ public class CollectionMain {
 
     public static void main(String args [])
     {
+        Set<Object> sets = new HashSet<Object>();
+        Object o = new Object();
+        sets.add(o);
+        sets.add(o);
+        sets.add(o);
+
+        System.out.println(sets.size());
+
         List<Set<String>> listSet = new ArrayList<Set<String>>();
         Set<String> set1= new HashSet<String>();
         set1.add("1");set1.add("2");set1.add("3");

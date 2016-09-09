@@ -26,6 +26,9 @@ import org.apache.commons.lang.RandomStringUtils;
  * 相比较结论 ConcurrentHashMap 比 HashMap 遍历循环for(s:list)/iterator map的EntitySet变量安全,不会出现ConcurrentModificationException异常
  * ConcurrentHashMap 遍历for(s:list)/iterator map的EntitySet变量，写线程对map的更新操作在读线程中都会反映出来
  * 且ConcurrentHashMap莫有闭环的隐患
+ *
+ * 多线程下操作Set是线程不安全的，除了可能出现与上面hashMap同样的问题外
+ * 如果多个线程中往set添加同一个对象，也有可能出现对象重复存在set中的情况，就会出现set中的元素可能不唯一的情况出现。
  */
 public class MapMain {
 	
