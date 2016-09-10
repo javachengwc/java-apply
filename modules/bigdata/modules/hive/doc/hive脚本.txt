@@ -47,4 +47,15 @@ where partitiontime = '20150818'
 and split(split(parse_url(concat('http://',website,url), 'QUERY','page_stats_w'),'/')[1],'\\*')[0]<67
 group by vn
 
+----------hive中各分组中排序前n%的数据查询
+select  b.g1,b.g2 count(b.id) as cnt,sum(b.score) as score
+from
+(
+   select id,g1,g2,score,
+   ntile(10) over (partition by g1,g2 order by score asc ) tg
+   from ta a
+) b where b.tg<=2
+group by  b.g1,b.g2
+#按照g1,g2分组,取各组中按照score升序排列前20%的记录汇总数据查询
+
 ------------------------------------------------------------------

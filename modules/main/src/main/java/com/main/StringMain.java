@@ -26,6 +26,7 @@ public class StringMain {
 
     public static void main(String args []) throws Exception
 	{
+        System.out.println(Boolean.valueOf("false"));
 
         System.out.println("-------------------");
         System.out.println(Pattern.compile("\\s*[,]+\\s*").split("aa,,bb,cc")[1]);

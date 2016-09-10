@@ -78,6 +78,11 @@ public class SpecUrlUtil extends UrlUtil
         int j = u.indexOf("/");
         if(j<0)
         {
+            int c = u.indexOf("?");
+            if(c>0)
+            {
+                return Integer.parseInt(u.substring(0,c));
+            }
             return Integer.parseInt(u);
         }
         return Integer.parseInt(u.substring(0,j));

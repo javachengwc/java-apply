@@ -370,6 +370,18 @@ public class SpecUrl implements Serializable {
         return address.toString();
     }
 
+    public List<SpecUrl> getBackupUrls() {
+        List<SpecUrl> urls = new ArrayList<SpecUrl>();
+        urls.add(this);
+        String[] backups = getParameter(Constant.BACKUP_KEY, new String[0]);
+        if (backups != null && backups.length > 0) {
+            for (String backup : backups) {
+                urls.add(genUrlWithAddress(backup));
+            }
+        }
+        return urls;
+    }
+
     private String appendDefPort(String address, int defPort) {
         if (!StringUtils.isBlank(address)  && defPort > 0) {
             int i = address.indexOf(':');
@@ -380,6 +392,19 @@ public class SpecUrl implements Serializable {
             }
         }
         return address;
+    }
+
+    public SpecUrl genUrlWithAddress(String address) {
+        int i = address.lastIndexOf(':');
+        String host;
+        int port = this.port;
+        if (i >= 0) {
+            host = address.substring(0, i);
+            port = Integer.parseInt(address.substring(i + 1));
+        } else {
+            host = address;
+        }
+        return new SpecUrl(getProtocol(), host, port, getPath(), getParameters(),getUsername(),getPassword());
     }
 
     public SpecUrl genUrlWithParamAdd(String key,Object value)
