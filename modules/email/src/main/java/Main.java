@@ -5,7 +5,7 @@ import java.io.File;
 import java.util.HashMap;
 
 /**
- * 发送邮件
+ * 带附件的邮件发送
  */
 public class Main {
 
