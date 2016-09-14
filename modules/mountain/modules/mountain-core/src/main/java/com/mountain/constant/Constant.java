@@ -22,4 +22,6 @@ public class Constant {
     public static final String  ANY_VALUE = "*";
 
     public static final String  SIDE_KEY = "side";
+
+    public static final String  EMPTY_PROTOCOL = "empty";
 }

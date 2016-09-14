@@ -7,5 +7,7 @@ public interface EmailService {
 	/**
 	 * 邮件发送
 	 */
-	void send(Map<?, ?> mailInfo);
+	public void send(Map<?, ?> mailInfo);
+
+    public String ping();
 }

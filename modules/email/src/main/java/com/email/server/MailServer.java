@@ -26,6 +26,7 @@ public class MailServer {
 		servlet.setHomeAPI(EmailService.class);
 		servlet.setHome(SpringContextUtils.getBean("emailService"));
 		root.addServlet(new ServletHolder(servlet), "/mail");
+        //访问路径:http://127.0.0.1:10001/mail
 		try {
 			server.start();
 		} catch (Exception e) {

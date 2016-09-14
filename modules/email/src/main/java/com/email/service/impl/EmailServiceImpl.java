@@ -24,6 +24,7 @@ public class EmailServiceImpl implements EmailService {
 
 	public void send(Map<?, ?> mailInfo) {
 
+        logger.info("EmailService send start.............");
 		long begin = System.currentTimeMillis();
 		EmailMeta meta = new EmailMeta(mailInfo);
 		Email mail = meta.toEmail();
@@ -40,6 +41,11 @@ public class EmailServiceImpl implements EmailService {
 
 		logger.info(MessageFormat.format("prepare mail[{0}] at {1}ms", mailInfo.get("to"), (System.currentTimeMillis() - begin)));
 	}
+
+    public String ping()
+    {
+        return "it's ok";
+    }
 
 	@Required
 	public void setHost(String host) {

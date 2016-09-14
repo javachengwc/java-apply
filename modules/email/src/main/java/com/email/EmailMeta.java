@@ -14,29 +14,28 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.apache.commons.mail.SimpleEmail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EmailMeta implements Serializable {
 
+    private static Logger logger = LoggerFactory.getLogger(EmailMeta.class);
+
 	private static final long serialVersionUID = -9198182999l;
 
-	/**
-	 * 来自,默认service@cc.com
-	 */
-	private static String from = "service@cc.com";
+	//来自,默认cc@cc.com
+	private static String from = "cc@cc.com";
 
-	/**
-	 * 来源名称
-	 */
+	//来源名称
 	private static String fromName = "cc-inc";
 
-	/**
-	 * 字符集
-	 */
-	private static String charset = "GBK";
+	//字符集
+	private static String charset = "UTF-8";
 
 	private final Map<String, String> headers = new HashMap<String, String>();
 
@@ -237,7 +236,10 @@ public class EmailMeta implements Serializable {
 	 * 跟根据邮件内容转换成可发送的email
 	 */
 	public Email toEmail() {
-		Email mail = null;
+        logger.info("EmailMeta toEmail() start,info-->"+this.toString());
+        logger.info("EmailMeta from="+this.getFrom()+",fromName="+this.getFromName());
+
+        Email mail = null;
 		if (this.isHtml()) {
 			mail = new HtmlEmail();
 		} else {
@@ -287,4 +289,9 @@ public class EmailMeta implements Serializable {
 		}
 		return mail;
 	}
+
+    public String toString()
+    {
+        return ToStringBuilder.reflectionToString(this);
+    }
 }
