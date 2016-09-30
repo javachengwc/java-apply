@@ -237,6 +237,29 @@ public class SpecUrl implements Serializable {
         return buf.toString();
     }
 
+    public String getInterface() {
+        return getParameter(Constant.INTERFACE_KEY, path);
+    }
+
+    public String getInterfaceService() {
+        String info = getInterface();
+        if (StringUtils.isBlank(info))
+        {
+            return "";
+        }
+        StringBuilder buf = new StringBuilder();
+        String group = getParameter(Constant.GROUP_KEY);
+        if (!StringUtils.isBlank(group)) {
+            buf.append(group).append("/");
+        }
+        buf.append(info);
+        String version = getParameter(Constant.VERSION_KEY);
+        if (!StringUtils.isBlank(version)) {
+            buf.append(":").append(version);
+        }
+        return buf.toString();
+    }
+
     public java.net.URL toJavaUrl() {
         try {
             return new java.net.URL(toString());
@@ -392,6 +415,11 @@ public class SpecUrl implements Serializable {
             }
         }
         return address;
+    }
+
+    public SpecUrl genUrlWithProtocol(String protocol) {
+
+        return new SpecUrl(protocol, getHost(), getPort(), getPath(), getParameters(),getUsername(),getPassword());
     }
 
     public SpecUrl genUrlWithAddress(String address) {

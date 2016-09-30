@@ -24,4 +24,21 @@ public class Constant {
     public static final String  SIDE_KEY = "side";
 
     public static final String  EMPTY_PROTOCOL = "empty";
+
+    public static final String  DYNAMIC_KEY = "dynamic";
+
+    public static final String  INTERFACE_KEY = "interface";
+
+    public static final String  PROVIDERS_CATEGORY = "providers";
+
+    public static final String  DEFAULT_CATEGORY = "providers";
+
+    public static final String  VALUE_PREFIX ="-";
+
+    public static final String  ENABLED_KEY= "enabled";
+
+    public static final String  DISABLED_KEY= "disabled";
+
+    public static final String  CLASSIFIER_KEY ="classifier";
+
 }

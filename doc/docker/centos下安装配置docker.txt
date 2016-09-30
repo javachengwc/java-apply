@@ -1,0 +1,20 @@
+------------------------------------centos下安装配置docker---------------------------------
+系统要求:CentOS 7 3.10以上 65位系统.
+$ uname -r
+  3.10.0-229.el7.x86_64
+
+$ sudo yum update
+
+$ vim /etc/yum.repos.d/docker.repo        #增加yum仓库
+    [dockerrepo]
+    name=Docker Repository
+    baseurl=https://yum.dockerproject.org/repo/main/centos/7/
+    enabled=1
+    gpgcheck=1
+    gpgkey=https://yum.dockerproject.org/gpg
+
+$ sudo yum install docker-engine          #安装docker
+$ sudo service docker start               #运行docker
+$ sudo docker run hello-world             #运行hello-world这个自带的image来验证docker是否安装成功
+
+-------------------------------------------------------------------------------------------------
