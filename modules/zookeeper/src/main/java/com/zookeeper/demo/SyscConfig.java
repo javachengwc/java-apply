@@ -39,14 +39,7 @@ public class SyscConfig implements Watcher {
 		}
 	}
 
-	/***
-	 * 写入或更新 数据
-	 * 
-	 * @param path
-	 *            写入路径
-	 * @param data
-	 *            写入的值
-	 * **/
+	//写入或更新数据
 	public void addOrUpdateData(String path, String data) throws Exception {
 
 		countDown.await();
@@ -63,11 +56,7 @@ public class SyscConfig implements Watcher {
 		}
 	}
 
-	/**
-	 * 读取数据
-	 * @return 读取数据的内容
-	 * 
-	 * **/
+	// 读取数据
 	public String readData() throws Exception {
 
 		String s = new String(zk.getData(PATH, this, null));
@@ -75,14 +64,10 @@ public class SyscConfig implements Watcher {
 		return s;
 	}
 
-	/**
-	 * 关闭zookeeper连接 释放资源
-	 * 
-	 * **/
+	// 关闭zookeeper连接 释放资源
 	public void close() {
 
 		try {
-
 			zk.close();
 		} catch (Exception e) {
 			e.printStackTrace();
