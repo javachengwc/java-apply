@@ -2,6 +2,10 @@
 hive> CREATE TABLE pokes (foo INT, bar STRING);
         Creates a table called pokes with two columns, the first being an integer and the other a string
 
+       CREATE TABLE data_tmp (userid INT,rating INT,unixtime STRING)
+       ROW FORMAT DELIMITED
+       FIELDS TERMINATED BY '\t'
+       STORED AS TEXTFILE;
 创建一个新表，结构与其他一样
 hive> create table new_table like records;
 
@@ -10,6 +14,9 @@ hive> create table logs(ts bigint,line string) partitioned by (dt String,country
 
 加载分区表数据：
 hive> load data local inpath '/home/hadoop/input/hive/partitions/file1' into table logs partition (dt='2001-01-01',country='GB');
+
+加载DFS数据 ，同时给定分区信息
+hive> load data inpath '/user/data/d2.txt'  overwrite into table logs partition (dt='2001-01-01',country='GB');
 
 展示表中有多少分区：
 hive> show partitions logs;
@@ -81,3 +88,13 @@ hive> CREATE VIEW valid_records AS SELECT * FROM records2 WHERE temperature !=99
 
 查看视图详细信息：
 hive> DESCRIBE EXTENDED valid_records;
+
+将查询数据输出至DFS目录
+hive> INSERT OVERWRITE DIRECTORY '/tmp/hdfs_out' SELECT a.* FROM invites a WHERE a.ds='';
+
+将查询结果输出至本地目录
+hive> INSERT OVERWRITE LOCAL DIRECTORY '/tmp/local_out' SELECT a.* FROM pokes a;
+
+将一个表的统计结果插入另一个表中
+hive> FROM invites a INSERT OVERWRITE TABLE events SELECT a.bar, count(1) WHERE a.foo > 0 GROUP BY a.bar;
+hive> INSERT OVERWRITE TABLE events SELECT a.bar, count(1) FROM invites a WHERE a.foo > 0 GROUP BY a.bar;

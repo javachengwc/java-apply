@@ -63,6 +63,9 @@ hive> show tables;
 OK
 Time taken: 21.874 seconds
 
+连接方式2
+beeline -u jdbc:hive2://127.0.0.1:10002 -n user -p passwd --verbose=true
+...
 hive>
 
 hive安装可能会遇到的问题
