@@ -1,0 +1,107 @@
+------------------------------hive应用----------------------------------
+Hive中分组取前N个值
+背景:假设有一个学生各门课的成绩的表单，应用hive取出每科成绩前10名的学生成绩。这个就是典型在分组取Top N的需求。
+
+解决思路:对于取出每科成绩前10名的学生成绩，针对学生成绩表，根据学科，成绩做order by排序,然后对排序后的成绩，执行自定义函数row_number(),
+必须带一个或者多个列参数，如ROW_NUMBER(col1, ....)，它的作用是按指定的列进行分组生成行序列。只要返回row_number()返回值小于10的的成绩记录，就可以返回每个单科成绩前10的学生。
+
+解决过程:
+#成绩表结构
+create table score_table (
+  subject        string,
+  student       string,
+  score           int
+)
+partitioned by (dt string)
+
+#查询每科成绩前10的学生成绩
+create temporary function row_number as 'com.blue.hive.udf.RowNumber';
+select subject,score,student from
+    (select subject,score,student from score_table where dt='2016' order by subject,score desc) student_score
+where row_number(subject) <= 10;
+com.blue.hive.udf.RowNumber是自定义函数，函数的作用是按指定的列进行分组生成行序列。这里根据每个科目的所有成绩，生成序列，序列值从1开始自增
+
+原始记录
+物理  80 张三
+数学  100 李一
+物理  90  张二
+数学  90  李二
+物理  100 张一
+数学  80  李三
+
+经过order by 后记录
+物理  100 张一
+物理  90  张二
+物理  80 张三
+.....
+数学  100 李一
+数学  90  李二
+数学  80  李三
+
+接着执行row_number函数，返回值如下
+科目  成绩 学生   row_number
+物理  100 张一      1
+物理  90  张二      2
+物理  80  张三      3
+.....
+数学  100 李一      1
+数学  90  李二      2
+数学  80  李三      3
+
+因为hive是基于MAPREADUCE的，必须保证row_number执行是在reducer中执行。上述的语句保证了成绩表的记录，按照科目和成绩做了全局排序，然后在reducer端执行row_number函数，
+如果在map端执行了row_number，那么结果将是错误的。要查看row_number函数在map端还是reducer端执行，可以查看hive的执行计划:
+create temporary function row_number as 'com.blue.hive.udf.RowNumber';
+explain select subject,score,student from
+    (select subject,score,student from score_table where dt='2016' order by subject,score desc) student_score
+where row_number(subject) <= 10;
+只要row_number函数在reducer端执行，除了使用order by全局排序配合，也可以使用distribute by + sort by。
+distribute by可以让相同科目的成绩记录发送到同一个reducer,而sort by可以在reducer端对记录做排序。
+而使用order by全局排序，只有一个reducer，未能充分利用资源，相比之下，distribute by + sort by在这里更有性能优势，可以在多个reducer做排序，再做row_number的计算。
+create temporary function row_number as 'com.blue.hive.udf.RowNumber';
+select subject,score,student from
+    (select subject,score,student from score_table where dt='2016' distribute by subject sort by subject asc, score desc) student_score
+where row_number(subject) <= 10;
+
+row_number函数:
+函数row_number(),必须带一个或者多个列参数，如row_number(col1, ....)，它的作用是按指定的列进行分组生成行序列。在ROW_NUMBER(a,b) 时，若两条记录的a，b列相同，则行序列+1，否则重新计数。
+源码如下:
+package com.blue.hive.udf;
+import org.apache.hadoop.hive.ql.exec.UDF;
+
+public class RowNumber extends UDF {
+    private static int MAX_VALUE = 50;
+    private static String comparedColumn[] = new String[MAX_VALUE];
+    private static int rowNum = 1;
+
+    public int evaluate(Object... args) {
+        String columnValue[] = new String[args.length];
+        for (int i = 0; i < args.length; i++) 『
+            columnValue[i] = args[i].toString();
+        }
+        if (rowNum == 1) {
+            for (int i = 0; i < columnValue.length; i++)
+                comparedColumn[i] = columnValue[i];
+        }
+
+        for (int i = 0; i < columnValue.length; i++) {
+            if (!comparedColumn[i].equals(columnValue[i])) {
+                for (int j = 0; j < columnValue.length; j++) {
+                    comparedColumn[j] = columnValue[j];
+                }
+                rowNum = 1;
+                return rowNum++;
+            }
+        }
+        return rowNum++;
+    }
+}
+
+编译后，打包成一个jar包，如/usr/local/hive/fun/rownumber.jar
+然后在hive shell下使用，如下:
+add jar /usr/local/hive/fun/rownumber.jar;
+create temporary function row_number as 'com.blue.hive.udf.RowNumber';
+select subject,score,student from
+    (select subject,score,student from score_table where dt='2016' order by subject,score desc) student_score
+where row_number(subject) <= 10;
+
+------------------------------------------------------------------------

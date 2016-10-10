@@ -1,8 +1,31 @@
+------------------------------hive hql-------------------------
+hive命令行交互
+hive –f  /root/shell/hive-script.sql（适合多语句）
+vi hive_script.sql
+    select * from t1;
+    select count(*) from t1;
+hive -S -f /root/shell/hive-script.sql（和静音模式-S联合使用不会显示mapreduct的操作过程）
+
+hive -e 'select * from t1'
+hive -S -e 'select * from t1'           #静音模式
+hive -e 'select * from t1'  > test.txt  #查询后结果保存到test.txt
+
+-------------------------
+#直接使用hive交互
+
+查看数据库
+hive> show databases;
+
+创建数据库
+hive> create database test;
+
+使用哪个数据库
+hive> use default;
+
 创建表：
 hive> CREATE TABLE pokes (foo INT, bar STRING);
-        Creates a table called pokes with two columns, the first being an integer and the other a string
 
-       CREATE TABLE data_tmp (userid INT,rating INT,unixtime STRING)
+hive>  CREATE TABLE data_tmp (userid INT,rating INT,unixtime STRING)
        ROW FORMAT DELIMITED
        FIELDS TERMINATED BY '\t'
        STORED AS TEXTFILE;
@@ -98,3 +121,5 @@ hive> INSERT OVERWRITE LOCAL DIRECTORY '/tmp/local_out' SELECT a.* FROM pokes a;
 将一个表的统计结果插入另一个表中
 hive> FROM invites a INSERT OVERWRITE TABLE events SELECT a.bar, count(1) WHERE a.foo > 0 GROUP BY a.bar;
 hive> INSERT OVERWRITE TABLE events SELECT a.bar, count(1) FROM invites a WHERE a.foo > 0 GROUP BY a.bar;
+
+------------------------------------------------------------------

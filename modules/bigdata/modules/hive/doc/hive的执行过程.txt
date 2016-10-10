@@ -1,0 +1,72 @@
+-----------------------------------------hive的执行过程-----------------------------------
+Hive的组件：
+元存储（Metastore ）         ---存储“系统目录以及关于表、列、分区等的元数据”的组件。
+驱动（Driver ）              ---控制 HiveQL 生命周期的组件，当 HiveQL 查询穿过 Hive时。该驱动管理着会话句柄以及任何会话的统计。
+查询编译器（Query Compiler） ---是一个组件，将HiveQL编译成有向无环图（directed acyclic graph, DAG）形式的map/reduce任务。
+执行引擎 Execution Engine    ---是一个组件，依相依性顺序（dependency order）执行由编译器产生的任务。
+Hive 服务器 HiveServer       ---一个提供“健壮的接口（thrift interface ）、JDBC/ODBC 服务器以及提供一种整合 Hive 和其它应用的”组件。
+客户端组件                   ---类似命令行接口CLI（Command Line Interface）， web UI 以及JDBC/ODBC驱动。包含了正反序列化（SerDe）以及对象观察器（ObjectInspector）接口的可扩展接口，
+                                类似于前述用户定义函数 UDF （User Defined Function）以及用户定义聚合函数UDAF（User Defined AggregateFunction）接口，允许用户定义自己的列函数。
+
+Hive执行的过程：
+HiveQL通过CLI/web UI或者thrift 、 odbc 或 jdbc接口的外部接口提交，经过complier编译器，运用Metastore中的云数据进行类型检测和语法分析，
+生成一个逻辑方案(logical plan),然后通过简单的优化处理，产生一个以有向无环图DAG数据结构形式展现的map-reduce任务。
+
+元存储(Metastore):
+存储列所有关于表、表的分区、模式、列及其类型、表地址等的表的元数据，可以通过thrift接口查询得到，由于需要快速的提供到编译器中，所以使用RDBMS
+
+查询编译器(query complier):
+用云存储中的元数据来生成执行计划，步骤如下：
+1).解析（parse）-anlr解析其生成语法树AST(hibernate也是这个)：将HQL转化为抽象语法树AST
+2).类型检查和语法分析(type checking and semantic analysis):将抽象语法树转换此查询块(query block tree),并将查询块转换成逻辑查询计划(logic plan Generator);
+3).优化(optimization):重写查询计划(logical optimizer)-->将逻辑查询计划转成物理计划(physical plan generator)-->选择最佳的join策略(physical optimizer)
+
+      parse　　 sa　　　 lpg 　　　　　 lo 　　　　　　 ppg 　　　　　 po
+hql------->AST------>QB----->OP TREE------->OP TREE------->task tree------->task tree
+
+首先进行hql语句解析，构造一颗AST树，从AST树中得到QueryBlock，再将QB转为对应的操作符，生成逻辑查询计划，对逻辑查询计划进行优化(谓词下推)，生成物理查询计划，
+对物理查询计划进行优化(MapJoinResolver/SkewJoinResolver/CommonJoinResolver)，得到最后的执行计划。
+MapJoinResolver：将小表的MR结果放入HashTableFiles-->DistributedCache,大表从分布式缓存中取得数据进行join；当hash数据较大时，分布式缓存查询效率降低，
+同时大表的Map都>在等待hash files；所以对其进行列优化处理小表的结果放到DC中进行压缩和更新，大表遍历时从DC中取出tar包>，然后解压读取本地的hash files。
+Hive完成列以下转换，作为优化阶段的一部分：
+1).列剪辑(column pruning):查询处理中唯一需要的列确实从行中投射出去
+2).谓语下推（Predicate pushdown):将只于一张表有关的过滤操作下推至TableScanOperator之后，
+3).分区剪辑（Partition pruning）:过滤掉分区上不符合条件的字段
+4).Map 端的连接（Map side joins）:当join的表很小时，在map段先复制它然后再进行join,格式如下：
+　SELECT /*+ MAPJOIN(t2) */ t1.c1, t2.c1 FROM t1 JOIN t2 ON(t1.c2 = t2.c2);
+　由hive.mapjoin.size.key以及hive.mapjoin.cache.numrows控制“任何时间保存在内存中的”表中行的数量，以及提供给系统联合键的大小
+5).连接再排序(Join reordering):把较小的表保存在内存中，较大的表进行遍历操作，保证系统内存不溢出
+
+MapJoin的进一步优化:
+1).数据再分区以把控GROUPBY形成的非对称（skews）:用两个MapReduce来做，第一个阶段将数据随机分发(或者按DISTINCT列分发在DISTINCT聚合的情况下)至reducers，并且计算聚合值；
+然后这些聚合结果按照GROUP BY 列分发给在第二个Reducer;
+　　　  set hive.groupby.skewindata= true ;
+　　　　SELECT t1.c1, sum(t1.c2)
+　　　　FROM t1
+　　　　GROUP BY t1.c1;
+2).mappers中的基于哈希的局部聚合:相当于combiner，在map端内存中进行聚合，然后发送给reducers，参数hive.map.aggr.hash.percentmemory说明了mapper 内存中可用于把控哈希表那部分的数量。
+如0.5能确保哈希表大小一旦超过用于mapper的最大内存的一半，存储在那儿的部分聚合就被发送到reducers了。hive.map.aggr.hash.min.reduction参数同样也用来控制用于mappers的内存数量
+
+执行引擎(execution engine):按照任务的依赖关系序列来执行
+
+其它优化：
+1).Left Semi Join实现in/exists子查询：
+SELECT A.* FROM A LEFT SEMI JOIN B ON(A.KEY = B.KEY AND B.KEY > 100);
+等同于SELECT A.* FROM A WHERE A.KEY IN(SELECT B.KEY FORM B WHERE B.KEY > 100);
+作用：map端用group by减少流入reduce端的数据量
+
+2).Bucket Map Join:
+set hive.optimize.bucketmapjoin = true;
+和Map join一起工作,所有join的表都做列分桶,同时大表桶的数量是小表桶的整数倍,做bucket的列必须是join的列。
+SELECT /*+MAPJOIN(a,c)*/ a.*, b.*, c.*
+a join b on a.key = b.key
+join c on a.key=c.key;
+在现实的生产环境中，会有成百上千个buckets。
+
+3).Skew join:
+join时数据倾斜，造成Reduce端OOM
+set hive.optimize.skewjoin = true;
+set hive.skewjoin.key = 阀值;
+当JOIN得到的map超过阀值时，将内存中的a-k1/b-k1数据分别存入hdfs中,然后遍历完后再对hdfs上的两块数据做Map Join,和其它key一起组成最后结果
+
+---------------------------------------------------------------------------------------------------

@@ -1,0 +1,117 @@
+-------------------------hive文件存储格式-------------------------
+hive文件存储格式包括以下几类：
+TEXTFILE,
+SEQUENCEFILE,
+RCFILE
+ORCFile(hive 0.11中被引入进来)
+其中TEXTFILE为默认格式，建表时不指定默认为这个格式，导入数据时会直接把数据文件拷贝到hdfs上不进行处理。
+SequenceFile,RCFile格式的表不能直接从本地文件导入数据，数据要先导入到textfile格式的表中，然后再从textfile表中用insert导入到SequenceFile,RCFile表中。
+
+TEXTFIEL:
+默认格式，数据不做压缩，磁盘开销大，数据解析开销大。
+可结合Gzip、Bzip2使用（系统自动检查，执行查询时自动解压），但使用这种方式，hive不会对数据进行切分，从而无法对数据进行并行操作。
+
+hive> create table test1(str STRING)
+    > STORED AS TEXTFILE;
+#写脚本生成一个随机字符串文件，导入文件：
+    > LOAD DATA LOCAL INPATH '/home/work/data/test.txt' INTO TABLE test1;
+Copying data from file:/home/work/data/test.txt
+Copying file: file:/home/work/data/test.txt
+Loading data to table default.test1
+
+SEQUENCEFILE:
+SequenceFile是Hadoop API提供的一种二进制文件支持，其具有使用方便、可分割、可压缩的特点。
+SequenceFile支持三种压缩选择：NONE, RECORD, BLOCK。 Record压缩率低，一般建议使用BLOCK压缩
+
+hive> create table test2(str STRING)
+hive> STORED AS SEQUENCEFILE;
+hive> SET hive.exec.compress.output=true;
+hive> SET io.seqfile.compression.type=BLOCK;
+hive> INSERT OVERWRITE TABLE test2 SELECT * FROM test1;
+
+RCFILE:
+RCFILE是一种行列存储相结合的存储方式。首先，其将数据按行分块，保证同一个record在一个块上，避免读一个记录需要读取多个block。
+其次，块数据列式存储，有利于数据压缩和快速的列存取
+
+hive> create table test3(str STRING)
+hive> STORED AS RCFILE;
+hive>  INSERT OVERWRITE TABLE test3 SELECT * FROM test1;
+
+ORCFile:
+ORC File，它的全名是Optimized Row Columnar (ORC) file，其实就是对RCFile做了一些优化。此文件格式可以提供一种高效的方法来存储Hive数据。
+它的设计目标是来克服Hive 其他格式的缺陷。运用ORC File可以提高Hive的读、写以及处理数据的性能。ORCFile在hive 0.11中被引入进来。
+和RCFile格式相比，ORC File格式有以下优点：
+(1)、每个task只输出单个文件，这样可以减少NameNode的负载；
+(2)、支持各种复杂的数据类型，比如： datetime, decimal, 以及一些复杂类型(struct, list, map, and union)；
+(3)、在文件中存储了一些轻量级的索引数据；
+(4)、基于数据类型的块模式压缩：a、integer类型的列用行程长度编码(run-length encoding);b、String类型的列用字典编码(dictionary encoding)；
+(5)、用多个互相独立的RecordReaders并行读相同的文件；
+(6)、无需扫描markers就可以分割文件；
+(7)、绑定读写所需要的内存；
+(8)、metadata的存储是用 Protocol Buffers的，所以它支持添加和删除一些列。
+
+hive> CREATE TABLE orc_test(
+hive> ...
+hive> ) STORED AS orc;
+
+hive>CREATE TABLE orc_test2(
+hive>...
+hive>) STORED AS orc tblproperties ("orc.compress"="SNAPPY");
+#设置列压缩格式为SNAPPY
+
+ORCFile存储格式有几个表属性可以进一步改善效果，这些属性如下：
+属性 	               默认值 	                   说明
+orc.compress 	       ZLIB 	                   列压缩格式（NONE, ZLIB, SNAPPY)
+orc.compress.size 	   262,144 (= 256 KiB) 	       每一个压缩块大小
+orc.stripe.size 	   268,435,456 (= 256 MiB) 	   每一个stripe大小
+orc.row.index.stride   10,000 	                   index间隔行数（必须大于10000）
+orc.create.index 	   true 	                   是否创建内联index
+
+测试表 	               存储 	压缩比 	count(*)时间（秒）
+rcfile原始表 	       7.5GB 	100% 	48
+orc_test(4个文件) 	   757MB 	10% 	57
+orc_test3(16个文件)    1.63GB 	22% 	56
+由上表可见，orc存储格式对存储的压缩提升了很多，而计算效率损失不大。业务方可以根据自身的计算特点选择使用。
+
+自定义格式
+当用户的数据文件格式不能被当前 Hive 所识别的时候，可以自定义文件格式。
+用户可以通过实现inputformat和 outputformat来自定义输入输出格式
+
+hive> create table test4(str STRING)
+hive> stored as
+hive> inputformat 'org.apache.hadoop.hive.contrib.fileformat.base64.Base64TextInputFormat'
+hive> outputformat 'org.apache.hadoop.hive.contrib.fileformat.base64.Base64TextOutputFormat';
+
+基于HDFS的行存储具备快速数据加载和动态负载的高适应能力，因为行存储保证了相同记录的所有域都在同一个集群节点。
+但是它不太满足快速的查询响应时间的要求，因为当查询仅仅针对所有列中的 少数几列时，它就不能跳过不需要的列，直接定位到所需列；
+同时在存储空间利用上，它也存在一些瓶颈，由于数据表中包含不同类型，不同数据值的列，行存储不 易获得一个较高的压缩比。
+RCFILE是基于SEQUENCEFILE实现的列存储格式。除了满足快速数据加载和动态负载高适应的需求外，也解决了SEQUENCEFILE的一些瓶颈。
+相比TEXTFILE和SEQUENCEFILE，RCFILE由于列式存储方式，数据加载时性能消耗较大，但是具有较好的压缩比和查询响应。
+数据仓库的特点是一次写入、多次读取，因此，整体来看，RCFILE相比其余两种格式具有较明显的优势。
+
+测试demo
+--TextFile
+set hive.exec.compress.output=true;
+set mapred.output.compress=true;
+set mapred.output.compression.codec=org.apache.hadoop.io.compress.GzipCodec;
+set io.compression.codecs=org.apache.hadoop.io.compress.GzipCodec;
+INSERT OVERWRITE table test_text_table PARTITION(product='xxx',dt='2015-05-22')
+SELECT xxx,xxx.... FROM xxxtable WHERE product='xxx' AND dt='2015-05-22';
+
+--SquenceFile
+set hive.exec.compress.output=true;
+set mapred.output.compress=true;
+set mapred.output.compression.codec=org.apache.hadoop.io.compress.GzipCodec;
+set io.compression.codecs=org.apache.hadoop.io.compress.GzipCodec;
+set io.seqfile.compression.type=BLOCK;
+INSERT OVERWRITE table test_sequence_table PARTITION(product='xxx',dt='2015-05-22')
+SELECT xxx,xxx.... FROM xxxtable WHERE product='xxx' AND dt='2015-05-22';
+
+--RCFile
+set hive.exec.compress.output=true;
+set mapred.output.compress=true;
+set mapred.output.compression.codec=org.apache.hadoop.io.compress.GzipCodec;
+set io.compression.codecs=org.apache.hadoop.io.compress.GzipCodec;
+INSERT OVERWRITE table test_rcfile_table PARTITION(product='xxx',dt='2015-05-22')
+SELECT xxx,xxx.... FROM xxxtable WHERE product='xxx' AND dt='2015-05-22';
+-------------------------------------------------------------------------
