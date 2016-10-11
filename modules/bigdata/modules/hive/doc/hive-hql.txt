@@ -62,6 +62,9 @@ hive> ALTER TABLE source RENAME TO target;
 添加新一列
 hive> ALTER TABLE invites ADD COLUMNS (new_col2 INT COMMENT 'a comment');
 
+清空表数据
+hive>insert overwrite table records select * from records where 1=0;
+
 删除表：
 hive> DROP TABLE records;
 

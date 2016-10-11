@@ -1,0 +1,38 @@
+----------------------------hive表字段类型-----------------------------
+Hive的内置数据类型可以分为两大类
+(1)、基础数据类型；
+(2)、复杂数据类型。
+
+基础数据类型包括：TINYINT,SMALLINT,INT,BIGINT,BOOLEAN,FLOAT,DOUBLE,STRING,BINARY,TIMESTAMP,DECIMAL,CHAR,VARCHAR,DATE。
+数据类型 	所占字节 	                             开始支持版本
+TINYINT 	1byte，-128 ~ 127
+SMALLINT 	2byte，-32,768 ~ 32,767
+INT 	    4byte,-2,147,483,648 ~ 2,147,483,647
+BIGINT 	    8byte
+BOOLEAN
+FLOAT 	    4byte单精度
+DOUBLE 	    8byte双精度
+STRING
+BINARY 	  	                                          从Hive0.8.0开始支持
+TIMESTAMP 	  	                                      从Hive0.8.0开始支持
+DECIMAL 	  	                                      从Hive0.11.0开始支持
+CHAR 	  	                                          从Hive0.13.0开始支持
+VARCHAR 	  	                                      从Hive0.12.0开始支持
+DATE 	  	                                          从Hive0.12.0开始支持
+
+复杂类型包括ARRAY,MAP,STRUCT,UNION，这些复杂类型是由基础类型组成的。
+ARRAY：ARRAY类型是由一系列相同数据类型的元素组成，这些元素可以通过下标来访问。比如有一个ARRAY类型的变量fruits，它是由['apple','orange','mango']组成，
+       那么可以通过fruits[1]来访问元素orange，ARRAY类型的下标是从0开始的。
+MAP：MAP包含key->value键值对，可以通过key来访问元素。比如”userlist”是一个map类型，其中username是key，password是value；那么可以通过userlist['username']来得到这个用户对应的password。
+STRUCT：STRUCT可以包含不同数据类型的元素。这些元素可以通过”点语法”的方式来得到所需要的元素，比如user是一个STRUCT类型，那么可以通过user.address得到这个用户的地址。
+UNION: UNIONTYPE，它是从Hive 0.7.0开始支持的。
+ep:
+ CREATE TABLE employees (
+    name STRING,
+    salary FLOAT,
+    subordinates ARRAY<STRING>,
+    deductions MAP<STRING, FLOAT>,
+    address STRUCT<street:STRING, city:STRING, state:STRING>
+) PARTITIONED BY (country STRING, state STRING);
+
+-----------------------------------------------------------------------------
