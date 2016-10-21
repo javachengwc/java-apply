@@ -33,7 +33,7 @@ public abstract class CacheRegistry implements  Registry{
     //url地址分隔正则表达式匹配任意空白字符
     private static final String URL_SPLIT = "\\s+";
 
-    private SpecUrl registryUrl;
+    protected SpecUrl registryUrl;
 
     private File file;
 
@@ -388,7 +388,7 @@ public abstract class CacheRegistry implements  Registry{
     }
 
     public void destroy() {
-        logger.error("CacheRegistry destroy begin ,register url:"+getUrl());
+        logger.info("CacheRegistry destroy begin ,register url:"+getUrl());
         Set<SpecUrl> destroyRegistered = new HashSet<SpecUrl>(getRegistered());
         if (! destroyRegistered.isEmpty()) {
             for (SpecUrl url :destroyRegistered) {
@@ -397,7 +397,7 @@ public abstract class CacheRegistry implements  Registry{
                     try {
                         unregister(url);
                     } catch (Exception e) {
-                        logger.warn("CacheRegistry  unregister error on destroy ,url="+url, e);
+                        logger.error("CacheRegistry  unregister error on destroy ,url="+url, e);
                     }
                 }
             }
@@ -410,7 +410,7 @@ public abstract class CacheRegistry implements  Registry{
                     try {
                         unsubscribe(url, listener);
                     } catch (Exception  e) {
-                        logger.warn("CacheRegistry unsubscribe error on destroy ,url=" +url, e);
+                        logger.error("CacheRegistry unsubscribe error on destroy ,url=" +url, e);
                     }
                 }
             }

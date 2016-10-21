@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * 随机负载均衡
+ * 权重负载均衡
  */
 public class WeightLoadBalance extends AbstractLoadBalance {
 

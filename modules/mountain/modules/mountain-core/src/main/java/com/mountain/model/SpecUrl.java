@@ -190,6 +190,14 @@ public class SpecUrl implements Serializable {
         return Pattern.compile("\\s*[,]+\\s*").split(value);
     }
 
+    public boolean getParameter(String key, boolean defaultValue) {
+        String value = getParameter(key);
+        if (value == null || value=="") {
+            return defaultValue;
+        }
+        return Boolean.parseBoolean(value);
+    }
+
     public String getParameterWithDecoded(String key) {
         return getParameterWithDecoded(key, null);
     }
@@ -307,6 +315,10 @@ public class SpecUrl implements Serializable {
         return urlStr;
     }
 
+    public String toServiceStr() {
+        return buildString(true, false, true, true);
+    }
+
     public String buildString(boolean appendUser, boolean appendParameter, boolean useIP, boolean useService, String... parameters) {
         StringBuilder buf = new StringBuilder();
         //协议
@@ -381,6 +393,10 @@ public class SpecUrl implements Serializable {
         return buf.toString();
     }
 
+    public String getBackupAddress() {
+        return getBackupAddress(0);
+    }
+
     public String getBackupAddress(int defPort) {
         StringBuilder address = new StringBuilder(appendDefPort(getAddress(), defPort));
         String[] backups = getParameter(Constant.BACKUP_KEY, new String[0]);
@@ -415,6 +431,10 @@ public class SpecUrl implements Serializable {
             }
         }
         return address;
+    }
+
+    public SpecUrl genUrlWithPath(String path) {
+        return new SpecUrl(getProtocol(), getHost(), getPort(), path,getParameters(),getUsername(),getPassword());
     }
 
     public SpecUrl genUrlWithProtocol(String protocol) {
@@ -488,6 +508,19 @@ public class SpecUrl implements Serializable {
         }
         SpecUrl newUrl = new SpecUrl(getProtocol(), getHost(), getPort(), getPath(), newParam,getUsername(),getPassword());
         return newUrl;
+    }
+
+    public boolean isAnyHost() {
+        if(Constant.ANYHOST_VALUE.equals(host) )
+        {
+            return true;
+        }
+        String anyStr=getParameter(Constant.ANYHOST_KEY);
+        if(!StringUtils.isBlank(anyStr) && "true".equalsIgnoreCase(anyStr))
+        {
+            return true;
+        }
+        return false;
     }
 
     @Override

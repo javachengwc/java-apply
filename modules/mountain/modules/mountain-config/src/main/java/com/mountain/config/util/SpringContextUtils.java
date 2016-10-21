@@ -1,4 +1,4 @@
-package com.mountain.config.spring.util;
+package com.mountain.config.util;
 
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;

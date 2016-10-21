@@ -1,7 +1,7 @@
 package com.mountain.config;
 
 import com.mountain.config.finagle.FinagleServerHandler;
-import com.mountain.config.spring.util.SpringContextUtils;
+import com.mountain.config.util.SpringContextUtils;
 import com.mountain.model.Provider;
 import com.mountain.model.SpecUrl;
 import com.mountain.registry.Registry;

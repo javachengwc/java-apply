@@ -19,6 +19,8 @@ public class Constant {
 
     public static final String  ANYHOST_VALUE = "0.0.0.0";
 
+    public static final String  ANYHOST_KEY = "anyhost";
+
     public static final String  ANY_VALUE = "*";
 
     public static final String  SIDE_KEY = "side";
@@ -40,5 +42,15 @@ public class Constant {
     public static final String  DISABLED_KEY= "disabled";
 
     public static final String  CLASSIFIER_KEY ="classifier";
+
+    public static final String  CONSUMERS_CATEGORY  = "consumers";
+
+    public static final String  ROUTERS_CATEGORY  = "routers";
+
+    public static final String  CONFIGURATORS_CATEGORY = "configurators";
+
+    public static final String  CHECK_KEY  = "check";
+
+    public final static String  PATH_SEPARATOR = "/";
 
 }

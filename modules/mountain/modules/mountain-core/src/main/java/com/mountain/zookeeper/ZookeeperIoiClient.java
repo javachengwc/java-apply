@@ -1,13 +1,17 @@
 package com.mountain.zookeeper;
 
+import org.I0Itec.zkclient.IZkChildListener;
 import org.I0Itec.zkclient.IZkStateListener;
 import org.I0Itec.zkclient.ZkClient;
 import org.apache.zookeeper.Watcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
@@ -22,6 +26,8 @@ public class ZookeeperIoiClient {
     private Watcher.Event.KeeperState curState=Watcher.Event.KeeperState.Disconnected;
 
     private Set<StateListener> stateListeners = new CopyOnWriteArraySet<StateListener>();
+
+    private ConcurrentMap<String,Set<IZkChildListener>> childListenersMap = new ConcurrentHashMap<String, Set<IZkChildListener>>();
 
     public ZookeeperIoiClient(String url,int timeout) {
         client = new ZkClient(url,timeout);
@@ -89,7 +95,7 @@ public class ZookeeperIoiClient {
         return client.exists(path);
     }
 
-    boolean writeData(String path, Object value)
+    public boolean writeData(String path, Object value)
     {
         boolean flag = false;
         try {
@@ -152,14 +158,46 @@ public class ZookeeperIoiClient {
         }
     }
 
+    public void addStateListener(StateListener listener) {
+        stateListeners.add(listener);
+    }
+
+    public void removeStateListener(StateListener listener) {
+        stateListeners.remove(listener);
+    }
+
+
+    public List<String> addChildListener(String path, IZkChildListener listener) {
+
+        Set<IZkChildListener> listenSet =childListenersMap.get(path);
+        if (listenSet == null) {
+            listenSet = new HashSet<IZkChildListener>();
+            childListenersMap.putIfAbsent(path,listenSet);
+        }
+        if(!listenSet.contains(listener))
+        {
+            listenSet.add(listener);
+        }
+        return client.subscribeChildChanges(path, listener);
+    }
+
+    public void removeChildListener(String path, IZkChildListener listener) {
+        Set<IZkChildListener> listenSet =childListenersMap.get(path);
+        if (listenSet != null && listenSet.contains(listener)) {
+            listenSet.remove(listener);
+            client.unsubscribeChildChanges(path,  listener);
+        }
+    }
+
     public static void main(String args []) throws Exception
     {
-        ZookeeperIoiClient client = new ZookeeperIoiClient("127.0.0.1:2181",60000);
+        ZookeeperIoiClient client = new ZookeeperIoiClient("127.0.0.1:2181",10000);
+        System.out.println("-------------------------------------------------------");
         System.out.println(client.checkExist("/aa/bb/ca"));
         client.writeData("/zk/cc334/zzz/ab/cd","ccc");
         System.out.println(client.getData("/zk/cc334/zzz/ab/cd"));
 
-        Thread.sleep(10*1000l);
+        Thread.sleep(100*1000l);
         client.create("/ab/ba/cb",true);
         client.create("/aa/bb/ca",true);
         //client.delete("/aa/bb/cc");

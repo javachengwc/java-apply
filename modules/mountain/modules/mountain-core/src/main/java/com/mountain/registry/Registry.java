@@ -1,7 +1,7 @@
 package com.mountain.registry;
 
-import com.mountain.core.zookeeper.ZookeeperClient;
 import com.mountain.model.SpecUrl;
+import com.mountain.zookeeper.ZookeeperIoiClient;
 
 import java.util.List;
 
@@ -25,6 +25,6 @@ public interface Registry {
     //查询
     public List<SpecUrl> query(SpecUrl url);
 
-    public ZookeeperClient getZookeeperClient();
+    public ZookeeperIoiClient getZookeeperClient();
 
 }

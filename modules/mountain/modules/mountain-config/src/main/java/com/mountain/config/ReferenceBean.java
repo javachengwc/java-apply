@@ -1,12 +1,12 @@
 package com.mountain.config;
 
 import com.mountain.config.finagle.FinagleInvoker;
-import com.mountain.core.Invoker;
 import com.mountain.cluster.LoadBalance;
 import com.mountain.cluster.WeightLoadBalance;
 import com.mountain.config.finagle.FinagleAsynInvokeHandler;
+import com.mountain.core.Invoker;
 import com.mountain.constant.Constant;
-import com.mountain.core.UrlConfer;
+import com.mountain.util.UrlConfer;
 import com.mountain.model.Consumer;
 import com.mountain.model.SpecUrl;
 import com.mountain.registry.NotifyListener;

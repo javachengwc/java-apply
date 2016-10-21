@@ -1,4 +1,4 @@
-package com.mountain.core;
+package com.mountain.util;
 
 import com.mountain.constant.Constant;
 import com.mountain.model.SpecUrl;

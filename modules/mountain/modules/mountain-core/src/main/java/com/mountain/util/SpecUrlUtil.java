@@ -1,5 +1,6 @@
 package com.mountain.util;
 
+import com.mountain.constant.Constant;
 import com.util.http.UrlUtil;
 import org.apache.commons.lang3.StringUtils;
 

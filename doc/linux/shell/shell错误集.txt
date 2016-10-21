@@ -1,0 +1,14 @@
+----------------------------------shell错误集--------------------------
+1,shell syntax error:unexpected end of file错误
+场景:在windows下编辑的shell脚本，在linux下运行报错
+错误:sh tt.sh 报错shell syntax error:unexpected end of file
+分析: windows下文件和Linux下文件格式差异问题导致的。
+      windows下的文本文件是以\r\n作为断行标志的，表示成十六进制就是0D 0A。而Unix下的文本文件是以\n作为断行标志的，表示成十六进制就是0A。
+      windows里,换行用的两个符号，回车\r，换行符号\n，在linux下只一个符号\n。
+      windows的文本文件在Linux下，用较低版本的vi打开时行尾会显示^M，当然也有可能看不到，
+      但是在vi的时候，会在下面显示此文件的格式，"tt.sh" [dos] 8L, 72C表示是一个dos文件格式。
+解决办法:
+vi tt.sh
+:set fileformat=unix
+:wq
+-----------------------------------------------------------------------

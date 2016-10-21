@@ -1,6 +1,6 @@
 package com.mountain.config;
 
-import com.mountain.config.spring.util.SpringContextUtils;
+import com.mountain.config.util.SpringContextUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;

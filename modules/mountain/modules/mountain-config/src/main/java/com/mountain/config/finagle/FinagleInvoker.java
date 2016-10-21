@@ -16,7 +16,7 @@ import java.net.InetSocketAddress;
 /**
  * finagle client service类
  */
-public class FinagleInvoker implements Invoker{
+public class FinagleInvoker implements Invoker {
 
     private static Logger logger = LoggerFactory.getLogger(FinagleInvoker.class);
 
