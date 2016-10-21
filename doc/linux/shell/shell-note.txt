@@ -1,0 +1,140 @@
+----------------------------------shell笔记------------------------------------
+shell命令行参数:
+$0 ：即命令本身，相当于c/c++中的argv[0]
+$1 ：第一个参数.
+$2, $3, $4 ... ：第2、3、4个参数，依次类推。
+$#  参数的个数，不包括命令本身
+$@ ：参数本身的列表，也不包括命令本身
+$* ：和$@相同，但"$*" 和 "$@"(加引号)并不同，"$*"将所有的参数解释成一个字符串，而"$@"是一个参数数组。
+-------------------------------------
+if条件语句:
+f [ expression ]
+then
+    statements
+fi
+
+if [ expression ]; then
+    statements
+elif [  expression ]; then
+    statements
+else
+    statements
+fi
+
+ep:
+YDAY=`date -d yesterday +%Y%m%d`
+LOGFILE="/tmp/logs/access_$YDAY.log"
+if [ -f "LOGFILE" ];then
+    echo "OK"
+else
+    echo "log file not exist,$LOGFILE" >tmp_info.log
+    mail -s "$YDAY log is not find" cc@cc.com <tmp_info.log
+fi
+
+if test $[2*3] -eq $[1+5]; then echo 'the two numbers is equal'; fi;
+#test 命令用于检查某个条件是否成立，与方括号[ ]类似。
+注意:expression 和方括号[ ]之间必须有空格，否则会有语法错误。
+------------------------------------
+for、while、until循环语句:
+
+ep:
+#!/bin/bash
+for x in one two three four
+do
+    echo $x
+done
+#for循环接收in语句之后的某种类型的字列表。
+
+for (( c=1; c<=5; c++ ))
+do
+    if [ $c -eq 2 ];then
+        continue
+    fi
+    if [ $c -eq 4 ];then
+        break
+    fi
+    echo "do $c times..."
+done
+#类似java风格的for循环,for循环中的用到了break,continue。
+
+for arg in "$@"
+do
+    echo $arg
+done
+#for循环接收in中的命令行参数列表
+
+echo "for: Traditional form: for var in ..."
+for j in $(seq 1 5)
+do
+    echo $j
+done
+#for循环中用seq产生循环次数
+
+#!/bin/bash
+myvar=1
+while [ $myvar -le 10 ]
+do
+    echo $myvar
+    myvar=$(( $myvar + 1 ))
+done
+#while循环输出1到10
+
+#!/bin/bash
+myvar=1
+until [ $myvar -gt 10 ]
+do
+    echo $myvar
+    myvar=$(( $myvar + 1 ))
+done
+#until语句循环输出1到10
+
+#循环中变量自增方法:
+1. i=`expr $i + 1`;
+2. let i+=1;
+3. ((i++));
+4. i=$[$i+1];
+5. i=$(( $i + 1 ))
+-------------------------------------------------------------------------------
+Q、如何查看当前使用什么shell?
+A: echo $SHELL 或ps
+
+Q、如何查看当前系统支持哪些shell?
+A： chsh --list-shells 或  cat /etc/shells
+
+Q、如何更改当前shell?
+A：chsh -s /bin/csh; 或编辑/etc/passed. 这些改变不会立即生效，改变的是用户登录shell，需要用户重新登录才能看到shell改变。
+   如果想立即改变shell。 直接运行/bin/csh。另外在shell脚本可以指定 #!/bin/bash 。指定解析shell。也可以 /bin/bash xx.sh 显示指定shell解析器运行。
+
+Q、什么是登录shell? 什么是非登录shell?
+A：登录shell 是通过输入用户名密码登录得到的shell。如ssh或telnet登录进入的shell。
+   非登陆shell如在图形系统下打开控制台。或直接在命令行里输入/bin/csh 之类切换得到shell。属于非登录shell。
+   如果在命令行里输入 /bin/bash --login. 那么这时候得到的就是登录shell
+   两者差别是，登录shell会加载一些文件。首先执行/etc/profile，然后执行以~/.bash_开头的文件，其次~/.profile。退出时候执行~/.bash_logout脚本（如果存在）。
+   非登陆shell不会执行上面这些脚本。而是执行~/.bashrc。
+    一般系统为了保证~/.bashrc都会被执行，~/.bash_profile中调用~/.bashrc
+   if [ -f ~/.bashrc ]; then
+    . ~/.bashrc
+   fi
+   如此一来。~/.bashrc反而变成保证一致性，变得非常通用而且很重要的初始化地方。
+   另外由于~代表各个用户自己，所以为了避免给每个用户修改~/.bashrc 文件。由此产生了一个全局所有用户的文件/etc/bashrc。 在每个用户 ~/.bashrc 文件有这样一句话
+   if [ -f /etc/bashrc ]; then
+        . /etc/bashrc
+   fi
+   这样就方便了，更改一个文件内容，对登录还是分登录shell，所有用户都能生效。
+
+Q、什么是交互shell和非交互shell?
+A：非交互Shell是指为执行脚本而fork出来的子Shell。说简单点。就是script脚本里面shell命令是在非交互shell下执行。因为解析这些命令时候。会启动一个/bin/bash 之类解析器去执行。
+
+Q、如何去执行一个shell脚本?
+A：有两种方式：
+   一是启动一个子shell解析器去执行脚本。就是上面说到的非交互shell。
+   ./test.sh 或 /bin/bash test.sh(和sh test.sh等同)
+   另一种方式是不启动子shell解析器。在当前shell内执行。
+   source test.sh 或 .  test.sh. 这种情况下实际上source和. 是bash的内部指令
+
+Q、如何查看当前是终端还是伪终端?
+A：使用ps命令。
+   在当前机器，如在虚拟机里面输入ps查看到终端类型是TTY:tty1
+   在ssh或telnet登录的控制使用ps查看到的是TTY:pts/1,这里pts中p=pseudo表示虚拟的意思
+   这些终端设备可当文件使用。例如可以使用echo 1 > /dev/tty1  或 echo 2 > /dev/pts/1 直接显示消息到终端上去。可以帮你消息输出到别人控制台上去。
+-------------------------------------------------------------------------------
