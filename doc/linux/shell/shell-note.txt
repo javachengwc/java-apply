@@ -34,6 +34,41 @@ fi
 if test $[2*3] -eq $[1+5]; then echo 'the two numbers is equal'; fi;
 #test 命令用于检查某个条件是否成立，与方括号[ ]类似。
 注意:expression 和方括号[ ]之间必须有空格，否则会有语法错误。
+
+-------------------------------------
+case语句:
+
+ep:
+#!/bin/bash
+echo "enter a number from 1 to 5:"
+read num
+case $num in
+    1) echo "you enter 1"
+    ;;
+    2) echo "you enter 2"
+    ;;
+    3) echo "you enter 3"
+    ;;
+    4) echo "you enter 4"
+    ;;
+    5) echo "you enter 5"
+    ;;
+    *) echo "error"
+    ;;
+esac
+
+#!/bin/bash
+echo "enter [y/n]:"
+read a
+case $a in
+    y|Y|Yes|YES) echo "you choise y $a"
+    ;;
+    n|N|NO|no) echo "you choise n $a"
+    ;;
+    *) echo "error"
+    ;;
+esac
+
 ------------------------------------
 for、while、until循环语句:
 

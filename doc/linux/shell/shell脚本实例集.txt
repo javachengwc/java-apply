@@ -1,0 +1,99 @@
+------------------------------shell脚本实例集-----------------------------
+1,读取输入数据
+#!/bin/bash
+while [ "$d" != "end" ]
+do
+  #echo -n 不换行输出
+  echo -n "please input a number: "
+  read d
+  if [ "$d" = "end" ]
+  then
+     break
+  fi
+  echo "var is $d"
+done
+
+2,删除当前目录下大小为0的文件
+#/bin/bash
+for filename in `ls`
+do
+  if test -d $filename
+  then
+      echo "$filename is dir"
+  else
+      a=$(ls -l $filename | awk '{ print $5 }')
+      if test $a -eq 0
+          then rm $filename
+          echo "$filename is deleted"
+      fi
+  fi
+done
+
+3,一行一行读取文件内容打印出来
+#!/bin/bash
+while read line
+do
+    echo $line
+done < $1
+
+4,获取本机IP地址
+#!/bin/bash
+ifconfig eth0 | grep "inet addr:" | awk '{ print $2 }'| sed 's/addr://g'
+或
+#!/bin/bash
+file="/etc/sysconfig/network-scripts/ifcfg-eth0"
+if [ -f $file ] ;then
+    IP=`grep "IPADDR" $file|awk -F"=" '{ print $2 }'`
+    MASK=`grep "NETMASK" $file|awk -F"=" '{ print $2 }'`
+    echo "$IP/$MASK"
+fi
+
+5,打印无密码用户
+#!/bin/bash
+echo $(cat /etc/shadow |grep '!!' | awk 'BEGIN { FS=":" }{print $1}')
+
+6,查询当前网段在使用的ip
+#!/bin/bash
+a=1
+while :
+do
+    a=$(($a+1))
+    if test $a -gt 128
+    then
+        break
+    else
+        echo $(ping -c 1 192.168.100.$a | grep "ttl" | awk '{print $4}'| sed 's/://g')
+        ip=$(ping -c 1 192.168.100.$a | grep "ttl" | awk '{print $4}'| sed 's/://g')
+        echo $ip >> ip.txt
+    fi
+done
+
+7,自动ftp上传
+#!/bin/bash
+ftp -n << END_FTP
+open 192.168.100.10
+#用户名test  密码：test
+user test test
+binary
+#关闭提示
+prompt  off
+#上传files文件
+mput   files
+close
+bye
+END_FTP
+
+8,监控主机的磁盘空间,当有使用空间达到90％就发email提醒
+#!/bin/bash
+#提取本服务器的IP地址信息
+IP=`ifconfig eth0 | grep "inet addr" | cut -f 2 -d ":" | cut -f 1 -d " "`
+SPACE=`df -hP | awk '{print int($5)}'`
+for per in $SPACE
+do
+  if [ $per -ge 90 ]
+  then
+    echo "$IP服务器存在磁盘空间使用率达到$per%，请留意。" | mail -s "服务器磁盘空间告警"  tt@tt.com
+  fi
+don
+
+-----------------------------------------------------------------------------
