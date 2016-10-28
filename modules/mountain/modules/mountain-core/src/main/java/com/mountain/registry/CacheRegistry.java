@@ -185,7 +185,7 @@ public abstract class CacheRegistry implements  Registry{
         return null;
     }
 
-    public List<SpecUrl> lookup(SpecUrl url) {
+    public List<SpecUrl> query(SpecUrl url) {
         List<SpecUrl> result = new ArrayList<SpecUrl>();
         Map<String, List<SpecUrl>> notifiedUrls = getNotified().get(url);
         if (notifiedUrls != null && notifiedUrls.size() > 0) {
@@ -265,7 +265,7 @@ public abstract class CacheRegistry implements  Registry{
     protected void recover() throws Exception {
         // register
         Set<SpecUrl> recoverRegistered = new HashSet<SpecUrl>(getRegistered());
-        if (! recoverRegistered.isEmpty()) {
+        if (recoverRegistered!=null && recoverRegistered.size()>0) {
             logger.info("CacheRegistry recover register url " + recoverRegistered);
             for (SpecUrl url : recoverRegistered) {
                 register(url);
@@ -273,7 +273,7 @@ public abstract class CacheRegistry implements  Registry{
         }
         // subscribe
         Map<SpecUrl, Set<NotifyListener>> recoverSubscribed = new HashMap<SpecUrl, Set<NotifyListener>>(getSubscribed());
-        if (! recoverSubscribed.isEmpty()) {
+        if ( recoverSubscribed!=null && recoverSubscribed.size()>0) {
             logger.info("CacheRegistry recover subscribe url " + recoverSubscribed.keySet());
             for (Map.Entry<SpecUrl, Set<NotifyListener>> entry : recoverSubscribed.entrySet()) {
                 SpecUrl url = entry.getKey();
