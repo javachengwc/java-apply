@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:djy="http://ccc.com/schema/djy"
+       default-autowire="byName" default-lazy-init="true"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+                           http://ccc.com/schema/djy http://ccc.com/schema/djy/djy.xsd">
+
+    <context:annotation-config/>
+    <context:component-scan base-package="com.mountain.tb.service"/>
+
+    <!--zookeeper注册中心-->
+    <djy:registry id="zk01" protocol="zookeeper" address="127.0.0.1:2181" timeout="20000"/>
+
+    <djy:application id="monutain-testb"/>
+
+    <djy:reference id="transServiceReference" sid="testa-trans-server"
+            api="com.mountain.tb.finagle.trans.TransDealService" version="1.0"
+            timeout="30000" registry="zk01"/>
+
+    <bean id="transConsumeService" class="com.mountain.tb.service.TransConsumeService" >
+        <property name="transService" ref="transServiceReference"/>
+    </bean>
+</beans>
