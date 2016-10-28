@@ -66,10 +66,10 @@ public class SpecUrl implements Serializable {
         this.protocol = protocol;
         this.host = host;
         this.port = (port < 0 )? 0 : port;
-        this.path = path;
         while(path != null && path.startsWith("/")) {
             path = path.substring(1);
         }
+        this.path = path;
         if (parameters == null) {
             parameters = new HashMap<String, String>();
         }
@@ -577,6 +577,20 @@ public class SpecUrl implements Serializable {
             }
         }
         return true;
+    }
+
+    public String toString()
+    {
+        StringBuffer buf = new StringBuffer();
+        buf.append("url-->").append(toUrlStr()).append("\r\n");
+        buf.append("protocol-->").append(getProtocol()).append("\r\n");
+        buf.append("host-->").append(getHost()).append("\r\n");
+        buf.append("port-->").append(getPort()).append("\r\n");
+        buf.append("path-->").append(getPath()).append("\r\n");
+        buf.append("username-->").append(getUsername()).append("\r\n");
+        buf.append("password-->").append(getPassword()).append("\r\n");
+        buf.append("ip-->").append(getIp()).append("\r\n");
+        return buf.toString();
     }
 
 }

@@ -220,7 +220,7 @@ public abstract class CacheRegistry implements  Registry{
         if (url == null) {
             throw new IllegalArgumentException("CacheRegistry register url == null");
         }
-        logger.info("CacheRegistry register url:" + url);
+        logger.info("CacheRegistry register url:" + url.toUrlStr());
         registered.add(url);
     }
 

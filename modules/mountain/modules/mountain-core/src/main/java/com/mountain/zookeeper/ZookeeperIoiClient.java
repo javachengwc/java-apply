@@ -58,7 +58,6 @@ public class ZookeeperIoiClient {
 
     public void create(String path, boolean ephemeral)
     {
-        System.out.println("path="+path);
         int i = path.lastIndexOf('/');
         if (i > 0) {
             create(path.substring(0, i), false);

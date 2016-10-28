@@ -432,7 +432,9 @@ public class ZookeeperRegistry extends CacheRegistry {
     public void doRegister(SpecUrl url)
     {
         try {
-            zkClient.create(toUrlPath(url), url.getParameter(Constant.DYNAMIC_KEY, true));
+            String urlPath =toUrlPath(url);
+            logger.info("ZookeeperRegistry doRegister urlPath="+urlPath);
+            zkClient.create(urlPath, url.getParameter(Constant.DYNAMIC_KEY, true));
         } catch (Exception e) {
             logger.error("ZookeeperRegistry doRegister failed ,url= "+url,e);
             throw new RegistryException("ZookeeperRegistry doRegister failed ,url="+url, e);
