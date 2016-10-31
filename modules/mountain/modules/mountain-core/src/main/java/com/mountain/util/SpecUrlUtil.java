@@ -1,6 +1,5 @@
 package com.mountain.util;
 
-import com.mountain.constant.Constant;
 import com.util.http.UrlUtil;
 import org.apache.commons.lang3.StringUtils;
 
@@ -117,7 +116,7 @@ public class SpecUrlUtil extends UrlUtil
         int i = u.indexOf("/");
         if(i>=0)
         {
-            u= u.substring(i);
+            u= u.substring(i+1);
             i= u.indexOf("?");
             if(i>0)
             {

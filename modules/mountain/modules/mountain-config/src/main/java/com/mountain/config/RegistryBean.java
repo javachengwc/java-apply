@@ -77,6 +77,7 @@ public class RegistryBean  implements Serializable,InitializingBean {
         }else {
             String urlStr=formatRegistryUrl(getAddress());
             SpecUrl url =SpecUrl.valueOf(urlStr);
+            logger.info("RegistryBean gen url=\r\n"+url);
             Registry oldRegistry =zookeeperRegistryMap.putIfAbsent(getId(), new ZookeeperRegistry(url));
             if(oldRegistry==null)
             {

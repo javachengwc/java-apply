@@ -37,7 +37,7 @@ public abstract class CacheRegistry implements  Registry{
 
     private File file;
 
-    private Properties properties = new Properties();
+    protected Properties properties = new Properties();
 
     //文件缓存定时写入
     private  ExecutorService registryCacheExecutor = Executors.newFixedThreadPool(1, new NamedThreadFactory("CacheRegistry", true));
@@ -56,8 +56,9 @@ public abstract class CacheRegistry implements  Registry{
 
     public CacheRegistry(SpecUrl url) {
         setUrl(url);
-        syncSaveFile = Boolean.valueOf(url.getParameter("cache_mode", "false"));
+        syncSaveFile =url.getParameter("cache_mode", false);
         String fileName = System.getProperty("user.home") + "/.mountain/registry-" + url.getParameter("application","application") + url.getHost() + ".cache";
+        logger.info("CacheRegistry fileName="+fileName);
         File file = null;
         if (!StringUtils.isBlank(fileName)) {
             file = new File(fileName);

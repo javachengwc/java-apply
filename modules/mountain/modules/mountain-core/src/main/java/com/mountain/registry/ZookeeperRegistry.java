@@ -26,7 +26,7 @@ public class ZookeeperRegistry extends CacheRegistry {
 
     private static int ZK_PORT = 2181;
 
-    private static String ROOT_PATH = "mountain";
+    public static String ROOT_PATH = "mountain";
 
     private String  root;
 
@@ -49,6 +49,14 @@ public class ZookeeperRegistry extends CacheRegistry {
     private ScheduledExecutorService retryExecutor = Executors.newScheduledThreadPool(1, new NamedThreadFactory("RetryTimer", true));
 
     private ScheduledFuture<?> retryFuture;
+
+    public String getRoot() {
+        return root;
+    }
+
+    public void setRoot(String root) {
+        this.root = root;
+    }
 
     public ZookeeperRegistry(SpecUrl url)
     {
@@ -585,5 +593,14 @@ public class ZookeeperRegistry extends CacheRegistry {
         if (notified != null) {
             notified.remove(listener);
         }
+    }
+
+    public String toString()
+    {
+        StringBuffer buf = new StringBuffer();
+        buf.append("root-->").append(root).append("\r\n");
+        buf.append("registryUrl-->").append(registryUrl).append("\r\n");
+        buf.append("properties-->").append(properties).append("\r\n");
+        return buf.toString();
     }
 }

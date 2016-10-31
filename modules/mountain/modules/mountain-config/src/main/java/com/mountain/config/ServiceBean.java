@@ -39,6 +39,7 @@ public class ServiceBean implements InitializingBean {
     public static List<SpecUrl> providerUrlList = new ArrayList<SpecUrl>();
 
     static {
+        System.out.println("ServiceBean exec static ...........");
         RunTimeUtil.addShutdownHook(new Thread(new Runnable() {
             public void run() {
                 logger.info("ServiceBean shutdown hook 回收service资源。");
@@ -187,7 +188,9 @@ public class ServiceBean implements InitializingBean {
         }
         if (needInitService) {
             //初始化服务
-            if(!initService()){
+            boolean inited=initService();
+            logger.info("ServiceBean init service [" + getId() + "] result is "+inited);
+            if(!inited){
                 //如果没有初始化成功, 不应将服务注册到zookeeper上
                 return;
             }
@@ -199,6 +202,7 @@ public class ServiceBean implements InitializingBean {
             }
             String[] registryIds = registryId.split(",");
             for (String rId : registryIds) {
+                logger.info("ServiceBean registry service [" + getId() + "] to "+rId);
                 registryService(rId);
             }
             ServiceBean.registryServiceMap.put(getId(),registryId);
@@ -223,6 +227,7 @@ public class ServiceBean implements InitializingBean {
             return isSuccess;
         }
         Provider provider = new Provider(id,api,port,version,timeout,threads);
+        logger.info("ServiceBean provider = "+provider);
         FinagleServerHandler finagleServerHandler = new FinagleServerHandler( provider,service);
         logger.info("ServiceBean initService service["+getId()+"] port:[" + port + "],thrift:[" + api + "],timeout:[" + timeout + "],threads:[" + threads + "]");
         try {
@@ -244,12 +249,13 @@ public class ServiceBean implements InitializingBean {
         }
         String urlStr=buildUrl();
         SpecUrl url = SpecUrl.valueOf(urlStr);
+        logger.info("ServiceBean service["+getId()+"] url=\r\n"+url);
         registry.register(url);
         providerUrlList.add(url);
         logger.info("ServiceBean registryService service["+getId()+"]注册成功,url=" + urlStr );
         //服务备注
         try {
-            registry.getZookeeperClient().writeData("/djy/" + getId(), EncodeUtil.urlEncode(getNote()));
+            registry.getZookeeperClient().writeData(registry.getRoot()+"/" + getId(), EncodeUtil.urlEncode(getNote()));
         } catch (Exception e) {
             logger.error("ServiceBean registryService service["+getId()+"]备注失败.",e);
         }
@@ -280,6 +286,7 @@ public class ServiceBean implements InitializingBean {
 
     //删除服务节点
     public static void destroyAll() {
+        logger.info("ServiceBean destroyAll start....");
         for (SpecUrl providerUrl : providerUrlList) {
             String serviceName = providerUrl.getServiceName();
             String regZkIds = ServiceBean.registryServiceMap.get(serviceName);

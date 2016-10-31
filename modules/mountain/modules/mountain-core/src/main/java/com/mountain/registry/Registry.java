@@ -10,6 +10,9 @@ import java.util.List;
  */
 public interface Registry {
 
+    //注册中心的根
+    public String getRoot();
+
     //注册服务
     public void register(SpecUrl url);
 
