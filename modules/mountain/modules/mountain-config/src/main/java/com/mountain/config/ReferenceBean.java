@@ -172,6 +172,8 @@ public class ReferenceBean<T> implements FactoryBean,InitializingBean  {
     }
 
     public void init() {
+
+        logger.info("ReferenceBean init start...");
         ip = NetUtil.getLocalHost();
         pid = AppUtil.getPid();
         this.application=ApplicationBean.applicationName;
@@ -207,10 +209,13 @@ public class ReferenceBean<T> implements FactoryBean,InitializingBean  {
             }
             try {
                 //订阅服务
+                logger.info("ReferenceBean reference[" +getId()  + "] subscribeService begin ...registry:[" + registryId + "]");
                 subscribeService(registryService);
                 //初始化消费者
+                logger.info("ReferenceBean reference[" +getId()  + "] initConsumer begin ...registry:[" + registryId + "]");
                 initConsumer();
                 //注册消费者
+                logger.info("ReferenceBean reference[" +getId()  + "] registryConsumer begin ...registry:[" + registryId + "]");
                 registryConsumer(registryService);
             } catch (Exception e) {
                 logger.error("ReferenceBean 订阅服务或初始化并注册消费者异常,reference["+getId()+"],registry:["+registryId+"]",e);
@@ -243,14 +248,14 @@ public class ReferenceBean<T> implements FactoryBean,InitializingBean  {
         }
 
         Map<String,String> paramMap = new HashMap<String,String>();
-        paramMap.put( Constant.CATEGORY_KEY,"configurators");
-        paramMap.put( Constant.VERSION_KEY,"*");
-        final SpecUrl subscribeConfUrl = new SpecUrl("finagle", "0.0.0.0", 0, serviceName, paramMap);
+        paramMap.put( Constant.CATEGORY_KEY,Constant.CONFIGURATORS_CATEGORY);
+        paramMap.put( Constant.VERSION_KEY,Constant.ANY_VALUE);
+        final SpecUrl subscribeConfUrl = new SpecUrl("finagle", Constant.ANYHOST_VALUE, 0, serviceName, paramMap);
 
         Map<String,String> providerParamMap = new HashMap<String,String>();
-        providerParamMap.put( Constant.CATEGORY_KEY,"providers");
-        providerParamMap.put( Constant.VERSION_KEY,"*");
-        final SpecUrl subscribeProviderUrl = new SpecUrl("finagle", "0.0.0.0", 0, serviceName,providerParamMap);
+        providerParamMap.put( Constant.CATEGORY_KEY,Constant.PROVIDERS_CATEGORY);
+        providerParamMap.put( Constant.VERSION_KEY,Constant.ANY_VALUE);
+        final SpecUrl subscribeProviderUrl = new SpecUrl("finagle", Constant.ANYHOST_VALUE, 0, serviceName,providerParamMap);
 
         registryService.subscribe(subscribeProviderUrl, new NotifyListener() {
             public void notify(List<SpecUrl> urls) {
@@ -262,13 +267,20 @@ public class ReferenceBean<T> implements FactoryBean,InitializingBean  {
             }
             //获取所有的服务提供者对应的配置列表
             List<SpecUrl> configuratorUrls =  registryService.query(subscribeConfUrl);
-            List<Invoker> invokers = mergeProviderAndConfUrls(urls, configuratorUrls, referenceId, version, timeout);
+            int confUrlSize =configuratorUrls==null?0:configuratorUrls.size();
+            logger.info("NotifyListener notify configuratorUrls size="+confUrlSize);
+            if(confUrlSize>0)
+            {
+                logger.info("NotifyListener notify configuratorUrls first ele:\r\n"+configuratorUrls.get(0));
+            }
+            List<Invoker> invokers = genInvoker(urls, configuratorUrls, referenceId, version, timeout);
             serviceInvokerMap.put(serviceName, invokers);
             int invokerCnt =(invokers==null)?0:invokers.size();
-            logger.info("NotifyListener notify reference[" + referenceId + "]缓存服务[" + serviceName + "]"+ invokerCnt +"] 个提供者。");
+            logger.info("NotifyListener notify reference[" + referenceId + "]缓存服务[" + serviceName + "]"+ invokerCnt +"个提供者。");
             loadBalanceMap.putIfAbsent(serviceName, new WeightLoadBalance());
             }
         });
+        logger.info("ReferenceBean subscribe "+subscribeProviderUrl.toUrlStr()+" over");
 
         registryService.subscribe(subscribeConfUrl, new NotifyListener() {
             public void notify(List<SpecUrl> urls) {
@@ -280,20 +292,23 @@ public class ReferenceBean<T> implements FactoryBean,InitializingBean  {
             }
             //获取所有服务提供者
             List<SpecUrl> invokerUrls = registryService.query(subscribeProviderUrl);
-            List<Invoker> invokers = mergeProviderAndConfUrls(invokerUrls, urls, referenceId, version, timeout);
+            List<Invoker> invokers = genInvoker(invokerUrls, urls, referenceId, version, timeout);
             serviceInvokerMap.put(serviceName, invokers);
             int invokerCnt =(invokers==null)?0:invokers.size();
-            logger.info("NotifyListener notify reference[" + referenceId + "]缓存服务[" + serviceName + "]"+ invokerCnt +"] 个提供者。");
+            logger.info("NotifyListener notify reference[" + referenceId + "]缓存服务[" + serviceName + "]"+ invokerCnt +"个提供者。");
             }
         });
+        logger.info("ReferenceBean subscribe "+subscribeConfUrl.toUrlStr()+" over");
     }
 
-    private List<Invoker> mergeProviderAndConfUrls(List<SpecUrl> providerUrls, List<SpecUrl> confUrls,String referenceId,String version,int timeout){
+    private List<Invoker> genInvoker(List<SpecUrl> providerUrls, List<SpecUrl> confUrls,String referenceId,String version,int timeout){
+
         Map<String, SpecUrl> urlMap = new HashMap<String, SpecUrl>();
         if (providerUrls != null) {
             for (SpecUrl invokerUrl : providerUrls) {
                 urlMap.put(invokerUrl.getAddress()+":"+version, invokerUrl);
             }
+            //合并url
             if(confUrls!=null){
                 for (SpecUrl confUrl : confUrls) {
                     String key = confUrl.getAddress() + ":" + confUrl.getParameter(Constant.VERSION_KEY, "1.0");
@@ -301,8 +316,7 @@ public class ReferenceBean<T> implements FactoryBean,InitializingBean  {
                         UrlConfer urlConfer = new UrlConfer(confUrl);
                         SpecUrl providerUrl =urlMap.get(key);
                         SpecUrl tempUrl = urlConfer.conf(providerUrl);
-                        logger.info("ReferenceBean mergeProviderAndConfUrls 服务提供者url:[" + providerUrl.toUrlStr() + "]合并自定义配置url:[" + confUrl.toUrlStr() + "]后，\r\n"
-                                +"生成的新的url:[" +tempUrl.toUrlStr() + "]");
+                        logger.info("ReferenceBean mergeProviderAndConfUrls 服务提供者url:[" + providerUrl.toUrlStr() + "]合并自定义配置url:[" + confUrl.toUrlStr() + "]后，生成的新的url:[" +tempUrl.toUrlStr() + "]");
                         urlMap.put(key, tempUrl);
                     }
                 }
@@ -315,15 +329,16 @@ public class ReferenceBean<T> implements FactoryBean,InitializingBean  {
             tempUrl = tempUrl.genUrlWithParamAdd("timeout", timeout);
             //版本一致且可用
             String tempVersion =tempUrl.getParameter(Constant.VERSION_KEY, "1.0");
-            String userable =tempUrl.getParameter(Constant.USEABLE_KEY, "true");
-            if(!"false".equals(userable) && version.equals(tempVersion)){
+            boolean userable =tempUrl.getParameter(Constant.USEABLE_KEY, true);
+            if(userable && version.equals(tempVersion)){
                 Invoker invoker = finagleInvokerMap.get(tempUrl.getAddress());
                 if(invoker==null){
+                    //产生调用客户端
                     invoker = new FinagleInvoker(tempUrl);
                 }
                 newInvokers.add(invoker);
                 logger.info("ReferenceBean mergeProviderAndConfUrls  reference[" + referenceId + "]合并服务提供者的配置后，url:[" + invoker.getUrl().toUrlStr() +
-                        "]  useable:[" + invoker.getUrl().getParameter(Constant.USEABLE_KEY, "true")+ "]  version: [" +invoker.getUrl().getParameter(Constant.VERSION_KEY, "1.0")+ "]");
+                        "]  useable:[" + invoker.getUrl().getParameter(Constant.USEABLE_KEY, true)+ "]  version: [" +invoker.getUrl().getParameter(Constant.VERSION_KEY, "1.0")+ "]");
             }
         }
         return newInvokers;
@@ -360,9 +375,9 @@ public class ReferenceBean<T> implements FactoryBean,InitializingBean  {
 
         //订阅路由信息
         Map<String,String> paramMap=new HashMap<String,String>();
-        paramMap.put( Constant.CATEGORY_KEY,"routers");
-        paramMap.put( Constant.VERSION_KEY,"*");
-        SpecUrl subscribeRouterUrl = new SpecUrl("route", "0.0.0.0", 0, serviceName, paramMap);
+        paramMap.put( Constant.CATEGORY_KEY,Constant.ROUTERS_CATEGORY);
+        paramMap.put( Constant.VERSION_KEY,Constant.ANY_VALUE);
+        SpecUrl subscribeRouterUrl = new SpecUrl(Constant.ROUTER_PROTOCOL, Constant.ANYHOST_VALUE, 0, serviceName, paramMap);
         registryService.subscribe(subscribeRouterUrl, new NotifyListener() {
 
             public void notify(List<SpecUrl> urls) {
@@ -386,10 +401,10 @@ public class ReferenceBean<T> implements FactoryBean,InitializingBean  {
     public String buildUrl()
     {
         StringBuffer buf = new StringBuffer();
-        buf.append("consumer://");
+        buf.append(Constant.CONSUMER_PROTOCOL+"://");
         buf.append(NetUtil.getLocalHost());
         buf.append("/" + getSid());
-        buf.append("?category=consumers");
+        buf.append("?category="+Constant.CONSUMERS_CATEGORY);
         buf.append("&pid=" + AppUtil.getPid());
         buf.append("&timestamp=" + System.currentTimeMillis());
         buf.append("&version=" + getVersion());
@@ -402,10 +417,10 @@ public class ReferenceBean<T> implements FactoryBean,InitializingBean  {
     public String buildRoute()
     {
         StringBuffer buf = new StringBuffer();
-        buf.append("route://");
+        buf.append(Constant.ROUTER_PROTOCOL+"://");
         buf.append(NetUtil.getLocalHost());
         buf.append("/" + getSid());
-        buf.append("?category=routers");
+        buf.append("?category="+Constant.ROUTERS_CATEGORY);
         buf.append("&disabled=false");
         buf.append("&pid=" + AppUtil.getPid());
         buf.append("&application=" + application);
@@ -425,6 +440,8 @@ public class ReferenceBean<T> implements FactoryBean,InitializingBean  {
 
     @Override
     public Object getObject() throws Exception {
+        //在具体调用接口的时候，此方法是入口
+        logger.info("ReferenceBean getObject invoked.............");
         return getProxy();
     }
 
@@ -454,7 +471,7 @@ public class ReferenceBean<T> implements FactoryBean,InitializingBean  {
             for(Invoker invoker : invokers){
                 Service<ThriftClientRequest, byte[]> service = (Service<ThriftClientRequest, byte[]>) invoker.getProvider();
                 service.close();
-                logger.info("ReferenceBean destroyInvokerProvider释放服务提供者:[" + invoker.getUrl().toUrlStr() + "]资源成功。");
+                logger.info("ReferenceBean destroy InvokerProvider释放服务提供者:[" + invoker.getUrl().toUrlStr() + "]资源成功。");
             }
         }
     }

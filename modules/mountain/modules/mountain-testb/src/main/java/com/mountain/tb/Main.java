@@ -15,7 +15,7 @@ public class Main {
         logger.info("Main testb start............");
 
         TransConsumeService transConsumeService =applicationContext.getBean("transConsumeService",TransConsumeService.class);
-        transConsumeService.consume(1);
+        transConsumeService.consume(300);
 
     }
 

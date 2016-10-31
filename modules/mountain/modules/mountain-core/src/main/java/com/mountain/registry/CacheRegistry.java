@@ -324,15 +324,17 @@ public abstract class CacheRegistry implements  Registry{
         if (listener == null) {
             throw new IllegalArgumentException("CacheRegistry notify listener == null");
         }
-        if ((urls == null || urls.size() == 0) && ! Constant.ANY_VALUE.equals(url.getInterface())) {
+        int urlsLen =urls ==null?0:urls.size();
+        if ( urlsLen==0 && ! Constant.ANY_VALUE.equals(url.getInterface())) {
             logger.warn("CacheRegistry notify urls is null ");
             return;
         }
-        logger.info("CacheRegistry notify urls for subscribe url: " + url + ", urls: " + urls);
+        logger.info("CacheRegistry notify urls for subscribe url: " + url +",urlsLen="+urlsLen);
 
         Map<String, List<SpecUrl>> result = new HashMap<String, List<SpecUrl>>();
         for (SpecUrl u : urls) {
             if (ServiceUrlUtil.isMatch(url, u)) {
+                logger.info("CacheRegistry notify match url has u-->\r\n "+u);
                 String category = u.getParameter(Constant.CATEGORY_KEY, Constant.DEFAULT_CATEGORY);
                 List<SpecUrl> categoryList = result.get(category);
                 if (categoryList == null) {
@@ -342,7 +344,8 @@ public abstract class CacheRegistry implements  Registry{
                 categoryList.add(u);
             }
         }
-        if (result.size() == 0) {
+        if (result.size() <= 0) {
+            logger.info("CacheRegistry notify result size <=0");
             return;
         }
         Map<String, List<SpecUrl>> categoryNotified = notified.get(url);
@@ -353,6 +356,8 @@ public abstract class CacheRegistry implements  Registry{
         for (Map.Entry<String, List<SpecUrl>> entry : result.entrySet()) {
             String category = entry.getKey();
             List<SpecUrl> categoryList = entry.getValue();
+            int categoryUrlSize =categoryList==null?0:categoryList.size();
+            logger.info("CacheRegistry notify category= "+category+", category url size ="+categoryUrlSize);
             categoryNotified.put(category, categoryList);
             saveProperties(url);
             listener.notify(categoryList);
@@ -368,15 +373,20 @@ public abstract class CacheRegistry implements  Registry{
             Map<String, List<SpecUrl>> categoryNotified = notified.get(url);
             if (categoryNotified != null) {
                 for (List<SpecUrl> list : categoryNotified.values()) {
-                    for (SpecUrl per : list) {
-                        if (buf.length() > 0) {
-                            buf.append(URL_SEPARATOR);
+                    if(list!=null) {
+                        for (SpecUrl per : list) {
+                            if (buf.length() > 0) {
+                                buf.append(URL_SEPARATOR);
+                            }
+                            buf.append(per.toUrlStr());
                         }
-                        buf.append(per.toUrlStr());
                     }
                 }
             }
-            properties.setProperty(url.getInterfaceService(), buf.toString());
+            String interfaceService=url.getInterfaceService();
+            String info = buf.toString();
+            logger.info("CacheRegistry saveProperties interfaceService="+interfaceService+",info=\r\n"+info);
+            properties.setProperty(interfaceService,info);
             long version = lastCacheCnt.incrementAndGet();
             if (syncSaveFile) {
                 cache(version);

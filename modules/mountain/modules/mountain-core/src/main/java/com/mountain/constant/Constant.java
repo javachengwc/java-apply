@@ -42,6 +42,8 @@ public class Constant {
 
     public static final String  CONSUMER_PROTOCOL  = "consumer";
 
+    public static final String  ROUTER_PROTOCOL  = "route";
+
     //category
     public static final String  ROUTERS_CATEGORY  = "routers";
 

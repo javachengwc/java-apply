@@ -41,6 +41,7 @@ public class FinagleAsynInvokeHandler implements InvocationHandler {
     public FinagleAsynInvokeHandler(Consumer consumer) {
         this.consumer=consumer;
         if (!StringUtils.isBlank(consumer.getDirecturl())) {
+            //directurl有值此处才创建invoker，非特殊情况下directurl都是无值的
             String serviceName = consumer.getSid();
             if (StringUtils.isBlank(serviceName)) {
                 //临时名称
@@ -67,7 +68,7 @@ public class FinagleAsynInvokeHandler implements InvocationHandler {
                 surl = invoker.getUrl().toUrlStr();
             } else {
                 SpecUrl routeUrl =ReferenceBean.getRouter(serviceName);
-                if (routeUrl!=null && !"false".equals(routeUrl.getParameter(Constant.USEABLE_KEY, "true"))) {
+                if (routeUrl!=null && routeUrl.getParameter(Constant.USEABLE_KEY, true)) {
                     Invoker invoker = ReferenceBean.getProvider(serviceName);
                     surl = invoker.getUrl().toUrlStr();
                     service = (Service<ThriftClientRequest, byte[]>) invoker.getProvider();
@@ -126,11 +127,11 @@ public class FinagleAsynInvokeHandler implements InvocationHandler {
     }
 
     private void invokeBefore() {
-
+        logger.info("FinagleAsynInvokeHandler invokeBefore invoked...");
     }
 
     private void invokeAfter() {
-
+        logger.info("FinagleAsynInvokeHandler invokeAfter invoked...");
     }
 
 }

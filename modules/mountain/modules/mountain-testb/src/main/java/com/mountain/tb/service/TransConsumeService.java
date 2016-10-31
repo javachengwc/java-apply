@@ -19,6 +19,11 @@ public class TransConsumeService {
         this.transService = transService;
     }
 
+    public TransConsumeService()
+    {
+        logger.info("TransConsumeService create ..........");
+    }
+
     public void consume(int dealId)
     {
         logger.info("TransConsumeService consume start");
@@ -26,7 +31,7 @@ public class TransConsumeService {
         ThreadUtil.sleep(2000l);
         try {
             StringResult result = transService.transDeal(dealId).toJavaFuture().get();
-            System.out.println("--------------transDeal result:\r\n");
+            System.out.println("--------------transDeal result:");
             System.out.println(result);
 
         }catch(Exception e)

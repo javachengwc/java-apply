@@ -8,15 +8,15 @@ import java.util.Arrays;
 
 public class ServiceUrlUtil {
 
-    public static boolean isMatchCategory(String category, String categories) {
-        if (StringUtils.isBlank(categories)) {
+    public static boolean isMatchCategory(String category, String consumerCategory) {
+        if (StringUtils.isBlank(consumerCategory)) {
             return Constant.DEFAULT_CATEGORY.equals(category);
-        } else if (categories.contains(Constant.ANY_VALUE)) {
+        } else if (consumerCategory.contains(Constant.ANY_VALUE)) {
             return true;
-        } else if (categories.contains(Constant.VALUE_PREFIX)) {
-            return !categories.contains(Constant.VALUE_PREFIX + category);
+        } else if (consumerCategory.contains(Constant.VALUE_PREFIX)) {
+            return !consumerCategory.contains(Constant.VALUE_PREFIX + category);
         } else {
-            return categories.contains(category);
+            return consumerCategory.contains(category);
         }
     }
 
@@ -35,21 +35,21 @@ public class ServiceUrlUtil {
             return false;
         }
 
-        boolean providerEnable= Boolean.valueOf(providerUrl.getParameter(Constant.ENABLED_KEY, "true"));
+        boolean providerEnable= providerUrl.getParameter(Constant.ENABLED_KEY, true);
 
         if (!providerEnable && !Constant.ANY_VALUE.equals(consumerUrl.getParameter(Constant.ENABLED_KEY)))
         {
             return false;
         }
-        String consumerGroup = consumerUrl.getParameter(Constant.GROUP_KEY);
+        String consumerGroup = consumerUrl.getParameter(Constant.GROUP_KEY, Constant.ANY_VALUE);
         String consumerVersion = consumerUrl.getParameter(Constant.VERSION_KEY);
         String consumerClassifier = consumerUrl.getParameter(Constant.CLASSIFIER_KEY, Constant.ANY_VALUE);
 
-        String providerGroup = providerUrl.getParameter(Constant.GROUP_KEY);
+        String providerGroup = providerUrl.getParameter(Constant.GROUP_KEY, Constant.ANY_VALUE);
         String providerVersion = providerUrl.getParameter(Constant.VERSION_KEY);
         String providerClassifier = providerUrl.getParameter(Constant.CLASSIFIER_KEY, Constant.ANY_VALUE);
 
-        boolean groupMatch =(Constant.ANY_VALUE.equals(consumerGroup) || consumerGroup.equals(providerGroup) || Arrays.asList(consumerGroup.split(",")).contains(providerGroup));
+        boolean groupMatch =(consumerGroup==null || Constant.ANY_VALUE.equals(consumerGroup) || consumerGroup.equals(providerGroup) || Arrays.asList(consumerGroup.split(",")).contains(providerGroup));
         if(!groupMatch)
         {
             return false;

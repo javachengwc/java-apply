@@ -38,12 +38,12 @@ public class PropertiesLoader {
     public static Properties loadFile(File file,Properties savedProperties )
     {
         InputStream in = null;
+        if(savedProperties==null) {
+            savedProperties = new Properties();
+        }
         try {
             if (file!=null && file.exists()) {
                 in = new FileInputStream(file);
-                if(savedProperties==null) {
-                    savedProperties = new Properties();
-                }
                 savedProperties.load(in);
                 return savedProperties;
             }else
@@ -61,6 +61,6 @@ public class PropertiesLoader {
                 }
             }
         }
-        return null;
+        return savedProperties;
     }
 }

@@ -174,6 +174,7 @@ public class ZookeeperRegistry extends CacheRegistry {
             }
             addFailSubscribed(url, listener);
         }
+        logger.info("ZookeeperRegistry subscribe over...");
     }
 
     //取消订阅
@@ -294,6 +295,7 @@ public class ZookeeperRegistry extends CacheRegistry {
         if (providers != null && providers.size() > 0) {
             for (String provider : providers) {
                 provider = EncodeUtil.urlDecode(provider);
+                logger.info("ZookeeperRegistry gen without empty url,provider="+provider);
                 if (provider.contains("://")) {
                     SpecUrl url = SpecUrl.valueOf(provider);
                     if (ServiceUrlUtil.isMatch(consumer, url)) {
@@ -307,10 +309,15 @@ public class ZookeeperRegistry extends CacheRegistry {
 
     private List<SpecUrl> toUrlsWithEmpty(SpecUrl consumer, String path, List<String> providers) {
         List<SpecUrl> urls = toUrlsWithoutEmpty(consumer, providers);
-        if (urls == null || urls.isEmpty()) {
+        if(urls==null)
+        {
+           urls = new ArrayList<SpecUrl>();
+        }
+        if (urls.isEmpty()) {
             int i = path.lastIndexOf('/');
-            String category = i < 0 ? path : path.substring(i + 1);
+            String category = (i < 0) ? path : path.substring(i + 1);
             SpecUrl empty=consumer.genUrlWithProtocol(Constant.EMPTY_PROTOCOL).genUrlWithParamAdd(Constant.CATEGORY_KEY,category);
+            logger.info("ZookeeperRegistry gen empty url is:\r\n"+empty+",category="+category);
             urls.add(empty);
         }
         return urls;
@@ -462,7 +469,9 @@ public class ZookeeperRegistry extends CacheRegistry {
     public void doSubscribe(final SpecUrl url, final NotifyListener listener)
     {
         try {
-            if (Constant.ANY_VALUE.equals(url.getInterface())) {
+            String iface = url.getInterface();
+            logger.info("ZookeeperRegistry doSubscribe url interface="+iface);
+            if (Constant.ANY_VALUE.equals(iface)) {
                 String root = this.root;
                 ConcurrentMap<NotifyListener, IZkChildListener> listeners = listenerMap.get(url);
                 if (listeners == null) {
@@ -504,7 +513,11 @@ public class ZookeeperRegistry extends CacheRegistry {
                 }
             } else {
                 List<SpecUrl> urls = new ArrayList<SpecUrl>();
-                for (String path : toCategoriesPath(url)) {
+                String[] pathArray = toCategoriesPath(url);
+                int pathArrayLen= pathArray==null?0:pathArray.length;
+                logger.info("ZookeeperRegistry doSubscribe pathArray length= "+pathArrayLen);
+                for (String path :pathArray ) {
+                    logger.info("ZookeeperRegistry doSubscribe per path,path="+path);
                     ConcurrentMap<NotifyListener, IZkChildListener> listeners = listenerMap.get(url);
                     if (listeners == null) {
                         listenerMap.putIfAbsent(url, new ConcurrentHashMap<NotifyListener, IZkChildListener>());
@@ -522,9 +535,11 @@ public class ZookeeperRegistry extends CacheRegistry {
                     zkClient.create(path, false);
                     List<String> children = zkClient.addChildListener(path, zkListener);
                     if (children != null) {
-                        urls.addAll(toUrlsWithEmpty(url, path, children));
+                        List<SpecUrl> specList =toUrlsWithEmpty(url, path, children);
+                        urls.addAll(specList);
                     }
                 }
+                logger.info("ZookeeperRegistry doSubscribe invoke notify begin...");
                 notify(url, listener, urls);
             }
         } catch (Exception e) {
