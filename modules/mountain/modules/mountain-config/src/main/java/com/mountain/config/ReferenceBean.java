@@ -259,43 +259,45 @@ public class ReferenceBean<T> implements FactoryBean,InitializingBean  {
 
         registryService.subscribe(subscribeProviderUrl, new NotifyListener() {
             public void notify(List<SpecUrl> urls) {
-            int cnt = (urls==null)?0:urls.size();
-            if(cnt<=0)
-            {
-                logger.info("NotifyListener notify subscribeProviderUrl urls count<=0,count="+cnt);
-                return;
-            }
-            //获取所有的服务提供者对应的配置列表
-            List<SpecUrl> configuratorUrls =  registryService.query(subscribeConfUrl);
-            int confUrlSize =configuratorUrls==null?0:configuratorUrls.size();
-            logger.info("NotifyListener notify configuratorUrls size="+confUrlSize);
-            if(confUrlSize>0)
-            {
-                logger.info("NotifyListener notify configuratorUrls first ele:\r\n"+configuratorUrls.get(0));
-            }
-            List<Invoker> invokers = genInvoker(urls, configuratorUrls, referenceId, version, timeout);
-            serviceInvokerMap.put(serviceName, invokers);
-            int invokerCnt =(invokers==null)?0:invokers.size();
-            logger.info("NotifyListener notify reference[" + referenceId + "]缓存服务[" + serviceName + "]"+ invokerCnt +"个提供者。");
-            loadBalanceMap.putIfAbsent(serviceName, new WeightLoadBalance());
+                logger.info("ReferenceBean subscribeService notifyListener1 notify exec...");
+                int cnt = (urls==null)?0:urls.size();
+                if(cnt<=0)
+                {
+                    logger.info("NotifyListener notify subscribeProviderUrl urls count<=0,count="+cnt);
+                    return;
+                }
+                //获取所有的服务提供者对应的配置列表
+                List<SpecUrl> configuratorUrls =  registryService.query(subscribeConfUrl);
+                int confUrlSize =configuratorUrls==null?0:configuratorUrls.size();
+                logger.info("NotifyListener notify configuratorUrls size="+confUrlSize);
+                if(confUrlSize>0)
+                {
+                    logger.info("NotifyListener notify configuratorUrls first ele:\r\n"+configuratorUrls.get(0));
+                }
+                List<Invoker> invokers = genInvoker(urls, configuratorUrls, referenceId, version, timeout);
+                serviceInvokerMap.put(serviceName, invokers);
+                int invokerCnt =(invokers==null)?0:invokers.size();
+                logger.info("NotifyListener notify reference[" + referenceId + "]缓存服务[" + serviceName + "]"+ invokerCnt +"个提供者。");
+                loadBalanceMap.putIfAbsent(serviceName, new WeightLoadBalance());
             }
         });
         logger.info("ReferenceBean subscribe "+subscribeProviderUrl.toUrlStr()+" over");
 
         registryService.subscribe(subscribeConfUrl, new NotifyListener() {
             public void notify(List<SpecUrl> urls) {
-            int cnt = (urls==null)?0:urls.size();
-            if(cnt<=0)
-            {
-                logger.info("NotifyListener notify subscribeConfUrl urls count<=0,count="+cnt);
-                return;
-            }
-            //获取所有服务提供者
-            List<SpecUrl> invokerUrls = registryService.query(subscribeProviderUrl);
-            List<Invoker> invokers = genInvoker(invokerUrls, urls, referenceId, version, timeout);
-            serviceInvokerMap.put(serviceName, invokers);
-            int invokerCnt =(invokers==null)?0:invokers.size();
-            logger.info("NotifyListener notify reference[" + referenceId + "]缓存服务[" + serviceName + "]"+ invokerCnt +"个提供者。");
+                logger.info("ReferenceBean subscribeService notifyListener2 notify exec...");
+                int cnt = (urls==null)?0:urls.size();
+                if(cnt<=0)
+                {
+                    logger.info("NotifyListener notify subscribeConfUrl urls count<=0,count="+cnt);
+                    return;
+                }
+                //获取所有服务提供者
+                List<SpecUrl> invokerUrls = registryService.query(subscribeProviderUrl);
+                List<Invoker> invokers = genInvoker(invokerUrls, urls, referenceId, version, timeout);
+                serviceInvokerMap.put(serviceName, invokers);
+                int invokerCnt =(invokers==null)?0:invokers.size();
+                logger.info("NotifyListener notify reference[" + referenceId + "]缓存服务[" + serviceName + "]"+ invokerCnt +"个提供者。");
             }
         });
         logger.info("ReferenceBean subscribe "+subscribeConfUrl.toUrlStr()+" over");
@@ -381,6 +383,7 @@ public class ReferenceBean<T> implements FactoryBean,InitializingBean  {
         registryService.subscribe(subscribeRouterUrl, new NotifyListener() {
 
             public void notify(List<SpecUrl> urls) {
+                logger.info("ReferenceBean registryConsumer notifyListener notify exec...");
                 int cnt = (urls==null)?0:urls.size();
                 if(cnt<=0)
                 {

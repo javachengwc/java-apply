@@ -201,6 +201,7 @@ public abstract class CacheRegistry implements  Registry{
             final AtomicReference<List<SpecUrl>> reference = new AtomicReference<List<SpecUrl>>();
             NotifyListener listener = new NotifyListener() {
                 public void notify(List<SpecUrl> urls) {
+                    logger.info("CacheRegistry query notifyListener notify exec...");
                     reference.set(urls);
                 }
             };

@@ -1,13 +1,15 @@
 package com.mountain.manage.model.vo;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
 /**
  * 服务信息
  */
-public class ServiceVo implements Serializable {
+public class ServiceVo implements Serializable,Comparable<ServiceVo> {
 
     private Integer id;
 
@@ -170,6 +172,12 @@ public class ServiceVo implements Serializable {
 
     public void setInvokeFailTotalCnt(Long invokeFailTotalCnt) {
         this.invokeFailTotalCnt = invokeFailTotalCnt;
+    }
+
+    public int compareTo(ServiceVo o) {
+        String service1 = this.getService()==null?"":this.getService();
+        String service2 = o.getService()==null?"":o.getService();
+        return service1.compareTo(service2);
     }
 
     public String toString()

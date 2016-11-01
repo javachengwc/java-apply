@@ -18,6 +18,8 @@ public class QueryVo implements Serializable{
     //查询值
     private String queryValue;
 
+    private String category;
+
     //状态 0--所有, 1--启用, 2--禁用或屏蔽
     private Integer state;
 
@@ -26,6 +28,14 @@ public class QueryVo implements Serializable{
     private Integer start;
 
     private Integer rows;
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
 
     public String getDimenType() {
         return dimenType;

@@ -39,6 +39,8 @@ public class SpecUrl implements Serializable {
 
     private String ip;
 
+    private String note;
+
     public SpecUrl() {
     }
 
@@ -140,6 +142,14 @@ public class SpecUrl implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 
     public String getAddress() {

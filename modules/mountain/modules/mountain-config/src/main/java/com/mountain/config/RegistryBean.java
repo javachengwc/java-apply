@@ -69,6 +69,10 @@ public class RegistryBean  implements Serializable,InitializingBean {
         }
     }
 
+    public static ConcurrentMap<String, Registry> getZookeeperRegistryMap() {
+        return zookeeperRegistryMap;
+    }
+
     public void init() {
 
         logger.info("RegistryBean init start............");

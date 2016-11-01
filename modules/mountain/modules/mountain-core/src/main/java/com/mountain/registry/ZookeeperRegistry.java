@@ -472,6 +472,7 @@ public class ZookeeperRegistry extends CacheRegistry {
             String iface = url.getInterface();
             logger.info("ZookeeperRegistry doSubscribe url interface="+iface);
             if (Constant.ANY_VALUE.equals(iface)) {
+                //后台admin订阅进入此处
                 String root = this.root;
                 ConcurrentMap<NotifyListener, IZkChildListener> listeners = listenerMap.get(url);
                 if (listeners == null) {
