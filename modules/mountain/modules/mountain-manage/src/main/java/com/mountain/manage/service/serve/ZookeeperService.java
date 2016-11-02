@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,14 +36,14 @@ public class ZookeeperService {
     private ConcurrentMap<String, ConcurrentMap<String, ConcurrentMap<String, Map<Long, SpecUrl>>>> multRegistryCacheMap =
             new ConcurrentHashMap<String, ConcurrentMap<String, ConcurrentMap<String, Map<Long, SpecUrl>>>>();
 
-    //注册中心-->应用集
-    private ConcurrentMap<String,Set<String>> applicationMap =new ConcurrentHashMap<String, Set<String>>();
+    //注册中心-->category-->应用集
+    private ConcurrentMap<String,Map<String,Set<String>>> applicationMap =new ConcurrentHashMap<String, Map<String,Set<String>>>();
 
-    //注册中心-->机器集
-    private ConcurrentMap<String,Set<String>> machineMap =new ConcurrentHashMap<String, Set<String>>();
+    //注册中心-->category-->机器集
+    private ConcurrentMap<String,Map<String,Set<String>>> machineMap =new ConcurrentHashMap<String, Map<String,Set<String>>>();
 
-    //注册中心-->服务集
-    private  ConcurrentMap<String,Set<String>> serviceMap =new ConcurrentHashMap<String, Set<String>>();
+    //注册中心-->category-->服务集
+    private  ConcurrentMap<String,Map<String,Set<String>>> serviceMap =new ConcurrentHashMap<String, Map<String,Set<String>>>();
 
     static
     {
@@ -66,15 +67,15 @@ public class ZookeeperService {
         return multRegistryCacheMap;
     }
 
-    public ConcurrentMap<String, Set<String>> getApplicationMap() {
+    public ConcurrentMap<String, Map<String, Set<String>>> getApplicationMap() {
         return applicationMap;
     }
 
-    public ConcurrentMap<String, Set<String>> getMachineMap() {
+    public ConcurrentMap<String, Map<String, Set<String>>> getMachineMap() {
         return machineMap;
     }
 
-    public ConcurrentMap<String, Set<String>> getServiceMap() {
+    public ConcurrentMap<String, Map<String, Set<String>>> getServiceMap() {
         return serviceMap;
     }
 
@@ -137,7 +138,19 @@ public class ZookeeperService {
     {
         preDo();
         String registryKey =registryMap.keySet().iterator().next();
-        return  machineMap.get(registryKey);
+        Map<String,Set<String>> map =  machineMap.get(registryKey);
+        Set<String> rt= new HashSet<String>();
+        if(map!=null)
+        {
+            for(Set<String> perSet:map.values())
+            {
+                if(perSet!=null)
+                {
+                    rt.addAll(perSet);
+                }
+            }
+        }
+        return rt;
     }
 
     //获取应用集
@@ -145,7 +158,19 @@ public class ZookeeperService {
     {
         preDo();
         String registryKey =registryMap.keySet().iterator().next();
-        return  applicationMap.get(registryKey);
+        Map<String,Set<String>> map = applicationMap.get(registryKey);
+        Set<String> rt= new HashSet<String>();
+        if(map!=null)
+        {
+            for(Set<String> perSet:map.values())
+            {
+                if(perSet!=null)
+                {
+                    rt.addAll(perSet);
+                }
+            }
+        }
+        return rt;
     }
 
     //获取服务集
@@ -153,7 +178,19 @@ public class ZookeeperService {
     {
         preDo();
         String registryKey =registryMap.keySet().iterator().next();
-        return  serviceMap.get(registryKey);
+        Map<String,Set<String>> map = serviceMap.get(registryKey);
+        Set<String> rt= new HashSet<String>();
+        if(map!=null)
+        {
+            for(Set<String> perSet:map.values())
+            {
+                if(perSet!=null)
+                {
+                    rt.addAll(perSet);
+                }
+            }
+        }
+        return rt;
     }
 
     public String getData(String path) {

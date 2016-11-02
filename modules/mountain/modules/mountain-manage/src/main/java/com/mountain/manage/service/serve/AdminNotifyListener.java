@@ -45,8 +45,8 @@ public class AdminNotifyListener  implements NotifyListener{
         }
         //category--service--id--url
         Map<String, Map<String, Map<Long, SpecUrl>>> categoryMap = new HashMap<String, Map<String, Map<Long, SpecUrl>>>();
-        Set<String> machineSet =new HashSet<String>();
-        Set<String> applicationSet =new HashSet<String>();
+        Map<String,Set<String>> machineMap =new HashMap<String,Set<String>>();
+        Map<String,Set<String>> applicationMap =new HashMap<String,Set<String>>();
         for (SpecUrl url : urls) {
             logger.info("AdminNotifyListener notify urls one url:"+url.toUrlStr());
             String category = url.getParameter(Constant.CATEGORY_KEY, Constant.PROVIDERS_CATEGORY);
@@ -90,10 +90,22 @@ public class AdminNotifyListener  implements NotifyListener{
                 String application =url.getParameter(Constant.APPLICATION_KEY);
                 if(!StringUtils.isBlank(machine))
                 {
+                    Set<String> machineSet =machineMap.get(category);
+                    if(machineSet==null)
+                    {
+                        machineSet=new HashSet<String>();
+                        machineMap.put(category,machineSet);
+                    }
                     machineSet.add(machine);
                 }
                 if(!StringUtils.isBlank(application))
                 {
+                    Set<String> applicationSet =applicationMap.get(category);
+                    if(applicationSet==null)
+                    {
+                        applicationSet=new HashSet<String>();
+                        applicationMap.put(category,applicationSet);
+                    }
                     applicationSet.add(application);
                 }
             }
@@ -109,31 +121,37 @@ public class AdminNotifyListener  implements NotifyListener{
             }
             services.putAll(serviceMap);
             //更新服务集
-            Set<String> servs =zookeeperService.getServiceMap().get(registryName);
+            Map<String,Set<String>> servsMap =zookeeperService.getServiceMap().get(registryName);
+            if(servsMap==null)
+            {
+                servsMap=new HashMap<String,Set<String>>();
+                zookeeperService.getServiceMap().put(registryName,servsMap);
+            }
+            Set<String> servs =servsMap.get(category);
             if(servs==null)
             {
                 servs=new HashSet<String>();
-                zookeeperService.getServiceMap().put(registryName,servs);
+                servsMap.put(category,servs);
             }
             servs.addAll(serviceMap.keySet());
         }
 
         //更新应用集合,机器集
-        Set<String> applications =zookeeperService.getApplicationMap().get(registryName);
+        Map<String,Set<String>> applications =zookeeperService.getApplicationMap().get(registryName);
         if(applications==null)
         {
-            applications=new HashSet<String>();
+            applications=new HashMap<String,Set<String>>();
             zookeeperService.getApplicationMap().put(registryName,applications);
         }
-        applications.addAll(applicationSet);
+        applications.putAll(applicationMap);
 
-        Set<String> machines =zookeeperService.getMachineMap().get(registryName);
+        Map<String,Set<String>> machines =zookeeperService.getMachineMap().get(registryName);
         if(machines==null)
         {
-            machines=new HashSet<String>();
+            machines=new HashMap<String,Set<String>>();
             zookeeperService.getMachineMap().put(registryName,machines);
         }
-        machines.addAll(machineSet);
+        machines.putAll(machineMap);
     }
 
     //service格式: group/service:version
