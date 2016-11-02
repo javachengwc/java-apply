@@ -8,14 +8,13 @@ import com.mountain.model.SpecUrl;
 import com.util.BeanCopyUtil;
 import com.util.page.CollectionPage;
 import com.util.page.Page;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 
 /**
@@ -31,10 +30,104 @@ public class ConsumerService {
 
     public Page<ServiceVo> queryList(QueryVo queryVo)
     {
+        logger.info("ConsumerService queryList doing ..................");
         queryVo.setCategory(Constant.CONSUMERS_CATEGORY);
         Map<String, ConcurrentMap<String, Map<Long, SpecUrl>>> cacheMap =zookeeperService.getRegistryCache();
-        logger.info("ConsumerService queryList doing ..................");
-        List<ServiceVo> list= BizFilterTransUtil.filterMap(cacheMap, queryVo);
+        List<ServiceVo> list = new ArrayList<ServiceVo>();
+        Page<ServiceVo> emptyPage=new CollectionPage<ServiceVo>(list,queryVo.getPage(),queryVo.getRows());
+        if(cacheMap==null || cacheMap.size()<=0) {
+            return emptyPage;
+        }
+        String category= queryVo.getCategory();
+        //根据category进行过滤
+        Map<String, Map<Long, SpecUrl>> data =cacheMap.get(category);
+        if(data==null || data.size()<=0)
+        {
+            return emptyPage;
+        }
+        Map<Long, SpecUrl> resultMap =new HashMap<Long, SpecUrl>();
+        Integer state = (queryVo.getState()==null)?0:queryVo.getState();
+        String keyword =queryVo.getQueryValue();
+        String application="";
+        String machine="";
+        String assignService="";
+        String demenType=queryVo.getDimenType();
+        if(!StringUtils.isBlank(demenType))
+        {
+            if("application".equals(demenType) && !StringUtils.isBlank(queryVo.getAssignValue()))
+            {
+                application=queryVo.getAssignValue();
+            }
+            if("machine".equals(demenType) && !StringUtils.isBlank(queryVo.getAssignValue()))
+            {
+                machine=queryVo.getAssignValue();
+            }
+            if("service".equals(demenType) && !StringUtils.isBlank(queryVo.getAssignValue()))
+            {
+                assignService=queryVo.getAssignValue();
+            }
+        }
+
+        for (Map.Entry<String, Map<Long, SpecUrl>> per : data.entrySet()) {
+            Map<Long, SpecUrl> perMap = per.getValue();
+            if(perMap==null)
+            {
+                continue;
+            }
+            for (Map.Entry<Long, SpecUrl> entry : perMap.entrySet()) {
+                SpecUrl url = entry.getValue();
+                //启用禁用过滤
+                boolean useable = url.getParameter(Constant.USEABLE_KEY, true);
+                if ((state == 1 && !useable) || (state == 2 && useable)) {
+                    continue;
+                }
+                //关键字过滤
+                if (!StringUtils.isBlank(keyword) && !url.getUrlStr().contains(keyword)) {
+                    continue;
+                }
+                String service=url.getService();
+                //服务过滤
+                if(!StringUtils.isBlank(assignService) && !assignService.equals(service))
+                {
+                    continue;
+                }
+                //机器过滤
+                if (!StringUtils.isBlank(machine)) {
+                    //查找提供服务的机器
+                    Set<String> servProviders=zookeeperService.queryProviders(service, 1);
+                    if(!servProviders.contains(machine)) {
+                        //提供机器不包含提交服条件机器
+                        continue;
+                    }
+                }
+                //应用过滤
+                if (!StringUtils.isBlank(application)) {
+                    //查找提供服务的应用
+                    Set<String> appProviders=zookeeperService.queryProviders(service,2);
+                    if(!appProviders.contains(application)) {
+                        //提供服务的应用不包含条件应用
+                        continue;
+                    }
+                }
+                resultMap.put(entry.getKey(), url);
+            }
+        }
+
+        //组装成serviceVo
+        if(resultMap!=null && resultMap.size()>0)
+        {
+            for(Long id:resultMap.keySet())
+            {
+                SpecUrl specUrl = resultMap.get(id);
+                ServiceVo vo = BizFilterTransUtil.trans(specUrl);
+                if(vo!=null)
+                {
+                    vo.setId(id.intValue());
+                    list.add(vo);
+                }
+            }
+        }
+        Collections.sort(list);
         Page<ServiceVo> page = new CollectionPage<ServiceVo>(list,queryVo.getPage(),queryVo.getRows());
         return page;
     }

@@ -12,10 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -187,6 +184,30 @@ public class ZookeeperService {
                 if(perSet!=null)
                 {
                     rt.addAll(perSet);
+                }
+            }
+        }
+        return rt;
+    }
+
+    //查询提供服务的机器或应用  flag 1--机器 2--应用
+    public Set<String> queryProviders(String service,int flag)
+    {
+        Set<String> rt=new HashSet<String>();
+        ConcurrentMap<String, ConcurrentMap<String, Map<Long, SpecUrl>>> map =getRegistryCache();
+        Map<String, Map<Long, SpecUrl>> serviceMap = map.get(Constant.PROVIDERS_CATEGORY);
+        Map<Long,SpecUrl> urlMap = serviceMap.get(service);
+        if(urlMap!=null && urlMap.values()!=null)
+        {
+            for(SpecUrl url:urlMap.values())
+            {
+                if(flag==1 && !StringUtils.isBlank(url.getHost()))
+                {
+                    rt.add(url.getHost());
+                }
+                if(flag==2 )
+                {
+                    rt.add(url.getParameter(Constant.APPLICATION_KEY,""));
                 }
             }
         }
