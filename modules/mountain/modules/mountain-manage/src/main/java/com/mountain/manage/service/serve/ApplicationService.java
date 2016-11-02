@@ -2,10 +2,15 @@ package com.mountain.manage.service.serve;
 
 import com.mountain.manage.model.vo.DimenVo;
 import com.util.BeanCopyUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 服务维度服务类
@@ -13,9 +18,29 @@ import java.util.List;
 @Service
 public class ApplicationService {
 
+    private static Logger logger = LoggerFactory.getLogger(ApplicationService.class);
+
+    @Autowired
+    private ZookeeperService zookeeperService;
+
     public List<DimenVo> queryList()
     {
-       return testData();
+        Set<String> apps = zookeeperService.getApplications();
+        int count = apps==null?0:apps.size();
+        logger.info("MachineService queryList application count="+count);
+        if(count==0)
+        {
+            return Collections.emptyList();
+        }
+        List<DimenVo> list = new ArrayList<DimenVo>();
+        for(String app:apps)
+        {
+            DimenVo vo = new DimenVo();
+            vo.setName(app);
+            vo.setType(1);
+            list.add(vo);
+        }
+        return list;
     }
 
     public List<DimenVo> testData()

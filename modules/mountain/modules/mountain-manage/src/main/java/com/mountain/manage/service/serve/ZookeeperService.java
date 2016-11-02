@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -34,6 +35,15 @@ public class ZookeeperService {
     private ConcurrentMap<String, ConcurrentMap<String, ConcurrentMap<String, Map<Long, SpecUrl>>>> multRegistryCacheMap =
             new ConcurrentHashMap<String, ConcurrentMap<String, ConcurrentMap<String, Map<Long, SpecUrl>>>>();
 
+    //注册中心-->应用集
+    private ConcurrentMap<String,Set<String>> applicationMap =new ConcurrentHashMap<String, Set<String>>();
+
+    //注册中心-->机器集
+    private ConcurrentMap<String,Set<String>> machineMap =new ConcurrentHashMap<String, Set<String>>();
+
+    //注册中心-->服务集
+    private  ConcurrentMap<String,Set<String>> serviceMap =new ConcurrentHashMap<String, Set<String>>();
+
     static
     {
         Map<String,String> paramMap = new HashMap<String,String>();
@@ -46,6 +56,26 @@ public class ZookeeperService {
         paramMap.put(Constant.CHECK_KEY, String.valueOf(false));
         adminUrl =adminUrl.genUrlWithParamAdd(paramMap);
         logger.info("ZookeeperService static gen adminUrl="+adminUrl.toUrlStr());
+    }
+
+    public Map<String, Registry> getRegistryMap() {
+        return registryMap;
+    }
+
+    public ConcurrentMap<String, ConcurrentMap<String, ConcurrentMap<String, Map<Long, SpecUrl>>>> getMultRegistryCacheMap() {
+        return multRegistryCacheMap;
+    }
+
+    public ConcurrentMap<String, Set<String>> getApplicationMap() {
+        return applicationMap;
+    }
+
+    public ConcurrentMap<String, Set<String>> getMachineMap() {
+        return machineMap;
+    }
+
+    public ConcurrentMap<String, Set<String>> getServiceMap() {
+        return serviceMap;
     }
 
     @PostConstruct
@@ -64,7 +94,7 @@ public class ZookeeperService {
                 Registry registry = entry.getValue();
                 ConcurrentMap<String, ConcurrentMap<String, Map<Long, SpecUrl>>> registryCache = new ConcurrentHashMap<String, ConcurrentMap<String, Map<Long, SpecUrl>>>();
                 multRegistryCacheMap.put(registryName, registryCache);
-                registry.subscribe(adminUrl, new AdminNotifyListener(registry, registryCache));
+                registry.subscribe(adminUrl, new AdminNotifyListener(registryName,registry,this));
                 logger.info("ZookeeperService init registry:" + registryName);
             }
             inited=true;
@@ -81,13 +111,18 @@ public class ZookeeperService {
         return registryMap.values().iterator().next();
     }
 
-    //获取缓存数据
-    public  ConcurrentMap<String, ConcurrentMap<String, Map<Long, SpecUrl>>> getRegistryCache()
+    public void preDo()
     {
         if(!inited)
         {
             init();
         }
+    }
+
+    //获取缓存数据
+    public  ConcurrentMap<String, ConcurrentMap<String, Map<Long, SpecUrl>>> getRegistryCache()
+    {
+        preDo();
         String registryKey =registryMap.keySet().iterator().next();
         return getRegistryCache(registryKey);
     }
@@ -95,6 +130,30 @@ public class ZookeeperService {
     public  ConcurrentMap<String, ConcurrentMap<String, Map<Long, SpecUrl>>> getRegistryCache(String registryKey)
     {
         return multRegistryCacheMap.get(registryKey);
+    }
+
+    //获取机器集合
+    public Set<String> getMachines()
+    {
+        preDo();
+        String registryKey =registryMap.keySet().iterator().next();
+        return  machineMap.get(registryKey);
+    }
+
+    //获取应用集
+    public Set<String> getApplications()
+    {
+        preDo();
+        String registryKey =registryMap.keySet().iterator().next();
+        return  applicationMap.get(registryKey);
+    }
+
+    //获取服务集
+    public Set<String> getServices()
+    {
+        preDo();
+        String registryKey =registryMap.keySet().iterator().next();
+        return  serviceMap.get(registryKey);
     }
 
     public String getData(String path) {

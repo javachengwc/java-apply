@@ -1,14 +1,22 @@
 package com.mountain.manage.service.serve;
 
+import com.mountain.constant.Constant;
 import com.mountain.manage.model.vo.QueryVo;
 import com.mountain.manage.model.vo.ServiceVo;
+import com.mountain.manage.util.BizFilterTransUtil;
+import com.mountain.model.SpecUrl;
 import com.util.BeanCopyUtil;
 import com.util.page.CollectionPage;
 import com.util.page.Page;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * 消费服务的服务类
@@ -16,12 +24,22 @@ import java.util.List;
 @Service
 public class ConsumerService {
 
+    private static Logger logger = LoggerFactory.getLogger(ConsumerService.class);
+
+    @Autowired
+    private ZookeeperService zookeeperService;
+
     public Page<ServiceVo> queryList(QueryVo queryVo)
     {
-        List<ServiceVo> list = testData();
+        queryVo.setCategory(Constant.CONSUMERS_CATEGORY);
+        Map<String, ConcurrentMap<String, Map<Long, SpecUrl>>> cacheMap =zookeeperService.getRegistryCache();
+        logger.info("ConsumerService queryList doing ..................");
+        List<ServiceVo> list= BizFilterTransUtil.filterMap(cacheMap, queryVo);
         Page<ServiceVo> page = new CollectionPage<ServiceVo>(list,queryVo.getPage(),queryVo.getRows());
         return page;
     }
+
+
 
     public List<ServiceVo> testData()
     {
