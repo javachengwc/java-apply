@@ -4,7 +4,7 @@ yum -y install gcc automake autoconf libtool make     ---安装gcc automake auto
 yum -y install gcc-c++                                ---安装gcc-c++
 
 ---------------telnet vim
-yun -y install telnet vim
+yum -y install telnet vim
 
 ---------------scp
 scp不直接安装,通过安装openssh-clients来安装scp

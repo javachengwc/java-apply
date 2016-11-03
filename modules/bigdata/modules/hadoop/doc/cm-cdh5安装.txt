@@ -36,6 +36,11 @@ vim /etc/hosts
     192.168.1.111   slave1
     192.168.1.112   slave2
 
+如果是虚拟机上的linux系统,网络设置需前置设置
+1,点击VMware快捷方式，右键打开文件所在位置 -> 双击vmnetcfg.exe -> VMnet1 host-only ->修改subnet ip 设置网段：192.168.1.0 子网掩码：255.255.255.0 -> apply -> ok
+2,回到windows --> 打开网络和共享中心 -> 更改适配器设置 -> 右键VMnet1 -> 属性 -> 双击IPv4 -> 设置windows的IP：192.168.1.100 子网掩码：255.255.255.0 -> 点击确定
+3,在虚拟软件上 --My Computer -> 选中虚拟机 -> 右键 -> settings -> 192network adapter -> host only
+
 以上步骤执行完毕后，如果需要,重启主机 reboot
 ----------------------------------------------------
 下载cloudera-manager.repo,修改baseurl中cm版本为实际版本

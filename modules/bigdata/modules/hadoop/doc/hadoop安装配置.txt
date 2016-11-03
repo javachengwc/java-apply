@@ -1,0 +1,189 @@
+------------------------------hadoop安装---------------------------------
+纯手工安装hadoop
+版本:centos6.6-64位,hadoop2.7-64位,jdk1.7-64位
+---------------------------------------
+服务器环境
+    系统：CentOS 6以上
+    内存：主节点4G内存以上，其他节点需要2G以上内存
+    节点:
+    192.168.1.110 hadoopa  master
+    192.168.1.111 hadoopb  slave
+    192.168.1.112 hadoopc  slave
+---------------------------------------
+准备工作(需在所有节点上执行)
+1,关闭防火墙和SELinux
+service iptables status  #查看防火墙状态
+service iptables stop （临时关闭）
+chkconfig iptables --list #查看防火墙开机启动状态
+chkconfig iptables off（关闭防火墙开机启动,重启后生效）
+修改 vim /etc/selinux/config 下的
+    SELINUX=disabled （重启后永久生效 ）
+
+2,网络配置修改
+如果是虚拟机上的linux系统,网络设置前需设置
+1,点击VMware快捷方式，右键打开文件所在位置 -> 双击vmnetcfg.exe -> VMnet1 host-only ->修改subnet ip 设置网段：192.168.1.0 子网掩码：255.255.255.0 -> apply -> ok
+2,回到windows --> 打开网络和共享中心 -> 更改适配器设置 -> 右键VMnet1 -> 属性 -> 双击IPv4 -> 设置windows的IP：192.168.1.100 子网掩码：255.255.255.0 -> 点击确定
+3,在虚拟软件上 --My Computer -> 选中虚拟机 -> 右键 -> settings -> 192network adapter -> host only
+
+a,修改hostname
+vim /etc/sysconfig/network
+    NETWORKING=yes　　　　
+    HOSTNAME=hadoopa
+b.网络配置(设置静态ip，以及指定ip地址)
+vim /etc/sysconfig/network-scripts/ifcfg-eth0
+    DEVICE="eth0"
+    BOOTPROTO="static"
+    IPADDR=192.168.1.110
+    NM_CONTROLLED="yes"
+    ONBOOT="yes"
+    TYPE="Ethernet"
+    DNS1=8.8.8.8
+    GATEWAY=192.168.1.1
+vim /etc/hosts
+    127.0.0.1 hadoopa.localdomain
+    # CDH Cluster
+    192.168.1.110   master
+    192.168.1.111   slave1
+    192.168.1.112   slave2
+以上步骤执行完毕后，如果需要,重启主机 reboot
+
+3,安装jdk7 64位，参见linux常用软件安装---java
+
+4,SSH免密码登录(主从各服务器相互ssh免密登陆)
+因为Hadoop需要通过SSH登录到各个节点进行操作，需每台服务器都生成公钥，再合并到authorized_keys
+(1)CentOS默认没有启动ssh无密登录，去掉/etc/ssh/sshd_config其中2行的注释，每台服务器都要设置，
+#RSAAuthentication yes
+#PubkeyAuthentication yes
+变成
+RSAAuthentication yes
+PubkeyAuthentication yes
+
+(2)输入命令，ssh-keygen -t rsa，生成key，都不输入密码，一直回车，/root就会生成.ssh文件夹，每台服务器都要设置
+(3)合并公钥到authorized_keys文件，
+在Master服务器，进入/root/.ssh目录，通过SSH命令合并，
+cat id_rsa.pub>> authorized_keys
+ssh root@192.168.1.112 cat ~/.ssh/id_rsa.pub>> authorized_keys
+ssh root@192.168.1.113 cat ~/.ssh/id_rsa.pub>> authorized_keys
+(4)把Master服务器的authorized_keys、known_hosts复制到Slave服务器的/root/.ssh目录
+ssh root@192.168.1.112、ssh root@192.168.1.113就不需要输入密码了
+(5)在每台服务器ssh root@other ips,登陆其他所有服务器，弹出提示的时候点yes,检查是否可相互ssh登陆
+
+可能在此过程中ssh未必在linux系统中安装全导致部分命令不能用，可如下安装完全ssh相关程序
+yum  -y install openssh openssh-clients openssh-server
+
+5,安装Hadoop2.7
+只在Master服务器解压，再复制到Slave服务器
+(1)下载“hadoop-2.7.0.tar.gz”，放到/home/hadoop目录下
+(2)解压，输入命令，tar -xzvf hadoop-2.7.0.tar.gz
+(3)在/home/hadoop目录下创建数据存放的文件夹，tmp、hdfs、hdfs/data、hdfs/name
+
+6,配置hadoop
+a,配置/home/hadoop/hadoop-2.7.0/etc/hadoop目录下的core-site.xml
+  <configuration>
+      <property>
+          <name>fs.defaultFS</name>
+          <value>hdfs://192.168.1.110:9000</value>
+      </property>
+      <property>
+          <name>hadoop.tmp.dir</name>
+          <value>file:/home/hadoop/tmp</value>
+      </property>
+      <property>
+          <name>io.file.buffer.size</name>
+          <value>131702</value>
+      </property>
+  </configuration>
+b,配置/home/hadoop/hadoop-2.7.0/etc/hadoop目录下的hdfs-site.xml
+<configuration>
+    <property>
+        <name>dfs.namenode.name.dir</name>
+        <value>file:/home/hadoop/dfs/name</value>
+    </property>
+    <property>
+        <name>dfs.datanode.data.dir</name>
+        <value>file:/home/hadoop/dfs/data</value>
+    </property>
+    <property>
+        <name>dfs.replication</name>
+        <value>2</value>
+    </property>
+    <property>
+        <name>dfs.namenode.secondary.http-address</name>
+        <value>192.168.1.110:9001</value>
+    </property>
+    <property>
+    <name>dfs.webhdfs.enabled</name>
+    <value>true</value>
+    </property>
+</configuration>
+c,配置/home/hadoop/hadoop-2.7.0/etc/hadoop目录下的mapred-site.xml
+<configuration>
+    <property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+    </property>
+    <property>
+        <name>mapreduce.jobhistory.address</name>
+        <value>192.168.1.110:10020</value>
+    </property>
+    <property>
+        <name>mapreduce.jobhistory.webapp.address</name>
+        <value>192.168.1.110:19888</value>
+    </property>
+</configuration>
+d,配置/home/hadoop/hadoop-2.7.0/etc/hadoop目录下的yarn-site.xml
+  <configuration>
+      <property>
+          <name>yarn.nodemanager.aux-services</name>
+          <value>mapreduce_shuffle</value>
+      </property>
+      <property>
+          <name>yarn.nodemanager.auxservices.mapreduce.shuffle.class</name>
+          <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+      </property>
+      <property>
+          <name>yarn.resourcemanager.address</name>
+          <value>192.168.1.110:8032</value>
+      </property>
+      <property>
+          <name>yarn.resourcemanager.scheduler.address</name>
+          <value>192.168.1.110:8030</value>
+      </property>
+      <property>
+          <name>yarn.resourcemanager.resource-tracker.address</name>
+          <value>192.168.1.110:8031</value>
+      </property>
+      <property>
+          <name>yarn.resourcemanager.admin.address</name>
+          <value>192.168.1.110:8033</value>
+      </property>
+      <property>
+          <name>yarn.resourcemanager.webapp.address</name>
+          <value>192.168.1.110:8088</value>
+      </property>
+      <property>
+          <name>yarn.nodemanager.resource.memory-mb</name>
+          <value>768</value>
+      </property>
+  </configuration>
+e,配置/home/hadoop/hadoop-2.7.0/etc/hadoop目录下hadoop-env.sh、yarn-env.sh的JAVA_HOME，
+  export JAVA_HOME=/usr/local/jdk7
+f,配置/home/hadoop/hadoop-2.7.0/etc/hadoop目录下的slaves，删除默认的localhost，增加2个从节点，
+    192.168.1.111
+    192.168.1.112
+g,将配置好的Hadoop复制到各个节点对应位置上，通过scp传送，
+    scp -r /home/hadoop 192.168.1.111:/home/
+    scp -r /home/hadoop 192.168.1.112:/home/
+
+7,启动并访问hadoop
+在Master服务器启动hadoop，从节点会自动启动，进入/home/hadoop/hadoop-2.7.0目录
+(1)初始化，输入命令，bin/hdfs namenode -format
+(2)全部启动sbin/start-all.sh，也可以分开sbin/start-dfs.sh、sbin/start-yarn.sh
+(3)停止的话，输入命令，sbin/stop-all.sh
+(4)输入命令，jps，可以看到相关信息
+
+Web访问，要先开放端口或者直接关闭防火墙
+(1)输入命令，systemctl stop firewalld.service
+(2)浏览器打开http://192.168.0.182:8088/
+(3)浏览器打开http://192.168.0.182:50070/
+-------------------------------------------------------------------------
