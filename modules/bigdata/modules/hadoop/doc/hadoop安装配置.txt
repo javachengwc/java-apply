@@ -104,11 +104,11 @@ b,配置/home/hadoop/hadoop-2.7.0/etc/hadoop目录下的hdfs-site.xml
 <configuration>
     <property>
         <name>dfs.namenode.name.dir</name>
-        <value>file:/home/hadoop/dfs/name</value>
+        <value>file:/home/hadoop/hdfs/name</value>
     </property>
     <property>
         <name>dfs.datanode.data.dir</name>
-        <value>file:/home/hadoop/dfs/data</value>
+        <value>file:/home/hadoop/hdfs/data</value>
     </property>
     <property>
         <name>dfs.replication</name>
@@ -188,9 +188,17 @@ g,将配置好的Hadoop复制到各个节点对应位置上，通过scp传送，
 (2)全部启动sbin/start-all.sh，也可以分开sbin/start-dfs.sh、sbin/start-yarn.sh
 (3)停止的话，输入命令，sbin/stop-all.sh
 (4)输入命令，jps，可以看到相关信息
+在启动dfs中，如果提示WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+就没办法做dfs相关任何操作，需要下载对应版本的native包解压到hadoop相应位置
+wget http://dl.bintray.com/sequenceiq/sequenceiq-bin/hadoop-native-64-2.7.0.tar
+tar xvf hadoop-native-64-2.7.0.tar
+cp lib* /home/hadoop/hadoop-2.7.0/lib/native   这样就能正常使用dfs了
+检验方式: bin/hadoop fs -ls /
+          bin/hadoop fs -mkdir /ttt
+          bin/hadoop fs -ls /
 
 Web访问，要先开放端口或者直接关闭防火墙
 (1)输入命令，systemctl stop firewalld.service
-(2)浏览器打开http://192.168.0.182:8088/
-(3)浏览器打开http://192.168.0.182:50070/
+(2)浏览器打开http://192.168.1.110:8088/
+(3)浏览器打开http://192.168.1.110:50070/
 -------------------------------------------------------------------------
