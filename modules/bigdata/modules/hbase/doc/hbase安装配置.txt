@@ -1,0 +1,90 @@
+--------------------------hbase安装配置--------------------
+版本:centos6.6-64位,jdk1.7-64位,hbase1.2.3,hadoop2.7.2-64位,
+注意:Hbase版本必需与 Hadoop 版本匹配，否则会安装失败或不能正常使用
+     查看 hbase 官方文档（http://hbase.apache.org/book.html#basic.prerequisites），可找到hbase版本与支持它的hadoop版本
+---------------------------------------
+服务器环境
+    系统：CentOS 6以上
+    内存：主节点4G内存以上，其他节点需要2G以上内存
+    节点:
+    192.168.1.110 hadoopa  master
+    192.168.1.111 hadoopb  slave
+    192.168.1.112 hadoopc  slave
+此次hbase安装基于hadoop安装配置.txt中所安装的hadoop环境
+---------------------------------------
+1,配置hosts,确保涉及的主机名均可以解析为ip
+  略(见hadoop安装配置.txt中网络配置修改)
+
+2,安装hbase1.2.3
+a,下载安装包hbase-1.2.3-bin.tar.gz，解压到相应位置
+    cp hbase-1.2.3-bin.tar.gz /data/hbase/
+    tar -zxvf hbase-1.2.3-bin.tar.gz #解压到/data/hbase/下
+b,环境变量设置
+    vi /etc/profile
+        HBASE_HOME=/data/hbase/hbase-1.2.3
+        PATH=$HBASE_HOME/bin:$PATH
+        export HBASE_HOME PATH
+    source /etc/profile
+c,配置相关的文件
+1),配置hbase-env.sh
+    vi /data/hbase/hbase-1.2.3/conf/hbase-env.sh
+        export JAVA_HOME=/usr/local/jdk7                 #Java路径
+        export HBASE_CLASSPATH=/data/hadoop/hadoop-2.7.2/etc/hadoop    #HBase类路径
+        export HBASE_MANAGES_ZK=true    #由HBase负责启动和关闭Zookeeper
+2),编辑hbase-site.xml
+    <property>
+        <name>hbase.rootdir</name>
+        <value>hdfs://hadoopa:9000/hbase</value>
+    </property>
+    <property>
+        <name>hbase.cluster.distributed</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>hbase.tmp.dir</name>
+        <value>/data/hbase/hbase-1.2.3/tmp</value>
+    </property>
+    <property>
+        <name>hbase.zookeeper.quorum</name>
+        <value>hadoopa,hadoopb,hadoopc</value>
+    </property>
+    <property>
+        <name>hbase.zookeeper.property.dataDir</name>
+        <value>/data/hbase/hbase-1.2.3/zookeeper</value>
+    </property>
+3),编辑regionservers文件
+    hadoopa
+    hadoopb
+    hadoopc
+d,创建相应目录和替换相关jar包
+1),创建所需目录
+    mkdir -p /data/hbase/hbase-1.2.3/tmp
+    mkdir -p /data/hbase/hbase-1.2.3/zookeeper  #上面配置的hbase-site.xml中有用到此两目录
+2),替换hbase中hadoop的核心jar包
+   主要目的是防止因为 hbase 和 hadoop 版本不同出现兼容问题，造成 hmaster 启动异常
+    ll /data/hbase/hbase-1.2.3/lib |grep hadoop   #查看hbase的lib目录
+    cd /data/hbase/hbase-1.2.3/lib
+    vim replace.sh
+        find -name "hadoop*jar" | sed 's/2.5.1/2.7.2/g' | sed 's/\.\///g' > f.log
+        rm ./hadoop*jar
+        cat ./f.log | while read Line
+        do
+            find /data/hadoop/hadoop-2.7.2 -name "$Line" | xargs -i cp {} ./
+        done
+        rm ./f.log
+    sh ./replace.sh   #创建并执行脚本replace.sh,替换hadoop相关jar包
+    如果还差相应的jar包，需要从公共maven库或其他地方寻找
+e,把Hbase复制到其它节点
+    scp -r /data/hbase 192.168.1.111:/data/
+    scp -r /data/hbase 192.168.1.112:/data/
+
+3,启动并验证hbase
+    bin/start-hbase.sh     #开启hbase
+    访问http://192.168.1.110:16010
+    bin/hbase shell        #用shell连接Hbase
+        hbase> status  --查看数据库状态
+        hbase> version  --查询数据库版本
+        hbase> list  --列出表
+        hbase> help  --帮助命令
+
+-----------------------------------------------------------
