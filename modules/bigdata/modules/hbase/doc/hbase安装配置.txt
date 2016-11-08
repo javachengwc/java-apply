@@ -31,6 +31,12 @@ c,配置相关的文件
         export JAVA_HOME=/usr/local/jdk7                 #Java路径
         export HBASE_CLASSPATH=/data/hadoop/hadoop-2.7.2/etc/hadoop    #HBase类路径
         export HBASE_MANAGES_ZK=true    #由HBase负责启动和关闭Zookeeper
+    如果是线上正式环境，此文件中的jvm参数设置需要调优，具体设置根据实际情况而定，此处给出一个参考调优设置
+    export HBASE_OPTS="-verbose:gc -XX:+PrintGCDetails -Xloggc:${HBASE_LOG_DIR}/hbase-gc.log -XX:+PrintGCTimeStamps
+    -XX:+PrintGCApplicationConcurrentTime -XX:+PrintGCApplicationStoppedTime \
+    -server -Xmx20480m -Xms20480m -Xmn10240m -Xss256k  -XX:SurvivorRatio=4 -XX:MaxPermSize=256m -XX:MaxTenuringThreshold=15 \
+    -XX:ParallelGCThreads=16 -XX:+UseConcMarkSweepGC -XX:+UseParNewGC  -XX:CMSFullGCsBeforeCompaction=5 -XX:+UseCMSCompactAtFullCollection \
+    -XX:+CMSClassUnloadingEnabled  -XX:CMSInitiatingOccupancyFraction=70 -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSMaxAbortablePrecleanTime=5000     \
 2),编辑hbase-site.xml
     <property>
         <name>hbase.rootdir</name>
@@ -86,5 +92,54 @@ e,把Hbase复制到其它节点
         hbase> version  --查询数据库版本
         hbase> list  --列出表
         hbase> help  --帮助命令
+-----------------------------------------------------------
+hbase配置文件hbase-site.xml配置参数说明
+hbase.tmp.dir                      ---本地文件系统tmp目录,默认值${java.io.tmpdir}/hbase-${user.name}
+hbase.rootdir                      ---HBase集群中所有RegionServer共享目录，用来持久化HBase的数据，一般设置的是hdfs的文件目录，如hdfs://hadoopa:9000/hbase
+hbase.cluster.distributed          ---集群的模式，分布式还是单机模式,如果设置成false的话，HBase进程和Zookeeper进程在同一个JVM进程。
+hbase.zookeeper.quorum             ---zookeeper集群的URL配置，多个host中间用逗号（,）分割
+hbase.zookeeper.property.dataDir   ---ZooKeeper的数据快照的存储位置
+zookeeper.session.timeout          ---客户端与zk连接超时时间,默认值：180000（3min）,线上配置：1200000（20min）
+hbase.zookeeper.property.tickTime  ---Client端与zk发送心跳的时间间隔,默认值：6000（6s）
+hbase.security.authentication      ---HBase集群安全认证机制，比如kerberos安全认证,默认值:空
+hbase.security.authorization       ---HBase是否开启安全授权机制,默认值:false
+hbase.regionserver.kerberos.principal
+                                   ---regionserver的kerberos认证的主体名称（由三部分组成：服务或用户名称、实例名称以及域名）,默认值:空
+hbase.regionserver.keytab.file     ---regionserver keytab文件路径,默认值:空
+hbase.master.kerberos.principal    ---master的kerberos认证的主体名称（由三部分组成：服务或用户名称、实例名称以及域名）,默认值:空
+hbase.master.keytab.file           ---master keytab文件路径,默认值:空
+hbase.regionserver.handler.count   ---regionserver处理IO请求的线程数,默认配置：10,线上配置：50
+hbase.regionserver.global.memstore.upperLimit
+                                   ---RegionServer进程block进行flush触发条件：该节点上所有region的memstore之和达到upperLimit*heapsize,默认配置：0.4
+hbase.regionserver.global.memstore.lowerLimit
+                                   ---RegionServer进程触发flush的一个条件：该节点上所有region的memstore之和达到lowerLimit*heapsize,默认配置：0.35
+hbase.client.write.buffer          ---客户端写buffer，设置autoFlush为false时，当客户端写满buffer才flush,默认配置：2097152（2M）,线上配置：8388608（8M）
+hbase.hregion.max.filesize         ---单个ColumnFamily的region大小，若按照ConstantSizeRegionSplitPolicy策略，
+                                      超过设置的该值则自动split,默认配置：21474836480（20G）,线上配置：107374182400（100G）
+hbase.hregion.memstore.block.multiplier
+                                   ---超过memstore大小的倍数达到该值则block所有写入请求，自我保护,默认配置：2,线上配置：8
+hbase.hregion.memstore.flush.size  ---memstore大小，当达到该值则会flush到外存设备,默认值： 134217728（128M）
+hbase.hregion.memstore.mslab.enabled
+                                   ---是否开启mslab方案，减少因内存碎片导致的Full GC，提高整体性能,默认配置:true
+hbase.regionserver.maxlogs         ---regionserver的hlog数量,默认配置：32,线上配置：128
+hbase.regionserver.hlog.blocksize  ---hlog大小上限，达到该值则block，进行roll掉,默认配置：hdfs配置的block大小,线上配置：536870912（512M）
+hbase.hstore.compaction.min        ---进入minor compact队列的storefiles最小个数,默认配置：3,线上配置：10
+hbase.hstore.compaction.max        ---单次minor compact最多的文件个数,默认配置：10,线上配置：30
+hbase.hstore.blockingStoreFiles    ---当某一个region的storefile个数达到该值则block写入，等待compact,默认配置： 7,线上配置：100（生产环境可以设置得很大）
+hbase.hstore.blockingWaitTime      ---block的等待时间,默认配置：90000（90s）
+hbase.hregion.majorcompaction      ---触发major compact的周期,默认配置：86400000（1d）,线上配置：0（关掉major compact）
+hbase.regionserver.thread.compaction.large
+                                   ---large compact线程池的线程个数,默认配置：1,线上配置：5
+hbase.regionserver.thread.compaction.small
+                                   ---small compact线程池的线程个数,默认配置：1,线上配置：5
+hbase.regionserver.thread.compaction.throttle
+                                   ---compact（major和minor）请求进入large和small compact线程池的临界点,
+                                      默认配置：2 * this.minFilesToCompact * this.region.memstoreFlushSize,线上配置：10737418240（10G）
+hbase.hstore.compaction.max.size   ---minor compact队列中storefile文件最大size,默认配置：Long.MAX_VALUE,线上配置：21474836480（20G）
+hbase.rpc.timeout                  ---RPC请求timeout时间,默认配置：60000（10s）,线上配置：300000（5min）
+hbase.regionserver.region.split.policy
+                                   ---split操作默认的策略,线上配置： org.apache.hadoop.hbase.regionserver.ConstantSizeRegionSplitPolicy（自己控制split）
+                                      默认配置： org.apache.hadoop.hbase.regionserver.IncreasingToUpperBoundRegionSplitPolicy（在region没有达到maxFileSize的前提下，如果fileSize达到regionCount * regionCount * flushSize则进行split操作）
+hbase.regionserver.regionSplitLimit---单台RegionServer上region数上限,默认配置：2147483647,线上配置：150
 
 -----------------------------------------------------------

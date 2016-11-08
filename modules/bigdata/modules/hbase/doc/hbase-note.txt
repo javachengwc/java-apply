@@ -1,0 +1,38 @@
+---------------------------------hbase-note-------------------------------
+HBase是一个分布式的、面向列的开源数据库,是Google Bigtable的开源实现，它利用Hadoop HDFS作为其文件存储系统，利用Hadoop MapReduce来处理HBase中的海量数据，利用Zookeeper作为协同服务。
+HBase是介于Map Entry(key & value)和DB Row之间的一种数据存储方式。有点类似于现在流行的Memcache，但不仅仅是简单的一个key对应一个 value，应用很可能需要存储多个属性的数据结构，
+但没有传统数据库表中那么多的关联关系，这就是所谓的松散数据。简单来说，在HBase中的表创建的可以看做是一张很大的表，而这个表的属性可以根据需求去动态增加，在HBase中没有表与表之间关联查询。
+列存储所带来的好处之一就是由于查询中的选择规则是通过列来定义的，因此整个数据库是自动索引化的。按列存储每个字段的数据聚集存储，在查询只需要少数几个字段的时候，能大大减少读取的数据量，
+一个字段的数据聚集存储，那就更容易为这种聚集存储设计更好的压缩/解压算法。
+
+HBase体系结构
+HBase的服务器体系结构遵从简单的主从服务器架构，它由HRegion Server群和HBase Master服务器构成。HBase Master负责管理所有的HRegion Server，而HBase中的所有RegionServer都是通过ZooKeeper来协调，并处理HBase服务器运行期间可能遇到的错误。
+HBase Master Server本身并不存储HBase中的任何数据，HBase逻辑上的表可能会被划分成多个Region，然后存储到HRegion Server群中。HBase Master Server中存储的是从数据到HRegion Server的映射
+1） Client
+HBase Client使用HBase的RPC机制与HMaster和HRegion Server进行通信，对于管理类操作，Client与HMaster进行RPC；对于数据读写类操作，Client与HRegionServer进行RPC。
+2）Zookeeper
+Zookeeper Quorum中除了存储了-ROOT-表的地址和HMaster的地址，HRegionServer会把自己以Ephemeral方式注册到Zookeeper中，使得HMaster可以随时感知到各个HRegionServer的健康状态。此外，Zookeeper也避免了HMaster的单点问题。
+3）HMaster
+每台HRegionServer都会与HMaster进行通信，HMaster的主要任务就是要告诉每台HRegion Server它要维护哪些HRegion。
+当一台新的HRegionServer登录到HMaster时，HMaster会告诉它等待分配数据。而当一台HRegion死机时，HMaster会把它负责的HRegion标记为未分配，然后再把它们分配到其他的HRegion Server中。
+HBase已经解决了HMaster单点故障问题（SPFO），并且HBase中可以启动多个HMaster，那么它就能够通过Zookeeper来保证系统中总有一个Master在运行。HMaster在功能上主要负责Table和Region的管理工作，具体包括：
+    管理用户对Table的增删改查操作
+    管理HRegionServer的负载均衡，调整Region分布
+    在Region Split后，负责新Region的分配
+    在HRegionServer停机后，负责失效HRegionServer上的Region迁移
+4）HRegion
+当表的大小超过设置值得时候，HBase会自动地将表划分为不同的区域，每个区域包含所有行的一个子集。对用户来说，每个表是一堆数据的集合，靠主键来区分。从物理上来说，一张表被拆分成了多块，每一块就是一个HRegion。我
+用表名+开始/结束主键来区分每一个HRegion，一个HRegion会保存一个表里面某段连续的数据，从开始主键到结束主键，一张完整的表格是保存在多个HRegion上面。
+5）HRegionServer
+所有的数据库数据一般都是保存在Hadoop分布式文件系统上面的，用户通过一系列HRegion服务器获取这些数据，一台机器上面一般只运行一个HRegionServer，且每一个区段的HRegion也只会被一个HRegion服务器维护
+HRegion Server主要负责响应用户的IO请求，向HDFS文件系统中读写数据，是HBase中最核心的模块。HRegionServer内部管理了一系列HRegion对象，每个HRegion对应了Table中的一个Region，HRegion中由多个HStore组成。
+每个HStore对应了Table中的一个Column Family的存储，可以看出每个ColumnFamily其实就是一个集中的存储单元，因此最好将具备共同IO特性的column放在一个Column Family中，这样最高效。
+6）HBase存储格式
+HBase中的所有数据文件都存储在Hadoop HDFS文件系统上，包括上述提到的两种文件类型：
+    HFile HBase中的KeyValue数据的存储格式，HFile是Hadoop的二进制格式文件，实际上StoreFile就是对HFile做了轻量级的包装，即StoreFile底层就是HFile。
+    HLogFile，HBase中WAL（Write Ahead Log）的存储格式，物理上是Hadoop的Sequence File
+7）ROOT表和META表
+用户表的Regions元数据被存储在.META.表中，随着Region的增多，.META.表中的数据也会增大，并分裂成多个Regions。为了定位.META.表中各个Regions的位置，把.META.表中的所有Regions的元数据保存在-ROOT-表中，最后由Zookeeper记录-ROOT-表的位置信息。
+所有客户端访问用户数据前，需要首先访问Zookeeper获得-ROOT-的位置，然后方位-ROOT-表获得.META.表的位置，最后根据.META.表中的信息确定用户数据存放的位置，-ROOT-表永远不会被分割，它只有一个Region，这样可以保证最多需要三次跳转就可以定位任意一个Region。
+为了加快访问速度，.META.表的Regions全部保存在内存中。
+--------------------------------------------------------------------------
