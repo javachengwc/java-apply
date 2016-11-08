@@ -119,8 +119,8 @@ b,配置/home/hadoop/hadoop-2.7.0/etc/hadoop目录下的hdfs-site.xml
         <value>192.168.1.110:9001</value>
     </property>
     <property>
-    <name>dfs.webhdfs.enabled</name>
-    <value>true</value>
+        <name>dfs.webhdfs.enabled</name>
+        <value>true</value>
     </property>
 </configuration>
 c,配置/home/hadoop/hadoop-2.7.0/etc/hadoop目录下的mapred-site.xml
