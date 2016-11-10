@@ -46,43 +46,44 @@ public class SafeguardStatExecutor  implements IExecutor{
         fromSources.add("1");
         fromSources.add("2");
 
+        //在用StatTotalUtil在数据总和统计的时候，各维度列表不需要一一写出来
         List<String> starters= new LinkedList<String>();
-        starters.add("0");
-        starters.add("1");
-        starters.add("2");
+//        starters.add("0");
+//        starters.add("1");
+//        starters.add("2");
 
         List<String> tagIds= new LinkedList<String>();
-        tagIds.add("0");//全部
-        tagIds.add("1");
-        tagIds.add("2");
-        tagIds.add("3");
+//        tagIds.add("0");//全部
+//        tagIds.add("1");
+//        tagIds.add("2");
+//        tagIds.add("3");
 
         List<String> subIds= new LinkedList<String>();
-        subIds.add("0");//全部
-        for(String tagId:tagIds)
-        {
-            int tid =Integer.parseInt(tagId);
-            if(tid>0)
-            {
-
-                subIds.add(""+(tid*10));
-                subIds.add(""+(tid*10+1));
-                subIds.add(""+(tid*10+2));
-            }
-        }
+//        subIds.add("0");//全部
+//        for(String tagId:tagIds)
+//        {
+//            int tid =Integer.parseInt(tagId);
+//            if(tid>0)
+//            {
+//
+//                subIds.add(""+(tid*10));
+//                subIds.add(""+(tid*10+1));
+//                subIds.add(""+(tid*10+2));
+//            }
+//        }
 
         List<String> thirdIds= new LinkedList<String>();
-        thirdIds.add("0");//全部
-        for(String subId:subIds)
-        {
-            int sid = Integer.parseInt(subId);
-            if(sid>0)
-            {
-                thirdIds.add(""+(sid*10));
-                thirdIds.add(""+(sid*10+1));
-                thirdIds.add(""+(sid*10+2));
-            }
-        }
+//        thirdIds.add("0");//全部
+//        for(String subId:subIds)
+//        {
+//            int sid = Integer.parseInt(subId);
+//            if(sid>0)
+//            {
+//                thirdIds.add(""+(sid*10));
+//                thirdIds.add(""+(sid*10+1));
+//                thirdIds.add(""+(sid*10+2));
+//            }
+//        }
 
         //采集数据
         genDemoData(dateTime, fromSources, starters, tagIds, subIds, thirdIds);

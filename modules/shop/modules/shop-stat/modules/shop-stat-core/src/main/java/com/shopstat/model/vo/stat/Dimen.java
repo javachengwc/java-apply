@@ -121,7 +121,7 @@ public class Dimen implements Serializable {
     {
         if(Number.class.isAssignableFrom(clazz))
         {
-            return columnName+"<>"+totalOption;
+            return "("+columnName+"<>"+totalOption+" or "+columnName+"  is null )";
         }
         return  columnName+"!='" +totalOption+"'";
     }
