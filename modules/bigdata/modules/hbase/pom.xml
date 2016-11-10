@@ -70,5 +70,18 @@
             <version>0.96.1.1-cdh5.0.0</version>
             <scope>provided</scope>
         </dependency>
+        <!--
+        <dependency>
+            <groupId>org.apache.phoenix</groupId>
+            <artifactId>phoenix-client</artifactId>
+            <version>4.8.1-HBase-1.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        -->
     </dependencies>
 </project>

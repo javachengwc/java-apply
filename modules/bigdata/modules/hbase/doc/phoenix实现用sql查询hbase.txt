@@ -6,11 +6,38 @@ phoenix操作的表及数据，存储在hbase上。phoenix只是需要和hbase�
 可以把phoenix看成一种代替hBase的语法的一个工具。虽然可以用java可以用jdbc来连接phoenix，然后操作hbase，但是在生产环境中，不可以用在OLTP(联机事务处理)中。
 在线事务处理的环境中，需要低延迟，而phoenix在查询HBase时，虽然做了一些优化，但延迟还是不小。所以依然是用在OLAT(联机分析处理)中，再将结果返回存储下来。
 
-1,phoenix嵌入hbase服务
+phoenix与HBase版本对应关系
+Phoenix 2.x - HBase 0.94.x
+Phoenix 3.x - HBase 0.94.x
+Phoenix 4.x - HBase 0.98.1+
 
+此次搭建的环境版本情况：
+hadoop-2.7.2
+hbase-1.2.3
+phoenix-4.8.1-HBase-1.2
+
+1,phoenix嵌入hbase服务
+从官网上下载apache-phoenix-4.8.1-HBase-1.2-bin.tar.gz
+tar -zxvf apache-phoenix-4.8.1-HBase-1.2-bin.tar.gz
+#拷贝服务端jar包(只有1个)到hbase各节点lib下
+cp ./apache-phoenix-4.8.1-HBase-1.2-bin/phoenix-4.8.1-HBase-1.2-server.jar /data/hbase/hbase-1.2.3/lib/
+scp ./apache-phoenix-4.8.1-HBase-1.2-bin/phoenix-4.8.1-HBase-1.2-server.jar  192.168.1.111:/data/hbase/hbase-1.2.3/lib/
+scp ./apache-phoenix-4.8.1-HBase-1.2-bin/phoenix-4.8.1-HBase-1.2-server.jar  192.168.1.112:/data/hbase/hbase-1.2.3/lib/
+重启hbase, /data/hbase/hbase-1.2.3/bin/stop-hbase.sh  /data/hbase/hbase-1.2.3/bin/start-hbase.sh
 
 2,验证phoenix
+#执行sqlline.py [zookeeper]
+./apache-phoenix-4.8.1-HBase-1.2-bin/bin/sqlline.py 192.168.1.110:2181
+create table test (id integer primary key, content varchar);
+upsert into test values (1,'hello');
+upsert into test values (2,'world');
+select * from test;
+#执行语句不报错，查询后能看到录入的2条数据，表示phoenix嵌入hbase服务没问题
 
 3,程序通过phoenix访问hbase
+#把phoenix-[version]-client.jar包引入到java程序的依赖包中
+注:此jar包中包含了hbase,hadoop,slf4j等jar包,很容易引起冲突
+程序运行前置条件:需要把hbase所有节点的ip,hostname添加到运行程序机器的hosts中
+程序例子见SimplePhoenix.java
 
 -----------------------------------------------------------------------------

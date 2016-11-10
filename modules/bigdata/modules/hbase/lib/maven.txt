@@ -1,0 +1,1 @@
+mvn install:install-file -Dfile=phoenix-4.8.1-HBase-1.2-client.jar -DgroupId=org.apache.phoenix -DartifactId=phoenix-client -Dversion=4.8.1-HBase-1.2 -Dpackaging=jar
