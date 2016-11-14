@@ -1,0 +1,101 @@
+-----------------------------hive安装配置------------------------------
+版本:centos6.6-64位,jdk1.7-64位,hadoop2.7.2-64位,hive-2.1.0
+---------------------------------------
+服务器环境
+    系统：CentOS 6以上
+    内存：主节点4G内存以上，其他节点需要2G以上内存
+    节点:
+    192.168.1.110 hadoopa  master
+    192.168.1.111 hadoopb  slave
+    192.168.1.112 hadoopc  slave
+此次hive安装基于hadoop安装配置.txt中所安装的hadoop环境
+前置安装:mysql(参考mysql安装.txt)
+hive只需要安装在主节点192.168.1.110 hadoopa就可
+---------------------------------------
+1,下载解压hive
+apache-hive-2.1.0-bin.tar.gz
+tar -zxvf apache-hive-2.1.0-bin.tar.gz
+cp -rf apache-hive-2.1.0-bin  /data/hive/
+
+2,设置Hive环境变量
+vim /etc/profile
+    HIVE_HOME=/data/hive/apache-hive-2.1.0-bin
+    PATH=$PATH:$HIVE_HOME/bin
+    export HIVE_HOME PATH....
+source /etc/profile
+
+3,修改配置文件
+a,配置文件重命名
+cd /data/hive/apache-hive-2.1.0-bin
+cp hive-env.sh.template hive-env.sh
+cp hive-default.xml.template hive-site.xml
+cp hive-log4j2.properties.template hive-log4j2.properties
+cp hive-exec-log4j2.properties.template hive-exec-log4j2.properties
+b,编辑hive-env.sh文件
+vim hive-env.sh
+    export JAVA_HOME=/usr/java/jdk7    ##Java路径
+    export HADOOP_HOME=/data/hadoop/hadoop-2.7.2   ##Hadoop路径
+    export HIVE_HOME=/data/hive/apache-hive-2.1.0-bin    ##Hive路径
+    export HIVE_CONF_DIR=$HIVE_HOME/conf    ##Hive配置文件路径
+c,修改hive-site.xml文件,对应<name>，修改成如下<value>值
+<property>
+    <name>hive.exec.scratchdir</name>
+    <value>/tmp/hive-${user.name}</value>
+</property>
+<property>
+    <name>hive.exec.local.scratchdir</name>
+    <value>/tmp/${user.name}</value>
+</property>
+<property>
+    <name>hive.downloaded.resources.dir</name>
+    <value>/tmp/hive/resources</value>
+</property>
+<property>
+    <name>hive.querylog.location</name>
+    <value>/tmp/${user.name}</value>
+</property>
+<property>
+    <name>hive.server2.logging.operation.log.location</name>
+    <value>/tmp/${user.name}/operation_logs</value>
+</property>
+
+4,配置Hive Metastore元数据存储在mysql
+a,将 mysql-connector-java-5.1.40-bin.jar 放入 $HIVE_HOME/lib 下
+b,修改hive-site.xml中配置mysql数据库连接信息
+<property>
+    <name>javax.jdo.option.ConnectionURL</name>
+    <value>jdbc:mysql://localhost:3306/hive?createDatabaseIfNotExist=true&amp;characterEncoding=UTF-8&amp;useSSL=false</value>
+</property>
+<property>
+    <name>javax.jdo.option.ConnectionDriverName</name>
+    <value>com.mysql.jdbc.Driver</value>
+</property>
+<property>
+    <name>javax.jdo.option.ConnectionUserName</name>
+    <value>hive</value>
+</property>
+<property>
+    <name>javax.jdo.option.ConnectionPassword</name>
+    <value>hive</value>
+</property>
+c,mysql中创建用户hive/密码hive
+
+5,为hive创建hdfs目录
+在hive中创建表之前需要使用/tmp 和 /user/hive/warehouse (hive-site.xml 配置文件中属性项 hive.metastore.warehouse.dir 的默认值) 目录并给它们赋写权限。
+cd /data/hadoop/hadoop-2.7.2/bin
+./hdfs dfs -mkdir /tmp
+./hdfs dfs -mkdir -p /usr/hive/warehouse
+./hdfs dfs -chmod g+w /tmp
+./hdfs dfs -chmod g+w /usr/hive/warehouse
+
+6,运行hive
+cd /data/hive/apache-hive-2.1.0-bin/bin
+(从hive2.1版本开始, 需要先运行schematool 命令来执行初始化操作,之前的版本不需要执行此步骤)
+(./schematool)  #运行schematool
+./hive          #运行hive
+能进入命令行表示hive运行成功
+hive>show tables;     #显示表
+连接运行hive也可以如下:
+./beeline -u jdbc:hive2://127.0.0.1:10002 -n user -p passwd --verbose=true
+hive>
+-----------------------------------------------------------------------
