@@ -1,0 +1,71 @@
+-------------------------------------hue安装配置-----------------------------
+hue是一个开源的Apache Hadoop UI系统，基于Python Web框架Django实现的。通过使用Hue可以在浏览器端的Web控制台上与Hadoop集群进行交互来分析处理数据，
+例如操作HDFS上的数据，运行MapReduce Job,执行hive查询等等。
+hue功能:
+    数据库查询编辑器,支持 Hive, Impala, MySql, PostGres, Sqlite and Oracle
+    动态查询仪表盘,支持 Solr
+    支持 Spark 编辑器和仪表盘
+    浏览器查看状态,支持 YARN, HDFS, Hive table Metastore, HBase, ZooKeeper
+    支持 Pig Editor, Sqoop2, Oozie workflows 编辑器和仪表盘
+    将数据导入hdfs
+---------------------------------------
+版本:centos6.6-64位,jdk1.7-64位,hadoop2.7.2-64位,hive-2.1.0,hue-3.10.0
+---------------------------------------
+服务器环境
+    系统：CentOS 6以上
+    内存：主节点4G内存以上，其他节点需要2G以上内存
+    节点:
+    192.168.1.110 hadoopa  master
+    192.168.1.111 hadoopb  slave
+    192.168.1.112 hadoopc  slave
+此次hue安装基于hadoop安装配置.txt中所安装的hadoop环境
+hue只需要安装在主节点192.168.1.110 hadoopa就可
+---------------------------------------
+1,安装依赖包
+a,编译器安装(一般linux都自带安装了编译器)
+    yum -y install gcc automake autoconf libtool make     ---安装gcc automake autoconf libtool make
+    yum -y install gcc-c++                                ---安装gcc-c++
+b,依赖软件安装
+    wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo    ---添加repo源
+    yum -y install ant apache-maven asciidoc rsync cyrus-sasl-devel cyrus-sasl-gssapi cyrus-sasl-plain  krb5-devel libffi-devel libtidy libxml2-devel libxslt-devel
+    yum -y install mysql-devel  openldap-devel python-devel  sqlite-devel openssl-devel gmp-devel                 ---安装依赖包
+
+2,下载安装hue
+源码安装:
+git clone https://github.com/cloudera/hue.git branch-3.10
+cd branch-3.10
+make apps            ---编译(时间非常长)
+或
+从git上下载hue-release-3.10.0.tar.gz
+tar -zxvf hue-release-3.10.0.tar.gz
+cd hue-release-3.10.0
+make apps
+
+3,配置hue(配置项可参考hue-conf.png)
+vim ./desktop/conf/pseudo-distributed.ini
+    [desktop]
+       http_host=192.168.1.110
+       http_port=8000
+       server_user=hue
+       server_group=hue
+       default_user=hue
+       default_hdfs_superuser=root
+    [hadoop]
+        fs_defaultfs=hdfs://192.168.1.110:9000
+        hadoop_conf_dir=/data/hadoop/hadoop-2.7.2/etc/hadoop
+    [[yarn_clusters]]
+          resourcemanager_host=192.168.1.110
+          resourcemanager_port=8032
+          resourcemanager_api_url=http://192.168.1.110:8088
+          history_server_api_url=http://192.168.1.110:19888
+    [beeswax]
+       hive_server_host=192.168.1.110
+       hive_server_port=10000
+       hive_conf_dir=/data/hive/apache-hive-2.1.0-bin/conf
+
+4,启动hue
+需前置启动hue接入的应用，比如hadoop,hiveServer2
+./build/env/bin/supervisor &
+访问hue web:http://192.168.1.110:8000
+
+-----------------------------------------------------------------------------

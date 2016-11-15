@@ -36,10 +36,8 @@ vim /etc/hosts
     192.168.1.111   slave1
     192.168.1.112   slave2
 
-如果是虚拟机上的linux系统,网络设置需前置设置
-1,点击VMware快捷方式，右键打开文件所在位置 -> 双击vmnetcfg.exe -> VMnet1 host-only ->修改subnet ip 设置网段：192.168.1.0 子网掩码：255.255.255.0 -> apply -> ok
-2,回到windows --> 打开网络和共享中心 -> 更改适配器设置 -> 右键VMnet1 -> 属性 -> 双击IPv4 -> 设置windows的IP：192.168.1.100 子网掩码：255.255.255.0 -> 点击确定
-3,在虚拟软件上 --My Computer -> 选中虚拟机 -> 右键 -> settings -> 192network adapter -> host only
+如果是虚拟机上的linux系统,网络设置前需设置vm对此虚拟系统的联网方式为桥接模式:
+在虚拟软件上 --My Computer -> 选中虚拟机 -> 右键 -> settings -> 网络适配器 -> 网络连接中选择桥接模式。
 
 以上步骤执行完毕后，如果需要,重启主机 reboot
 ----------------------------------------------------
@@ -57,7 +55,8 @@ Cloudera Manager安装(1,2,3步骤需所有节点上执行)
     cp cloudera-manager.repo /etc/yum.repos.d/    ---拷贝cloudera-manager.repo文件到/etc/yum.repos.d/下
     yum list|grep cloudera                        ---验证repo文件
     如果列出的不是安装的版本,执行
-    yum clean all
+    yum clean all                                 ---清空现有缓存
+    yum makecache                                 ---生成新的缓存
     yum list | grep cloudera
 2,将下载的rpms文件拷贝到所有节点下任意目录切换到rpms目录下，执行
     yum -y install *.rpm                          ---安装相应的rpm包

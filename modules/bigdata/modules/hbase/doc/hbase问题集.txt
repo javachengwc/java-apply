@@ -1,0 +1,15 @@
+-----------------------------------hbase问题集-------------------------------
+1,hbase同一时间使用过多的文件句柄抛异常java.io.IOException...(Too manyopen files)
+需要修改系统中hbase用户的最大文件句柄限制。可以设置到10k. 还需要修改hbase用户的 nproc，如果过低会造成 OutOfMemoryError异常
+vim /etc/security/limits.conf 添加一行，如:
+    #给hadoop用户设置打开的最大文件句柄为10240
+    hadoop  -  nofile 10240
+    #给hadoop用户设置nproc最大值为32000
+    hadoop soft/hard nproc 32000
+查看 /etc/pam.d/login 文件中有：(没有就添加)
+session required /lib/security/pam_limits.so
+注意：
+32位系统是添加 session required /lib/security/pam_limits.so
+64位系统是添加 session required /lib64/security/pam_limits.so
+
+-----------------------------------------------------------------------------

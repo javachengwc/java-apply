@@ -177,4 +177,30 @@ ulimit选项
 -t ：指定CPU使用时间的上限，单位为秒。
 -u <程序数目>：用户最多可开启的程序数目。
 -v <虚拟内存大小>：指定可使用的虚拟内存上限，单位为KB。
+
+linux系统限制配置
+/etc/security/limits.conf
+limits.conf的格式如下：
+username|@groupname type resource limit
+username|@groupname：设置需要被限制的用户名，组名前面加@和用户名区别。也可以用通配符*来做所有用户的限制。
+type：有soft,hard以及-,soft指的是当前系统生效的设置值。hard 表明系统中所能设定的最大值。soft的限制不能比hard限制高。用-就表明同时设置了soft和hard的值。
+resource：
+    core - 限制内核文件的大小
+    date - 最大数据大小
+    fsize - 最大文件大小
+    memlock - 最大锁定内存地址空间
+    nofile - 打开文件的最大数目
+    rss - 最大持久设置大小
+    stack - 最大栈大小
+    cpu - 以分钟为单位的最多CPU时间
+    noproc - 进程的最大数目
+    as - 地址空间限制
+    maxlogins - 此用户允许登录的最大数目
+要使limits.conf文件配置生效，必须要确保 pam_limits.so文件被加入到启动文件中。
+查看 /etc/pam.d/login 文件中有：(没有就添加)
+session required /lib/security/pam_limits.so
+注意：
+32位系统是添加 session required /lib/security/pam_limits.so
+64位系统是添加 session required /lib64/security/pam_limits.so
+
 ----------------------------------------------------------
