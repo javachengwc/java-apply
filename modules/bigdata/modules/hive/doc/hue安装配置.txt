@@ -60,11 +60,18 @@ vim ./desktop/conf/pseudo-distributed.ini
         fs_defaultfs=hdfs://192.168.1.110:9000
         hadoop_conf_dir=/data/hadoop/hadoop-2.7.2/etc/hadoop
     [[yarn_clusters]]
-          resourcemanager_host=192.168.1.110
-          resourcemanager_port=8032
-          resourcemanager_api_url=http://192.168.1.110:8088
-          history_server_api_url=http://192.168.1.110:19888
-          submit_to=True
+        resourcemanager_host=192.168.1.110
+        resourcemanager_port=8032
+        resourcemanager_api_url=http://192.168.1.110:8088
+        history_server_api_url=http://192.168.1.110:19888
+        submit_to=True
+    [[database]]
+        engine=mysql
+        host=localhost
+        port=3306
+        user=hue
+        password=hue
+        name=hue
     [beeswax]
        hive_server_host=192.168.1.110
        hive_server_port=10000
@@ -78,8 +85,20 @@ b,在hadoop的core-site.xml中为hue配置相应的代理用户(这里的代理�
         <name>hadoop.proxyuser.root.groups</name>
         <value>*</value>
     </property>
+    
+4,初始化hue元数据存储相关
+a,在mysql中创建对应的数据库及账号并授权
+     create database hue;
+     create user 'hue'@'%' IDENTIFIED BY 'hue';
+     grant all privileges on hue.* to hue@'%';
+b,将libmysqlclient.so加入到系统库中
+32位:ln -s /usr/local/mysql/lib/libmysqlclient.so.20 /usr/lib/libmysqlclient.so.20
+64位:ln -s /usr/local/mysql/lib/libmysqlclient.so.20 /usr/lib64/libmysqlclient.so.20
+c, 初始化数据库
+    bin/hue syncdb
+    bin/hue migrate
 
-4,启动hue
+5,启动hue
 需前置启动hue接入的应用，比如hadoop,hiveserver2
 useradd hue                            ---添加hue账号(hue运行必须要有这账号，不然会报错)
 bin/hive --service metastore &         ---启动hive metastore服务

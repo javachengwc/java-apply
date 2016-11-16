@@ -1,0 +1,34 @@
+------------------------------------hue问题集----------------------------------
+1,在hue中的hive执行带map-rds任务的查询的时候，提示databade locked，并看不到查询结果
+原因:Hue默认使用的是derby数据库来存储配置信息及相关元数据，此配置会出现如上情况。
+解决办法:将hue的元数据存储调整成使用MySQL来存储
+1,修改配置文件pseudo-distributed.ini
+vim desktop/conf/pseudo-distributed.ini
+    [[database]]
+        engine=mysql
+        host=localhost
+        port=3306
+        user=hue
+        password=hue
+        name=hue
+2,在mysql中创建对应的数据库及账号并授权
+     create database hue;
+     create user 'hue'@'%' IDENTIFIED BY 'hue';
+     grant all privileges on hue.* to hue@'%';
+
+3,将libmysqlclient.so加入到系统库中
+32位:ln -s /usr/local/mysql/lib/libmysqlclient.so.20 /usr/lib/libmysqlclient.so.20
+64位:ln -s /usr/local/mysql/lib/libmysqlclient.so.20 /usr/lib64/libmysqlclient.so.20
+
+4, 初始化数据库
+    bin/hue syncdb
+    bin/hue migrate
+如果需要把以前的信息导到过来需这样处理
+    bin/hue dumpdata > aa.json
+    mysql -uhue -phue -e "delte from hue.django_content_type"
+    bin/hue loaddata aa.json
+
+5,重启hue
+./build/env/bin/supervisor &
+
+-------------------------------------------------------------------------------
