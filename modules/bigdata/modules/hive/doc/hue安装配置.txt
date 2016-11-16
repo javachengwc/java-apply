@@ -37,19 +37,25 @@ cd branch-3.10
 make apps            ---编译(时间非常长)
 或
 从git上下载hue-release-3.10.0.tar.gz
+cp hue-release-3.10.0.tar.gz /data/hue/
+cd /data/hue/
 tar -zxvf hue-release-3.10.0.tar.gz
 cd hue-release-3.10.0
 make apps
 
-3,配置hue(配置项可参考hue-conf.png)
+3,配置hue(配置项可参考hue-conf.png),
+a,用下面的各项设值更新到配置文件pseudo-distributed.ini中
 vim ./desktop/conf/pseudo-distributed.ini
     [desktop]
+       secret_key=000111222333
        http_host=192.168.1.110
        http_port=8000
-       server_user=hue
-       server_group=hue
+       time_zone=Asia/Shanghai
+       server_user=root
+       server_group=root
        default_user=hue
        default_hdfs_superuser=root
+       default_site_encoding=utf-8
     [hadoop]
         fs_defaultfs=hdfs://192.168.1.110:9000
         hadoop_conf_dir=/data/hadoop/hadoop-2.7.2/etc/hadoop
@@ -58,14 +64,27 @@ vim ./desktop/conf/pseudo-distributed.ini
           resourcemanager_port=8032
           resourcemanager_api_url=http://192.168.1.110:8088
           history_server_api_url=http://192.168.1.110:19888
+          submit_to=True
     [beeswax]
        hive_server_host=192.168.1.110
        hive_server_port=10000
        hive_conf_dir=/data/hive/apache-hive-2.1.0-bin/conf
+b,在hadoop的core-site.xml中为hue配置相应的代理用户(这里的代理用户就是上面的server_user对应的用户)
+    <property>
+        <name>hadoop.proxyuser.root.hosts</name>
+        <value>*</value>
+    </property>
+    <property>
+        <name>hadoop.proxyuser.root.groups</name>
+        <value>*</value>
+    </property>
 
 4,启动hue
-需前置启动hue接入的应用，比如hadoop,hiveServer2
-./build/env/bin/supervisor &
+需前置启动hue接入的应用，比如hadoop,hiveserver2
+useradd hue                            ---添加hue账号(hue运行必须要有这账号，不然会报错)
+bin/hive --service metastore &         ---启动hive metastore服务
+bin/hiveserver2 &                      ---启动hiveservers服务
+./build/env/bin/supervisor &           ---启动hue服务
 访问hue web:http://192.168.1.110:8000
 
 -----------------------------------------------------------------------------

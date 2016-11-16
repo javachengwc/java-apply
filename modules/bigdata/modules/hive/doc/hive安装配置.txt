@@ -84,9 +84,9 @@ c,mysql中创建用户hive/密码hive
 在hive中创建表之前需要使用/tmp 和 /user/hive/warehouse (hive-site.xml 配置文件中属性项 hive.metastore.warehouse.dir 的默认值) 目录并给它们赋写权限。
 cd /data/hadoop/hadoop-2.7.2/bin
 ./hdfs dfs -mkdir /tmp
-./hdfs dfs -mkdir -p /usr/hive/warehouse
+./hdfs dfs -mkdir -p /user/hive/warehouse
 ./hdfs dfs -chmod g+w /tmp
-./hdfs dfs -chmod g+w /usr/hive/warehouse
+./hdfs dfs -chmod g+w /user/hive/warehouse
 
 6,运行hive
 cd /data/hive/apache-hive-2.1.0-bin/bin
