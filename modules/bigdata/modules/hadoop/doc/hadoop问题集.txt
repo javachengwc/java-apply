@@ -1,0 +1,32 @@
+-----------------------------------hadoop问题集-----------------------------
+1,hadoop2.7.2 slave节点NodeManager无法启动
+在搭建hadoop-2.7.2 中启动./sbin/start-yarn.sh，无报错，但slave节点的NodeManager进程启动不起来。
+查看slave节点hadoop日志，vim yarn-root-nodemanager-hadoopb.log
+发现如下信息:FATAL org.apache.hadoop.yarn.server.nodemanager.NodeManager: Error starting NodeManager
+问题原因:NodeManager要求的内存最低1024MB
+解决方法:
+在hadoop集群各节点的yarn-site.xml文件中配置如下配置，重启./sbin/start-yarn.sh即可
+<property>
+    <name>yarn.nodemanager.resource.memory-mb</name>
+    <value>1024</value>
+</property>
+<property>
+    <name>yarn.nodemanager.resource.cpu-vcores</name>
+    <value>1</value>
+</property>
+
+2,hadoop在执行任务时报错java.io.IOException: org.apache.hadoop.yarn.exceptions.InvalidResourceRequestException:
+Invalid resource request, requested memory < 0, or requested memory > max configured, requestedMemory=1536, maxMemory=1024
+问题原因:任务需要节点的yarn工作内存为1536M,但目前节点设置的yarn工作内存为1000M,内存不足，请求无效
+解决方法:
+在hadoop集群各节点的yarn-site.xml文件中配置如下配置，重启./sbin/start-yarn.sh即可
+<property>
+    <name>yarn.scheduler.maximum-allocation-mb</name>
+    <value>2000</value>
+ </property>
+<property>
+    <name>yarn.nodemanager.resource.memory-mb</name>
+    <value>2000</value>
+</property>
+
+----------------------------------------------------------------------------

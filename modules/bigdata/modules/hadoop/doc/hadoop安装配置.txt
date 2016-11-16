@@ -170,7 +170,11 @@ d,配置/home/hadoop/hadoop-2.7.0/etc/hadoop目录下的yarn-site.xml
       </property>
       <property>
           <name>yarn.nodemanager.resource.memory-mb</name>
-          <value>768</value>
+          <value>2000</value>
+      </property>
+      <property>
+          <name>yarn.nodemanager.resource.cpu-vcores</name>
+          <value>1</value>
       </property>
   </configuration>
 e,配置/home/hadoop/hadoop-2.7.0/etc/hadoop目录下hadoop-env.sh、yarn-env.sh的JAVA_HOME，
@@ -193,9 +197,18 @@ g,将配置好的Hadoop复制到各个节点对应位置上，通过scp传送，
 wget http://dl.bintray.com/sequenceiq/sequenceiq-bin/hadoop-native-64-2.7.0.tar
 tar xvf hadoop-native-64-2.7.0.tar
 cp lib* /home/hadoop/hadoop-2.7.0/lib/native   这样就能正常使用dfs了
-检验方式: bin/hadoop fs -ls /
-          bin/hadoop fs -mkdir /ttt
-          bin/hadoop fs -ls /
+检验方式a:
+    在主节点 jps-ml 列出的进程需要有
+    org.apache.hadoop.hdfs.server.namenode.NameNode
+    org.apache.hadoop.hdfs.server.namenode.SecondaryNameNode
+    org.apache.hadoop.yarn.server.resourcemanager.ResourceManager
+    在从节点jps-ml 列出的进程需要有
+    org.apache.hadoop.hdfs.server.datanode.DataNode
+    org.apache.hadoop.yarn.server.nodemanager.NodeManager
+检验方式b:
+    bin/hadoop fs -ls /
+    bin/hadoop fs -mkdir /ttt
+    bin/hadoop fs -ls /
 
 Web访问，要先开放端口或者直接关闭防火墙
 (1)输入命令，systemctl stop firewalld.service

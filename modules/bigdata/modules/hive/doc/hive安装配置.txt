@@ -79,6 +79,11 @@ b,修改hive-site.xml中配置mysql数据库连接信息
     <value>hive</value>
 </property>
 c,mysql中创建用户hive/密码hive
+(启动后，在此数据库中,
+TBLS表中记录hive表信息,
+DBS表中记录hive数据库信息,
+PARTITION_KEYS表记录hive表的分区信息,
+COLUMNS_V2记录hive表的列信息)
 
 5,为hive创建hdfs目录
 在hive中创建表之前需要使用/tmp 和 /user/hive/warehouse (hive-site.xml 配置文件中属性项 hive.metastore.warehouse.dir 的默认值) 目录并给它们赋写权限。
