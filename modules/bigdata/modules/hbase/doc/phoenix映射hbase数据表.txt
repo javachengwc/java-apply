@@ -1,0 +1,20 @@
+----------------------------------phoenix映射hbase数据表----------------------------------
+phoenix对hbase中已经存在的数据表或则通过hbase客户端创建的表不会自动进行映射，
+所以想要在phoenix中操作这些表就需要手动进行配置。这些表才能在phoenix中可见并可操作。
+
+比如hbase中有一张表
+create 't1','f1'
+put 't1','rk01','f1:col1','value1'
+put 't1','rk01','f1:col2','value2'
+要在phoenix中访问此表需要做如下操作:
+在phoenix客户端回话中创建对应的view或则table
+create view "t1"(dd varchar primary key, "f1"."col1" varchar,"f1"."col2" varchar); 或
+create table "t1"(ROW varchar primary key, "f1"."col1" varchar,"f1"."col2" varchar);
+select * from "t1";         ---映射成功，以后就可以直接从通过phoenix来操作hbase中的"t1"表了。
+
+注:
+1,hbase数据表默认主键列名是ROW
+2,phoenix在创建映射视图或表中，表名和列族以及列名需要用双引号括起来，
+  因为hbase是区分大小写的，如果不用双引号括起来的话在创建表的时候会自动将小写转换为大写字母，这样hbase中会创建另外一张表。
+3,phoenix查询表的时候，如果表名有小写字母，表名需要用双引号括起来，强制不转换为大写。
+------------------------------------------------------------------------------------------

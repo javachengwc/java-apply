@@ -44,7 +44,7 @@ cd hue-release-3.10.0
 make apps
 编译执行过程中没报错,查看HUE_HOME目录下文件，多出了app.reg文件和build文件夹表示编译安装成功
 
-3,配置hue(配置项可参考hue-conf.png),
+3,配置hue(配置项可参考hue-conf.png),这里整合了hadoop,hive,hbase,并且把配置切换成mysql来存储
 a,用下面的各项设值更新到配置文件pseudo-distributed.ini中
 vim ./desktop/conf/pseudo-distributed.ini
     [desktop]
@@ -66,6 +66,9 @@ vim ./desktop/conf/pseudo-distributed.ini
         resourcemanager_api_url=http://192.168.1.110:8088
         history_server_api_url=http://192.168.1.110:19888
         submit_to=True
+    [hbase]
+      hbase_clusters=(hbases|192.168.1.110:9090)
+      hbase_conf_dir=/data/hbase/hbase-1.2.3/conf
     [[database]]
         engine=mysql
         host=localhost
@@ -100,11 +103,13 @@ c, 初始化数据库
     bin/hue migrate
 
 5,启动hue
-需前置启动hue接入的应用，比如hadoop,hiveserver2
-useradd hue                            ---添加hue账号(hue运行必须要有这账号，不然会报错)
-bin/hive --service metastore &         ---启动hive metastore服务
-bin/hiveserver2 &                      ---启动hiveservers服务
-./build/env/bin/supervisor &           ---启动hue服务
+需前置启动hue接入的应用，比如hadoop,hiveserver2,hbase
+useradd hue                                       ---添加hue账号(hue运行必须要有这账号，不然会报错)
+$HIVE_HOME/bin/hive --service metastore &         ---启动hive metastore服务
+$HIVE_HOME/bin/hiveserver2 &                      ---启动hiveservers服务
+$HBASE_HOME/bin/start-hbase.sh                    ---启动hbase
+$HBASE_HOME/bin/hbase-daemon.sh start thrift      ---启动hbase的thrift服务
+./build/env/bin/supervisor &                      ---启动hue服务
 访问hue web:http://192.168.1.110:8000
 
 -----------------------------------------------------------------------------
