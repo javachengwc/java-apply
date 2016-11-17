@@ -42,6 +42,7 @@ cd /data/hue/
 tar -zxvf hue-release-3.10.0.tar.gz
 cd hue-release-3.10.0
 make apps
+编译执行过程中没报错,查看HUE_HOME目录下文件，多出了app.reg文件和build文件夹表示编译安装成功
 
 3,配置hue(配置项可参考hue-conf.png),
 a,用下面的各项设值更新到配置文件pseudo-distributed.ini中
