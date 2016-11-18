@@ -3,5 +3,64 @@ sqoop是结构化数据系统(mysql)和Hadoop系统间的数据转换的一个�
 sqoop版本分sqoop1和sqoop2，其中sqoop1目前版本为1.4.6，Sqoop2版本为1.99.7
 sqoop2目前问题太多。无法正常使用，故这里安装的sqoop版本为1.4.6。
 
+环境基于hadoop安装配置.txt中服务器环境
+--------------------------------------
+1,下载解压sqoop二进制包
+wget http://mirror.bit.edu.cn/apache/sqoop/1.4.6/sqoop-1.4.6.bin__hadoop-2.0.4-alpha.tar.gz
+tar -zxvf sqoop-1.4.6.bin__hadoop-2.0.4-alpha.tar.gz  -C /data/sqoop
 
+2,设置环境变量
+vi /etc/profile
+    SQOOP_HOME=/data/sqoop/sqoop-1.4.6.bin__hadoop-2.0.4-alpha
+    PATH=$SQOOP_HOME/bin:$PATH
+    export SQOOP_HOME PATH...
+source /etc/profile
+
+3,配置文件配置
+cd /data/sqoop/sqoop-1.4.6.bin__hadoop-2.0.4-alpha/conf
+cp sqoop-env-template.sh sqoop-env.sh
+vi sqoop-env.sh
+    export HADOOP_COMMON_HOME=/data/hadoop/hadoop-2.7.2
+    export HADOOP_MAPRED_HOME=/data/hadoop/hadoop-2.7.2
+    export HBASE_HOME=/data/hbase/hbase-1.2.3
+    export HIVE_HOME=/data/hive/apache-hive-2.1.0-bin
+vi sqoop-site.xml
+    <property>
+        <name>sqoop.metastore.client.autoconnect.url</name>
+        <value>jdbc:mysql://192.168.1.110:3306/sqoop?useUnicode=true&amp;characterEncoding=utf-8</value>
+    </property>
+    <property>
+        <name>sqoop.metastore.client.autoconnect.username</name>
+        <value>sqoop</value>
+    </property>
+    <property>
+        <name>sqoop.metastore.client.autoconnect.password</name>
+        <value>sqoop</value>
+    </property>
+    
+4,创建存储sqoop元数据的数据库及账号(也就是上面步骤配置的账号及数据库)
+在mysql中创建对应的数据库及账号并授权
+     create database sqoop;
+     create user 'sqoop'@'%' IDENTIFIED BY 'sqoop';
+     grant all privileges on sqoop.* to sqoop@'%';
+
+5,拷贝hadoop包和mysql驱动包到sqoop的lib目录
+    cp $HADOOP_HOME/share/hadoop/common/hadoop-common-2.7.2.jar $SQOOP_HOME/lib
+    cp mysql-connector-java-5.1.39.jar $SQOOP_HOME/lib
+
+6,测试
+    sqoop version              ---显示sqoop的版本
+    sqoop help                 ---显示sqoop帮助信息
+    sqoop list-tables --connect jdbc:mysql://192.168.1.100:3306/hive --username root --password root      ---列出数据库所有表
+    如果上面语句执行成功，会列出数据库中的所有表，这表示sqoop配置成功，可使用。
+
+注:当使用sqoop命令语句时，如果提示
+    Warning: /data/sqoop/sqoop-1.4.6.bin__hadoop-2.0.4-alpha/../hcatalog does not exist! HCatalog jobs will fail.
+    Please set $HCAT_HOME to the root of your HCatalog installation.
+    Warning: /data/sqoop/sqoop-1.4.6.bin__hadoop-2.0.4-alpha/../accumulo does not exist! Accumulo imports will fail.
+    Please set $ACCUMULO_HOME to the root of your Accumulo installation.
+    Warning: /data/sqoop/sqoop-1.4.6.bin__hadoop-2.0.4-alpha/../zookeeper does not exist! Accumulo imports will fail.
+    Please set $ZOOKEEPER_HOME to the root of your Zookeeper installation.
+可编辑$SQOOP_HOME/bin/configure-sqoop文件，把里面对应的检查片段注释掉就可以了(根据fail搜索),
+这样以后使用sqoop命令就不会再有上面的警告提示了。
 -----------------------------------------------------------------------------------
