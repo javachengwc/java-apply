@@ -37,8 +37,16 @@ vi sqoop-site.xml
         <name>sqoop.metastore.client.autoconnect.password</name>
         <value>sqoop</value>
     </property>
-    
-4,创建存储sqoop元数据的数据库及账号(也就是上面步骤配置的账号及数据库)
+    <property>
+        <name>sqoop.metastore.client.record.password</name>
+        <value>true</value>
+    </property>
+    <property>
+         <name>sqoop.metastore.client.enable.autoconnect</name>
+         <value>true</value>
+    </property
+
+4,创建存储sqoop metastore的元数据的数据库及账号(也就是上面步骤配置的账号及数据库)
 在mysql中创建对应的数据库及账号并授权
      create database sqoop;
      create user 'sqoop'@'%' IDENTIFIED BY 'sqoop';

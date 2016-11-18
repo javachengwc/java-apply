@@ -1,4 +1,126 @@
 -----------------------------------sqoop导入导出--------------------------------
+1,从mysql导入到hdfs中
+sqoop import
+--connect jdbc:mysql://ip:3306/db    ##mysql url
+--username name                      ##连接mysql的用户名
+--password pwd                       ##连接mysql的密码
+--table test                         ##从mysql导出的表名称
+--fields-terminated-by '\t'          ##指定输出文件中的行的字段分隔符
+--target-dir                         ##存放路径，默认是hdfs上的user/username/tablename路径
+-m 1                                 ##复制过程使用1个map作业
 
+ep:
+sqoop import --connect jdbc:mysql://192.168.1.110:3306/test --username root --password root --table test --fields-terminated-by ':' -m 1
+                                     ---导入数据库test表数据到hdfs
+hadoop fs -ls ./test                 ---在hdfs上查看上面导入的数据
 
---------------------------------------------------------------------------------
+2,从hdfs导出到mysql中
+sqoop export
+--connect jdbc:mysql://ip:3306/db             ##mysql url
+--username name                               ##连接mysql的用户名
+--password pwd                                ##连接mysql的密码
+--table test                                  ##从mysql导出的表名称
+--fields-terminated-by '\t'                   ##指定输出文件中的行的字段分隔符
+-m 1                                          ##复制过程使用1个map作业
+--export-dir '/user/hadoop/test/part-m-00000' ##hdfs中的文件
+
+ep: sqoop export --connect jdbc:mysql://192.168.1.110:3306/test --username root --password root --table test --export-dir '/user/hadoop/test/part-m-00000' --fields-terminated-by '\t'
+                                              ---导出hdfs数据到mysql表(对应的表需要事先创建)
+
+3,从mysql导入到hive中
+sqoop create-hive-table  --connect jdbc:mysql://192.168.1.110:3306/test --username root --password root --table test --hive-table test --fields-terminated-by ',' --hive-overwrite
+或
+sqoop import --connect jdbc:mysql://192.168.1.110:3306/test  --username root --password root --table test --hive-table test --hive-import --fields-terminated-by ',' --hive-overwrite
+
+4,从hive导出到mysql中(跟从hdfs导出到mysql中一样)
+sqoop export --connect jdbc:mysql://192.168.1.110:3306/test --username root --password rest --table test --export-dir /user/hive/warehouse/test --fields-terminated-by ','
+
+5,从mysql导入到hbase中
+sqoop import --connect jdbc:mysql://192.168.1.110:3306/test --username root --password root --table test
+             --hbase-create-table --hbase-table mysql_test --column-family info --hbase-row-key id -m 1
+------------------------------------------------------------------------
+sqoop eval连接mysql直接select和dml操作
+sqoop eval --connect jdbc:mysql://192.168.1.110:3306/test --username root --password root --query 'select * from test'
+sqoop eval --connect jdbc:mysql://192.168.1.110:3306/test --username root --password root -e 'select * from test'
+sqoop eval --connect jdbc:mysql://192.168.1.110:3306/test --username root --password root -e "insert into test values (6,'six')"
+
+sqoop job相关的命令有两个：bin/sqoop job,bin/sqoop-job,使用这两个都可以。
+sqoop job命令的基本用法：
+    创建job：--create
+    删除job：--delete
+    执行job：--exec
+    显示job：--show
+    列出job：--list
+下面基于增量同步数据这个应用场景，创建一个sqoop job，命令如下所示：
+sqoop job --create myjob --import --connect jdbc:mysql://192.168.1.110:3306/test  --username root --password root --table test
+          --hive-import --incremental append --check-column id --last-value 1 -- --default-character-set=utf-8
+#创建id为"myjob"的job，将mysql数据库test中的test表同步到Hive表中，而且--incremental append选项使用append模式，--last-value为1，从mysql表中自增主键id=1开始同步
+#sqoop支持两种增量导入模式，一种是append，即通过指定一个递增的列，如myjob,
+#另一种是可以根据时间戳，比如: --incremental lastmodified --check-column created --last-value '2016-07-07 07:00:00'，就是只导入created>'2016-07-07 07:00:00'的数据。
+sqoop job --list                      #列出sqoop上所有job
+sqoop job --show myjob                #查询job详细配置情况
+sqoop job --exec myjob                #执行myjob
+sqoop job --exec myjob -- --username root -P
+sqoop job --delete myjob              #删除myjob
+
+定时执行job,
+* */1 * * *   sqoop job --meta-connect jdbc:mysql://192.168.1.110:3306/sqood --exec myjob > myjob.out 2>&1  ##任务每小时执行一次
+------------------------------------------------------------------------
+sqoop导入导出参数选项
+
+--append 	                           将数据追加到hdfs中已经存在的dataset中。sqoop将把数据先导入到一个临时目录中，然后重新给文件命名到一个正式的目录中，以避免和该目录中已存在的文件重名。
+
+--as-avrodatafile 	                   将数据导入到一个Avro数据文件中
+
+--as-sequencefile 	                   将数据导入到一个sequence文件中
+
+--as-textfile 	                       将数据导入到一个普通文本文件中，生成该文本文件后，可以在hive中通过sql语句查询出结果。
+
+--boundary-query <statement> 	       边界查询，也就是在导入前先通过SQL查询得到一个结果集，然后导入的数据就是该结果集内的数据，
+                                       格式如：--boundary-query 'select id,no from t where id = 3'，表示导入的数据为id=3的记录。
+
+--columns<col,col> 	                   指定要导入的字段值，格式如：--columns id,username
+
+--direct 	                           直接导入模式，使用的是关系数据库自带的导入导出工具。官网上是说这样导入会更快
+
+--direct-split-size 	               在使用上面direct直接导入的基础上，对导入的流按字节数分块，
+                                       特别是使用直连模式从PostgreSQL导入数据的时候，可以将一个到达设定大小的文件分为几个独立的文件。
+
+--inline-lob-limit 	                   设定大对象数据类型的最大值
+
+-m,--num-mappers 	                   启动N个map来并行导入数据，默认是4个，最好不要将数字设置为高于集群的节点数
+
+--query，-e <sql> 	                   从查询结果中导入数据，该参数使用时必须指定--target-dir,--hive-table，
+                                       在查询语句中一定要有where条件且在where条件中需要包含 \$CONDITIONS，
+                                       示例：--query 'select * from t where \$CONDITIONS ' --target-dir /tmp/t –hive-table t
+
+--split-by <column> 	               表的列名，用来切分工作单元，一般后面跟主键ID
+
+--table <table-name> 	               关系数据库表名，数据从该表中获取
+
+--delete-target-dir 	               删除目标目录
+
+--target-dir <dir> 	                   指定hdfs路径
+
+--warehouse-dir <dir> 	               指定数据导入的存放目录,与 --target-dir 不能同时使用,适用于hdfs导入,不适合导入hive目录
+
+--where 	                           从关系数据库导入数据时的查询条件，示例：--where "id = 2"
+
+-z,--compress 	                       压缩参数，默认情况下数据是没被压缩的，通过该参数可以使用gzip压缩算法对数据进行压缩，适用于SequenceFile, text文本文件, 和Avro文件
+
+--compression-codec 	               hadoop压缩编码，默认是gzip
+
+--null-string <null-string> 	       可选参数，如果没有指定，则字符串null将被使用
+
+--enclosed-by <char> 	               给字段值前后加上指定的字符，比如双引号，示例：--enclosed-by '\"'，显示例子："1","aa","bb"
+
+--escaped-by <char> 	               给双引号作转义处理，如字段值为"测试"，经过 --escaped-by "\\" 处理后，在hdfs中的显示值为：\"测试\"，对单引号无效
+
+--fields-terminated-by <char> 	       设定每个字段是以什么符号作为结束的，默认是逗号，也可以改为其它符号，如句号.，
+
+--lines-terminated-by <char> 	       设定每条记录行之间的分隔符，默认是换行串，也可以改为其它符号，如：--lines-terminated-by "#" 以#号分隔
+
+--mysql-delimiters 	                   mysql默认的分隔符设置，字段之间以,隔开，行之间以换行\n隔开，默认转义符号是\，字段值以单引号'包含起来。
+
+--optionally-enclosed-by <char> 	   enclosed-by是强制给每个字段值前后都加上指定的符号，而--optionally-enclosed-by只是给带有双引号或单引号的字段值加上指定的符号，故叫可选的
+-----------------------------------------------------------------------------------
