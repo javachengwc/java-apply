@@ -1,9 +1,10 @@
 -------------------------------------sqoop安装配置---------------------------------
 sqoop是结构化数据系统(mysql)和Hadoop系统间的数据转换的一个工具。
-sqoop版本分sqoop1和sqoop2，其中sqoop1目前版本为1.4.6，Sqoop2版本为1.99.7
+sqoop版本分sqoop1和sqoop2，其中sqoop1目前版本为1.4.6，sqoop2版本为1.99.7
 sqoop2目前问题太多。无法正常使用，故这里安装的sqoop版本为1.4.6。
 
 环境基于hadoop安装配置.txt中服务器环境
+sqoop只需要安装在主节点192.168.1.110 hadoopa就可
 --------------------------------------
 1,下载解压sqoop二进制包
 wget http://mirror.bit.edu.cn/apache/sqoop/1.4.6/sqoop-1.4.6.bin__hadoop-2.0.4-alpha.tar.gz

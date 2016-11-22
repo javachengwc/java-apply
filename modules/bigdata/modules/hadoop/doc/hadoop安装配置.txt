@@ -1,6 +1,6 @@
 ------------------------------hadoop安装---------------------------------
 纯手工安装hadoop
-版本:centos6.6-64位,hadoop2.7-64位,jdk1.7-64位
+版本:centos6.6-64位,hadoop2.7.2-64位,jdk1.7-64位
 注意:正式环境安装hadoop别选2.7.0版本，此版本不兼容任何版本的hbase
 ---------------------------------------
 服务器环境
@@ -78,14 +78,14 @@ ssh root@192.168.1.111、ssh root@192.168.1.112就不需要输入密码了
 可能在此过程中ssh未必在linux系统中安装全导致部分命令不能用，可如下安装完全ssh相关程序
 yum  -y install openssh openssh-clients openssh-server
 
-5,安装Hadoop2.7
+5,安装Hadoop
 只在Master服务器解压，再复制到Slave服务器
-(1)下载“hadoop-2.7.0.tar.gz”，放到/home/hadoop目录下
-(2)解压，输入命令，tar -xzvf hadoop-2.7.0.tar.gz
-(3)在/home/hadoop目录下创建数据存放的文件夹，tmp、hdfs、hdfs/data、hdfs/name
+(1)下载“hadoop-2.7.2.tar.gz”，放到/data/hadoop目录下
+(2)解压，输入命令，tar -xzvf hadoop-2.7.2.tar.gz
+(3)在/data/hadoop目录下创建数据存放的文件夹，tmp、hdfs、hdfs/data、hdfs/name
 
 6,配置hadoop
-a,配置/home/hadoop/hadoop-2.7.0/etc/hadoop目录下的core-site.xml
+a,配置/data/hadoop/hadoop-2.7.2/etc/hadoop目录下的core-site.xml
   <configuration>
       <property>
           <name>fs.defaultFS</name>
@@ -93,22 +93,22 @@ a,配置/home/hadoop/hadoop-2.7.0/etc/hadoop目录下的core-site.xml
       </property>
       <property>
           <name>hadoop.tmp.dir</name>
-          <value>file:/home/hadoop/tmp</value>
+          <value>file:/data/hadoop/tmp</value>
       </property>
       <property>
           <name>io.file.buffer.size</name>
           <value>131702</value>
       </property>
   </configuration>
-b,配置/home/hadoop/hadoop-2.7.0/etc/hadoop目录下的hdfs-site.xml
+b,配置/data/hadoop/hadoop-2.7.2/etc/hadoop目录下的hdfs-site.xml
 <configuration>
     <property>
         <name>dfs.namenode.name.dir</name>
-        <value>file:/home/hadoop/hdfs/name</value>
+        <value>file:/data/hadoop/hdfs/name</value>
     </property>
     <property>
         <name>dfs.datanode.data.dir</name>
-        <value>file:/home/hadoop/hdfs/data</value>
+        <value>file:/data/hadoop/hdfs/data</value>
     </property>
     <property>
         <name>dfs.replication</name>
@@ -123,7 +123,7 @@ b,配置/home/hadoop/hadoop-2.7.0/etc/hadoop目录下的hdfs-site.xml
         <value>true</value>
     </property>
 </configuration>
-c,配置/home/hadoop/hadoop-2.7.0/etc/hadoop目录下的mapred-site.xml
+c,配置/data/hadoop/hadoop-2.7.2/etc/hadoop目录下的mapred-site.xml
 <configuration>
     <property>
         <name>mapreduce.framework.name</name>
@@ -138,7 +138,7 @@ c,配置/home/hadoop/hadoop-2.7.0/etc/hadoop目录下的mapred-site.xml
         <value>192.168.1.110:19888</value>
     </property>
 </configuration>
-d,配置/home/hadoop/hadoop-2.7.0/etc/hadoop目录下的yarn-site.xml
+d,配置/data/hadoop/hadoop-2.7.2/etc/hadoop目录下的yarn-site.xml
   <configuration>
       <property>
           <name>yarn.nodemanager.aux-services</name>
@@ -177,17 +177,17 @@ d,配置/home/hadoop/hadoop-2.7.0/etc/hadoop目录下的yarn-site.xml
           <value>1</value>
       </property>
   </configuration>
-e,配置/home/hadoop/hadoop-2.7.0/etc/hadoop目录下hadoop-env.sh、yarn-env.sh的JAVA_HOME，
+e,配置/data/hadoop/hadoop-2.7.2/etc/hadoop目录下hadoop-env.sh、yarn-env.sh的JAVA_HOME，
   export JAVA_HOME=/usr/local/jdk7
-f,配置/home/hadoop/hadoop-2.7.0/etc/hadoop目录下的slaves，删除默认的localhost，增加2个从节点，
+f,配置/data/hadoop/hadoop-2.7.2/etc/hadoop目录下的slaves，删除默认的localhost，增加2个从节点，
     192.168.1.111
     192.168.1.112
 g,将配置好的Hadoop复制到各个节点对应位置上，通过scp传送，
-    scp -r /home/hadoop 192.168.1.111:/home/
-    scp -r /home/hadoop 192.168.1.112:/home/
+    scp -r /data/hadoop 192.168.1.111:/data/
+    scp -r /data/hadoop 192.168.1.112:/data/
 
-7,启动并访问hadoop
-在Master服务器启动hadoop，从节点会自动启动，进入/home/hadoop/hadoop-2.7.0目录
+7,启动并访问hadoop(主节点启动)
+在Master服务器启动hadoop，从节点会自动启动，进入/data/hadoop/hadoop-2.7.2目录
 (1)初始化，输入命令，bin/hdfs namenode -format
 (2)全部启动sbin/start-all.sh，也可以分开sbin/start-dfs.sh、sbin/start-yarn.sh
 (3)停止的话，输入命令，sbin/stop-all.sh
@@ -196,7 +196,7 @@ g,将配置好的Hadoop复制到各个节点对应位置上，通过scp传送，
 就没办法做dfs相关任何操作，需要下载对应版本的native包解压到hadoop相应位置
 wget http://dl.bintray.com/sequenceiq/sequenceiq-bin/hadoop-native-64-2.7.0.tar
 tar xvf hadoop-native-64-2.7.0.tar
-cp lib* /home/hadoop/hadoop-2.7.0/lib/native   这样就能正常使用dfs了
+cp lib* /data/hadoop/hadoop-2.7.2/lib/native   这样就能正常使用dfs了
 检验方式a:
     在主节点 jps-ml 列出的进程需要有
     org.apache.hadoop.hdfs.server.namenode.NameNode

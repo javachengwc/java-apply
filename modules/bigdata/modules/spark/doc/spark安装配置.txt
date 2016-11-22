@@ -1,0 +1,58 @@
+---------------------------------------spark安装配置------------------------------------
+版本:centos6.6-64位,jdk1.7-64位,hadoop2.7.2-64位,scala-2.11.8,spark-2.0.1-bin-hadoop2.7
+---------------------------------------
+服务器环境
+    系统：CentOS 6以上
+    内存：主节点4G内存以上，其他节点需要2G以上内存
+    节点:
+    192.168.1.110 hadoopa  master
+    192.168.1.111 hadoopb  slave
+    192.168.1.112 hadoopc  slave
+此次spark安装基于hadoop安装配置.txt中所安装的hadoop环境
+---------------------------------------
+1,基础环境配置
+  (见hadoop安装配置.txt中1到4步骤)
+
+2,安装scala(各节点都需安装)
+a),下载解压scala包
+tar -zxvf scala-2.11.8.tgz -C /usr/local
+b),设置scala环境变量
+vim /etc/profile
+    SCALA_HOME=/usr/local/scala-2.11.8
+    PATH=$SCALA_HOME/bin:$PATH
+    export SCALA_HOME PATH
+source /etc/profile
+scala -version        #查看scala版本
+
+3,安装spark
+a),下载解压spark包
+tar -zxvf spark-2.0.1-bin-hadoop2.7.tgz -C /data/spark
+b),设置spark环境变量(各节点都要设置)
+vim /etc/profile
+    SPARK_HOME=/data/spark/spark-2.0.1-bin-hadoop2.7
+    PATH=$SPARK_HOME/bin:$PATH
+    export SPARK_HOME PATH
+source /etc/profile
+c),配置spark
+主要配置文件有两个spark-env.sh和slaves
+cd $SPARK_HOME/conf
+cp spark-env.sh.template spark-env.sh
+vi spark-env.sh
+    export JAVA_HOME=/usr/local/jdk7
+    export SCALA_HOME=/usr/local/scala-2.11.8
+    export SPARK_MASTER_IP=hadoopa
+    export SPARK_WORKER_MEMORY=1g
+    export HADOOP_CONF_DIR=/data/hadoop/hadoop-2.7.2/etc/hadoop
+cp slaves.template slaves
+vi slaves
+    192.168.1.111
+    192.168.1.112
+d),将配置好的spark复制到各个节点对应位置上
+    scp -r /data/spark 192.168.1.111:/data/
+    scp -r /data/spark 192.168.1.112:/data/
+
+4,启动并验证spark(主节点上启动)
+$SPARK_HOME/sbin/start-all.sh
+web访问:http://192.168.1.110:8080
+
+----------------------------------------------------------------------------------------
