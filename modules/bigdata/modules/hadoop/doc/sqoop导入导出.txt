@@ -29,11 +29,12 @@ ep: sqoop export --connect jdbc:mysql://192.168.1.110:3306/test --username root 
 
 3,从mysql导入到hive中
 sqoop create-hive-table  --connect jdbc:mysql://192.168.1.110:3306/test --username root --password root --table test --hive-table test --fields-terminated-by ',' --hive-overwrite
-或
+#创建hive表
 sqoop import --connect jdbc:mysql://192.168.1.110:3306/test  --username root --password root --table test --hive-table test --hive-import --fields-terminated-by ',' --hive-overwrite
+#导数据到hive表
 
 4,从hive导出到mysql中(跟从hdfs导出到mysql中一样)
-sqoop export --connect jdbc:mysql://192.168.1.110:3306/test --username root --password rest --table test --export-dir /user/hive/warehouse/test --fields-terminated-by ','
+sqoop export --connect jdbc:mysql://192.168.1.110:3306/test --username root --password root --table test --export-dir /user/hive/warehouse/test --fields-terminated-by ','
 
 5,从mysql导入到hbase中
 sqoop import --connect jdbc:mysql://192.168.1.110:3306/test --username root --password root --table test

@@ -37,6 +37,8 @@ vim hive-env.sh
     export HADOOP_HOME=/data/hadoop/hadoop-2.7.2   ##Hadoop路径
     export HIVE_HOME=/data/hive/apache-hive-2.1.0-bin    ##Hive路径
     export HIVE_CONF_DIR=$HIVE_HOME/conf    ##Hive配置文件路径
+    export HADOOP_OPTS="$HADOOP_OPTS  -Xms128m -Xmx256m -XX:PermSize=64M -XX:MaxPermSize=128m"
+    ##hive进程的jvm内存设置(如果不进行设置,默认分配的jvm内存过小，很容易导致hive进程out of memory)
 c,修改hive-site.xml文件,对应<name>，修改成如下<value>值
 <property>
     <name>hive.exec.scratchdir</name>
