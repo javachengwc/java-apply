@@ -117,6 +117,24 @@ top /top -d 2/top -b -n 2 --当前进程信息
 	按 o 键可以改变列的显示顺序。按小写的 a-z 可以将相应的列向右移动，而大写的 A-Z 可以将相应的列向左移动。最后按回车键确定。 
 	按大写的 F 或 O 键，然后按 a-z 可以将进程按照相应的列进行排序。而大写的 R 键可以将当前的排序倒转。
 ----------------------------
+查看进程占用内存(比较准确的方式)
+echo 0 $(awk '/TYPE/ {print "+", $2}' /proc/pid/smaps) | bc
+pid:进程id
+TYPE的可选值:
+    Rss: 进程占用的所有内存，包括跟其他进程共享的内存(直接把共享的整个内存数值加上来)。此值没有包含swap
+    Shared: 进程跟其他进程分享的内存
+    Private: 进程占用的私有内存。
+    Swap: 进程用的swap内存
+    Pss: 按比例计算的内存数量。这是一个查看总体内存占用量的参数。这是根据共享进程的数量来调整共享内存数量的内存占用。
+         如果一个进程占用的私有内存是1MB，使用的共享内存有20MB，但是这个共享内存同时有10个进程（包括它自己在内）在使用，那么PSS就是 1 + 20/10 = 3MB
+ep:
+echo 0 $(awk '/Pss/ {print "+", $2}' /proc/100876/smaps) | bc
+echo 0 $(awk '/Private/ {print "+", $2}' /proc/100876/smaps) | bc
+echo 0 $(awk '/Swap/ {print "+", $2}' /proc/100876/smaps) | bc
+echo 0 $(awk '/Shared/ {print "+", $2}' /proc/100876/smaps) | bc
+echo 0 $(awk '/Rss/ {print "+", $2}' /proc/100876/smaps) | bc
+(bc安装:yum install bc)
+----------------------------
 uname -a          ---查看linux系统信息
 lsb_release -a    ---查询linux系统版本信息
 ----------------------------

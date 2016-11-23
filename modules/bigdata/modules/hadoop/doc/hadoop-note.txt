@@ -1,5 +1,6 @@
 --------------------------------------
-
+hadoop系列组件的使用可参考 http://blog.csdn.net/nsrainbow/article/category/2738493/
+--------------------------------------
 bin/hadoop job -list               ---查看当前正在执行的MR任务
 bin/hadoop job -kill 任务名        ---强制停掉正在执行的某个MR任务
 
@@ -9,9 +10,7 @@ jps | grep SecondaryNameNode | awk '{print $1}' | xargs kill $1
 jps | grep ResourceManager | awk '{print $1}' | xargs kill $1
 jps | grep DataNode | awk '{print $1}' | xargs kill $1
 jps | grep NodeManager  | awk '{print $1}' | xargs kill $1
-
 -------------------------------------
-
 fsck:hadoop的健康监测命令
 fsck工具来检验HDFS中的文件是否正常可用。可检测文件块是否在DataNode中丢失，是否低于或高于文件副本
 fack命令用法如下(启动hadoop hdfs的账号才有权查看):
@@ -34,14 +33,11 @@ bin/hadoop fsck / -delete           ---清除无效的信息块
 
 注:fsck在namenode文件信息较大的时候，会比较影响hadoop性能，应该慎用.
    通常可以在集群空闲的时间段，执行一次，查看整体的HDFS副本健康状况
-
 ---------------------------------------------
 
 Hadoop由于磁盘满，会导致进入安全模式
 hadoop dfsadmin -safemode leave   ---hadoop退出安全模式
-
 ---------------------------------------------
-
 Hadoop自带一些基准测试程序，用来测试集群性能
 
 bin/hadoop jar ./share/hadoop/mapreduce/hadoop-mapreduce-examples-2.2.0.jar randomwriter rand
@@ -53,9 +49,6 @@ bin/hadoop jar ./share/hadoop/mapreduce/hadoop-mapreduce-examples-2.2.0.jar sort
 hadoop1.x的基准测试命令:
 bin/hadoop jar hadoop-examples-1.2.1.jar teragen 10000000 input    ---生成数据
 bin/hadoop jar hadoop-examples-1.2.1.jar terasort  input output    ---排序输出
-
 ---------------------------------------------
-
 hadoop升级 1.2->2.* 参考:http://qindongliang.iteye.com/blog/2094577
-
 ---------------------------------------------

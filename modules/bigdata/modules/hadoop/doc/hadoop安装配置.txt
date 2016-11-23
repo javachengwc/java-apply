@@ -122,6 +122,8 @@ b,配置/data/hadoop/hadoop-2.7.2/etc/hadoop目录下的hdfs-site.xml
         <name>dfs.webhdfs.enabled</name>
         <value>true</value>
     </property>
+    #dfs.webhdfs.enabled设置为true表示启动webhdfs,可通过web接口操作hdfs,比如
+    #http://192.168.1.110:50070/webhdfs/v1/ttt/hive.log?op=OPEN 就是打开/ttt/hive.log
 </configuration>
 c,配置/data/hadoop/hadoop-2.7.2/etc/hadoop目录下的mapred-site.xml
 <configuration>

@@ -48,28 +48,30 @@ make apps
 a,用下面的各项设值更新到配置文件pseudo-distributed.ini中
 vim ./desktop/conf/pseudo-distributed.ini
     [desktop]
-       secret_key=000111222333
-       http_host=192.168.1.110
-       http_port=8000
-       time_zone=Asia/Shanghai
-       server_user=root
-       server_group=root
-       default_user=hue
-       default_hdfs_superuser=root
-       default_site_encoding=utf-8
+        secret_key=000111222333
+        http_host=192.168.1.110
+        http_port=8000
+        time_zone=Asia/Shanghai
+        server_user=root
+        server_group=root
+        default_user=hue
+        default_hdfs_superuser=root
+        default_site_encoding=utf-8
     [hadoop]
         fs_defaultfs=hdfs://192.168.1.110:9000
         hadoop_conf_dir=/data/hadoop/hadoop-2.7.2/etc/hadoop
-    [[yarn_clusters]]
+        webhdfs_url=http://192.168.1.110:50070/webhdfs/v1
+    [yarn_clusters]
         resourcemanager_host=192.168.1.110
         resourcemanager_port=8032
         resourcemanager_api_url=http://192.168.1.110:8088
+        proxy_api_url=http://192.168.1.110:8088
         history_server_api_url=http://192.168.1.110:19888
         submit_to=True
     [hbase]
-      hbase_clusters=(hbases|192.168.1.110:9090)
-      hbase_conf_dir=/data/hbase/hbase-1.2.3/conf
-    [[database]]
+        hbase_clusters=(hbases|192.168.1.110:9090)
+        hbase_conf_dir=/data/hbase/hbase-1.2.3/conf
+    [database]
         engine=mysql
         host=localhost
         port=3306
@@ -77,9 +79,11 @@ vim ./desktop/conf/pseudo-distributed.ini
         password=hue
         name=hue
     [beeswax]
-       hive_server_host=192.168.1.110
-       hive_server_port=10000
-       hive_conf_dir=/data/hive/apache-hive-2.1.0-bin/conf
+        hive_server_host=192.168.1.110
+        hive_server_port=10000
+        hive_conf_dir=/data/hive/apache-hive-2.1.0-bin/conf
+     [zookeeper]
+        host_ports=hadoopa:2181,hadoopb:2181,hadoopc:2181
 b,在hadoop的core-site.xml中为hue配置相应的代理用户(这里的代理用户就是上面的server_user对应的用户)
     <property>
         <name>hadoop.proxyuser.root.hosts</name>
