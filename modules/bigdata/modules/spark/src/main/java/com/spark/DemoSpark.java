@@ -16,7 +16,8 @@ import java.util.Arrays;
  * 本示例从hdfs读取文件
  * 按照word count程序计算后将结果存入redis
  *
- * sh startDemoSparkTask.sh /tmp/data.out word_key
+ * sh startDemoSparkTask.sh /tmp/data.out word_key  或
+ * spark-submit --class com.spark.DemoSpark --master spark://localhost:7077 /../DemoSpark.jar /tmp/data.out word_key
  */
 public class DemoSpark {
 
