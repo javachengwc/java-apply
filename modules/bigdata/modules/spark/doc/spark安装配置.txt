@@ -61,5 +61,4 @@ $SPARK_HOME/sbin/start-all.sh        #启动spark
 web访问:http://192.168.1.110:8080
 $SPARK_HOME/bin/spark-shell --master spark://192.168.1.110:7077     #进入Spark Shell
 
-
 ----------------------------------------------------------------------------------------
