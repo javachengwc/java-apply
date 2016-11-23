@@ -43,6 +43,11 @@ vi spark-env.sh
     export SPARK_MASTER_IP=hadoopa
     export SPARK_WORKER_MEMORY=1g
     export HADOOP_CONF_DIR=/data/hadoop/hadoop-2.7.2/etc/hadoop
+    #如果使用到了lzo,还需要加上如下配置
+    (export SPARK_CLASSPATH=/data/hadoop-lzo/current/hadoop-lzo.jar
+     export SPARK_CLASSPATH=$SPARK_CLASSPATH:$CLASSPATH
+     export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:$HADOOP_HOME/lib/native
+     )
 cp slaves.template slaves
 vi slaves
     192.168.1.111
