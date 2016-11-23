@@ -1,50 +1,48 @@
 ----------------hdfs常用命令---------------
 
-hadoop fs -ls arg             ---浏览文件
+hadoop fs -ls path             ---浏览文件
         hadoop fs -ls hdfs://host:port/user/dir
-        返回文件信息格式:文件名<副本数> 文件大小 修改日期 权限 用户 ID/组 ID
+        hadoop fs -ls /tmp
 
-hadoop fs -du URI             ---显示目录中所有文件大小，或者指定一个文件时，显示此文件大小
+hadoop fs -du path             ---显示目录中所有文件大小，或者指定一个文件时，显示此文件大小
         hadoop fs -du hdfs://host:port/user/file
+        hadoop fs -du /tmp
 
-hadoop fs -cat URI            ---查看文件内容
+hadoop fs -cat path            ---查看文件内容
         hadoop fs -cat hdfs://host1:port1/file
+        hadoop fs -cat /tmp/ttt.log
 
-hadoop fs -cp URI             ---将文件从源路径复制到目标路径
+hadoop fs -cp from to          ---将文件从源路径复制到目标路径
         hadoop fs -cp /user/file /uesr/file1
 
-hadoop fs -mkdir path         ---创建对应的文件目录，并直接创建相应的父目录
+hadoop fs -mkdir path          ---创建对应的文件目录，并直接创建相应的父目录
         hadoop fs -mkdir hdfs://host:port/user/dir
+        hadoop fs -mkdir -p /a/b/c
 
-hadoop fs -mv URI dest        ---将源文件移动到目标路径
+hadoop fs -mv from to          ---将源文件移动到目标路径
         hadoop fs -mv /user/file1 /user/file2
 
-hadoop fs -rm URI             ---删除指定的文件，且要求非空的目录和文件
+hadoop fs -rm path             ---删除指定的文件，且要求非空的目录和文件
         hadoop fs -rm hdfs://host:port/file
+        hadoop fs -rm /tmp/ttt.log
 
-hadoop fs -rmr URI            ---递归地删除指定文件中的空目录
+hadoop fs -rmr path            ---递归地删除指定目录及文件
 
-hadoop fs -put localsrc dest  ---从本地文件系统复制单个或多个源路径到目标文件系统
+hadoop fs -put localPath to    ---从本地文件系统复制单个或多个源路径到hdfs对应路径
         hadoop fs -put localfile hdfs://host:port/user/file
+        hadoop fs -put /tmp/hive.log /ttt
 
-hadoop fs -get URI localdst   ---复制文件到本地文件系统
+hadoop fs -get hdfsPath localPath   ---复制hdfs文件到本地路径
         hadoop fs -get hdfs://host:port/file localfile
+        hadoop fs -get /ttt/hive.log /tmp
 
 hadoop fs -setrep [R] path    ---改变一个副本复制份数
         hadoop fs -setrep -w 3 -R /user/file
 
-hadoop fs -test -[ezd] URI    ---使用ezd对文件进行检查
+hadoop fs -test -[ezd] path   ---使用ezd对文件进行检查
         -e 检查文件是否存在，若存在返回值为 0；
         -z 检查文件是否为 0 字节，如果是则返回 0；
         -d 检查路径是否为目录，如果是则返回 1，否则返回 0
-
-hadoop fs -text src           ---将源文件输出为文本格式
-
-hadoop fs -copyFromLocal localsrc
-                              ---将本地文件复制到hdfs中
-
-hadoop fs -copyToLocal localsrc
-                              ---将一个文件从hdfs系统中复制到本地文件
 
 hadoop fs -expunge            ---清空回收站
 
