@@ -1,0 +1,17 @@
+----------------------------------spark master高可用------------------------------
+服务器环境
+    基于spark安装配置.txt中所安装的spark集群环境
+-------------------------------------------------
+1,搭建zookeeper集群
+见zookeeper配置安装.txt
+
+2,修改spark配置文件
+vim spark-env.sh
+    export SPARK_DAEMON_JAVA_OPTS="-Dspark.deploy.recoveryMode=ZOOKEEPER -Dspark.deploy.zookeeper.url=hadoopa:2181,hadoopb:2181,hadoopc:2181 -Dspark.deploy.zookeeper.dir=/spark"
+
+3,启动并测试高可用
+    sbin/start-all.sh     #启动当前的master和对应的worker
+    sbin/start-master.sh  #启动另一台机器上的master
+    web访问查看对应的两个master的8080端口，看是否运行成功，一个alive、一个standby
+    sbin/stop-master.sh   #关闭alive状态的master，等待几十秒(延迟同步),查看之前standby状态的mater是否变成alive状态，若改变，高可用配置成功
+----------------------------------------------------------------------------------
