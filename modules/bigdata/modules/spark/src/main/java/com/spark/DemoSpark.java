@@ -22,6 +22,8 @@ import java.util.Arrays;
  * --executor-memory 2G
  * --driver-memory 2G
  * --num-executors 50 )这些选项参数必要的时候可在spark-submit执行时带上
+ * spark-submit执行程序需要在yarn集群上执行，则带参数--master yarn --deploy-mode cluster即可,它表示
+ * 以cluster模式连接到Yarn集群。群集位置将基于通过HADOOP_CONF_DIR变量找到。
  */
 public class DemoSpark {
 
