@@ -196,11 +196,12 @@ resource：
     noproc - 进程的最大数目
     as - 地址空间限制
     maxlogins - 此用户允许登录的最大数目
-要使limits.conf文件配置生效，必须要确保 pam_limits.so文件被加入到启动文件中。
+要使limits.conf文件配置生效，重启linux系统及可。
+(低版本的linux系统可能需要确保 pam_limits.so文件被加入到启动文件中。
 查看 /etc/pam.d/login 文件中有：(没有就添加)
 session required /lib/security/pam_limits.so
 注意：
 32位系统是添加 session required /lib/security/pam_limits.so
-64位系统是添加 session required /lib64/security/pam_limits.so
+64位系统是添加 session required /lib64/security/pam_limits.so)
 
 ----------------------------------------------------------
