@@ -1,3 +1,33 @@
 ---------------------------------hive整合hbase--------------------------------
+hadoop,hive,hbase环境基于hadoop安装配置.txt,hive安装配置.txt,hbase安装配置.txt中的搭建环境
+-------------------------------------------------
+1,替换hive lib中的hbase相关jar包
+rm -rf $HIVE_HOME/lib/hbase*.jar
+rm -rf $HIVE_HOME/lib/zookeeper-*.jar
+cp $HBASE_HOME/lib/hbase*.jar $HIVE_HOME/lib
+cp $HBASE_HOME/lib/zookeeper*.jar $HIVE_HOME/lib
+
+2,配置hive
+vim $HIVE_HOME/conf/hive-site.xml
+    <property>
+        <name>hive.aux.jars.path</name>
+        <value>
+            file:///data/hive/apache-hive-2.1.0-bin/lib/hive-hbase-handler-2.1.0.jar,
+            file:///data/hive/apache-hive-2.1.0-bin/lib/guava-14.0.1.jar,
+            file:///data/hive/apache-hive-2.1.0-bin/lib/hbase-common-1.2.3.jar,
+            file:///data/hive/apache-hive-2.1.0-bin/lib/zookeeper-3.4.6.jar
+        </value>
+    </property>
+    <property>
+        <name>hive.zookeeper.quorum</name>
+        <value>hadoopa,hadoopb,hadoopc</value>
+    </property>
+    <property>
+        <name>hbase.zookeeper.quorum</name>
+        <value>hadoopa,hadoopb,hadoopc</value>
+    </property>
+3,
+
+
 
 ------------------------------------------------------------------------------
