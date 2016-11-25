@@ -1,0 +1,18 @@
+----------------------------spark问题集------------------------------
+1,在spark整合hive时,spark sql读取hive元数据时报错找不到mysql驱动
+NucleusException: Attempt to invoke the "BONECP" plugin to create a ConnectionPool gave an error :
+The specified datastore driver ("com.mysql.jdbc.Driver") was not found in the CLASSPATH
+原因:整合配置不正确
+解决方式:
+a),$HIVE_HOME/conf/hive-site.xml中增加hive.metastore.uris 的配置信息
+vim $HIVE_HOME/conf/hive-site.xml
+    <property>
+        <name>hive.metastore.uris</name>
+        <value>thrift://hadoopa:9083</value>
+    </property
+b),将$HIVE_HOME/conf/hive-site.xml拷贝至$SPARK_HOME/conf/目录下
+c),启动hive元数据存储服务,启动spark-sql进行验证
+在spark-sql启动中不报错,并且在spark-sql交互界面中执行show databases,select * from t limit 10类似这样的查询，
+能返回正常的结果，表示spark整合hive成功。
+
+---------------------------------------------------------------------

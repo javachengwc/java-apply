@@ -1,0 +1,27 @@
+--------------------------------spark整合hive-------------------------------
+spark,hive环境基于spark安装配置.txt,hive安装配置.txt中的搭建环境
+整合hive的配置只需要在spark主节点变更即可
+---------------------------------------------
+1,修改hive配置，增加metastore服务的thrift接口暴露配置.
+vim $HIVE_HOME/conf/hive-site.xml
+    <property>
+        <name>hive.metastore.uris</name>
+        <value>thrift://hadoopa:9083</value>
+    </property
+
+2, 拷贝hive配置文件到spark配置目录中
+  cp $HIVE_HOME/conf/hive-site.xml $SPARK_HOME/conf
+
+3,修改spark-env.sh,
+vim spark-env.sh
+    export HIVE_HOME=/data/hive/apache-hive-2.1.0-bin
+
+4,启动hive元数据存储服务
+$HIVE_HOME/bin/hive --service metastore &
+
+5,启动spark-sql进行验证(不需要启动spark服务,直接运行spark-sql即可)
+$SPARK_HOME/bin/spark-sql
+在spark-sql启动中不报错,并且在spark-sql交互界面中执行show databases,select * from t limit 10类似这样的查询，
+能返回正常的结果，表示spark整合hive成功。
+
+----------------------------------------------------------------------------
