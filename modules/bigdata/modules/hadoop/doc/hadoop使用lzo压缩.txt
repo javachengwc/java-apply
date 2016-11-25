@@ -1,3 +1,21 @@
 ----------------------------------hadoop使用lzo压缩---------------------------------
+hadoop环境基于hadoop安装配置.txt的搭建环境
+lzo是一种高压缩比和解压速度极快的编码，它的特点是解压缩速度非常快，无损压缩，压缩后的数据能准确还原。
+lzo是基于block分块的，允许数据被分解成chunk，能够被并行的解压。
+--------------------------------------------
+1,安装lzo(集群各节点都要安装)
+yum -y install  lzo-devel  zlib-devel  gcc autoconf automake libtool       #安装依赖包
+wget http://www.oberhumer.com/opensource/lzo/download/lzo-2.06.tar.gz      #下载lzo压缩包
+tar -zxvf lzo-2.06.tar.gz
+./configure -enable-shared -prefix=/usr/local/lzo/
+make && make test && make install
+
+2,安装hadoop-lzo
+
+3,设置环境变量
+
+4,配置hadoop
+
+5,在hive中验证lzo
 
 ------------------------------------------------------------------------------------

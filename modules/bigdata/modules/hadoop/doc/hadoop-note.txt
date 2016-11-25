@@ -1,5 +1,7 @@
 --------------------------------------
-hadoop系列组件的使用可参考 http://blog.csdn.net/nsrainbow/article/category/2738493/
+hadoop系列组件的使用可参考
+http://lxw1234.com/
+http://blog.csdn.net/nsrainbow/article/category/2738493/
 --------------------------------------
 bin/hadoop job -list               ---查看当前正在执行的MR任务
 bin/hadoop job -kill 任务名        ---强制停掉正在执行的某个MR任务
