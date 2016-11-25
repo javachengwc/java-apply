@@ -18,6 +18,10 @@ import java.util.Arrays;
  *
  * sh startDemoSparkTask.sh /tmp/data.out word_key  或
  * spark-submit --class com.spark.DemoSpark --master spark://localhost:7077 /../DemoSpark.jar /tmp/data.out word_key
+ * (--driver-class-path ./mysql-connector-java-5.1.39.jar
+ * --executor-memory 2G
+ * --driver-memory 2G
+ * --num-executors 50 )这些选项参数必要的时候可在spark-submit执行时带上
  */
 public class DemoSpark {
 
