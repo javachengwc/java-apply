@@ -58,4 +58,13 @@ from
 group by  b.g1,b.g2
 #按照g1,g2分组,取各组中按照score升序排列前20%的记录汇总数据查询
 
+--------hive中各分类中排序前n的数据查询
+select  *
+from
+(
+   select a.*,
+   row_number() over (partition by g1 order by score desc ) rank
+   from ta a
+) b where b.rank<=1
+#按照g1分组,取各组中按照score降序排列前1条记录的数据查询
 ------------------------------------------------------------------
