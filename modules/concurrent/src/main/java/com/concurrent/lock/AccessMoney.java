@@ -99,12 +99,17 @@ class MyCount {
      */
     public void saving(int x, String name) {
         lock.lock();                        //获取锁
-        if (x > 0) {
-            cash += x;                      //存款
-            System.out.println(name + "存款" + x + "，当前余额为" + cash);
+        try {
+            if (x > 0) {
+                cash += x;                      //存款
+                System.out.println(name + "存款" + x + "，当前余额为" + cash);
+            }
+            _draw.signalAll();                  //唤醒所有等待线程。
+        }catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            lock.unlock();                      //释放锁
         }
-        _draw.signalAll();                  //唤醒所有等待线程。
-        lock.unlock();                      //释放锁
     }
 
     /**
@@ -116,12 +121,11 @@ class MyCount {
     public void drawing(int x, String name) {
         lock.lock();                           //获取锁
         try {
-            if (cash - x < 0) {
+            while (cash - x < 0) {
                 _draw.await();                 //阻塞取款操作
-            } else {
-                cash -= x;                     //取款
-                System.out.println(name + "取款" + x + "，当前余额为" + cash);
             }
+            cash -= x;                     //取款
+            System.out.println(name + "取款" + x + "，当前余额为" + cash);
             _save.signalAll();                  //唤醒所有存款操作
         } catch (InterruptedException e) {
             e.printStackTrace();
