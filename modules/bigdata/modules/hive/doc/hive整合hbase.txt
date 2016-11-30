@@ -26,8 +26,35 @@ vim $HIVE_HOME/conf/hive-site.xml
         <name>hbase.zookeeper.quorum</name>
         <value>hadoopa,hadoopb,hadoopc</value>
     </property>
-3,
+    <property>
+        <name>hive.zookeeper.client.port</name>
+        <value>2181</value>
+    </property>
+#注:hive.aux.jars.path的value值不能换行,不能有空格。上面只是为了方便展示才换行跟留空格
 
+3,启动集群测试验证
+$HADOOP_HOME/sbin/start-all.sh                   ---启hadoop集群
+$HBASE_HOME/bin/stop-hbase.sh                    ---启hbase集群
+$HIVE_HOME/bin/hive --service metastore &        ---启动hive metastore服务
+$HIVE_HOME/bin/hive                              ---进入hive交互界面
+    create table hbase_hive_1(key int, value string)
+    STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+    WITH SERDEPROPERTIES ("hbase.columns.mapping" = ":key,cf1:val")
+    TBLPROPERTIES ("hbase.table.name" = "xyz");
+    #创建一个hbase能识别的hive表
 
+    insert overwrite table hbase_hive_1 select * from tdd;
+    #导数据到hbase_hive_1表
 
+    select * from hbase_hive_1;
+    #查看hbase_hive_1表数据
+
+    select count(1) as cnt from  hbase_hive_1;
+    #查看hbase_hive_1表数据量
+
+$HBASE_HOME/bin/hbase shell                     ---进入hbase交互界面
+    scan 'xyz'
+    #查看上面hive表hbase_hive_1对应的hbase表数据
+
+如果上面的操作无错,切两边查询的数据吻合,则hive整合hbase成功
 ------------------------------------------------------------------------------
