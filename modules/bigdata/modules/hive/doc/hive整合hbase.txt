@@ -53,8 +53,12 @@ $HIVE_HOME/bin/hive                              ---进入hive交互界面
     #查看hbase_hive_1表数据量
 
 $HBASE_HOME/bin/hbase shell                     ---进入hbase交互界面
+    describe 'xyz'
     scan 'xyz'
     #查看上面hive表hbase_hive_1对应的hbase表数据
 
-如果上面的操作无错,切两边查询的数据吻合,则hive整合hbase成功
+    put 'xyz','100','cf1:val','ddd'
+    #放数据到xyz这个hbase表
+
+如果上面的操作无错,且两边查询的数据吻合,则hive整合hbase成功
 ------------------------------------------------------------------------------
