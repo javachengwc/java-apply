@@ -7,10 +7,33 @@ lzo是基于block分块的，允许数据被分解成chunk，能够被并行的�
 yum -y install  lzo-devel  zlib-devel  gcc autoconf automake libtool       #安装依赖包
 wget http://www.oberhumer.com/opensource/lzo/download/lzo-2.06.tar.gz      #下载lzo压缩包
 tar -zxvf lzo-2.06.tar.gz
+cd lzo-2.06
+export CFLAGS=-m64
 ./configure -enable-shared -prefix=/usr/local/lzo/
 make && make test && make install
 
 2,安装hadoop-lzo
+a),安装maven(见linux常用软件安装.txt)
+b),wget https://github.com/twitter/hadoop-lzo/archive/master.zip
+unzip master
+cd hadoop-lzo-master
+export CFLAGS=-m64
+export CXXFLAGS=-m64
+export C_INCLUDE_PATH=/usr/local/lzo/include
+export LIBRARY_PATH=/usr/local/lzo/lib
+mvn clean package -Dmaven.test.skip=true
+cd target/native/Linux-amd64-64
+tar -cBf - -C lib . | tar -xBvf - -C ~
+此操作会在~目录下生成如下文件:
+    1-rw-r--r--  1 libgplcompression.a
+    2-rw-r--r--  1 libgplcompression.la
+    3lrwxrwxrwx  1 libgplcompression.so -> libgplcompression.so.0.0.0
+    4lrwxrwxrwx  1 libgplcompression.so.0 -> libgplcompression.so.0.0.0
+    5-rwxr-xr-x  1 libgplcompression.so.0.0.0
+   其中libgplcompression.so和libgplcompression.so.0是链接文件，指向libgplcompression.so.0.0.0
+cp ~/libgplcompression* $HADOOP_HOME/lib/native/
+cp target/hadoop-lzo-0.4.18-SNAPSHOT.jar $HADOOP_HOME/share/hadoop/common/
+将生成的libgplcompression*和target/hadoop-lzo-0.4.18-SNAPSHOT.jar同步到集群中的其他节点对应的目录
 
 3,设置环境变量
 
