@@ -9,14 +9,37 @@ wget http://www.oberhumer.com/opensource/lzo/download/lzo-2.06.tar.gz      #下�
 tar -zxvf lzo-2.06.tar.gz
 cd lzo-2.06
 export CFLAGS=-m64
-./configure -enable-shared -prefix=/usr/local/lzo/
+./configure -enable-shared -prefix=/usr/local/lzo
 make && make test && make install
+cp /usr/local/lzo/lib/* /usr/lib
+cp /usr/local/lzo/lib/* /usr/lib64
 
-2,安装hadoop-lzo
+2,安装lzop(是使用lzo库写的一个程序，用它可以压缩、解压缩文件,只是为了测lzo是否能正常压缩解压，不是必须安装)
+wget http://www.lzop.org/download/lzop-1.03.tar.gz
+tar -zxvf lzop-1.03.tar.gz
+cd lzop-1.03
+export C_INCLUDE_PATH=/usr/local/lzo/include
+(如果不配置C_INCLUDE_PATH，会报错:LZO header files not found. Please check your installation or set the environment variable `CPPFLAGS‘.)
+./configure -enable-shared -prefix=/usr/local/lzop
+（如果报错: error while loading shared libraries: liblzo2.so.2: cannot open shared object file: No such file or directory
+  解决办法：export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64)
+make  && make install
+ln -s /usr/local/lzop/bin/lzop /usr/bin/lzop
+lzop /tmp/root/hive.log.2016-11-15            #压缩文件看是否正常生成lzo格式的压缩的文件hive.log.2016-11-15.lzo
+lzop -d /tmp/root/hive.log.2016-11-15.lzo     #解压lzo文件
+
+3,安装hadoop-lzo
 a),安装maven(见linux常用软件安装.txt)
 b),wget https://github.com/twitter/hadoop-lzo/archive/master.zip
 unzip master
 cd hadoop-lzo-master
+vim pom.xml
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <hadoop.current.version>2.7.2</hadoop.current.version>
+        <hadoop.old.version>1.0.4</hadoop.old.version>
+    </properties>
+#上面步骤编辑pom.xml,修改hadoop.current.version为当前hadoop集群使用的版本
 export CFLAGS=-m64
 export CXXFLAGS=-m64
 export C_INCLUDE_PATH=/usr/local/lzo/include
@@ -24,21 +47,90 @@ export LIBRARY_PATH=/usr/local/lzo/lib
 mvn clean package -Dmaven.test.skip=true
 cd target/native/Linux-amd64-64
 tar -cBf - -C lib . | tar -xBvf - -C ~
-此操作会在~目录下生成如下文件:
-    1-rw-r--r--  1 libgplcompression.a
-    2-rw-r--r--  1 libgplcompression.la
-    3lrwxrwxrwx  1 libgplcompression.so -> libgplcompression.so.0.0.0
-    4lrwxrwxrwx  1 libgplcompression.so.0 -> libgplcompression.so.0.0.0
-    5-rwxr-xr-x  1 libgplcompression.so.0.0.0
-   其中libgplcompression.so和libgplcompression.so.0是链接文件，指向libgplcompression.so.0.0.0
-cp ~/libgplcompression* $HADOOP_HOME/lib/native/
-cp target/hadoop-lzo-0.4.18-SNAPSHOT.jar $HADOOP_HOME/share/hadoop/common/
-将生成的libgplcompression*和target/hadoop-lzo-0.4.18-SNAPSHOT.jar同步到集群中的其他节点对应的目录
+此操作会在用户跟目录下生成如下文件:
+    -rw-r--r--  1 libgplcompression.a
+    -rw-r--r--  1 libgplcompression.la
+    lrwxrwxrwx  1 libgplcompression.so -> libgplcompression.so.0.0.0
+    lrwxrwxrwx  1 libgplcompression.so.0 -> libgplcompression.so.0.0.0
+    -rwxr-xr-x  1 libgplcompression.so.0.0.0
+cp ~/libgplcompression* $HADOOP_HOME/lib/native
+cp target/hadoop-lzo-0.4.21-SNAPSHOT.jar $HADOOP_HOME/share/hadoop/common
+将生成的libgplcompression*和target/hadoop-lzo-0.4.21-SNAPSHOT.jar同步到集群中的其他节点对应的目录
+scp ~/libgplcompression* 192.168.27.130:/data/hadoop/hadoop-2.7.2/lib/native
+scp ~/libgplcompression* 192.168.27.131:/data/hadoop/hadoop-2.7.2/lib/native
+scp hadoop-lzo-0.4.21-SNAPSHOT.jar 192.168.27.130:/data/hadoop/hadoop-2.7.2/share/hadoop/common
+scp hadoop-lzo-0.4.21-SNAPSHOT.jar 192.168.27.131:/data/hadoop/hadoop-2.7.2/share/hadoop/common
 
-3,设置环境变量
+4,配置hadoop(集群各节点)
+vim $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+    export LD_LIBRARY_PATH=/usr/local/lzo/lib
 
-4,配置hadoop
+vim $HADOOP_HOME/etc/hadoop/core-site.xml
+    <property>
+        <name>io.compression.codecs</name>
+        <value>org.apache.hadoop.io.compress.GzipCodec,
+             org.apache.hadoop.io.compress.DefaultCodec,
+             com.hadoop.compression.lzo.LzoCodec,
+             com.hadoop.compression.lzo.LzopCodec,
+             org.apache.hadoop.io.compress.BZip2Codec
+        </value>
+    </property>
+    <property>
+        <name>io.compression.codec.lzo.class</name>
+        <value>com.hadoop.compression.lzo.LzoCodec</value>
+    </property>
+注:io.compression.codecs列项值不能换行，不能留空格，这里只是为了展示才如此。
+
+vim $HADOOP_HOME/etc/hadoop/mapred-site.xml
+    <property>
+        <name>mapred.compress.map.output</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>mapred.map.output.compression.codec</name>
+        <value>com.hadoop.compression.lzo.LzoCodec</value>
+    </property>
+    <property>
+        <name>mapred.child.env</name>
+        <value>LD_LIBRARY_PATH=/usr/local/lzo/lib</value>
+     </property>
 
 5,在hive中验证lzo
+a),在hive中创建t_zlo表
+CREATE TABLE t_zlo(
+	  id bigint,
+	  stat_date string,
+	  insert_time string,
+	  from_source int,
+	  tag_id int,
+	  sub_id int,
+	  third_id int,
+	  safeguard_starter int,
+	  inc_cnt int,
+	  shop_mistake_cnt int,
+	  user_mistake_cnt int,
+	  complete_cnt int,
+	  complete_over_week_cnt int,
+	  close_cnt int,
+	  dealing_total_cnt int)
+ROW FORMAT SERDE
+  'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe'
+WITH SERDEPROPERTIES (
+	  'field.delim'=',',
+	  'line.delim'='\n',
+	  'serialization.format'=',')
+STORED AS INPUTFORMAT "com.hadoop.mapred.DeprecatedLzoTextInputFormat"
+OUTPUTFORMAT "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat";
+b),导入数据
+lzop  /tmp/tt.log
+hive> load data local inpath '/tmp/tt.log.lzo' into table t_zlo;
+c),索引lzo文件
+hadoop jar /data/hadoop/hadoop-2.7.2/share/hadoop/common/hadoop-lzo-0.4.21-SNAPSHOT.jar com.hadoop.compression.lzo.DistributedLzoIndexer /user/hive/warehouse/t_zlo
+(在实际使用中不需要索引lzo文件，索引后查询hive表总数会多1，但具体每行记录又是没变的，不知道为什么)
+d),用hive执行mr任务
+hive> set hive.exec.reducers.max=10;
+hive> set mapred.reduce.tasks=10;
+hive> select id,insert_time from t_zlo limit 10;
+正常执行无报错表示hadoop使用lzo压缩没问题。
 
 ------------------------------------------------------------------------------------
