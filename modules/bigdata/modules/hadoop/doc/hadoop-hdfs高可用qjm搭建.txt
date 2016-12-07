@@ -1,0 +1,25 @@
+---------------------------------------hadoop hdfs高可用--------------------------------
+hdfs集群中只有一个Namenode,会引入单点问题,如果Namenode故障，那么这个集群将不可用，直到Namenode重启或者其他Namenode接入。
+hdfs ha特性即解决这个问题，它通过在集群中同时运行2个(redundant)Namenodes，并让active和passive之间热备(hot standby)。
+当Active Namenode故障失效后，即可快速故障转移到新的Namenode上(passive Namenode)。
+
+在hadfs ha架构中，有两个独立的机器作为Namenode，任何时刻，只有一个Namenode处于Active状态，另一个处于standby状态(passive,备份)。
+为了让Standby Node与Active Node保持同步，这两个Node都与一组称为JNS的互相独立的进程保持通信(Journal Nodes)。
+当Active Node上更新了namespace，它将记录修改日志发送给JNS的多数派。Standby Node将会从JNS中读取这些edits，并持续关注它们对日志的变更。
+当failover发生时，Standby将会在提升自己为Active之前，确保能够从JNS中读取所有的edits；即在failover发生之前，Standy持有的namespace应该与Active保持完全同步。
+任何时刻，只有一个Active Namenode是非常重要的，否则将会导致集群操作的混乱，两个Namenode将会分别有两种不同的数据状态，可能会导致数据丢失或者状态异常，此情况称为“split-brain”(脑裂)。
+对于JNS(Journal Nodes)而言，任何时候只允许一个Namenode作为writer,在failover期间，原来的Standby Node将会接管Active的所有职能，并负责向JNS写入日志记录。
+
+为了构建HA集群架构，需要准备如下资源：
+1,Namenode机器：两台配置对等的物理机器，它们分别运行Active和Standby Node。
+2,JouralNode机器：运行JouralNodes的机器。JouralNode守护进程相当的轻量级，它们可以和hadoop的其他进程部署在一起，比如Namenode,ResourceManager等。
+不过为了形成多数派(majority)，至少需要3个JouralNodes，因为edits操作必须在多数派上写入成功。当然JNS的个数可以 > 3，且通常为奇数(3,5,7)，
+这样可以更好的容错和形成多数派,如果运行了N个JNS，那么它可以允许(N-1)/2个JNS进程失效并且不影响工作。
+此外，在HA集群中，standby namenode还会对namespace进行checkpoint操作，因此，不需要在HA集群中运行SecondaryNamenode、CheckpointNode或者BackupNode。如果运行，将会出错(不允许)。
+
+hdfs ha的部署:
+
+------------------------------------------------------------------------------------------
+
+
+

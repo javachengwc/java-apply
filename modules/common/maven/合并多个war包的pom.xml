@@ -78,6 +78,9 @@
                         <overlay>
                             <groupId>com.security</groupId>
                             <artifactId>security-manage</artifactId>
+                            <excludes>
+                                <exclude>WEB-INF/lib/spring*</exclude>
+                            </excludes>
                         </overlay>
 
                         <overlay>
