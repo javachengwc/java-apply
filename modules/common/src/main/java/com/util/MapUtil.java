@@ -479,12 +479,12 @@ public class MapUtil {
         return true;
     }
 
-    public static Integer extractInt(Map<String,Object> map ,String key)
+    public static <K,V>  Integer extractInt(Map<K,V> map ,K key)
     {
         return extractInt(map,key,null);
     }
 
-    public static Integer extractInt(Map<String,Object> map ,String key,Integer defNum)
+    public static  <K,V> Integer extractInt(Map<K,V> map ,K key,Integer defNum)
     {
         if(map==null)
         {
@@ -494,12 +494,42 @@ public class MapUtil {
         Integer rt= defNum;
         if(!StringUtils.isBlank(objStr))
         {
-            rt=Integer.parseInt(objStr);
+            if(NumberUtil.isFloatNumeric(objStr))
+            {
+                rt =new Double(Double.parseDouble(objStr)).intValue();
+            }else {
+                rt = Integer.parseInt(objStr);
+            }
         }
         return rt;
     }
 
-    public static String extractStr(Map<String,Object> map ,String key)
+    public static <K,V>  Long extractLong(Map<K,V> map ,K key)
+    {
+        return extractLong(map, key, null);
+    }
+
+    public static  <K,V> Long extractLong(Map<K,V> map ,K key,Integer defNum)
+    {
+        if(map==null)
+        {
+            return null;
+        }
+        String objStr = (map.get(key)==null)?"":map.get(key).toString();
+        Long rt= (defNum==null)?null:defNum.longValue();
+        if(!org.apache.commons.lang.StringUtils.isBlank(objStr))
+        {
+            if(NumberUtil.isFloatNumeric(objStr))
+            {
+                rt =new Double(Double.parseDouble(objStr)).longValue();
+            }else {
+                rt = Long.parseLong(objStr);
+            }
+        }
+        return rt;
+    }
+
+    public static  <K,V>  String extractStr(Map<K,V> map ,K key)
     {
         if(map==null)
         {
@@ -509,7 +539,7 @@ public class MapUtil {
         return objStr;
     }
 
-    public static Date extractDateTime(Map<String,Object> map ,String key)
+    public static  <K,V>  Date extractDateTime(Map<K,V> map ,K key)
     {
         if(map==null)
         {
@@ -522,7 +552,7 @@ public class MapUtil {
         return null;
     }
 
-    public static Date extractDate(Map<String,Object> map ,String key)
+    public static <K,V>  Date extractDate(Map<K,V> map ,K key)
     {
         if(map==null)
         {
@@ -535,13 +565,13 @@ public class MapUtil {
         return null;
     }
 
-    public static Object extractData(Map<String,Object> map ,String key,Class clazz)
+    public static <K,V> Object extractData(Map<K,V> map ,K key,Class clazz)
     {
         return extractData(map,key,clazz,null);
     }
 
     //从map中提取某key的值
-    public static Object extractData(Map<String,Object> map ,String key,Class clazz,Integer defNum)
+    public static <K,V> Object extractData(Map<K,V> map ,K key,Class clazz,Integer defNum)
     {
         if(map==null)
         {
@@ -558,7 +588,12 @@ public class MapUtil {
             Integer rt= defNum;
             if(!StringUtils.isBlank(objStr))
             {
-                rt=Integer.parseInt(objStr);
+                if(NumberUtil.isFloatNumeric(objStr))
+                {
+                    rt =new Double(Double.parseDouble(objStr)).intValue();
+                }else {
+                    rt = Integer.parseInt(objStr);
+                }
             }
             return numberSerialize(rt,clazz);
         }
@@ -567,7 +602,12 @@ public class MapUtil {
             Long rt=(defNum==null)?null:defNum.longValue();
             if(!StringUtils.isBlank(objStr))
             {
-                rt=Long.parseLong(objStr);
+                if(NumberUtil.isFloatNumeric(objStr))
+                {
+                    rt =new Double(Double.parseDouble(objStr)).longValue();
+                }else {
+                    rt = Long.parseLong(objStr);
+                }
             }
             return numberSerialize(rt,clazz);
         }
@@ -604,7 +644,12 @@ public class MapUtil {
             Short rt= (defNum==null)?null:defNum.shortValue();
             if(!StringUtils.isBlank(objStr))
             {
-                rt=Short.parseShort(objStr);
+                if(NumberUtil.isFloatNumeric(objStr))
+                {
+                    rt =new Double(Double.parseDouble(objStr)).shortValue();
+                }else {
+                    rt =Short.parseShort(objStr);
+                }
             }
             return numberSerialize(rt,clazz);
         }
