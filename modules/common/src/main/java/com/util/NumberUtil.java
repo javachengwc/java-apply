@@ -169,6 +169,14 @@ public final class NumberUtil {
         return rt;
     }
 
+    /**
+     * DecimalFormat实现千位符
+     * 比如:parseMoney(-8850002210.03,"###,###.##")
+     */
+    public static  String parseMoney(Number amount,String pattern){
+        DecimalFormat df=new DecimalFormat(pattern);
+        return df.format(amount);
+    }
 
     public static void main(String args[])
     {
@@ -179,6 +187,8 @@ public final class NumberUtil {
         DecimalFormat format = new DecimalFormat( "#0.00");
         System.out.println(formatToStr(500.2,format) );
 
-        System.out.println(transKilobitData(-88500022100l,true));
+        System.out.println(transKilobitData(-885000221003l,true));
+
+        System.out.println(parseMoney(8850002210.03,"###,###.##"));
     }
 }
