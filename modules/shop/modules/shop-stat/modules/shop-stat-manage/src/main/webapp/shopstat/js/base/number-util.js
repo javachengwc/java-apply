@@ -13,7 +13,7 @@ function transKilobitData(num, precision, separator) {
         parts[0] = parts[0].toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + (separator || ','));
         if(parts.length>1)
         {
-            parts[1] = parts[1].toString().replace(/[0]+/g, '');
+            parts[1] = parts[1].toString().replace(/[0]+$/g, '');
             if( parts[1]==null || parts[1].toString().length<=0)
             {
                 return parts[0].toString();
