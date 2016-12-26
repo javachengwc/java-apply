@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.db.dao.ext.DbDao" >
+
+    <resultMap id="BaseResultMap" type="com.db.model.pojo.TbDb" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="ht" property="ht" jdbcType="VARCHAR" />
+        <result column="pt" property="pt" jdbcType="INTEGER" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="account" property="account" jdbcType="VARCHAR" />
+        <result column="pwd" property="pwd" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <select id="queryPage" resultMap="BaseResultMap" parameterType="com.db.model.vo.DbQueryVo">
+        select * from tb_db
+        <where>
+            <if test="host!=null and host!='' ">
+                AND ht = '${host}'
+            </if>
+            <if test="name!=null and name!='' ">
+                AND name = ${name}
+            </if>
+            <if test="account!=null and account!='' ">
+                AND account = '${account}'
+            </if>
+        </where>
+        <if test="start != null and rows != null">
+            limit ${start},${rows}
+        </if>
+    </select>
+
+    <select id="count"  resultType="java.lang.Integer" parameterType="com.db.model.vo.DbQueryVo">
+        select count(1) as count
+        from tb_db
+        <where>
+            <if test="host!=null and host!='' ">
+                AND ht = '${host}'
+            </if>
+            <if test="name!=null and name!='' ">
+                AND name = ${name}
+            </if>
+            <if test="account!=null and account!='' ">
+                AND account = '${account}'
+            </if>
+        </where>
+    </select>
+</mapper>

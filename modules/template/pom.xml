@@ -18,6 +18,7 @@
     
 	<modules>
         <module>modules/freemarker</module>
+		<module>modules/freemarkerweb</module>
 		<module>modules/velocity</module>
 	</modules>
 
