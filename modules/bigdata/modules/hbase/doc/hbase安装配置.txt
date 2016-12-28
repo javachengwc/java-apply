@@ -58,6 +58,12 @@ c,配置相关的文件
         <name>hbase.zookeeper.property.dataDir</name>
         <value>/data/hbase/hbase-1.2.3/zookeeper</value>
     </property>
+ 如果zookeeper不用hbase自带的zookerper,而是用外置zookeeper,这里对zookeeper的配置需要调整成
+    <!--hbase外置zk集群时-->
+    <property>
+        <name>hbase.zookeeper.quorum</name>
+        <value>hadoopa:2181,hadoopb:2181,hadoopc:2181</value>
+    </property>
 3),编辑regionservers文件
     hadoopa
     hadoopb

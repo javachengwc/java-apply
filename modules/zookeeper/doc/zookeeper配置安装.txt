@@ -35,8 +35,12 @@
   server.2=127.0.0.1:2890:3890
   注：initLimit，syncLimit在单节点部署模式下，不需要配置。
 
-3,在dataDir目录下创建myid文件，写入该节点的编号 0 。这样一个节点就配置完成了,照此配置相应的其他2个节点
+3,创建配置中的dataDir,dataLogDir目录
+  mkdir -p /data/zookeeper/data/data0
+  mkdir -p /data/zookeeper/log/log0
 
-4,分别进入三个节点的bin目录，启动zookeeper，运行./zkServer.sh start
+5,在dataDir目录下创建myid文件，写入该节点的编号 0 。这样一个节点就配置完成了,照此配置相应的其他2个节点
+
+5,分别进入三个节点的bin目录，启动zookeeper，运行./zkServer.sh start
 可用自带的工具./zkCli.sh -server 127.0.0.1:2180进行测试
 交互命令有ls, get,set,create,delete等，path参数必须以/开头
