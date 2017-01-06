@@ -10,15 +10,19 @@ public class QuerySliceUtil {
 
     private static int DEF_PER=10;
 
-    public static  <T> List<T> query(QueryPage<T> queryPage,int perSize)
+    public static  <T>  List<T> query(QueryPage<T> queryPage,int perSize)
+    {
+        return query(queryPage,0,perSize);
+    }
+
+    public static  <T>  List<T> query(QueryPage<T> queryPage,int startNo ,int perSize)
     {
         List<T> all = new ArrayList<T>();
-
-        int start =0;
         if(perSize<=0)
         {
             perSize=DEF_PER;
         }
+        int start =startNo;
         int queryCount=perSize;
 
         while(queryCount>=perSize)
@@ -30,6 +34,38 @@ public class QuerySliceUtil {
             {
                 start=start+queryCount;
 
+                all.addAll(perList);
+                perList.clear();
+            }
+        }
+        return all;
+    }
+
+    public static  <T>  List<T> query(QueryPage<T> queryPage,int startNo,int total ,int perSize)
+    {
+        List<T> all = new ArrayList<T>();
+        if(perSize<=0)
+        {
+            perSize=DEF_PER;
+        }
+        int start =startNo;
+        int queryCount=perSize;
+
+        int queryTotal=0;
+        while(queryCount>=perSize && queryTotal<total)
+        {
+            int hasCount =total-queryTotal;
+            if( hasCount<perSize)
+            {
+                perSize=hasCount;
+            }
+            List<T> perList = queryPage.queryPage(start,perSize);
+            queryCount = (perList==null)?0:perList.size();
+
+            if(queryCount>0)
+            {
+                start=start+queryCount;
+                queryTotal=queryTotal+queryCount;
                 all.addAll(perList);
                 perList.clear();
             }

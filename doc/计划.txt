@@ -1,6 +1,6 @@
 jenkins
 gitlab
 otter
-nagios
+nagios,zabbix监控
 ecshop
 docker
