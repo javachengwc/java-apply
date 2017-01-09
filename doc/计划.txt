@@ -4,3 +4,5 @@ otter
 nagios,zabbix监控
 ecshop
 docker
+flume
+presto
