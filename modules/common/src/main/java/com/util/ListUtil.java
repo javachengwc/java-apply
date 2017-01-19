@@ -91,6 +91,40 @@ public class ListUtil {
         return rt;
     }
 
+    //将list转换成map
+    public static <K,V> Map<K,V> transMap(List<V> list,Picker<K,V> picker)
+    {
+        return transMap(list,picker,null);
+    }
+
+    public static <K,V> Map<K,V> transMap(List<V> list,Picker<K,V> picker,K def)
+    {
+        Map<K,V> map =new HashMap<K,V>();
+        if(list==null || list.size()<=0)
+        {
+            return map;
+        }
+        for(V per:list)
+        {
+            K key = picker.pick(per);
+            if(key==null)
+            {
+                key=def;
+            }
+            if(key!=null)
+            {
+                map.put(key,per);
+            }
+        }
+        return  map;
+    }
+
+    //从对象中提取某值的接口
+    public interface  Picker<K,V>
+    {
+        public K pick(V  value);
+    }
+
     public static void main(String args [])
     {
         List<Integer> intList = new ArrayList<Integer>();
