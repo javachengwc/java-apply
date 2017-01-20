@@ -119,6 +119,17 @@ public class ListUtil {
         return  map;
     }
 
+    public static <K> Map<K,Map<String,Object>> transMap(List<Map<String,Object>> list,final String keyName,final Class kClass)
+    {
+        Picker<K,Map<String,Object>> picker =new Picker<K, Map<String, Object>>() {
+            @Override
+            public K pick(Map<String, Object> value) {
+                return (K)MapUtil.extractData(value,keyName,kClass);
+            }
+        };
+        return transMap(list,picker);
+    }
+
     //从对象中提取某值的接口
     public interface  Picker<K,V>
     {
@@ -144,6 +155,20 @@ public class ListUtil {
         System.out.println("----------------"+listJointToStr(strList,","));
         System.out.println("----------------"+listJointToStr(strList,",","'","'"));
 
-
+        List<Map<String,Object>> listMap = new ArrayList<Map<String,Object>>();
+        Map<String,Object> map1=new HashMap<String,Object>();
+        map1.put("a",100);
+        map1.put("b","bbb");
+        listMap.add(map1);
+        Map<String,Object> map2=new HashMap<String,Object>();
+        map2.put("a",200);
+        map2.put("b","bbb2");
+        listMap.add(map2);
+        Map<Integer,Map<String,Object>> tMap = transMap(listMap,"a",Integer.class);
+        System.out.println(tMap.size());
+        for(Map.Entry<Integer,Map<String,Object>> ent:tMap.entrySet())
+        {
+            System.out.println(ent.getKey()+":"+ent.getValue());
+        }
     }
 }
