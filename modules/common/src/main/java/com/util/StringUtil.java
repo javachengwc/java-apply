@@ -1,5 +1,6 @@
 package com.util;
 
+import com.util.base.BlankUtil;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 

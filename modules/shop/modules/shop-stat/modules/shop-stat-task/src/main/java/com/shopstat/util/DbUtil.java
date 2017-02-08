@@ -1,6 +1,6 @@
 package com.shopstat.util;
 
-import com.util.MapUtil;
+import com.util.col.MapUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;

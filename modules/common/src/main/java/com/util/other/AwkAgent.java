@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.util;
+package com.util.other;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

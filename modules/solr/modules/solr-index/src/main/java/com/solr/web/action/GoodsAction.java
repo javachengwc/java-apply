@@ -8,7 +8,7 @@ import com.solr.web.action.response.ExceptionResponse;
 import com.solr.web.action.response.Return;
 import org.apache.log4j.Logger;
 
-import com.util.BlankUtil;
+import com.util.base.BlankUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

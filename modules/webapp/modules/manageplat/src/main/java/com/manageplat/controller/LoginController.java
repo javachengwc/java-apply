@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.manageplat.service.AuthManager;
-import com.util.BlankUtil;
+import com.util.base.BlankUtil;
 import com.util.PropertiesLoader;
 import com.util.web.HttpRenderUtil;
 import com.util.web.RequestUtil;

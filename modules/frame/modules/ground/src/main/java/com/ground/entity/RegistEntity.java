@@ -1,7 +1,7 @@
 package com.ground.entity;
 
-import com.util.BlankUtil;
-import com.util.PackageUtil;
+import com.util.base.BlankUtil;
+import com.util.lang.PackageUtil;
 
 import java.util.Collections;
 import java.util.HashSet;

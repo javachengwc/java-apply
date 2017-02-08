@@ -9,7 +9,7 @@ import java.util.Map;
 import com.ground.condition.DBCondition;
 import com.ground.condition.UpdateSet;
 import com.ground.condition.WhereCondition;
-import com.util.BlankUtil;
+import com.util.base.BlankUtil;
 import org.apache.log4j.Logger;
 
 

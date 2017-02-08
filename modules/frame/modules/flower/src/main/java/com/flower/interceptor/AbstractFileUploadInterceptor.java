@@ -19,7 +19,7 @@ import com.flower.DataFilter;
 import com.flower.invocation.ActionInvocation;
 import com.flower.multipart.IMultiPartRequest;
 import com.flower.multipart.MultipartRequest;
-import com.util.BlankUtil;
+import com.util.base.BlankUtil;
 
 
 /**

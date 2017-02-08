@@ -1,4 +1,4 @@
-package com.util;
+package com.util.col;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -124,7 +124,7 @@ public class ListUtil {
         Picker<K,Map<String,Object>> picker =new Picker<K, Map<String, Object>>() {
             @Override
             public K pick(Map<String, Object> value) {
-                return (K)MapUtil.extractData(value,keyName,kClass);
+                return (K) MapUtil.extractData(value, keyName, kClass);
             }
         };
         return transMap(list,picker);

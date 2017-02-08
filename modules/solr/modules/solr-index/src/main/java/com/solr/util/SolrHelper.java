@@ -1,7 +1,7 @@
 package com.solr.util;
 
 
-import com.util.BlankUtil;
+import com.util.base.BlankUtil;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;

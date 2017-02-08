@@ -16,7 +16,7 @@ import com.ground.core.callback.IPreparedStatementSetter;
 import com.ground.core.datasource.DBEnv;
 import com.ground.entity.callback.*;
 import com.ground.exception.GroundException;
-import com.util.BlankUtil;
+import com.util.base.BlankUtil;
 import com.util.page.Page;
 import com.util.page.PageQuery;
 import org.apache.commons.lang.StringUtils;

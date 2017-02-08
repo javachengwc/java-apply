@@ -1,6 +1,6 @@
 package com.flower.config;
 
-import com.util.BlankUtil;
+import com.util.base.BlankUtil;
 
 public class InterceptorConfig {
 	public InterceptorConfig(String pattern, String className, String excludes, String id){

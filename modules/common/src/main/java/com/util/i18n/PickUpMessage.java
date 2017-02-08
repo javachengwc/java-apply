@@ -1,6 +1,6 @@
 package com.util.i18n;
 
-import com.util.PackageUtil;
+import com.util.lang.PackageUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;

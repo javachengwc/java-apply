@@ -1,7 +1,7 @@
 package com.newrelic.util;
 
-import com.util.JarUtil;
-import com.util.PackageUtil;
+import com.util.lang.JarUtil;
+import com.util.lang.PackageUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;

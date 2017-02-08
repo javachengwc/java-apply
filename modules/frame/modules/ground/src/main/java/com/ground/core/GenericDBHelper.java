@@ -10,7 +10,7 @@ import java.util.List;
 
 import com.ground.core.callback.*;
 import com.ground.core.datasource.DBEnv;
-import com.util.BlankUtil;
+import com.util.base.BlankUtil;
 import org.apache.log4j.Logger;
 
 public class GenericDBHelper {

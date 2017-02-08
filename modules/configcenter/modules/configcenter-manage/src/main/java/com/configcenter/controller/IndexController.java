@@ -8,7 +8,7 @@ import com.configcenter.service.SessionManager;
 import com.configcenter.service.rbac.UserService;
 import com.configcenter.vo.OnlineUser;
 import com.configcenter.vo.TreeNode;
-import com.util.BlankUtil;
+import com.util.base.BlankUtil;
 import com.util.web.HttpRenderUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

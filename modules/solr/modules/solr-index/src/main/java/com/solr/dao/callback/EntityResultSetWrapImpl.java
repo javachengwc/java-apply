@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.Map;
 
-import com.util.BlankUtil;
+import com.util.base.BlankUtil;
 import com.util.date.SysDateTime;
 import com.solr.util.TypeUtils;
 import org.apache.commons.lang3.ClassUtils;

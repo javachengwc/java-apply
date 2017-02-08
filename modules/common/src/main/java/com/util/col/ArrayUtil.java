@@ -1,4 +1,4 @@
-package com.util;
+package com.util.col;
 
 public class ArrayUtil {
 

@@ -1,5 +1,9 @@
-package com.util;
+package com.util.col;
 
+import com.util.ClassUtil;
+import com.util.NumberUtil;
+import com.util.ReflectionUtil;
+import com.util.StringUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -747,7 +751,7 @@ public class MapUtil {
                     {
                         value =extractData(map,key,fdClazz);
                     }
-                    ReflectionUtil.setFieldValue(bean,fieldName,value);
+                    ReflectionUtil.setFieldValue(bean, fieldName, value);
                 }
                 clazz = clazz.getSuperclass();
             }

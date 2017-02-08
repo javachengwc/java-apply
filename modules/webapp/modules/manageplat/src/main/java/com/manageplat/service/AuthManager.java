@@ -1,6 +1,6 @@
 package com.manageplat.service;
 
-import com.util.BlankUtil;
+import com.util.base.BlankUtil;
 import com.util.PropertiesLoader;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
