@@ -1,6 +1,6 @@
 package com.socket.simple;
 
-import com.util.DataTransUtil;
+import com.util.enh.DataTransUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;

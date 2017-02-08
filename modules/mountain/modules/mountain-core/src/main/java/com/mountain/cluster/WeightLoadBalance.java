@@ -1,7 +1,7 @@
 package com.mountain.cluster;
 
 import com.mountain.core.Invoker;
-import com.util.RandomUtil;
+import com.util.enh.RandomUtil;
 
 import java.util.HashMap;
 import java.util.List;

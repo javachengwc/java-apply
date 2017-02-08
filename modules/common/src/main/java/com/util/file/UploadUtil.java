@@ -1,4 +1,4 @@
-package com.util;
+package com.util.file;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;

@@ -5,7 +5,7 @@ import com.mountain.manage.model.vo.QueryVo;
 import com.mountain.manage.model.vo.ServiceVo;
 import com.mountain.manage.util.BizFilterTransUtil;
 import com.mountain.model.SpecUrl;
-import com.util.BeanCopyUtil;
+import com.util.enh.BeanCopyUtil;
 import com.util.page.CollectionPage;
 import com.util.page.Page;
 import org.apache.commons.lang3.StringUtils;

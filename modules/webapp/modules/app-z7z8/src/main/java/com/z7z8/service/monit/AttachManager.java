@@ -1,6 +1,6 @@
 package com.z7z8.service.monit;
 
-import com.util.StreamUtil;
+import com.util.base.StreamUtil;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;

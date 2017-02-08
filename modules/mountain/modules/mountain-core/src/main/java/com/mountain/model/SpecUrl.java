@@ -2,7 +2,7 @@ package com.mountain.model;
 
 import com.mountain.constant.Constant;
 import com.mountain.util.SpecUrlUtil;
-import com.util.DeepCopyUtil;
+import com.util.enh.DeepCopyUtil;
 import com.util.base.StringUtil;
 import com.util.encrypt.EncodeUtil;
 import com.util.net.NetUtil;

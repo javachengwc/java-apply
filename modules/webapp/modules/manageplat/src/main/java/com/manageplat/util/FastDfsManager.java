@@ -1,19 +1,11 @@
 package com.manageplat.util;
 
-import com.util.PropertiesLoader;
-import com.util.StreamUtil;
-import org.apache.commons.lang.StringUtils;
 //import org.csource.common.MyException;
 //import org.csource.fastdfs.ClientGlobal;
 //import org.csource.fastdfs.StorageClient;
 //import org.csource.fastdfs.TrackerGroup;
 //import org.csource.fastdfs.TrackerServer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.net.InetSocketAddress;
-import java.util.Properties;
 
 /**
  * fastdfs文件管理类.

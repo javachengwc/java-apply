@@ -8,7 +8,6 @@ import com.configcenter.vo.CommonQueryVo;
 import com.configcenter.vo.NodeState;
 import com.configcenter.vo.ResourceVo;
 import com.configcenter.vo.TreeNode;
-import com.util.BeanCopyUtil;
 import com.util.web.HttpRenderUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;

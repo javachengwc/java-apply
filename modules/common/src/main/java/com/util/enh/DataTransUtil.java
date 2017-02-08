@@ -1,4 +1,4 @@
-package com.util;
+package com.util.enh;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;

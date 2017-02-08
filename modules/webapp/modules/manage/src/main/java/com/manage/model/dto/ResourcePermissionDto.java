@@ -2,7 +2,7 @@ package com.manage.model.dto;
 
 import com.manage.model.rbac.Resource;
 import com.manage.model.rbac.ResourcePermission;
-import com.util.BeanCopyUtil;
+import com.util.enh.BeanCopyUtil;
 
 public class ResourcePermissionDto {
 

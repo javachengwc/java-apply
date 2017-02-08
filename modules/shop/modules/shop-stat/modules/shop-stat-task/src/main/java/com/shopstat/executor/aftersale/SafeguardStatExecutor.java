@@ -8,7 +8,7 @@ import com.shopstat.model.vo.stat.Norm;
 import com.shopstat.model.vo.stat.Stat;
 import com.shopstat.util.DateTimeUtil;
 import com.shopstat.util.StatTotalUtil;
-import com.util.RandomUtil;
+import com.util.enh.RandomUtil;
 import com.util.date.DateUtil;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;

@@ -1,7 +1,7 @@
 package com.mountain.manage.service.serve;
 
 import com.mountain.manage.model.vo.DimenVo;
-import com.util.BeanCopyUtil;
+import com.util.enh.BeanCopyUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

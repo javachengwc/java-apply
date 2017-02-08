@@ -1,6 +1,6 @@
 package com.manage.web.main;
 
-import com.util.BeanCopyUtil;
+import com.util.enh.BeanCopyUtil;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;

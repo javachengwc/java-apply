@@ -7,7 +7,7 @@ import java.util.Map;
 import com.manageplat.model.job.JobHttpUrl;
 import com.manageplat.util.HttpClientCookieUtil;
 import com.manageplat.util.SysConfig;
-import com.util.RandomUtil;
+import com.util.enh.RandomUtil;
 import com.util.http.UrlUtil;
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.Header;

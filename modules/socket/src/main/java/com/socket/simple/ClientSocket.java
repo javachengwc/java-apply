@@ -1,6 +1,5 @@
 package com.socket.simple;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -11,7 +10,7 @@ import java.util.concurrent.TimeoutException;
 import com.socket.simple.vo.BaseRequest;
 import com.socket.simple.vo.BaseResponse;
 import com.socket.simple.vo.ErrorResponse;
-import com.util.ZipUtil;
+import com.util.file.ZipUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 /**
