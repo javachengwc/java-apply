@@ -1,6 +1,6 @@
 package com.shopstat.model.vo.stat;
 
-import com.util.StringUtil;
+import com.util.base.StringUtil;
 import com.util.date.DateUtil;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang3.StringUtils;

@@ -1,11 +1,10 @@
 package com.shopstat.model.vo.stat;
 
-import com.util.StringUtil;
+import com.util.base.StringUtil;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 

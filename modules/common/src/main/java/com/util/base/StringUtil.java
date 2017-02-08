@@ -1,4 +1,4 @@
-package com.util;
+package com.util.base;
 
 import com.util.base.BlankUtil;
 import org.apache.commons.lang.StringEscapeUtils;

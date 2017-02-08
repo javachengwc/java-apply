@@ -2,7 +2,7 @@ package com.mountain.util;
 
 import com.mountain.constant.Constant;
 import com.mountain.model.SpecUrl;
-import com.util.StringUtil;
+import com.util.base.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashSet;

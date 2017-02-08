@@ -1,7 +1,7 @@
 package com.ocean.parser;
 
 import com.google.common.base.Optional;
-import com.util.StringUtil;
+import com.util.base.StringUtil;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**

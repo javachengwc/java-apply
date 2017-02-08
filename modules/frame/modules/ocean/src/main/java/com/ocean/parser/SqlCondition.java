@@ -1,6 +1,6 @@
 package com.ocean.parser;
 
-import com.util.StringUtil;
+import com.util.base.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;

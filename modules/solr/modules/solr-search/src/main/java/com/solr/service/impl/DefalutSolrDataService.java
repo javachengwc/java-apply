@@ -9,7 +9,7 @@ import com.solr.util.SolrServerFactory;
 import com.solr.model.*;
 import com.solr.service.SolrDataService;
 import com.solr.util.SysConfig;
-import com.util.StringUtil;
+import com.util.base.StringUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
