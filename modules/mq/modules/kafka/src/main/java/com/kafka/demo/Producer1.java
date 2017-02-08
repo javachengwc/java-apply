@@ -1,6 +1,6 @@
 package com.kafka.demo;
 
-import com.util.ThreadUtil;
+import com.util.base.ThreadUtil;
 import kafka.producer.KeyedMessage;
 import kafka.javaapi.producer.Producer;
 import kafka.producer.ProducerConfig;

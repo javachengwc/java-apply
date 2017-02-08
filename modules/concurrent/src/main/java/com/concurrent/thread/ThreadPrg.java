@@ -1,6 +1,6 @@
 package com.concurrent.thread;
 
-import com.util.ThreadUtil;
+import com.util.base.ThreadUtil;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;

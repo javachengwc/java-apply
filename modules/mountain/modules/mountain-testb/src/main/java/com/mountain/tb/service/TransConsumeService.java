@@ -2,7 +2,7 @@ package com.mountain.tb.service;
 
 import com.mountain.tb.finagle.trans.StringResult;
 import com.mountain.tb.finagle.trans.TransDealService;
-import com.util.ThreadUtil;
+import com.util.base.ThreadUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.kafka.KafkaConstant;
 import com.kafka.mode.*;
-import com.util.RunTimeUtil;
+import com.util.lang.RunTimeUtil;
 import kafka.api.PartitionOffsetRequestInfo;
 import kafka.cluster.Broker;
 import kafka.common.TopicAndPartition;

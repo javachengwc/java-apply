@@ -1,6 +1,6 @@
 package com.designptn;
 
-import com.util.ThreadUtil;
+import com.util.base.ThreadUtil;
 
 /**
  * 单例模式

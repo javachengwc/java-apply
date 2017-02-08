@@ -1,4 +1,4 @@
-package com.util;
+package com.util.base;
 
 /**
  * 线程工具类

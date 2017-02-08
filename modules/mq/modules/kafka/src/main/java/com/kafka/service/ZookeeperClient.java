@@ -1,6 +1,6 @@
 package com.kafka.service;
 
-import com.util.RunTimeUtil;
+import com.util.lang.RunTimeUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;

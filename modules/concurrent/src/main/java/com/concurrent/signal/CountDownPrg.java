@@ -1,6 +1,6 @@
 package com.concurrent.signal;
 
-import com.util.ThreadUtil;
+import com.util.base.ThreadUtil;
 
 import java.util.concurrent.CountDownLatch;
 

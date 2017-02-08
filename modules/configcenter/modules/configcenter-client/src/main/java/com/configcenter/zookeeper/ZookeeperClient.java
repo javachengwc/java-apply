@@ -1,6 +1,6 @@
 package com.configcenter.zookeeper;
 
-import com.util.ThreadUtil;
+import com.util.base.ThreadUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;

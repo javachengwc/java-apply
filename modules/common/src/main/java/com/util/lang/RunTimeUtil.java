@@ -1,4 +1,4 @@
-package com.util;
+package com.util.lang;
 
 import java.util.LinkedList;
 import java.util.List;

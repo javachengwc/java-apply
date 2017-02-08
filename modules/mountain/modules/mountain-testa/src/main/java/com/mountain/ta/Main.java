@@ -1,6 +1,6 @@
 package com.mountain.ta;
 
-import com.util.ThreadUtil;
+import com.util.base.ThreadUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;

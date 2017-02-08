@@ -14,7 +14,7 @@ import com.mountain.registry.Registry;
 import com.twitter.finagle.Service;
 import com.twitter.finagle.thrift.ThriftClientRequest;
 import com.util.AppUtil;
-import com.util.RunTimeUtil;
+import com.util.lang.RunTimeUtil;
 import com.util.net.NetUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

@@ -1,6 +1,6 @@
 package com.httpclient.util;
 import org.apache.http.HttpHost;
-import com.util.RunTimeUtil;
+import com.util.lang.RunTimeUtil;
 import org.apache.http.*;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;

@@ -3,7 +3,7 @@ package com.configcenter.service;
 import com.configcenter.model.OperateRecord;
 import com.configcenter.util.SpringContextUtils;
 import com.configcenter.vo.OnlineUser;
-import com.util.ThreadUtil;
+import com.util.base.ThreadUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

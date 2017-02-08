@@ -3,7 +3,7 @@ package com.zookeeper;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
-import com.util.ThreadUtil;
+import com.util.base.ThreadUtil;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;

@@ -5,7 +5,7 @@ import static org.jboss.netty.channel.Channels.pipeline;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 
-import com.util.ThreadUtil;
+import com.util.base.ThreadUtil;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelPipeline;
