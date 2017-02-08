@@ -1,7 +1,7 @@
 // Generated from D:\tmp\Excel\Auth.g4 by ANTLR 4.0
 package com.antlr.auth;
 
-import com.util.NumberUtil;
+import com.util.base.NumberUtil;
 import org.antlr.v4.runtime.tree.*;
 
 public class AuthBaseVisitor extends AbstractParseTreeVisitor<Integer> implements

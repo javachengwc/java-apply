@@ -1,7 +1,7 @@
 package com.configcenter.service;
 
 import com.configcenter.util.SysConfig;
-import com.util.NumberUtil;
+import com.util.base.NumberUtil;
 import com.util.RunTimeUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.zookeeper.*;

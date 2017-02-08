@@ -3,7 +3,7 @@ package com.mountain.config;
 import com.mountain.model.SpecUrl;
 import com.mountain.registry.Registry;
 import com.mountain.registry.ZookeeperRegistry;
-import com.util.NumberUtil;
+import com.util.base.NumberUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

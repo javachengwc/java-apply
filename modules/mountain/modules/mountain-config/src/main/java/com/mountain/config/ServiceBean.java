@@ -6,7 +6,7 @@ import com.mountain.model.Provider;
 import com.mountain.model.SpecUrl;
 import com.mountain.registry.Registry;
 import com.util.AppUtil;
-import com.util.NumberUtil;
+import com.util.base.NumberUtil;
 import com.util.RunTimeUtil;
 import com.util.StringUtil;
 import com.util.encrypt.EncodeUtil;

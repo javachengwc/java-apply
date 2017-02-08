@@ -1,7 +1,7 @@
 package com.util.col;
 
-import com.util.ClassUtil;
-import com.util.NumberUtil;
+import com.util.lang.ClassUtil;
+import com.util.base.NumberUtil;
 import com.util.ReflectionUtil;
 import com.util.StringUtil;
 import org.apache.commons.beanutils.BeanUtils;

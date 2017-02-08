@@ -5,7 +5,7 @@ import com.manageplat.model.pojo.TyEntity;
 import com.manageplat.model.vo.tongyong.TyResultVo;
 import com.manageplat.service.tongyong.EntityService;
 import com.manageplat.service.tongyong.TyQueryService;
-import com.util.NumberUtil;
+import com.util.base.NumberUtil;
 import com.util.web.HttpRenderUtil;
 import net.sf.json.JSONObject;
 import org.slf4j.Logger;

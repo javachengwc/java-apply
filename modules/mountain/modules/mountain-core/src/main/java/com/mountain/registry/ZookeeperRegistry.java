@@ -7,7 +7,7 @@ import com.mountain.util.NamedThreadFactory;
 import com.mountain.util.ServiceUrlUtil;
 import com.mountain.zookeeper.StateListener;
 import com.mountain.zookeeper.ZookeeperIoiClient;
-import com.util.NumberUtil;
+import com.util.base.NumberUtil;
 import com.util.encrypt.EncodeUtil;
 import org.I0Itec.zkclient.IZkChildListener;
 import org.apache.zookeeper.Watcher;

@@ -9,7 +9,7 @@ import com.solr.util.*;
 import com.solr.model.FacetVo;
 import com.solr.service.ResultHandler;
 import com.solr.service.SolrService;
-import com.util.NumberUtil;
+import com.util.base.NumberUtil;
 import com.util.Pinyin4jUtil;
 import net.sf.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;

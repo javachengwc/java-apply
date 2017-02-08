@@ -15,7 +15,7 @@ import com.configcenter.service.SessionManager;
 import com.configcenter.service.core.BaseService;
 import com.configcenter.vo.CommonQueryVo;
 import com.configcenter.vo.RoleVo;
-import com.util.NumberUtil;
+import com.util.base.NumberUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

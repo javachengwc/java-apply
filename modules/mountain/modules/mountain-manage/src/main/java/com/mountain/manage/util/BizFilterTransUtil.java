@@ -4,7 +4,7 @@ import com.mountain.constant.Constant;
 import com.mountain.manage.model.vo.QueryVo;
 import com.mountain.manage.model.vo.ServiceVo;
 import com.mountain.model.SpecUrl;
-import com.util.NumberUtil;
+import com.util.base.NumberUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;

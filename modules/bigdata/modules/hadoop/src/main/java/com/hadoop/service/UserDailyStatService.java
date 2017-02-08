@@ -3,7 +3,7 @@ package com.hadoop.service;
 import com.hadoop.model.UserDailyStatBvo;
 import com.hadoop.task.base.HadoopBaseTask;
 import com.util.col.MapUtil;
-import com.util.NumberUtil;
+import com.util.base.NumberUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.fs.FileSystem;

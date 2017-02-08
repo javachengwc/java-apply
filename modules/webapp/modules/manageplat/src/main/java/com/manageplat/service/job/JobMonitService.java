@@ -22,7 +22,7 @@ import com.manageplat.model.job.JobInfo;
 import com.manageplat.model.job.JobMonit;
 import com.manageplat.model.vo.job.JobExecuteQueryVo;
 import com.manageplat.model.vo.job.JobMonitQueryVo;
-import com.util.NumberUtil;
+import com.util.base.NumberUtil;
 import com.util.date.SysDateTime;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
