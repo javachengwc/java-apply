@@ -5,10 +5,13 @@
         <div id="search_con">
             <form id="add_form" name="add_form" method="post" enctype="multipart/form-data">
                 <span>上传文件:</span><input type="file" id="file" name ="file" /><br/><br/>
+                <span>名称:</span><input type="text" id="name" name ="name" /><br/><br/>
                 <span>文件类型:</span>
                     <select name="type" id="type" class="input-xlarge">
-                        <option value="0" >-----图片-----</option>
-                        <option value="1" >-----其他-----</option>
+                        <option value="0" >-----普通-----</option>
+                        <option value="1" >-----图片-----</option>
+                        <option value="2" >---可执行文件--</option>
+                        <option value="3" >-----其他-----</option>
                     </select>
                 <br/><br/>
                 <span>链接地址:</span><input type="text" id="linkAddress" name ="linkAddress" /><br/><br/>
@@ -30,6 +33,7 @@
         $("#file").val("");
         $("#linkAddress").val("");
         $("#type").val("");
+        $("#name").val("");
     }
 
     //添加
@@ -40,8 +44,9 @@
         var file =$("#file").val();
         var linkAddress = $("#linkAddress").val();
         var type = $("#type").val();
+        var name = $("#name").val();
 
-        var b = !(linkAddress == '' || type =='' || file =='') ;
+        var b = !(name == '' || type =='' || file =='') ;
 
         if(b){
             var options={

@@ -2,8 +2,10 @@
 <div class="template_con">
     <div class="search_con">
         类型:<select name="type" id="type" class="input-xlarge">
-                <option value="0" >-----图片-----</option>
-                <option value="1" >-----其他-----</option>
+                <option value="0" >-----普通-----</option>
+                <option value="1" >-----图片-----</option>
+                <option value="2" >---可执行文件--</option>
+                <option value="3" >-----其他-----</option>
             </select>
         <input type="hidden" id="pageNo" value="1"/>
         &nbsp;&nbsp;&nbsp;&nbsp;
@@ -14,8 +16,8 @@
         <table id ="resultTable" class="tempTable" border="0" cellspacing="1" cellpadding="1" >
             <thead>
             <td width="10%">id</td>
-            <td width="30%">图片</td>
-            <td width="30%">链接地址</td>
+            <td width="30%">名称</td>
+            <td width="30%">文件</td>
             <td width="10%">操作</td>
             </thead>
             <tbody class="tbody">
@@ -62,15 +64,16 @@
 
             var link = single['link'];
             var type = single.type;
-            var url="";
-            if(type==0)
+            var name=single.name;
+            var url=single.path;
+            if(type==1)
             {
                 url='<img width="200" height="50" src="/file/showPic.do?id='+single.id+'"></img>';
             }
             html += '<tr>';
             html +='<td>'+ single.id+ '</td>';
+            html +='<td>'+ name +'</td>';
             html +='<td>'+ url +'</td>';
-            html +='<td>'+ link +'</td>';
             html +='<td>'+'<a onclick="deleteFile('+single.id+')"  href="javascript:void(0)"><span color="blue">删除</span></a>' + '</td>';
             html += '</tr>';
 

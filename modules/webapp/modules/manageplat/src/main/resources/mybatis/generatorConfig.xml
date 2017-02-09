@@ -28,7 +28,7 @@
 
         <javaModelGenerator targetPackage="com.manageplat.model.pojo"
 
-                            targetProject="F:\workproject\java-application\modules\webapp\modules\manageplat\src\main\java">
+                            targetProject="F:\workproject\java-apply\modules\webapp\modules\manageplat\src\main\java">
 
             <property name="enableSubPackages" value="true"/>
 
@@ -42,7 +42,7 @@
 
         <sqlMapGenerator targetPackage="mybatis.sqlmap"
 
-                         targetProject="F:\workproject\java-application\modules\webapp\modules\manageplat\src\main\resources">
+                         targetProject="F:\workproject\java-apply\modules\webapp\modules\manageplat\src\main\resources">
 
             <property name="enableSubPackages" value="true"/>
 
@@ -50,7 +50,7 @@
 
         <javaClientGenerator type="MIXEDMAPPER" targetPackage="com.manageplat.model.mapper"
 
-                             targetProject="F:\workproject\java-application\modules\webapp\modules\manageplat\src\main\java">
+                             targetProject="F:\workproject\java-apply\modules\webapp\modules\manageplat\src\main\java">
 
             <property name="enableSubPackages" value="true"/>
 
@@ -60,19 +60,7 @@
         <!-- 添加需要生成的表，以及生成方式 -->
 
 
-        <table tableName="ty_entity" >
-
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-
-        </table>
-
-        <table tableName="ty_entity_item" >
-
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-
-        </table>
-
-        <table tableName="ty_entity_cdn" >
+        <table tableName="file_record" >
 
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
 

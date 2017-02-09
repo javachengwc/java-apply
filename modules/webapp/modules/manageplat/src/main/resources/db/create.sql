@@ -231,3 +231,19 @@ insert into user_daily_stat(source_type,plat,utma,user_id,pv,out_count,order_cou
 (0,0,'9999976551437493811','1821',60,13,1,2000,1,'2015-07-21 10:00:00','20150721'),
 (0,0,'9999952511418979072','',72,6,0,0,0,'2015-07-21 10:00:00','20150721');
 
+create table file_record
+(
+    id int auto_increment,
+    name varchar(50) comment '文件名',
+    type int default 0 comment '类型 0--普通,1--图片,2--可执行文件,3--其他',
+    path varchar(200) comment '文件path',
+    size bigint default 0 comment '文件大小',
+    create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
+    link varchar(200) comment '链接地址' ,
+    source varchar(50) comment '来源',
+    note varchar(200) comment '备注',
+    primary key (id),
+    key create_time(create_time),
+    key name(name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='文件记录表';
+

@@ -77,7 +77,7 @@ public class FileController {
         FileRecord fileRecord =fileService.get(id);
         String path=null;
         if(fileRecord!=null) {
-            path=fileRecord.getUrl();
+            path=fileRecord.getPath();
         }
         if(StringUtils.isBlank(path))
         {
@@ -121,7 +121,8 @@ public class FileController {
 
     /**添加**/
     @RequestMapping(value = "/addFile")
-    public void addFile(HttpServletResponse response,@RequestParam(value = "file", required = false) MultipartFile file,String linkAddress,Integer type )
+    public void addFile(HttpServletResponse response,@RequestParam(value = "file", required = false) MultipartFile file,
+                        String name,String linkAddress,Integer type )
     {
 
         logger.info("FileController addFile start");
@@ -158,14 +159,14 @@ public class FileController {
         try
         {
             FileRecord fileRecord = new FileRecord();
+            fileRecord.setName(name);
             fileRecord.setLink(linkAddress);
             fileRecord.setCreateTime(new Date());
             if(type!=null) {
                 fileRecord.setType(type);
             }
 
-            fileRecord.setUrl(path);
-
+            fileRecord.setPath(path);
 
             fileService.addFile(fileRecord);
 
@@ -187,8 +188,8 @@ public class FileController {
         FileRecord fileRecord =fileService.get(id);
         if(fileRecord!=null) {
 
-            if(!StringUtils.isBlank(fileRecord.getUrl())) {
-                AttachManager.getInstance().delFiles(fileRecord.getUrl());
+            if(!StringUtils.isBlank(fileRecord.getPath())) {
+                AttachManager.getInstance().delFiles(fileRecord.getPath());
             }
             fileService.delete(id);
         }
