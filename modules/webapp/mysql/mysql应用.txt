@@ -132,4 +132,6 @@ select length(name),char_length(name) from t1;
 
 select 'aabb' REGEXP '[a-z]+';   //匹配字母
 
+----mysql释放表空间
+OPTIMIZE TABLE table_name
 -----------------------------------------------------------
