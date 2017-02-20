@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 public final class RegexUtil {
 
 	public static final Pattern CELL_PHONE_PATTERN = Pattern.compile(CommonRegex.CELL_PHONE);
+
 	public static final Pattern TELE_PHONE_PATTERN = Pattern.compile(CommonRegex.TELE_PHONE);
 	
 	public static final Pattern ID_CARD_NO_PATTERN = Pattern.compile(CommonRegex.ID_CARD_NO);
