@@ -40,6 +40,19 @@ public class DateUtil {
         return format.format(date);
     }
 
+    public static Boolean checkDate(String date,String fmt) {
+        try {
+            if (StringUtils.isNotBlank(date))
+            {
+                new SimpleDateFormat(fmt).parse(date);
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return false;
+    }
+
     /**将秒或分转成可读的数据 显示**/
     public static String dateLongTransReadAble(String period,int flag)
     {
