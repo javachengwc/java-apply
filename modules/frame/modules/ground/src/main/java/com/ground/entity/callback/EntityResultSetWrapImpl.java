@@ -13,7 +13,7 @@ import java.util.Map.Entry;
 import com.ground.core.callback.IResultSetExtractor;
 import com.ground.core.callback.IRowMapper;
 import com.ground.entity.EntityFactory;
-import com.util.TypeUtil;
+import com.util.base.ObjectUtil;
 import com.util.date.SysDateTime;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.ClassUtils;
@@ -137,47 +137,52 @@ public class EntityResultSetWrapImpl<T> implements IResultSetExtractor<T>,IRowMa
 		try{
 			if(returnClass.isAssignableFrom(Integer.class) || returnClass.isAssignableFrom(int.class))
 			{
-				setMethod.invoke(t, TypeUtil.objectToInteger(value));
+				setMethod.invoke(t, ObjectUtil.numberSerialize(ObjectUtil.obj2Integer(value),returnClass));
 	            return;
 			}
 			if(returnClass.isAssignableFrom(Long.class) || returnClass.isAssignableFrom(long.class))
 			{
-				setMethod.invoke(t, TypeUtil.objectToLong(value));
+				setMethod.invoke(t, ObjectUtil.numberSerialize(ObjectUtil.obj2Long(value),returnClass));
 				return;
 			}
 			if(returnClass.isAssignableFrom(String.class))
 			{
-				setMethod.invoke(t, TypeUtil.objectToString(value));
+				setMethod.invoke(t, ObjectUtil.obj2Str(value));
 				return;
 			}
 			if(returnClass.isAssignableFrom(Boolean.class) || returnClass.isAssignableFrom(boolean.class)  )
 			{
-				setMethod.invoke(t, TypeUtil.objectToBoolean(value));
+				setMethod.invoke(t, ObjectUtil.obj2Boolean(value));
 				return;
 			}
 			if(returnClass.isAssignableFrom(Byte.class) || returnClass.isAssignableFrom(byte.class)  )
 			{
-				setMethod.invoke(t, TypeUtil.objectToByte(value));
+				setMethod.invoke(t, ObjectUtil.numberSerialize(ObjectUtil.obj2Byte(value),returnClass));
 				return;
 			}
 			if(returnClass.isAssignableFrom(Character.class) || returnClass.isAssignableFrom(char.class)  )
 			{
-				setMethod.invoke(t, TypeUtil.objectToChar(value));
+                Character rt= ObjectUtil.obj2Char(value);
+                if(returnClass==char.class && rt==null)
+                {
+                    rt ="0".toCharArray()[0];
+                }
+				setMethod.invoke(t, rt);
 				return;
 			}
 			if(returnClass.isAssignableFrom(Short.class) || returnClass.isAssignableFrom(short.class)  )
 			{
-				setMethod.invoke(t, TypeUtil.objectToShort(value));
+				setMethod.invoke(t, ObjectUtil.numberSerialize(ObjectUtil.obj2Short(value),returnClass));
 				return;
 			}
 			if(returnClass.isAssignableFrom(Float.class) || returnClass.isAssignableFrom(float.class)  )
 			{
-				setMethod.invoke(t, TypeUtil.objectToFloat(value));
+				setMethod.invoke(t,ObjectUtil.numberSerialize(ObjectUtil.obj2Float(value),returnClass));
 				return;
 			}
 			if(returnClass.isAssignableFrom(Double.class) || returnClass.isAssignableFrom(double.class)  )
 			{
-				setMethod.invoke(t, TypeUtil.objectToDouble(value));
+				setMethod.invoke(t, ObjectUtil.numberSerialize(ObjectUtil.obj2Double(value),returnClass));
 				return;
 			}
 			if(returnClass.isAssignableFrom(Date.class)){

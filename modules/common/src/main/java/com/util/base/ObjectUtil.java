@@ -11,13 +11,13 @@ public class ObjectUtil {
     private static Long zeroLong =0l;
 
     //转成String
-    public static String o2Str(Object obj) {
+    public static String obj2Str(Object obj) {
 
         return (obj==null)?null:obj.toString();
     }
 
     //转成char
-    public static Character o2Char(Object obj)
+    public static Character obj2Char(Object obj)
     {
         if(obj==null)
         {
@@ -29,7 +29,7 @@ public class ObjectUtil {
     }
 
     //转成boolean
-    public static boolean o2Boolean(Object obj) {
+    public static boolean obj2Boolean(Object obj) {
 
         if(obj==null)
         {
@@ -40,11 +40,11 @@ public class ObjectUtil {
     }
 
     //转成Byte
-    public static Byte o2Byte(Object obj) {
-        return o2Byte(obj, null);
+    public static Byte obj2Byte(Object obj) {
+        return obj2Byte(obj, null);
     }
 
-    public static Byte o2Byte(Object obj,Integer defNum) {
+    public static Byte obj2Byte(Object obj,Integer defNum) {
         Byte rt= (defNum==null)?null:defNum.byteValue();
         if(obj==null)
         {
@@ -59,11 +59,11 @@ public class ObjectUtil {
     }
 
     //转成Short
-    public static Short o2Short(Object obj) {
-        return o2Short(obj,null);
+    public static Short obj2Short(Object obj) {
+        return obj2Short(obj,null);
     }
 
-    public static Short o2Short(Object obj,Integer defNum) {
+    public static Short obj2Short(Object obj,Integer defNum) {
         Short rt= (defNum==null)?null:defNum.shortValue();
         if(obj==null)
         {
@@ -81,12 +81,12 @@ public class ObjectUtil {
     }
 
     //转成Integer
-    public static Integer o2Integer(Object obj) {
+    public static Integer obj2Integer(Object obj) {
 
-        return o2Integer(obj,null);
+        return obj2Integer(obj,null);
     }
 
-    public static Integer o2Integer(Object obj,Integer defNum) {
+    public static Integer obj2Integer(Object obj,Integer defNum) {
         Integer rt= defNum;
         if(obj==null)
         {
@@ -104,12 +104,12 @@ public class ObjectUtil {
     }
 
     //转成Long
-    public static Long o2Long(Object obj) {
+    public static Long obj2Long(Object obj) {
 
-        return o2Long(obj, null);
+        return obj2Long(obj, null);
     }
 
-    public static Long o2Long(Object obj,Long defNum) {
+    public static Long obj2Long(Object obj,Long defNum) {
         Long rt= defNum;
         if(obj==null)
         {
@@ -127,11 +127,11 @@ public class ObjectUtil {
     }
 
     //转成Float
-    public static Float o2Float(Object obj){
-        return o2Float(obj,null);
+    public static Float obj2Float(Object obj){
+        return obj2Float(obj,null);
     }
 
-    public static Float o2Float(Object obj,Integer defNum)
+    public static Float obj2Float(Object obj,Integer defNum)
     {
         Float rt= (defNum==null)?null:defNum.floatValue();
         if(obj==null)
@@ -147,11 +147,11 @@ public class ObjectUtil {
     }
 
     //转成Double
-    public static Double o2Double(Object obj){
-        return o2Double(obj, null);
+    public static Double obj2Double(Object obj){
+        return obj2Double(obj, null);
     }
 
-    public static Double o2Double(Object obj,Integer defNum) {
+    public static Double obj2Double(Object obj,Integer defNum) {
         Double rt= (defNum==null)?null:defNum.doubleValue();
         if(obj==null)
         {
@@ -166,11 +166,11 @@ public class ObjectUtil {
     }
 
     //转成BigDecimal
-    public static BigDecimal o2BigDecimal(Object obj)
+    public static BigDecimal obj2BigDecimal(Object obj)
     {
-        return o2BigDecimal(obj,null);
+        return obj2BigDecimal(obj,null);
     }
-    public static BigDecimal o2BigDecimal(Object obj,Integer defNum) {
+    public static BigDecimal obj2BigDecimal(Object obj,Integer defNum) {
         BigDecimal df= (defNum==null)?null:BigDecimal.valueOf(defNum.longValue());
         if(obj==null)
         {
@@ -195,7 +195,7 @@ public class ObjectUtil {
     }
 
     //转成Date
-    public static Date o2Date(Object obj) {
+    public static Date obj2Date(Object obj) {
         if(obj==null)
         {
             return null;
@@ -229,45 +229,45 @@ public class ObjectUtil {
     }
 
 
-    public static Object o2Data(Object obj ,Class clazz,Integer defNum)
+    public static Object obj2Data(Object obj ,Class clazz,Integer defNum)
     {
         if(clazz==String.class)
         {
-            return o2Str(obj);
+            return obj2Str(obj);
         }
         if(clazz==boolean.class || clazz==Boolean.class)
         {
-            boolean rt= o2Boolean(obj);
+            boolean rt= obj2Boolean(obj);
             return (clazz==boolean.class)?rt:Boolean.valueOf(rt);
         }
         if(clazz==int.class || clazz==Integer.class)
         {
-            return numberSerialize(o2Integer(obj,defNum),clazz);
+            return numberSerialize(obj2Integer(obj,defNum),clazz);
         }
         if(clazz==long.class || clazz==Long.class)
         {
             Long defLong = (defNum==null)?null:defNum.longValue();
-            return numberSerialize(o2Long(obj,defLong),clazz);
+            return numberSerialize(obj2Long(obj,defLong),clazz);
         }
         if(clazz==float.class || clazz==Float.class)
         {
-            return numberSerialize(o2Float(obj,defNum),clazz);
+            return numberSerialize(obj2Float(obj,defNum),clazz);
         }
         if(clazz==double.class || clazz==Double.class)
         {
-            return numberSerialize(o2Double(obj,defNum),clazz);
+            return numberSerialize(obj2Double(obj,defNum),clazz);
         }
         if(clazz==byte.class || clazz==Byte.class )
         {
-            return numberSerialize(o2Byte(obj,defNum),clazz);
+            return numberSerialize(obj2Byte(obj,defNum),clazz);
         }
         if(clazz==short.class || clazz==Short.class)
         {
-            return numberSerialize(o2Short(obj,defNum),clazz);
+            return numberSerialize(obj2Short(obj,defNum),clazz);
         }
         if(clazz==char.class || clazz==Character.class)
         {
-            Character rt= o2Char(obj);
+            Character rt= obj2Char(obj);
             if(clazz==char.class && rt==null)
             {
                 rt =zeroLong.toString().toCharArray()[0];
@@ -276,11 +276,11 @@ public class ObjectUtil {
         }
         if(clazz==Date.class)
         {
-            return o2Date(obj);
+            return obj2Date(obj);
         }
         if(clazz==BigDecimal.class)
         {
-            return o2BigDecimal(obj,defNum);
+            return obj2BigDecimal(obj,defNum);
         }
         return obj;
     }
