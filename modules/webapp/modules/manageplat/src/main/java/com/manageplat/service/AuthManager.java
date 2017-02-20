@@ -1,6 +1,5 @@
 package com.manageplat.service;
 
-import com.util.base.BlankUtil;
 import com.util.PropertiesLoader;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -111,7 +110,7 @@ public class AuthManager {
     public void assignAuth(String userName)
     {
         String menuIndexs = (authProp.get(userName)==null)?"":authProp.get(userName).toString();
-        if(BlankUtil.isBlank(menuIndexs))
+        if(StringUtils.isBlank(menuIndexs))
         {
             return;
         }
@@ -141,7 +140,7 @@ public class AuthManager {
 
 
             List<String> menuArry = menuMap.get(menuKeys[0]);
-            if(BlankUtil.isBlank(menuArry)){
+            if(menuArry==null){
                 menuArry = new ArrayList<String>();
                 menuMap.put(menuKeys[0], menuArry);
             }

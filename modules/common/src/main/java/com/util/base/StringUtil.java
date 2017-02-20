@@ -1,6 +1,5 @@
 package com.util.base;
 
-import com.util.base.BlankUtil;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -317,7 +316,7 @@ public class StringUtil {
      * @return HTMLEncode
      */
     public static String encode4Html(String value) {
-        if(BlankUtil.isBlank(value))
+        if(StringUtils.isBlank(value))
         {
             return "";
         }

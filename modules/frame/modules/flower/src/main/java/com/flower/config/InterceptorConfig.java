@@ -1,10 +1,10 @@
 package com.flower.config;
 
-import com.util.base.BlankUtil;
+import org.apache.commons.lang3.StringUtils;
 
 public class InterceptorConfig {
 	public InterceptorConfig(String pattern, String className, String excludes, String id){
-		if(BlankUtil.isBlank(id)){
+		if(StringUtils.isBlank(id)){
 			throw new InstantiationError("id must be specified for an interceptor, class = " + className);
 		}
 		this.pattern = pattern;

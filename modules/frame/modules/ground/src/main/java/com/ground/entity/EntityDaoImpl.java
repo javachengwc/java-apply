@@ -16,10 +16,9 @@ import com.ground.core.callback.IPreparedStatementSetter;
 import com.ground.core.datasource.DBEnv;
 import com.ground.entity.callback.*;
 import com.ground.exception.GroundException;
-import com.util.base.BlankUtil;
 import com.util.page.Page;
 import com.util.page.PageQuery;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.log4j.Logger;
 
@@ -46,8 +45,9 @@ public class EntityDaoImpl extends GenericDao implements IEntityDao
 	 */
 	private  <T> List<Object> getPkListVal(Class<T> entityClass,T entity) throws Exception{
 		Map<String, String> keyFieldStr = EntityFactory.getKeyFiledName(entityClass);
-		if(BlankUtil.isBlank(keyFieldStr) || keyFieldStr.size() == 0)
-			return null;
+		if(keyFieldStr==null || keyFieldStr.size() <= 0) {
+            return null;
+        }
 		List<Object> listVal = new LinkedList<Object>();
 		for(String fieldStr : keyFieldStr.keySet()){
 			String getMethodStr = "get" + StringUtils.capitalize(fieldStr);
@@ -330,11 +330,9 @@ public class EntityDaoImpl extends GenericDao implements IEntityDao
 	    
 	    String orderBy = page.getOrderBy();
 		String order = page.getOrder();
-		if (!BlankUtil.isBlank(orderBy)) {
-			if (!BlankUtil.isBlank(order)) {
-				
-				fragment  += " order by " + orderBy + " " + order;
-			}
+		if (!StringUtils.isBlank(orderBy) && !StringUtils.isBlank(order))
+        {
+            fragment  += " order by " + orderBy + " " + order;
 		}
 		int start =page.getStart();
 		int pageSize =page.getPageSize();
@@ -390,8 +388,9 @@ public class EntityDaoImpl extends GenericDao implements IEntityDao
 			}
 		}
 		String result =buf.toString();
-		if(BlankUtil.isBlank(result))
-			result="";
+		if(StringUtils.isBlank(result)) {
+            result = "";
+        }
 		return result;
 	}
 	/**

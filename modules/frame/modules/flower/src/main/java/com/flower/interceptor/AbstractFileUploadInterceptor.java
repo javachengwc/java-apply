@@ -19,7 +19,6 @@ import com.flower.DataFilter;
 import com.flower.invocation.ActionInvocation;
 import com.flower.multipart.IMultiPartRequest;
 import com.flower.multipart.MultipartRequest;
-import com.util.base.BlankUtil;
 
 
 /**
@@ -67,11 +66,11 @@ public abstract class AbstractFileUploadInterceptor implements Interceptor {
             // get the content type
             String[] contentType = multipartRequest.getContentType(inputName);
 
-            if (!BlankUtil.isBlank(contentType)) {
+            if (contentType!=null && contentType.length>0) {
                 // get the name of the file from the input tag
                 String[] fileName = multipartRequest.getFileNames(inputName);
 
-                if (!BlankUtil.isBlank(fileName)) {
+                if (fileName!=null && fileName.length>0) {
                     // get a File object for the uploaded File
                     File[] files = multipartRequest.getFile(inputName);
                     if (files != null && files.length > 0) {

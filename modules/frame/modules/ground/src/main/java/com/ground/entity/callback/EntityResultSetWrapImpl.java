@@ -13,10 +13,9 @@ import java.util.Map.Entry;
 import com.ground.core.callback.IResultSetExtractor;
 import com.ground.core.callback.IRowMapper;
 import com.ground.entity.EntityFactory;
-import com.util.base.BlankUtil;
 import com.util.TypeUtil;
 import com.util.date.SysDateTime;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.log4j.Logger;
 
@@ -74,11 +73,13 @@ public class EntityResultSetWrapImpl<T> implements IResultSetExtractor<T>,IRowMa
 				String name = rsmt.getColumnName(i);
 				Object value = rs.getObject(i);
 				String field =null;
-				if(columnMap!=null )
-					field = columnMap.get(name);
-				if(BlankUtil.isBlank(field))
-					continue;
-				if(value==null || BlankUtil.isBlank(value))
+				if(columnMap!=null ) {
+                    field = columnMap.get(name);
+                }
+				if(StringUtils.isBlank(field)) {
+                    continue;
+                }
+				if(value==null)
 				{
 					continue;
 				}

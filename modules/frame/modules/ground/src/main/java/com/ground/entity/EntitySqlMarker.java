@@ -9,7 +9,7 @@ import java.util.Map;
 import com.ground.condition.DBCondition;
 import com.ground.condition.UpdateSet;
 import com.ground.condition.WhereCondition;
-import com.util.base.BlankUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 
@@ -266,7 +266,7 @@ public class EntitySqlMarker
 	{
 		
 		String tableName =EntityFactory.getEntityTableName(dbCondition.table);
-		if(BlankUtil.isBlank(tableName))
+		if(StringUtils.isBlank(tableName))
 		{
 			throw new SQLException("EntitySqlMarker addSelectSqlAndWhere "+dbCondition.table+" relation table is null");
 		}
@@ -292,7 +292,7 @@ public class EntitySqlMarker
 		{
 			index++;
 			String cName = EntityFactory.getEntityColumnName(dbCondition.table,c.columnName );
-			if(BlankUtil.isBlank(cName))
+			if(StringUtils.isBlank(cName))
 			{
 				throw new SQLException("EntitySqlMarker addWhereSql "+dbCondition.table+" "+c.columnName+" relation column is null");
 			}
@@ -319,7 +319,7 @@ public class EntitySqlMarker
 		for(String group : groups)
 		{
 			String cName = EntityFactory.getEntityColumnName(dbCondition.table,group);
-			if(BlankUtil.isBlank(cName))
+			if(StringUtils.isBlank(cName))
 			{
 				throw new SQLException("EntitySqlMarker addGroupSql "+dbCondition.table+" "+group+" relation column is null");
 			}
@@ -341,7 +341,7 @@ public class EntitySqlMarker
 		{
 			String column = it.next();
 			String cName = EntityFactory.getEntityColumnName(dbCondition.table,column);
-			if(BlankUtil.isBlank(cName))
+			if(StringUtils.isBlank(cName))
 			{
 				throw new SQLException("EntitySqlMarker addOrderSql "+dbCondition.table+" "+column+" relation column is null");
 			}
@@ -370,7 +370,7 @@ public class EntitySqlMarker
 	{
 		
 		String tableName =EntityFactory.getEntityTableName(dbCondition.table);
-		if(BlankUtil.isBlank(tableName))
+		if(StringUtils.isBlank(tableName))
 		{
 			throw new SQLException("EntitySqlMarker addUpdateSqlAndWhere "+dbCondition.table+" relation table is null");
 		}
@@ -388,7 +388,7 @@ public class EntitySqlMarker
 		{
 			index++;
 			String cName = EntityFactory.getEntityColumnName(dbCondition.table,c.columnName );
-			if(BlankUtil.isBlank(cName))
+			if(StringUtils.isBlank(cName))
 			{
 				throw new SQLException("EntitySqlMarker addUpdateSetSql "+dbCondition.table+" "+c.columnName+" relation column is null");
 			}

@@ -1,7 +1,6 @@
 package com.solr.util;
 
-
-import com.util.base.BlankUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -73,7 +72,7 @@ public class SolrHelper
 		}
 		SolrQuery query = new SolrQuery();
 		query.setQuery(queryString.toString());
-		if(!BlankUtil.isBlank(sortField)){
+		if(!StringUtils.isBlank(sortField)){
 			query.addSortField(sortField, SolrQuery.ORDER.desc );
 		}
 		query.setStart(startIndex);
@@ -144,7 +143,7 @@ public class SolrHelper
 		SolrQuery query = new SolrQuery();
 		//query.setQuery(queryString.toString());
 		query.setQuery(searchCondition);
-		if(!BlankUtil.isBlank(sortField)){
+		if(!StringUtils.isBlank(sortField)){
 			query.addSortField(sortField, SolrQuery.ORDER.desc );
 		}
 		query.setStart(startIndex);

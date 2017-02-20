@@ -10,7 +10,7 @@ import java.util.List;
 
 import com.ground.core.callback.*;
 import com.ground.core.datasource.DBEnv;
-import com.util.base.BlankUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 public class GenericDBHelper {
@@ -388,7 +388,7 @@ public class GenericDBHelper {
 	
 	public static void assertKeyNotNull(String key)
 	{
-		if(BlankUtil.isBlank(key))
+		if(StringUtils.isBlank(key))
 		{
 			throw new IllegalArgumentException("the db key cannot be null");
 		}

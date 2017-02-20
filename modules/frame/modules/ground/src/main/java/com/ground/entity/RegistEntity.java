@@ -1,7 +1,7 @@
 package com.ground.entity;
 
-import com.util.base.BlankUtil;
 import com.util.lang.PackageUtil;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -13,8 +13,9 @@ public class RegistEntity
 
 	public static void registPakageEntity(String scanPackage)
 	{
-		if(BlankUtil.isBlank(scanPackage))
-			return;
+		if(StringUtils.isBlank(scanPackage)) {
+            return;
+        }
 		String []perPackage = scanPackage.split(",");
 		Set<String> clazzs =new HashSet<String>();
 		for(String pkg:perPackage)

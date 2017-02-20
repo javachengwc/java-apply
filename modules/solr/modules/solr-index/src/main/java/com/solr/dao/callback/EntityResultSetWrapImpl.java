@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.Map;
 
-import com.util.base.BlankUtil;
 import com.util.date.SysDateTime;
 import com.solr.util.TypeUtils;
 import org.apache.commons.lang3.ClassUtils;
@@ -64,14 +63,15 @@ public class EntityResultSetWrapImpl<T> implements ResultSetExtractor<T>,RowMapp
 				if(columnMap!=null )
 				{
 					field = columnMap.get(name);
-					if(BlankUtil.isBlank(field))
+					if(StringUtils.isBlank(field))
 					{
 						field = columnMap.get(StringUtils.lowerCase(name));
 					}
 				}
-				if(BlankUtil.isBlank(field))
-					continue;
-				if(value==null || BlankUtil.isBlank(value))
+				if(StringUtils.isBlank(field)) {
+                    continue;
+                }
+				if(value==null)
 				{
 					continue;
 				}

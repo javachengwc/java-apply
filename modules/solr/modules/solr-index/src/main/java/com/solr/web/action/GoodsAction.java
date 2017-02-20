@@ -6,9 +6,8 @@ import com.solr.service.business.GoodsService;
 import com.solr.service.solr.SolrSchemaConfig;
 import com.solr.web.action.response.ExceptionResponse;
 import com.solr.web.action.response.Return;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-
-import com.util.base.BlankUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -84,11 +83,11 @@ public class GoodsAction {
 	         return new Return(-1,"参数错误");
 		 }
 		 //参数处理
-		 if(BlankUtil.isBlank(allocateCity) || ",0".equals(allocateCity) || ",0,".equals(allocateCity))
+		 if(StringUtils.isBlank(allocateCity) || ",0".equals(allocateCity) || ",0,".equals(allocateCity))
 		 {
 			 allocateCity="0";
 		 }
-		 if(BlankUtil.isBlank(spotCity) || ",0".equals(spotCity) || ",0,".equals(spotCity))
+		 if(StringUtils.isBlank(spotCity) || ",0".equals(spotCity) || ",0,".equals(spotCity))
 		 {
 			 spotCity="0";
 		 }

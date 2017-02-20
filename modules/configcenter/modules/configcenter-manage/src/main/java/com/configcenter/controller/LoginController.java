@@ -7,7 +7,6 @@ import com.configcenter.service.LogManager;
 import com.configcenter.service.SessionManager;
 import com.configcenter.service.rbac.UserService;
 import com.configcenter.vo.OnlineUser;
-import com.util.base.BlankUtil;
 import com.util.date.DateUtil;
 import com.util.encrypt.EncodeUtil;
 import com.util.http.UrlUtil;
@@ -94,7 +93,7 @@ public class LoginController {
     private void saveToSession(HttpSession session,User user)
     {
         String sessionKey = Constant.USER_SESSION_ACCOUNT;
-        if(BlankUtil.isBlank(session.getAttribute(sessionKey)))
+        if(session.getAttribute(sessionKey)==null)
         {
             session.setAttribute(sessionKey, user.getAccount());
             OnlineUser onlineUser =transOnline(user);

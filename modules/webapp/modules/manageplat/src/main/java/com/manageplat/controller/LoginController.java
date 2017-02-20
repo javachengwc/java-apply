@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.manageplat.service.AuthManager;
-import com.util.base.BlankUtil;
 import com.util.PropertiesLoader;
 import com.util.web.HttpRenderUtil;
 import com.util.web.RequestUtil;
@@ -75,7 +74,7 @@ public class LoginController {
     private void saveToSession(HttpSession session,String userName)
     {
         String sessionKey = USER_SESSION_ID;
-        if(BlankUtil.isBlank(session.getAttribute(sessionKey)))
+        if(session.getAttribute(sessionKey)==null)
         {
             session.setAttribute(sessionKey, userName);
         }
@@ -89,7 +88,7 @@ public class LoginController {
             return false;
         }
         Object pwd = userinfo.get(userName);
-        if(BlankUtil.isBlank(pwd))
+        if(pwd==null)
         {
             return false;
         }
