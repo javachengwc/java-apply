@@ -1,6 +1,6 @@
 package com.captcha.service;
 
-import com.util.enh.RandomUtil;
+import com.util.base.RandomUtil;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
