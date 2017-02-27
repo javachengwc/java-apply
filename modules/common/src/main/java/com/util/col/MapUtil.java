@@ -1,5 +1,6 @@
 package com.util.col;
 
+import com.util.base.ObjectUtil;
 import com.util.lang.ClassUtil;
 import com.util.base.NumberUtil;
 import com.util.lang.ReflectionUtil;
@@ -494,18 +495,8 @@ public class MapUtil {
         {
             return null;
         }
-        String objStr = (map.get(key)==null)?"":map.get(key).toString();
-        Integer rt= defNum;
-        if(!StringUtils.isBlank(objStr))
-        {
-            if(NumberUtil.isFloatNumeric(objStr))
-            {
-                rt =new Double(Double.parseDouble(objStr)).intValue();
-            }else {
-                rt = Integer.parseInt(objStr);
-            }
-        }
-        return rt;
+        Object obj= map.get(key);
+        return ObjectUtil.obj2Integer(obj,defNum);
     }
 
     public static <K,V>  Long extractLong(Map<K,V> map ,K key)
@@ -519,18 +510,9 @@ public class MapUtil {
         {
             return null;
         }
-        String objStr = (map.get(key)==null)?"":map.get(key).toString();
-        Long rt= (defNum==null)?null:defNum.longValue();
-        if(!org.apache.commons.lang.StringUtils.isBlank(objStr))
-        {
-            if(NumberUtil.isFloatNumeric(objStr))
-            {
-                rt =new Double(Double.parseDouble(objStr)).longValue();
-            }else {
-                rt = Long.parseLong(objStr);
-            }
-        }
-        return rt;
+        Object obj= map.get(key);
+        Long defLong = (defNum==null)?null:defNum.longValue();
+        return ObjectUtil.obj2Long(obj,defLong);
     }
 
     public static  <K,V>  String extractStr(Map<K,V> map ,K key)
@@ -549,11 +531,8 @@ public class MapUtil {
         {
             return null;
         }
-        Timestamp dateTime = ((map.get(key) == null) ? null : (Timestamp) map.get(key));
-        if (dateTime != null) {
-            return new Date(dateTime.getTime());
-        }
-        return null;
+        Object obj =map.get(key);
+        return ObjectUtil.obj2Date(obj);
     }
 
     public static <K,V>  Date extractDate(Map<K,V> map ,K key)
@@ -562,11 +541,8 @@ public class MapUtil {
         {
             return null;
         }
-        java.util.Date date = (map.get(key) == null ? null : (java.util.Date) map.get(key));
-        if (date != null) {
-            return new Date(date.getTime());
-        }
-        return null;
+        Object obj =map.get(key);
+        return ObjectUtil.obj2Date(obj);
     }
 
     public static <K,V> Object extractData(Map<K,V> map ,K key,Class clazz)
@@ -581,134 +557,8 @@ public class MapUtil {
         {
             return null;
         }
-        String objStr = (map.get(key)==null)?"":map.get(key).toString();
-
-        if(clazz==String.class)
-        {
-            return objStr;
-        }
-        if(clazz==int.class || clazz==Integer.class)
-        {
-            Integer rt= defNum;
-            if(!StringUtils.isBlank(objStr))
-            {
-                if(NumberUtil.isFloatNumeric(objStr))
-                {
-                    rt =new Double(Double.parseDouble(objStr)).intValue();
-                }else {
-                    rt = Integer.parseInt(objStr);
-                }
-            }
-            return numberSerialize(rt,clazz);
-        }
-        if(clazz==long.class || clazz==Long.class)
-        {
-            Long rt=(defNum==null)?null:defNum.longValue();
-            if(!StringUtils.isBlank(objStr))
-            {
-                if(NumberUtil.isFloatNumeric(objStr))
-                {
-                    rt =new Double(Double.parseDouble(objStr)).longValue();
-                }else {
-                    rt = Long.parseLong(objStr);
-                }
-            }
-            return numberSerialize(rt,clazz);
-        }
-        if(clazz==float.class || clazz==Float.class)
-        {
-            Float rt= (defNum==null)?null:defNum.floatValue();
-            if(!StringUtils.isBlank(objStr))
-            {
-                rt=Float.parseFloat(objStr);
-            }
-            return numberSerialize(rt,clazz);
-        }
-        if(clazz==double.class || clazz==Double.class)
-        {
-            Double rt= (defNum==null)?null:defNum.doubleValue();
-            if(!StringUtils.isBlank(objStr))
-            {
-                rt=Double.parseDouble(objStr);
-            }
-            return numberSerialize(rt,clazz);
-        }
-
-        if(clazz==byte.class || clazz==Byte.class )
-        {
-            Byte rt =(defNum==null)?null:defNum.byteValue();
-            if(!StringUtils.isBlank(objStr))
-            {
-                rt=Byte.parseByte(objStr);
-            }
-            return numberSerialize(rt,clazz);
-        }
-        if(clazz==short.class || clazz==Short.class)
-        {
-            Short rt= (defNum==null)?null:defNum.shortValue();
-            if(!StringUtils.isBlank(objStr))
-            {
-                if(NumberUtil.isFloatNumeric(objStr))
-                {
-                    rt =new Double(Double.parseDouble(objStr)).shortValue();
-                }else {
-                    rt =Short.parseShort(objStr);
-                }
-            }
-            return numberSerialize(rt,clazz);
-        }
-        if(clazz==char.class || clazz==Character.class)
-        {
-            Character rt= StringUtils.isBlank(objStr)?null:objStr.toCharArray()[0];
-            if(clazz==char.class && rt==null)
-            {
-                rt =zeroLong.toString().toCharArray()[0];
-            }
-            return rt;
-        }
-        if(clazz==boolean.class || clazz==Boolean.class)
-        {
-            Boolean rt = StringUtils.isBlank(objStr)?null:Boolean.parseBoolean(objStr);
-            if(clazz==boolean.class && rt==null)
-            {
-                rt =false;
-            }
-            return rt;
-        }
-        return objStr;
-    }
-
-    public static Object numberSerialize(Number number ,Class clazz)
-    {
-        if(number!=null)
-        {
-            return number;
-        }
-        if(clazz==int.class)
-        {
-            return zeroLong.intValue();
-        }
-        if(clazz==byte.class)
-        {
-            return zeroLong.byteValue();
-        }
-        if(clazz==short.class)
-        {
-            return zeroLong.shortValue();
-        }
-        if(clazz==long.class)
-        {
-            return zeroLong.longValue();
-        }
-        if(clazz==float.class)
-        {
-            return zeroLong.floatValue();
-        }
-        if(clazz==double.class)
-        {
-            return zeroLong.doubleValue();
-        }
-        return number;
+        Object obj =map.get(key);
+        return ObjectUtil.obj2Data(obj,clazz,defNum);
     }
 
     public static <T> T map2Bean(Map<String,Object> map,Class<T> clz)

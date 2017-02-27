@@ -26,6 +26,8 @@ public class StringMain {
 
     public static void main(String args []) throws Exception
 	{
+        System.out.println("a,".split(",").length);
+
         System.out.println(Boolean.valueOf("false"));
 
         System.out.println("-------------------");
