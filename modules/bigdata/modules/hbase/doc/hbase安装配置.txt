@@ -41,6 +41,7 @@ c,配置相关的文件
     <property>
         <name>hbase.rootdir</name>
         <value>hdfs://hadoopa:9000/hbase</value>
+        <!--此处的值是 hadoop中配置的${fs.defaultFS}值再追加上/hbase -->
     </property>
     <property>
         <name>hbase.cluster.distributed</name>
