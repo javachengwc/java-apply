@@ -10,14 +10,240 @@ hdfs ha特性即解决这个问题，它通过在集群中同时运行2个(redun
 任何时刻，只有一个Active Namenode是非常重要的，否则将会导致集群操作的混乱，两个Namenode将会分别有两种不同的数据状态，可能会导致数据丢失或者状态异常，此情况称为“split-brain”(脑裂)。
 对于JNS(Journal Nodes)而言，任何时候只允许一个Namenode作为writer,在failover期间，原来的Standby Node将会接管Active的所有职能，并负责向JNS写入日志记录。
 
-为了构建HA集群架构，需要准备如下资源：
-1,Namenode机器：两台配置对等的物理机器，它们分别运行Active和Standby Node。
-2,JouralNode机器：运行JouralNodes的机器。JouralNode守护进程相当的轻量级，它们可以和hadoop的其他进程部署在一起，比如Namenode,ResourceManager等。
+为了构建HA集群架构，需要两台配置对等的Namenode机器，它们分别运行Active和Standby Node。
+JouralNode服务进程其实是随dataNode服务启动的时候一并启动的，不需要额外单独机器运行。
 不过为了形成多数派(majority)，至少需要3个JouralNodes，因为edits操作必须在多数派上写入成功。当然JNS的个数可以 > 3，且通常为奇数(3,5,7)，
 这样可以更好的容错和形成多数派,如果运行了N个JNS，那么它可以允许(N-1)/2个JNS进程失效并且不影响工作。
 此外，在HA集群中，standby namenode还会对namespace进行checkpoint操作，因此，不需要在HA集群中运行SecondaryNamenode、CheckpointNode或者BackupNode。如果运行，将会出错(不允许)。
+---------------------------------------------------------------------------------------
+hadoop集群搭建参考 hadoop安装配置.txt
+zookeeper集群搭建参考 zookeeper配置安装.txt
+集群环境:centos6.6-64位,hadoop2.7.2-64位,jdk1.7-64位
 
-hdfs ha的部署:
+各机器情况以及启动的服务:
+192.168.27.129   hadoopa
+192.168.27.130   hadoopb
+192.168.27.131   hadoopc
+192.168.27.132   hadoopd
+---------------------------------
+      进程 	                           hadoopa 	 hadoopb   hadoopc   hadoopd
+NN 	  NameNode 	                       是        不是      不是      是
+JN 	  JournalNode 	                   是 	     是        不是 	 是
+DN 	  DateNode                         是 	     是        是        是
+      NodeManager 	                   是 	     是 	   是 	     是
+      Zookeeper 	                   是 	     是 	   是 	     不是
+      ResourceManager 	               是 	     不是 	   不是 	 不是
+ZKFC  DFSZKFailoverController 	       是 	     不是      不是      是
+----------------------------------------------------------------------------------------
+hadoop ha的部署:
+1,hadoop配置各节点配置
+a,core-site.xml配置[4个节点配置等同]
+vim /data/hadoop/hadoop-2.7.2/etc/hadoop/core-site.xml
+    <configuration>
+          <property>
+              <name>fs.defaultFS</name>
+              <value>hdfs://nds</value>
+          </property>
+          <property>
+              <name>hadoop.tmp.dir</name>
+              <value>file:/data/hadoop/tmp</value>
+          </property>
+          <property>
+              <name>io.file.buffer.size</name>
+              <value>131702</value>
+          </property>
+          <property>
+              <name>ha.zookeeper.quorum</name>
+              <value>hadoopa:2181,hadoopb:2181,hadoopc:2181</value>
+          </property>
+          <property>
+              <name>io.compression.codecs</name>
+              <value>org.apache.hadoop.io.compress.GzipCodec,org.apache.hadoop.io.compress.DefaultCodec,com.hadoop.compression.lzo.LzoCodec,com.hadoop.compression.lzo.LzopCodec,org.apache.hadoop.io.compress.BZip2Codec</value>
+          </property>
+          <property>
+              <name>io.compression.codec.lzo.class</name>
+              <value>com.hadoop.compression.lzo.LzoCodec</value>
+          </property>
+          <property>
+              <name>hadoop.proxyuser.root.hosts</name>
+              <value>*</value>
+          </property>
+          <property>
+              <name>hadoop.proxyuser.root.groups</name>
+              <value>*</value>
+          </property>
+    </configuration>
+
+b,hdfs-site.xml配置[4个节点配置等同]
+vim /data/hadoop/hadoop-2.7.2/etc/hadoop/hdfs-site.xml
+    <configuration>
+        <property>
+            <name>dfs.namenode.name.dir</name>
+            <value>file:/data/hadoop/hdfs/name</value>
+        </property>
+        <property>
+            <name>dfs.datanode.data.dir</name>
+            <value>file:/data/hadoop/hdfs/data</value>
+        </property>
+        <property>
+            <name>dfs.replication</name>
+            <value>2</value>
+        </property>
+        <property>
+            <name>dfs.webhdfs.enabled</name>
+            <value>true</value>
+        </property>
+        <property>
+            <name>dfs.nameservices</name>
+            <value>nds</value>
+        </property>
+        <property>
+            <name>dfs.ha.namenodes.nds</name>
+            <value>nn1,nn2</value>
+        </property>
+        <property>
+            <name>dfs.namenode.rpc-address.nds.nn1</name>
+            <value>hadoopa:9000</value>
+        </property>
+        <property>
+            <name>dfs.namenode.rpc-address.nds.nn2</name>
+            <value>hadoopd:9000</value>
+        </property>
+        <property>
+            <name>dfs.namenode.http-address.nds.nn1</name>
+            <value>hadoopa:50070</value>
+        </property>
+        <property>
+            <name>dfs.namenode.http-address.nds.nn2</name>
+            <value>hadoopd:50070</value>
+        </property>
+        <property>
+            <name>dfs.namenode.shared.edits.dir</name>
+            <value>qjournal://hadoopa:8485;hadoopb:8485;hadoopd:8485/nds</value>
+        </property>
+        <property>
+            <name>dfs.journalnode.edits.dir</name>
+            <value>/data/hadoop/tmp/journal</value>
+        </property>
+        <property>
+            <name>dfs.ha.automatic-failover.enabled</name>
+            <value>true</value>
+        </property>
+        <property>
+            <name>dfs.client.failover.proxy.provider.nds</name>
+            <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider</value>
+        </property>
+        <property>
+            <name>dfs.ha.fencing.methods</name>
+            <value>sshfence</value>
+        </property>
+        <property>
+            <name>dfs.ha.fencing.ssh.private-key-files</name>
+            <value>/root/.ssh/id_rsa</value>
+        </property>
+    </configuration>
+
+c,yarn-site.xml配置[4个节点配置等同]
+vim /data/hadoop/hadoop-2.7.2/etc/hadoop/yarn-site.xml
+    <configuration>
+          <property>
+              <name>yarn.nodemanager.aux-services</name>
+              <value>mapreduce_shuffle</value>
+          </property>
+          <property>
+              <name>yarn.nodemanager.auxservices.mapreduce.shuffle.class</name>
+              <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+          </property>
+          <property>
+              <name>yarn.resourcemanager.hostname</name>
+              <value>hadoopa</value>
+          </property>
+          <property>
+              <name>yarn.nodemanager.resource.memory-mb</name>
+              <value>2000</value>
+          </property>
+          <property>
+              <name>yarn.nodemanager.resource.cpu-vcores</name>
+              <value>1</value>
+          </property>
+    </configuration>
+
+d,mapred-site.xml配置[4个节点配置等同]
+vim /data/hadoop/hadoop-2.7.2/etc/hadoop/mapred-site.xml
+    <configuration>
+        <property>
+            <name>mapreduce.framework.name</name>
+            <value>yarn</value>
+        </property>
+        <property>
+            <name>mapred.compress.map.output</name>
+            <value>true</value>
+        </property>
+        <property>
+            <name>mapred.map.output.compression.codec</name>
+            <value>com.hadoop.compression.lzo.LzoCodec</value>
+        </property>
+        <property>
+            <name>mapred.child.env</name>
+            <value>LD_LIBRARY_PATH=/usr/local/lzo/lib</value>
+        </property>
+    </configuration>
+
+e,slaves配置[4个节点配置等同]
+vim /data/hadoop/hadoop-2.7.2/etc/hadoop/slaves配置
+    hadoopa
+    hadoopb
+    hadoopc
+    hadoopd
+
+2,启动hadoop-ha过程
+a.启动Zookeeper集群
+    分别在hadoopa,hadoopb,hadoopc机器上zookeeper目录启动zookeeper
+    $ZOOKEEPER_HOME/bin/zkServer.sh start
+b,初始化hadoop ha在Zookeeper集群上的相应节点
+    在hadoopa节点上执行 hdfs zkfc -formatZK
+    执行后在zookeeper中存在ls /hadoop-ha/nds表示初始化成功
+c,启动JournalNode
+    分别在hadoopa,hadoopb,hadoopd节点上启动JournalNode
+    $HADOOP_HOME/sbin/hadoop-daemon.sh start journalnode
+d,格式化集群上的一个NameNode并启动
+     在hadoopa节点上格式化并启动nameNode
+     hdfs namenode -format
+     $HADOOP_HOME/sbin/hadoop-daemon.sh start namenode
+e,同步主NameNode数据到备用NameNode上并启动备用NameNode
+     在hadoopd节点上执行
+     hdfs namenode -bootstrapStandby
+     $HADOOP_HOME/sbin/hadoop-daemon.sh start namenode
+     如果同步不成功，可直接拷贝主NameNode的${dfs.namenode.name.dir},{hadoop.tmp.dir}到备NameNode相应目录
+f,启动hadoop集群DataNode
+     在hadoopa节点上执行
+     $HADOOP_HOME/sbin/hadoop-daemons.sh start datanode
+     执行后，集群各节点的dataNode应该都被启动起来了
+g,启动hadoop集群Yarn
+     在hadoopa节点下执行
+     $HADOOP_HOME/sbin/start-yarn.sh
+     执行后，hadoopa节点下ResourceManager被启动，集群各节点的NodeManager应该都被启动
+h,启动ZKFC
+     分别在hadoopa,hadoopd节点下执行
+     HADOOP_HOME/sbin/hadoop-daemon.sh start zkfc
+     执行后,DFSZKFailoverController进程被启动
+至此,hadoop-ha高可用集群第一次启动完成。
+在后面启动集群时候，就不需要如上步骤来启动集群了，
+按照一般的集群启动方式来启动就可以了，即直接执行HADOOP_HOME/sbin/start-all.sh，也可以分开sbin/start-dfs.sh、sbin/start-yarn.sh就行.
+
+3,验证hadoop-ha集群
+a,web访问集群情况
+   http://hadoopa:8088
+   可查看集群状态
+b,web访问NameNode状态
+  http://hadoopa:50070，http://hadoopd:50070
+  页面分别显示有
+    Overview 'hadoopa:9000' (active)   ---表示主nameNode
+    Overview 'hadoopd:9000' (standby)  ---表示备nameNode
+c,杀掉nameNode主节点中的nameNode进程，再web访问之前是备nameNode的后台页面，查看nameNode状态是否已经主备切换
+  在hadoopa节点中  kill -9 nameNode进程id
+  然后访问备namenode后台http://hadoopd:50070
+  页面上显示 Overview 'hadoopd:9000' (active)  ---表示已经切换成主nameNode了
 
 ------------------------------------------------------------------------------------------
 

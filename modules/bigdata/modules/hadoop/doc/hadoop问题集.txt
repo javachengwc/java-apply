@@ -29,4 +29,16 @@ Invalid resource request, requested memory < 0, or requested memory > max config
     <value>2000</value>
 </property>
 
+3,NameNode多次Format后DataNode无法启动
+NameNode格式化两次后，DataNode无法启动，查看日志，报错如下:
+FATAL org.apache.hadoop.hdfs.server.datanode.DataNode: Initialization failed for Block pool <registering> (Datanode Uuid unassigned) service to hadoopd/192.168.27.132:9000. Exiting.
+java.io.IOException: Cluster IDs not matched: dn cid=CID-addc4db4-e939-4b85-909b-7ee1b1268d9a but ns cid=CID-186a2413-e0bf-4a69-a32e-dab33d5cda5f; bpid=BP-717260266-192.168.27.129-1478511561748
+        at org.apache.hadoop.hdfs.server.datanode.DataNode.setClusterId(DataNode.java:717)
+从报错中可以看到 dn cid=CID-addc4db4-e939-4b85-909b-7ee1b1268d9a but ns cid=CID-186a2413-e0bf-4a69-a32e-dab33d5cda5f
+解决方法：修改hadoop集群中这两个Cluster ID的值使其一致。
+NameNode的Cluster ID是${dfs.namenode.name.dir}/current/VERSION文件中的值
+DataNode的Cluster ID是${dfs.datanode.data.dir}/current/VERSION文件中的值
+将这两个ClusterID修改成同一个值, 可以将DataNode的Cluster ID修改成NameNode的Cluster ID,
+也可以把NameNode的Cluster ID修改成DataNode的Cluster ID，NameNode个数有限，DataNode数量较多，修改NameNode端工作少一些。
+
 ----------------------------------------------------------------------------
