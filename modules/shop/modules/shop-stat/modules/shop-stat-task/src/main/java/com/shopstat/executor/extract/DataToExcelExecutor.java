@@ -1,16 +1,7 @@
 package com.shopstat.executor.extract;
 
 import com.excel.ExcelUtil;
-import com.shopstat.dao.ext.aftersale.SafeguardStatDao;
 import com.shopstat.executor.IExecutor;
-import com.shopstat.model.pojo.StatSafeguard;
-import com.shopstat.model.vo.stat.Dimen;
-import com.shopstat.model.vo.stat.Norm;
-import com.shopstat.model.vo.stat.Stat;
-import com.shopstat.util.DateTimeUtil;
-import com.shopstat.util.StatTotalUtil;
-import com.util.base.RandomUtil;
-import com.util.date.DateUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
