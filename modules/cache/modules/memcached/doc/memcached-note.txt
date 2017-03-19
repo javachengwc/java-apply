@@ -15,7 +15,7 @@ memcached -d -m 512  -u root -l 127.0.0.1 -p 11211 -c 512 -P /usr/local/memcache
  -d stop|shutdown 关闭正在运行的memcached服务
  -d install 安装memcached服务
  -d uninstall 卸载memcached服务
- -M 内存耗尽时返回错误，而不是删除项
+ -M 内存耗尽时返回错误，而不是LRU分配空间
  -f 块大小增长因子，默认是1.25
  -n 最小分配空间，key+value+flags默认是48
  memcache 启动之后，可以通过telnet连接memcache，进行简单操作管理
@@ -61,5 +61,20 @@ stats                              ---查看状态
     bytes_written 	                  总发送字节数（结果字节数）
     limit_maxbytes 	                  分配给memcache的内存大小（字节）
     threads 	                      当前线程数
+查看memcached的使用情况，还可用memcached-tool.pl工具
+memcached-tool 主机名:端口
+获得的信息类似如下：
+  #  Item_Size   Max_age  1MB_pages Count   Full?
+  1     100 B  133565 s    1215    52296     yes
+  2     125 B  135679 s     752    39321     yes
+  3     150 B  133957 s     333    27652     yes
+各列的含义为：
+列 	             含义
+# 	             slab class编号
+Item_Size 	     chunk大小
+Max_age 	     LRU内最旧的记录的生存时间
+1MB_pages 	     分配给slab的页数
+Count 	         Slab内的记录数
+Full? 	         Slab内是否含有空闲chunk
 
 -----------------------------------------------------------------------------
