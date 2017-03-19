@@ -12,7 +12,8 @@ public class SystemMain {
         String path = System.getProperty("user.home");
         String sp = System.getProperty("path.separator");
         String fp =File.separator;
-
         System.out.println(path+" "+sp+" "+fp);
+
+        System.out.println(Number.class.isAssignableFrom(Integer.class));
     }
 }
