@@ -1,4 +1,4 @@
-package com.cache.memcached.demo;
+package com.cache.xmlemcached;
 
 import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.MemcachedClientBuilder;
@@ -11,6 +11,9 @@ import net.rubyeye.xmemcached.utils.AddrUtil;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
+/**
+ * xmemcached api的应用详见captcha模块，此模块对验证码是用xmemcached api访问memcached服务器存取的
+ */
 public class MemCachePrg {
 
 	public static void main(String[] args) throws IOException, MemcachedException, InterruptedException, TimeoutException {
