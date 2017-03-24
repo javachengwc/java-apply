@@ -97,6 +97,12 @@ join act c on b.act_id=c.act_id
 set a.discount=if(b.privilege_price<>0,b.privilege_price,0)
 where c.is_finished=0
 
+update a
+left join b on a.id=b.aid
+left join c on  a.id=c.aid
+set a.vlu=if(b.vlu is null,0,b.vlu)+if(c.vlu is null,0,c.vlu)
+where a.id in (1,2,3)
+
 ------delete 操作------
 
 -----mysql连表删数据
