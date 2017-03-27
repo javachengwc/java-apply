@@ -14,6 +14,13 @@ ep:  # visudo
      aa   ALL=(ALL)       ALL               ---给aa用户赋予sudo上所有权限,第一次sudo以及隔一段时间失效后需要输入自己帐号密码。
      bb     ALL=(ALL)     NOPASSWD: ALL     ---给bb用户赋予sudo上所有权限,且不需要输入密码。
 
----------
+---------cpu
+cat /proc/cpuinfo                               ---查看cpu相关信息
+cat /proc/cpuinfo |grep "processor"|wc -l       ---查看逻辑cpu个数(多少核)
+cat /proc/cpuinfo |grep "physical id" |wc -l    ---同上
+getconf LONG_BIT                                ---查看cpu运行在多少位下
+cat /proc/cpuinfo | grep flags | grep ' lm '|wc -l
+#结果等于24，说明24个逻辑CPU都支持64位运算， lm指long mode, 支持lm则是64bit
+                                                ------查看CPU是否支持64位运算
 
 ---------------------------------------------------------
