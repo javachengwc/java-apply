@@ -41,6 +41,7 @@ public class StringMain {
 		boolean notDo=true;
 
         String keykey="2|_|1010|_|1|_|3|_|5";
+        //keykey.intern();
 
         int index1= keykey.indexOf("|_|",  keykey.indexOf("|_|")+1);
 
