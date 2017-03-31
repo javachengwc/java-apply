@@ -1,0 +1,33 @@
+--------------------------mybatis缓存-------------------------
+MyBatis缓存分为一级缓存和二级缓存
+MyBatis的一级缓存指的是在一个Session域内,session未关闭的时候执行的查询会根据sql为key被缓存,修改任何参数的值都会导致缓存失效。
+如果集成了spring,是无法使用mybatis的一级缓存,也就是说mybatis的一级缓存在spring中是没有作用的。
+集成spring中，SqlSessionDaoSupport内部sqlSession的实现是使用动态代理实现的,这个动态代理sqlSessionProxy使用一个模板方法封装了select()等操作,
+每一次select()查询都会自动先执行openSession(),执行完后调用close()方法。这就导致查询用不上MyBatis的一级缓存。
+
+二级缓存就是global caching,它超出session范围之外,可以被所有sqlSession共享,开启它只需要在mybatis的配置文件配置settings
+<setting name="cacheEnabled" value="true"/>
+以及在相应的Mapper文件里开启缓存的设置
+<mapper namespace="com.manageplat.dao.job.XXDao">
+    <cache
+        eviction="FIFO"
+        flushInterval="6000"
+        size="128"
+        readOnly="true" />
+</mapper>
+global caching的作用域是针对Mapper的Namespace而言的,就是说只在有在这个Namespace内的查询才能共享这个cache。
+
+使用二级缓存注意事项
+1. 只能在单表单空间的表上使用二级缓存
+   不只是要保证这个表在整个系统中只有单表操作，而且和该表有关的全部操作必须全部在一个namespace下。
+2. 在可以保证查询远远大于insert,update,delete操作的情况下使用缓存
+
+针对一个表的某些操作不在他独立的namespace下进行。
+例如在UserMapper.xml中有大多数针对user表的操作。但还有一个XXXMapper.xml中，有针对user单表的操作。
+会导致user在两个命名空间下的数据不一致。如果在UserMapper.xml中做了刷新缓存的操作，
+在XXXMapper.xml中缓存仍然有效，如果有针对user的单表查询，使用缓存的结果可能会不正确。
+
+多表操作一定不能使用缓存,原因同上，因为不止一个namespace中对表进行了查询或增改删操作。
+综上，实际项目中，MyBatis二级缓存几乎莫用。
+
+--------------------------------------------------------------
