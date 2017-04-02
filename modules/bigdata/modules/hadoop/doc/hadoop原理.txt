@@ -1,0 +1,190 @@
+---------------------------------hadoop运行原理------------------------------------------
+Hadoop是一个开源的可运行于大规模集群上的分布式并行编程框架，其最核心的设计包括：MapReduce和HDFS。
+基于 Hadoop,可以轻松地编写可处理海量数据的分布式并行程序，并将其运行于由成百上千个结点组成的大规模计算机集群上。
+基于MapReduce计算模型编写分布式并行程序,主要工作就是设计实现Map和Reduce类，其它的并行编程中的种种复杂问题，
+如分布式存储，工作调度，负载平衡，容错处理，网络通信等，均由 MapReduce框架和HDFS文件系统负责处理。
+
+HDFS存储的机制
+HDFS是建立在Linux文件系统之上的一个虚拟分布式文件系统，它由一个管理节点( NameNode )和N个数据节点( DataNode )组成，每个节点均是一台普通的计算机。
+在使用上同单机上的文件系统非常类似，一样可以建目录，创建，复制，删除文件，查看文件内容等。
+但其底层实现上是把文件切割成Block（块），然后这些Block分散地存储于不同的DataNode上，每个Block还可以复制数份存储于不同的 DataNode上，达到容错容灾之目的。
+NameNode则是HDFS的核心，它通过维护一些数据结构，记录了每一个文件被切割成了多少个Block，这些Block可以从哪些 DataNode中获得，各个DataNode的状态等重要信息。
+HDFS的数据块
+每个磁盘都有默认的数据块大小,这是磁盘进行读写的基本单位.构建于单个磁盘之上的文件系统通过磁盘块来管理该文件系统中的块.该文件系统中的块一般为磁盘块的整数倍。
+磁盘块一般为512字节.HDFS也有块的概念,默认为64MB(一个map处理的数据大小)。HDFS上的文件也被划分为块大小的多个分块,与其他文件系统不同的是,HDFS中小于一个块大小的文件不会占据整个块的空间。
+任务粒度－数据切片（Splits）
+把原始大数据集切割成小数据集时，通常让小数据集小于或等于HDFS中一个Block的大小(缺省是64M)，这样能够保证一个小数据集位于一台计算机上，便于本地计算。
+有M个小数据集待处理，就启动M个Map任务，注意这M个Map任务分布于N台计算机上并行运行，Reduce任务的数量R则可由用户指定。
+
+MapReduce原理
+MapReduce框架的核心步骤主要分两部分：Map和Reduce。功能是按一定的映射规则将输入的 <key, value>对转换成另一个或一批 <key, value>对输出。
+当你向MapReduce框架提交一个计算作业时，它会首先把计算作业拆分成若干个Map任务，然后分配到不同的节点上去执行，
+每一个Map任务处理输入数据中的一部分，当Map任务完成后，它会生成一些中间文件，这些中间文件将会作为Reduce任务的输入数据。
+Reduce对数据做进一步处理之后，输出最终结果。
+简而言之，就是将大数据集分解为成百上千的小数据集，每个(或若干个)数据集分别由集群中的一个结点进行处理并生成中间结果，然后这些中间结果又由大量的结点进行合并,形成最终结果。
+适合用MapReduce来处理的数据集(或任务)有一个基本要求：待处理的数据集可以分解成许多小的数据集，而且每一个小数据集都可以完全并行地进行处理。
+Map-Reduce的处理过程主要涉及四个部分：Client进程（用于提交Map-reduce任务job），JobTracker进程，TaskTracker进程，HDFS（Hadoop分布式文件系统）。
+其中JobTracker进程作为主控，用于调度和管理其它的TaskTracker进程, JobTracker可以运行于集群中任一台计算机上，通常情况下配置JobTracker进程运行在NameNode节点之上。
+TaskTracker负责执行JobTracker进程分配给的任务，其必须运行于DataNode上，即 DataNode 既是数据存储结点，也是计算结点。
+JobTracker将Map任务和Reduce任务分发给空闲的TaskTracker,让这些任务并行运行，并负责监控任务的运行情况。
+如果某一个TaskTracker出故障了，JobTracker会将其负责的任务转交给另一个空闲的TaskTracker重新运行。
+
+MapReduce处理天气数据实例
+一批有关天气的数据，其格式如下：
+每行一条记录,每一行第15个到第18个字符为年,第25个到第29个字符为温度，其中第25位是符号+/-。
+0067011990999991950051507+0000+
+0043011990999991950051512+0022+
+0067011990999991937051507+0001+
+0043011990999991937051512-0002+
+0067011990999991950051507+0010+
+.............................
+需要统计出每年的最高温度。
+
+MapReduce中Map和Reduce两步,每－步都有key-value对作为输入和输出：
+map阶段的key-value对的格式是由输入的格式所决定的，如果是默认的TextInputFormat，则每行作为一个记录进程处理，其中key为此行的开头相对于文件的起始位置，value就是此行的字符文本
+map阶段的输出的key-value对的格式必须同reduce阶段的输入key-value对的格式相对应
+对于此例，在map过程，输入的key-value对如下：
+(0, 0067011990999991950051507+0000+)
+(33, 0043011990999991950051512+0022+)
+(66, 0043011990999991950051518-0011+)
+(165, 0067011990999991937051507+0001+)
+(198, 0043011990999991937051512-0002+)
+.................................
+在map过程中，通过对每一行字符串的解析，得到年-温度的key-value对作为输出：
+(1950, 0)
+(1950, 22)
+(1950, -11)
+(1937, 1)
+(1937, -2)
+...............................
+在shuffle过程，将map过程中的输出，按照相同的key将value放到同一个列表中作为reduce的输入
+(1950, [0, 22, –11])
+(1937, [1, -2])
+...............................
+在reduce过程中，在列表中选择出最大的温度，将年-最大温度的key-value作为输出：
+(1949, 111)
+(1937, 1)
+...............................
+
+MapReduce任务执行步骤
+1,任务提交
+JobClient.runJob()创建一个新的JobClient实例，调用其submitJob()函数。
+    向JobTracker请求一个新的job ID
+    检测此job的output配置
+    计算此job的input splits
+    将Job运行所需的资源拷贝到JobTracker的文件系统中的文件夹中，包括job jar文件，job.xml配置文件，input splits
+    通知JobTracker此Job已经可以运行了
+提交任务后，runJob每隔一秒钟轮询一次job的进度，将进度返回到命令行，直到任务运行完毕。
+2,任务初始化
+当JobTracker收到submitJob调用的时候，将此任务放到一个队列中，job调度器将从队列中获取任务并初始化任务。
+初始化首先创建一个对象来封装job运行的tasks, status以及progress。
+在创建task之前，job调度器首先从共享文件系统中获得JobClient计算出的input splits。
+其为每个input split创建一个map task。每个task被分配一个ID。
+3,任务分配
+TaskTracker周期性的向JobTracker发送heartbeat。
+在heartbeat中，TaskTracker告知JobTracker其已经准备运行一个新的task，JobTracker将分配给其一个task。
+在JobTracker为TaskTracker选择一个task之前，JobTracker必须首先按照优先级选择一个Job，在最高优先级的Job中选择一个task。
+TaskTracker有固定数量的位置来运行map task或者reduce task。默认的调度器对待map task优先于reduce task
+当选择reduce task的时候，JobTracker并不在多个task之间进行选择，而是直接取下一个，因为reduce task没有数据本地化的概念。
+4,任务执行
+TaskTracker被分配了一个task，下面便要运行此task。
+首先，TaskTracker将此job的jar从共享文件系统中拷贝到TaskTracker的文件系统中。
+TaskTracker从distributed cache中将job运行所需要的文件拷贝到本地磁盘。
+其次，其为每个task创建一个本地的工作目录，将jar解压缩到文件目录中。
+其三，其创建一个TaskRunner来运行task。
+TaskRunner创建一个新的JVM来运行task。
+被创建的child JVM和TaskTracker通信来报告运行进度。
+5,Map的过程
+MapRunnable从input split中读取一个个的record，然后依次调用Mapper的map函数，将结果输出。
+map的输出并不是直接写入硬盘，而是将其写入缓存memory buffer。
+当buffer中数据的到达一定的大小，一个后台线程将数据开始写入硬盘。
+在写入硬盘之前，内存中的数据通过partitioner分成多个partition。
+在同一个partition中，背景线程会将数据按照key在内存中排序。
+每次从内存向硬盘flush数据，都生成一个新的spill文件。
+当此task结束之前，所有的spill文件被合并为一个整的被partition的而且排好序的文件。
+reducer可以通过http协议请求map的输出文件，tracker.http.threads可以设置http服务线程数。
+6,Reduce的过程
+当map task结束后，其通知TaskTracker，TaskTracker通知JobTracker。
+对于一个job，JobTracker知道TaskTracer和map输出的对应关系。
+reducer中一个线程周期性的向JobTracker请求map输出的位置，直到其取得了所有的map输出。
+reduce task需要其对应的partition的所有的map输出。
+reduce task中的copy过程即当每个map task结束的时候就开始拷贝输出，因为不同的map task完成时间不同。
+reduce task中有多个copy线程，可以并行拷贝map输出。
+当很多map输出拷贝到reduce task后，一个后台线程将其合并为一个大的排好序的文件。
+当所有的map输出都拷贝到reduce task后，进入sort过程，将所有的map输出合并为大的排好序的文件。
+最后进入reduce过程，调用reducer的reduce函数，处理排好序的输出的每个key，最后的结果写入HDFS。
+
+MapReduce的核心过程----Shuffle
+shuffle是mapreduce的核心，shuffle的主要工作是从Map结束到Reduce开始之间的过程。
+图mr.jpg中的partitions、copy phase、sort phase所代表的就是shuffle的不同阶段。
+shuffle阶段又可以分为Map端的shuffle和Reduce端的shuffle。
+一、Map端的shuffle
+　　Map端会处理输入数据并产生中间结果，这个中间结果会写到本地磁盘，而不是HDFS。每个Map的输出会先写到内存缓冲区中，当写入的数据达到设定的阈值时，
+　　系统将会启动一个线程将缓冲区的数据写到磁盘，这个过程叫做spill。
+　　在spill写入之前，会先进行二次排序，首先根据数据所属的partition进行排序，然后每个partition中的数据再按key来排序。
+　　partition的目是将记录划分到不同的Reducer上去，以期望能够达到负载均衡，以后的Reducer就会根据partition来读取自己对应的数据。
+　　接着运行combiner(如果设置了的话)，combiner的本质也是一个Reducer，其目的是对将要写入到磁盘上的文件先进行一次处理，这样，写入到磁盘的数据量就会减少。
+　　最后将数据写到本地磁盘产生spill文件(spill文件保存在{mapred.local.dir}指定的目录中，Map任务结束后就会被删除)。
+　　最后，每个Map任务可能产生多个spill文件，在每个Map任务完成前，会通过多路归并算法将这些spill文件归并成一个文件。至此，Map的shuffle过程就结束了。
+二、Reduce端的shuffle
+　　Reduce端的shuffle主要包括三个阶段，copy、sort(merge)和reduce。
+　　首先要将Map端产生的输出文件拷贝到Reduce端，但每个Reducer如何知道自己应该处理哪些数据呢？因为Map端进行partition的时候，
+　　实际上就相当于指定了每个Reducer要处理的数据(partition就对应了Reducer)，所以Reducer在拷贝数据的时候只需拷贝与自己对应的partition中的数据即可。
+　　每个Reducer会处理一个或者多个partition，但需要先将自己对应的partition中的数据从每个Map的输出结果中拷贝过来。
+　　接下来就是sort阶段，也成为merge阶段，因为这个阶段的主要工作是执行了归并排序。从Map端拷贝到Reduce端的数据都是有序的，所以很适合归并排序。
+　　最终在Reduce端生成一个较大的文件作为Reduce的输入。最后就是Reduce过程了，在这个过程中产生了最终的输出结果，并将其写到HDFS上。
+
+Shuffle是指从Map产生输出开始，包括系统执行排序以及传送Map输出到Reducer作为输入的过程。
+首先从Map端开始分析，当Map开始产生输出的时候，他并不是简单的把数据写到磁盘，因为频繁的操作会导致性能严重下降，它的处理更加复杂，
+数据首先是写到内存中的一个缓冲区，并作一些预排序，以提升效率，
+每个Map任务都有一个用来写入“输出数据”的“循环内存缓冲区”，这个缓冲区默认大小是100M（可以通过io.sort.mb属性来设置具体的大小），
+当缓冲区中的数据量达到一个特定的阀值(io.sort.mb * io.sort.spill.percent，其中io.sort.spill.percent默认是0.80)时，系统将会启动一个后台线程把缓冲区中的内容spill到磁盘。
+在spill过程中，Map的输出将会继续写入到缓冲区，但如果缓冲区已经满了，Map就会被阻塞直到spill完成。
+spill线程在把缓冲区的数据写到磁盘前，会对他进行一个二次排序，首先根据数据所属的partition排序，然后每个partition中再按Key排序。输出包括一个索引文件和数据文件。
+如果设定了Combiner，将在排序输出的基础上进行。Combiner就是一个Mini Reducer，它在执行Map任务的节点本身运行，先对Map的输出作一次简单的Reduce，
+使得Map的输出更紧凑，更少的数据会被写入磁盘和传送到Reducer。Spill文件保存在由mapred.local.dir指定的目录中，Map任务结束后删除。
+每当内存中的数据达到spill阀值的时候，都会产生一个新的spill文件，所以在Map任务写完他的最后一个输出记录的时候，可能会有多个spill文件，
+在Map任务完成前，所有的spill文件将会被归并排序为一个索引文件和数据文件。这是一个多路归并过程，最大归并路数由io.sort.factor控制(默认是10)。
+如果设定了Combiner，并且spill文件的数量至少是3（由min.num.spills.for.combine属性控制），那么Combiner将在输出文件被写入磁盘前运行以压缩数据。
+对写入到磁盘的数据进行压缩（这种压缩同Combiner的压缩不一样）通常是一个很好的方法，因为这样做使得数据写入磁盘的速度更快，节省磁盘空间，并减少需要传送到Reducer的数据量。
+默认输出是不被压缩的，但可以很简单的设置mapred.compress.map.output为true启用该功能。压缩所使用的库由mapred.map.output.compression.codec来设定。
+当spill文件归并完毕后，Map将删除所有的临时spill文件，并告知TaskTracker任务已完成。
+Reducers通过HTTP来获取对应的数据。用来传输partitions数据的工作线程个数由tasktracker.http.threads控制，
+这个设定是针对每一个TaskTracker的，并不是单个Map，默认值为40，在运行大作业的大集群上可以增大以提升数据传输速率。
+Shuffle的Reduce部分。Map的输出文件放置在运行Map任务的TaskTracker的本地磁盘上（注意：Map输出总是写到本地磁盘，但是Reduce输出不是，一般是写到HDFS），
+它是运行Reduce任务的TaskTracker所需要的输入数据。Reduce任务的输入数据分布在集群内的多个Map任务的输出中，Map任务可能会在不同的时间内完成，只要有其中一个Map任务完成，
+Reduce任务就开始拷贝他的输出。这个阶段称为拷贝阶段，Reduce任务拥有多个拷贝线程，可以并行的获取Map输出。可以通过设定mapred.reduce.parallel.copies来改变线程数。
+Reduce是怎么知道从哪些TaskTrackers中获取Map的输出呢？当Map任务完成之后，会通知他们的父TaskTracker，告知状态更新，然后TaskTracker再转告JobTracker，
+这些通知信息是通过心跳通信机制传输的，因此针对以一个特定的作业，jobtracker知道Map输出与tasktrackers的映射关系。
+Reducer中有一个线程会间歇的向JobTracker询问Map输出的地址，直到把所有的数据都取到。在Reducer取走了Map输出之后，TaskTracker不会立即删除这些数据，
+因为Reducer可能会失败，他们会在整个作业完成之后，JobTracker告知他们要删除的时候才去删除。
+如果Map输出足够小，他们会被拷贝到Reduce TaskTracker的内存中（缓冲区的大小由mapred.job.shuffle.input.buffer.percnet控制），
+或者达到了Map输出的阀值的大小(由mapred.inmem.merge.threshold控制)，缓冲区中的数据将会被归并然后spill到磁盘。
+拷贝来的数据叠加在磁盘上，有一个后台线程会将它们归并为更大的排序文件，这样做节省了后期归并的时间。对于经过压缩的Map输出，系统会自动把它们解压到内存方便对其执行归并。
+当所有的Map 输出都被拷贝后，Reduce 任务进入排序阶段（更恰当的说应该是归并阶段，因为排序在Map端就已经完成），这个阶段会对所有的Map输出进行归并排序，这个工作会重复多次才能完成。
+假设这里有50 个Map输出（可能有保存在内存中的），并且归并因子是10（由io.sort.factor控制，就像Map端的merge一样），那最终需要5次归并。
+每次归并会把10个文件归并为一个，最终生成5个中间文件。在这一步之后，系统不再把5个中间文件归并成一个，而是排序后直接“喂”给Reduce函数，省去向磁盘写数据这一步。
+最终归并的数据可以是混合数据，既有内存上的也有磁盘上的。由于归并的目的是归并最少的文件数目，使得在最后一次归并时总文件个数达到归并因子的数目，
+所以每次操作所涉及的文件个数在实际中会更微妙些。譬如，如果有40个文件，并不是每次都归并10个最终得到4个文件，相反第一次只归并4个文件，然后再实现三次归并，
+每次10个，最终得到4个归并好的文件和6个未归并的文件。要注意，这种做法并没有改变归并的次数，只是最小化写入磁盘的数据优化措施，
+因为最后一次归并的数据总是直接送到Reduce函数那里。在Reduce阶段，Reduce函数会作用在排序输出的每一个key上。这个阶段的输出被直接写到输出文件系统，一般是HDFS。
+在HDFS中，因为TaskTracker节点也运行着一个DataNode进程，所以第一个块备份会直接写到本地磁盘。到此，MapReduce的Shuffle和Sort分析完毕。
+
+Partition操作
+把Map任务输出的中间结果按 key的范围划分成 R份( R是预先定义的 Reduce任务的个数)，划分时通常使用hash函数如: hash(key) mod R，
+这样取模相同的key集合，将会由一个Reduce任务来处理，这样可以简化 Reduce获取计算数据的过程。
+Combine操作
+在partition之前，还可以对中间结果先做combine，即将中间结果中有相同key的 <key, value>对合并成一对。
+combine的过程与 Reduce的过程类似,很多情况下就可以直接使用 Reduce函数，但combine是作为 Map任务的一部分，在执行完 Map函数后紧接着执行的，
+而Reduce必须在所有的Map操作完成后才能进行。Combine能够减少中间结果中<key, value>对的数目，从而减少网络流量。
+Reduce任务从Map任务结点取中间结果
+Map任务的中间结果在做完Combine和 Partition之后，以文件形式存于本地磁盘。中间结果文件的位置会通知主控 JobTracker,JobTracker再通知Reduce任务到哪一个DataNode上去取中间结果。
+注意所有的Map任务产生中间结果均按其Key用同一个Hash函数划分成了R份，R个Reduce任务各自负责一份Key区间。
+每个Reduce需要向许多个原Map任务结点以取得落在其负责的Key区间内的中间结果，然后执行Reduce函数，形成一个最终的结果文件。
+
+本地计算
+数据存储在哪一台计算机上，就由这台计算机进行这部分数据的计算，这样可以减少数据在网络上的传输，降低对网络带宽的需求。
+在Hadoop这样的基于集群的分布式并行系统中，计算结点可以很方便地扩充，而因它所能够提供的计算能力近乎是无限的，
+但是由是数据需要在不同的计算机之间流动，故网络带宽变成了瓶颈，“本地计算”是最有效的一种节约网络带宽的手段，被称为“移动计算比移动数据更经济”。
+
+-----------------------------------------------------------------------------------------
