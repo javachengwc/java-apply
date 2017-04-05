@@ -1,0 +1,22 @@
+--------------------------------------spring mvc------------------------------------
+spring mvc是Spring提供的一个灵活的web框架。主要由DispatcherServlet、处理器映射、处理器(控制器)、视图解析器、视图组成。见图spring-mvc.png。
+
+DispatcherServlet:spring提供的前端控制器，所有的请求都有经过它来统一分发。
+在DispatcherServlet将请求分发给Spring Controller之前，需要借助于Spring提供的HandlerMapping定位到具体的Controller。
+
+处理器映射：选择使用哪个控制器来处理请求,一般都是注解驱动，比如在spring配置中对controller的映射配置片段  <mvc:annotation-driven/>。
+<mvc:annotation-driven /> 会自动注册DefaultAnnotationHandlerMapping与AnnotationMethodHandlerAdapter 两个bean,是spring mvc为@Controller分发请求所必须的。
+HandlerMapping接口的实现类有SimpleUrlHandlerMapping通过配置文件，把一个URL映射到Controller。DefaultAnnotationHandlerMapping通过注解，把一个URL映射到Controller类上。
+HandlerAdapter接口的实现类有AnnotationMethodHandlerAdapter类，通过注解，把一个URL映射到Controller类的方法上。
+
+视图解析器：结果应该如何渲染，比如在spring配置中配置的<bean id="viewResolver"....  <bean id="multipartResolver"...就是视图解析器。
+
+spring mvc请求处理过程:
+(1) Http请求：客户端请求提交到DispatcherServlet。
+(2) 寻找处理器：由DispatcherServlet控制器查询一个或多个HandlerMapping，找到处理请求的Controller。
+(3) 调用处理器：DispatcherServlet将请求提交到Controller。
+(4) 调用业务处理和返回结果：Controller调用业务逻辑处理后，返回ModelAndView。
+(5) 处理视图映射并返回模型：DispatcherServlet查询一个或多个ViewResoler视图解析器，找到ModelAndView指定的视图。
+(6) Http响应：视图负责将结果显示到客户端。
+
+------------------------------------------------------------------------------------

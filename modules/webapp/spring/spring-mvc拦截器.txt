@@ -1,0 +1,68 @@
+---------------------------------------spring-mvc拦截器------------------------------------
+spring提供了：
+    org.springframework.web.servlet.HandlerInterceptor接口，
+    org.springframework.web.servlet.handler.HandlerInterceptorAdapter适配器，
+实现这个接口或继承此类，可以非常方便的实现自己的拦截器。
+有以下三个方法：
+    public boolean preHandle(HttpServletRequest request,HttpServletResponse response, Object handler); //controller之前执行
+    public void postHandle(HttpServletRequest request,HttpServletResponse response, Object handler,ModelAndView modelAndView);/生成视图之前执行
+    public void afterCompletion(HttpServletRequest request,HttpServletResponse response, Object handler, Exception ex); //最后执行，返回处理（已经渲染了页面）
+分别实现预处理、后处理（调用了Service并返回ModelAndView，但未进行页面渲染）、返回处理（已经渲染了页面）
+在preHandle中，可以进行编码、安全控制等处理。在postHandle中，有机会修改ModelAndView。在afterCompletion中，可以根据ex是否为null判断是否发生了异常，进行日志记录。
+
+Spring MVC并没有总的拦截器，不能对所有的请求进行前后拦截。
+Spring MVC的拦截器，是属于HandlerMapping级别的，可以有多个HandlerMapping ，每个HandlerMapping可以有自己的拦截器。
+当一个请求确定由哪个HandlerMapping映射，是按mapping的order值从小到大，顺序执行HandlerMapping接口的实现类时，
+哪一个先有返回，那就确定由此HandlerMapping来映射查找对应的contrller来处理。
+一个请求交给一个HandlerMapping时，这个HandlerMapping先找有没有处理器来处理这个请求，如何找到了，就执行拦截器，执行完拦截后，交给处理器处理。
+如果没有找到处理器，那么这个拦截器就不会被执行。
+
+拦截器配置
+方式1:（近似）总拦截器
+<mvc:interceptors>
+    <bean class="com.app.inteceptor.SpecInteceptor" />
+</mvc:interceptors>
+spring没有总的拦截器。<mvc:interceptors/>会为每一个HandlerMapping，注入一个拦截器。
+总有一个HandlerMapping是可以找到处理器的，最多也只找到一个处理器，所以这个拦截器总会被执行的。
+
+方式2，拦截匹配的url。
+<mvc:interceptors >
+  <mvc:interceptor>
+        <mvc:mapping path="/shop/*" />
+        <bean class="com.app.inteceptor.SpecInteceptor"></bean>
+    </mvc:interceptor>
+</mvc:interceptors>
+
+方式3,HandlerMapping上的拦截器。
+<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+ <property name="interceptors">
+     <list>
+         <bean class="com.app.inteceptor.SpecInteceptor"></bean>
+     </list>
+ </property>
+</bean>
+如果使用了<mvc:annotation-driven />， 它会自动注册DefaultAnnotationHandlerMapping 与AnnotationMethodHandlerAdapter 这两个bean,
+就没有机会再给它注入interceptors属性，就无法指定拦截器。可以通过人工配置上面的两个Bean，不使用 <mvc:annotation-driven />，
+就可以 给interceptors属性 注入拦截器了。
+
+在spring mvc中实现全局异常处理。
+   HandlerExceptionResolver接口
+   SimpleMappingExceptionResolver类。和它的父类AbstractHandlerExceptionResolver类。
+可以实现HandlerExceptionResolver接口或者继承SimpleMappingExceptionResolver类，写一个自定义异常处理程序。
+通过SimpleMappingExceptionResolver可以将不同的异常映射到不同的jsp页面（通过exceptionMappings属性的配置）。
+也可以为所有的异常指定一个默认的异常提示页面（通过defaultErrorView属性的配置），
+如果所抛出的异常在exceptionMappings中没有对应的映射，则三spring将用此默认配置显示异常信息。
+注意这里配置的异常显示界面均仅包括主文件名，至于文件路径和后缀已经在viewResolver中指定。如/error/error表示/error/error.jsp。
+<!--异常处理-->
+<bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+    <property name="defaultErrorView">
+        <value>/error/error</value>
+    </property>
+    <property name="defaultStatusCode">
+        <value>500</value>
+    </property>
+    <property name="warnLogCategory">
+        <value>org.springframework.web.servlet.handler.SimpleMappingExceptionResolver</value>
+    </property>
+</bean>
+-------------------------------------------------------------------------------------------

@@ -1,0 +1,47 @@
+------------------------------------------spring mvc---------------------------------------
+spring mvc的转发与重定向:通过redirect/forward:url方式转发或重定向到另一个controller或url进行后续的处理。
+ep:
+return "forward:/shop/show"; 或return "redirect:/index.jsp";redirect:url也可用于防止表单重复提交。
+带参数重定向--RedirectAttributes
+用户保存或修改后，为了防止用户刷新浏览器(F5)导致表单重复提交，一般在保存或修改操作之后会redirect到一个结果页面（不是forward），同时携带参数，如操作成功的提示信息。
+因为是Redirect，Request里的attribute不会传递过去。Spring提供了这个能力--RedirectAttributes。
+public String save(Data data, RedirectAttributes redirectAttributes) {
+    ........
+    redirectAttributes.addFlashAttribute("message", "操作成功");
+    return "redirect:/shop/info";
+}
+
+<mvc:annotation-driven /> 到底做了什么工作? 见下:
+<!-- 注解请求映射  -->
+<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+    <property name="interceptors">
+        <list>
+            <ref bean="logNDCInteceptor"/>            <!-- 日志拦截器，这是开发人员可扩展的自定义的拦截器 -->
+            <ref bean="myRequestHelperInteceptor"/>   <!-- RequestHelper拦截器，这是开发人员可扩展的自定义的拦截器-->
+            <ref bean="myPermissionsInteceptor"/>     <!-- 权限拦截器，这是开发人员可扩展的自定义的拦截器-->
+            <ref bean="myUserInfoInteceptor"/>        <!-- 用户信息拦截器，这是开发人员可扩展的自定义的拦截器-->
+        </list>
+    </property>
+</bean>
+<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+    <property name="messageConverters">
+        <list>
+            <ref bean="byteArray_hmc" />
+            <ref bean="string_hmc" />
+            <ref bean="resource_hmc" />
+            <ref bean="source_hmc" />
+            <ref bean="xmlAwareForm_hmc" />
+            <ref bean="jaxb2RootElement_hmc" />
+            <ref bean="jackson_hmc" />
+        </list>
+    </property>
+</bean>
+<bean id="byteArray_hmc" class="org.springframework.http.converter.ByteArrayHttpMessageConverter" />
+<bean id="string_hmc" class="org.springframework.http.converter.StringHttpMessageConverter" />
+<bean id="resource_hmc" class="org.springframework.http.converter.ResourceHttpMessageConverter" />
+<bean id="source_hmc" class="org.springframework.http.converter.xml.SourceHttpMessageConverter" />
+<bean id="xmlAwareForm_hmc" class="org.springframework.http.converter.xml.XmlAwareFormHttpMessageConverter" />
+<bean id="jaxb2RootElement_hmc" class="org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter" />
+<bean id="jackson_hmc" class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter" /><!-- 处理json-->
+
+-------------------------------------------------------------------------------------------

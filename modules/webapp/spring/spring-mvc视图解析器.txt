@@ -1,0 +1,104 @@
+-------------------------------------spring mvc视图解析器----------------------------------
+spring mvc的视图解析器是处理结果应该如何渲染，比如在spring配置中配置的<bean id="viewResolver"....  <bean id="multipartResolver"...就是视图解析器。
+当有jsp,ftl (模板)等多种页面生成展示方式时，spring默认使用的是“视图解析器链”。 spring会在“视图解析器链”中顺序的查找，直到找到对应的 “视图解析器”。
+jsp视图解析器一定要写在最后面，因为一旦调用jsp，就向浏览器发出数据了，Spring就没有机会再尝试下一个了。
+如下支持jsp,ftl (模板)两种页面生成展示方式
+
+<!-- 多视图处理器 -->
+<bean id="freeMarkerViewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+    <property name="cache" value="true"/>
+    <property name="prefix" value=""/>
+    <property name="suffix" value=".ftl"/>
+    <property name="exposeRequestAttributes" value="true"/>
+    <property name="exposeSessionAttributes" value="true"/>
+    <property name="exposeSpringMacroHelpers" value="true"/>
+    <property name="allowRequestOverride" value="true" />
+    <property name="contentType" value="text/html;charset=UTF-8"/>
+    <property name="requestContextAttribute" value="rc"/>
+    <property name="order" value="0"/>
+</bean>
+
+<bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="contentType" value="text/html; charset=utf-8"/>
+        <property name="prefix" value="/WEB-INF/jsp/" />
+        <property name="suffix" value=".jsp" />
+        <property name="order" value="1" />
+</bean>
+
+<!-- velocity view Resolver -->
+<bean id="velocityViewResolver" class="org.springframework.web.servlet.view.velocity.VelocityLayoutViewResolver">
+    <property name="layoutUrl" value="layout/default.vm"/>
+    <property name="cache" value="false"/>
+    <property name="suffix" value=".vm"/>
+    <property name="exposeSpringMacroHelpers" value="true"/>
+    <property name="dateToolAttribute" value="dateTool"/>
+    <property name="numberToolAttribute" value="numberTool"/>
+    <property name="contentType" value="text/html;charset=UTF-8"/>
+    <property name="order" value="2"
+</bean>
+
+<!-- freemarker config -->
+<bean id="freeMarkerConfigurer" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+   <property name="templateLoaderPath" value="/WEB-INF/ftl/" />
+   <property name="freemarkerSettings">
+       <props>
+           <prop key="template_update_delay">5</prop>
+           <prop key="default_encoding">UTF-8</prop>
+           <prop key="locale">zh_CN</prop>
+       </props>
+   </property>
+</bean>
+
+ContentNegotiatingViewResolver解析器:此视图解析器可用同样的内容数据来呈现不同的view
+它是根据客户提交的MimeType(如 text/html,application/xml)来跟服务端的一组viewResover的MimeType相比较,如果符合,即返回viewResover的数据
+比如:
+http://127.0.0.1/data.xml    呈现xml文件
+http://127.0.0.1/data.json   呈现json格式
+http://127.0.0.1/data        使用默认view呈现，比如jsp等
+
+<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+    <property name="order" value="0" />
+    <property name="favorPathExtension" value="true"></property>   //是否启用扩展名支持，启用，这里的访问结果解析渲染就是根据扩展名来解析渲染。
+    <property name="favorParameter" value="false" />               //是否启用参数支持，默认是true,这里关闭
+    <property name="ignoreAcceptHeader" value="true" />            //是否忽略掉accept header，默认是false,这里设为true,忽略
+    <property name="mediaTypes">
+        <map>
+            <entry key="json" value="application/json" />
+            <entry key="xml" value="application/xml" />
+        </map>
+    </property>
+    <!--
+    <property name="viewResolvers">
+        <list>
+            <ref bean="velocityViewResolver"/>
+            <ref bean="jspViewResolver"/>
+        </list>
+    </property>
+    -->
+    <property name="defaultViews">
+        <list>
+            <bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView"></bean>
+            <bean class="org.springframework.web.servlet.view.xml.MarshallingView">
+                <constructor-arg>
+                    <bean class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+                         <property name="classesToBeBound">
+                            <list>
+                               <value>com.ccc.Ttt</value>
+                            </list>
+                         </property>
+                    </bean>
+                </constructor-arg>
+            </bean>
+        </list>
+    </property>
+</bean>
+<!-- 上面没匹配到就使用此视图解析器 -->
+<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <property name="order" value="2" />
+    <property name="prefix" value="/WEB-INF/views/" />
+    <property name="suffix" value=".jsp" />
+    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+</bean>
+
+-------------------------------------------------------------------------------------------
