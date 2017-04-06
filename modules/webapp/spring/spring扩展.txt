@@ -1,0 +1,34 @@
+---------------------------------------spring扩展--------------------------------------
+使用BeanPostProcessor来自定义Bean
+通过实现BeanPostProcessor接口，来扩展bean
+    public interface BeanPostProcessor {
+        Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException;
+        Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException;
+    }
+BeanPostProcessor接口定义了一些回调方法，可以实现它们来自定义实例化、依赖解析等逻辑。
+
+使用BeanFactoryPostProcessor来自定义配置元数据
+这个扩展点是org.springframework.beans.factory.config.BeanFactoryPostProcessor，
+从语义上和BeanPostProcessor很相似，但有个不同点：BeanFactorPostProcessor操作Bean的配置元数据。
+Spring IoC容器允许BeanFactoryPostProcessor读取配置元数据，并在容器实例化任何Bean（不包括BeanFactoryPostProcessor本身）之前修改配置元数据。
+可以配置多个BeanFactoryPostProcessor，并通过order属性来控制它们执行的顺序。
+Spring包含一些预定义的BeanFactoryPostProcessor，比如PropertyOverideConfigurer和PropertyPlaceholderConfigurer。
+ApplicationContext会自动检测实现了BeanFactoryPostProcessor接口的Bean，并将这些Bean当作post-processor。
+
+使用FactoryBean自定义初始化逻辑
+FactoryBean接口是Spring IoC容器实例化逻辑的一个插件化的扩展点。
+若在系统有着复杂的初始化代码，且更适合使用Java代码（而不是XML），那么就可以创建自定义的FactoryBean，将初始化逻辑写到里面，然后将自定义的FactoryBean插入容器中。
+FactoryBean接口提供了三个方法：
+    Object getObject()：返回当前工厂创建的对象实例。
+    Boolean isSingleton()：判断是否是单例。
+    Class getObjectType()：返回对象类型
+
+spring可扩展Schema提供自定义配置支持
+完成一个自定义配置一般需要以下步骤：
+    设计配置属性和JavaBean
+    编写XSD文件
+    编写NamespaceHandler和BeanDefinitionParser完成解析工作
+    编写spring.handlers和spring.schemas串联起所有部件
+    在Bean文件中应用
+详细的过程见mountain/mountain-config模块，有这样的扩展。
+---------------------------------------------------------------------------------------
