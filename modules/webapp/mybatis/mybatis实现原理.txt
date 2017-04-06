@@ -1,0 +1,9 @@
+-----------------------------mybatis实现原理-------------------------------
+sqlSessionFactory     ----sqlSession工程类，管理mybatis全局配置,创建,管理sqlSession
+sqlSession            ----一个sql session会话
+Executor              ----对应jdbc底层一个完整的sql操作。sqlSession通过Executor执行sql操作
+MapperProxy           ----代理实现mybatis的mapper接口
+MapperMethod          ----对mapper接口里面的一个方法包装
+StatementHandler      ----jdbc Statement的处理器
+ResultSetHandler      ----jdbc resultSet的处理器
+---------------------------------------------------------------------------
