@@ -1,0 +1,365 @@
+---------------------------------spring事务-----------------------------
+事务有四个特性：ACID
+    原子性（Atomicity）：事务是一个原子操作，由一系列动作组成。事务的原子性确保动作要么全部完成，要么完全不起作用。
+    一致性（Consistency）：一旦事务完成（不管成功还是失败），系统必须确保它所建模的业务处于一致的状态，而不会是部分完成部分失败。在现实中的数据不应该被破坏。
+    隔离性（Isolation）：可能有许多事务会同时处理相同的数据，因此每个事务都应该与其他事务隔离开来，防止数据损坏。
+    持久性（Durability）：一旦事务完成，无论发生什么系统错误，它的结果都不应该受到影响，这样就能从任何系统崩溃中恢复过来。通常情况下，事务的结果被写到持久化存储器中。
+
+事务隔离级别
+    隔离级别是指若干个并发的事务之间的隔离程度。隔离级别定义了一个事务可能受其他并发事务影响的程度。
+    并发事务引起的问题，在应用程序中，多个事务并发运行，经常会操作相同的数据来完成各自的任务。可能会导致一下的问题。
+      脏读（Dirty reads）——脏读发生在一个事务读取了另一个事务改写但尚未提交的数据时。如果改写在稍后被回滚了，那么第一个事务获取的数据就是无效的。
+      不可重复读（Nonrepeatable read）——不可重复读发生在一个事务执行相同的查询两次或两次以上，但是每次都得到不同的数据时。这通常是因为另一个并发事务在两次查询期间进行了更新。
+      幻读（Phantom read）——幻读与不可重复读类似。它发生在一个事务（T1）读取了几行数据，接着另一个并发事务（T2）插入了一些数据时。
+      在随后的查询中，第一个事务（T1）就会发现多了一些原本不存在的记录。
+    不可重复读的重点是修改，同样的条件, 第1次和第2次读出来的记录结果不一样。
+    幻读的重点在于新增或者删除，同样的条件, 第1次和第2次读出来的记录数不一样。
+    TransactionDefinition 接口中定义了五个表示隔离级别的常量：
+    TransactionDefinition.ISOLATION_DEFAULT：这是默认值，表示使用底层数据库的默认隔离级别。对大部分数据库而言，通常这值就是TransactionDefinition.ISOLATION_READ_COMMITTED。
+    TransactionDefinition.ISOLATION_READ_UNCOMMITTED：最低的隔离级别，允许读取尚未提交的数据变更，可能会导致脏读、幻读或不可重复读。
+    TransactionDefinition.ISOLATION_READ_COMMITTED：该隔离级别表示一个事务只能读取另一个事务已经提交的数据。该级别可以防止脏读，，但是幻读或不可重复读仍有可能发生。这也是大多数情况下的推荐值。
+    TransactionDefinition.ISOLATION_REPEATABLE_READ：该隔离级别表示一个事务在整个过程中可以多次重复执行某个查询，并且每次返回的记录都相同。该级别可以防止脏读和不可重复读，但幻读仍有可能发生。
+    TransactionDefinition.ISOLATION_SERIALIZABLE：所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰,但是这将严重影响程序的性能。通常情况下不会用该级别。
+
+事务传播行为
+    所谓事务的传播行为是指，如果在开始当前事务之前，一个事务上下文已经存在，此时有若干选项可以指定一个事务性方法的执行行为。
+    TransactionDefinition.PROPAGATION_REQUIRED：如果当前存在事务，则加入该事务；如果当前没有事务，则创建一个新的事务。这是默认值。
+    TransactionDefinition.PROPAGATION_REQUIRES_NEW：创建一个新的事务，如果当前存在事务，则把当前事务挂起。
+    TransactionDefinition.PROPAGATION_SUPPORTS：如果当前存在事务，则加入该事务；如果当前没有事务，则以非事务的方式继续运行。
+    TransactionDefinition.PROPAGATION_NOT_SUPPORTED：以非事务方式运行，如果当前存在事务，则把当前事务挂起。
+    TransactionDefinition.PROPAGATION_NEVER：以非事务方式运行，如果当前存在事务，则抛出异常。
+    TransactionDefinition.PROPAGATION_MANDATORY：如果当前存在事务，则加入该事务；如果当前没有事务，则抛出异常。
+    TransactionDefinition.PROPAGATION_NESTED：如果当前存在事务，则创建一个事务作为当前事务的嵌套事务来运行；如果当前没有事务，则该取值等价于TransactionDefinition.PROPAGATION_REQUIRED。
+    详情见后面事务传播行为的详细说明。
+    
+事务管理器
+   spring提供了多种事务管理器，spring将事务管理的职责委托给这些Hibernate或者JTA等持久化机制所提供的的事务来实现。
+   spring事务管理器的接口是org.springframework.transaction.PlatformTransactionManager，通过这个接口，Spring为各个平台如JDBC、Hibernate等都提供了对应的事务管理器。
+   public interface PlatformTransactionManager()...{
+       // 由TransactionDefinition得到TransactionStatus对象
+       TransactionStatus getTransaction(TransactionDefinition definition) throws TransactionException;
+       // 提交
+       Void commit(TransactionStatus status) throws TransactionException;
+       // 回滚
+       Void rollback(TransactionStatus status) throws TransactionException;
+   }
+   public interface TransactionStatus{
+       boolean isNewTransaction(); // 是否是新的事物
+       boolean hasSavepoint(); // 是否有恢复点
+       void setRollbackOnly();  // 设置为只回滚
+       boolean isRollbackOnly(); // 是否为只回滚
+       boolean isCompleted; // 是否已完成
+   }
+   <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">  #JDBC事务
+   <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">   #Hibernate事务
+   <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">      #Java持久化API事务（JPA）
+   <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">  #jta事务，跨多数据源事务。
+
+事务属性包含了5个方面，传播行为，隔离规则，事务超时，是否只读，回滚规则
+TransactionDefinition接口：
+public interface TransactionDefinition {
+    int getPropagationBehavior(); // 返回事务的传播行为
+    int getIsolationLevel();      // 返回事务的隔离级别，事务管理器根据它来控制另外一个事务可以看到本事务内的哪些数据
+    int getTimeout();             // 返回事务必须在多少秒内完成
+    boolean isReadOnly();         //事务是否只读，事务管理器能够根据这个返回值进行优化，确保事务是只读的
+}
+TransactionDefinition正好用来定义事务属性。
+
+事务属性之只读
+事务的第三个特性是它是否为只读事务。如果事务只对后端的数据库进行该操作，数据库可以利用事务的只读特性来进行一些特定的优化。
+
+事务属性之超时
+为了使应用很好地运行，事务不能运行太长的时间。因为事务可能涉及对后端数据库的锁定，所以长时间的事务会不必要的占用数据库资源。
+事务超时就是事务的一个定时器，在特定时间内事务如果没有执行完毕，那么就会自动回滚，而不是一直等待其结束。
+
+事务属性之回滚规则
+事务回滚规则定义了哪些异常会导致事务回滚而哪些不会。默认情况下，事务只有遇到运行期异常时才会回滚，而在遇到检查型异常时不会回滚。
+但可声明事务在遇到特定的检查型异常时像遇到运行期异常那样回滚。同样，也可以声明事务遇到特定的异常不回滚，即使这些异常是运行期异常。
+
+事务属性之事务传播行为
+a,PROPAGATION_REQUIRED 如果存在一个事务，则支持当前事务。如果没有事务则开启一个新的事务。
+//事务属性 PROPAGATION_REQUIRED
+methodA{
+    ……
+    methodB();
+    ……
+}
+//事务属性 PROPAGATION_REQUIRED
+methodB{
+   ……
+}
+调用MethodA时，环境中没有事务，开启一个新的事务.当在MethodA中调用MethodB时，环境中已经有了一个事务，所以methodB加入当前事务。
+--------------------------------
+
+b,PROPAGATION_SUPPORTS 如果存在一个事务，支持当前事务。如果没有事务，则非事务的执行。
+//事务属性 PROPAGATION_REQUIRED
+methodA(){
+  methodB();
+}
+
+//事务属性 PROPAGATION_SUPPORTS
+methodB(){
+  ……
+}
+单纯的调用methodB时，methodB方法是非事务的执行的。当调用methdA时,methodB则加入了methodA的事务中,事务地执行。
+----------------------------------
+
+c,PROPAGATION_MANDATORY 如果已经存在一个事务，支持当前事务。如果没有一个活动的事务，则抛出异常。
+//事务属性 PROPAGATION_REQUIRED
+methodA(){
+    methodB();
+}
+
+//事务属性 PROPAGATION_MANDATORY
+    methodB(){
+    ……
+}
+当单独调用methodB时，因为当前没有一个活动的事务，则会抛出异常throw new IllegalTransactionStateException;
+当调用methodA时，methodB则加入到methodA的事务中，事务地执行。
+----------------------------------
+
+d,PROPAGATION_REQUIRES_NEW 总是开启一个新的事务。如果一个事务已经存在，则将这个存在的事务挂起。
+使用PROPAGATION_REQUIRES_NEW,需要使用 JtaTransactionManager作为事务管理器。
+//事务属性 PROPAGATION_REQUIRED
+methodA(){
+    doSomeThingA();
+    methodB();
+    doSomeThingB();
+}
+//事务属性 PROPAGATION_REQUIRES_NEW
+methodB(){
+   ...
+}
+当调用methodA()时,相当于
+main(){
+    TransactionManager tm = null;
+    try{
+        //获得一个JTA事务管理器
+        tm = getTransactionManager();
+        tm.begin();//开启一个新的事务
+        Transaction ts1 = tm.getTransaction();
+        doSomeThing();
+        tm.suspend();//挂起当前事务
+        try{
+            tm.begin();//重新开启第二个事务
+            Transaction ts2 = tm.getTransaction();
+            methodB();
+            ts2.commit();//提交第二个事务
+        } Catch(RunTimeException ex) {
+            ts2.rollback();//回滚第二个事务
+        } finally {
+            //释放资源
+        }
+        //methodB执行完后，恢复第一个事务
+        tm.resume(ts1);
+        doSomeThingB();
+        ts1.commit();//提交第一个事务
+    } catch(RunTimeException ex) {
+        ts1.rollback();//回滚第一个事务
+    } finally {
+        //释放资源
+    }
+}
+ts1为外层事务，ts2为内层事务。ts1与ts2是两个独立的事务，互不相干。ts2是否成功并不依赖于ts1。
+---------------------------------
+e,PROPAGATION_NOT_SUPPORTED 总是非事务地执行，并挂起任何存在的事务。
+使用PROPAGATION_NOT_SUPPORTED,也需要使用JtaTransactionManager作为事务管理器。
+f,PROPAGATION_NEVER 总是非事务地执行，如果存在一个活动事务，则抛出异常。
+g,PROPAGATION_NESTED如果一个活动的事务存在，则运行在一个嵌套的事务中. 如果没有活动事务, 则按TransactionDefinition.PROPAGATION_REQUIRED 属性执行
+使用PROPAGATION_NESTED，还需要把PlatformTransactionManager的nestedTransactionAllowed属性设为true;而 nestedTransactionAllowed属性值默认为false。
+//事务属性 PROPAGATION_REQUIRED
+methodA(){
+    doSomeThingA();
+    methodB();
+    doSomeThingB();
+}
+//事务属性 PROPAGATION_NESTED
+methodB(){
+    ……
+}
+如果单独调用methodB方法，则按REQUIRED属性执行。如果调用methodA方法，相当于：
+main(){
+    Connection con = null;
+    Savepoint savepoint = null;
+    try{
+        con = getConnection();
+        con.setAutoCommit(false);
+        doSomeThingA();
+        savepoint = con2.setSavepoint();
+        try{
+            methodB();
+        } catch(RuntimeException ex) {
+            con.rollback(savepoint);
+        } finally {
+            //释放资源
+        }
+        doSomeThingB();
+        con.commit();
+    } catch(RuntimeException ex) {
+        con.rollback();
+    } finally {
+        //释放资源
+    }
+}
+当methodB方法调用之前，调用setSavepoint方法，保存当前的状态到savepoint。如果methodB方法调用失败，则恢复到之前保存的状态。
+但是需要注意的是，这时的事务并没有进行提交，如果后续的代码(doSomeThingB()方法)调用失败，则回滚包括methodB方法的所有操作。
+嵌套事务一个非常重要的概念就是内层事务依赖于外层事务。外层事务失败时，会回滚内层事务所做的动作。而内层事务操作失败并不会引起外层事务的回滚。
+使用PROPAGATION_NESTED时，外层事务的回滚可以引起内层事务的回滚。而内层事务的异常并不会导致外层事务的回滚，它是一个真正的嵌套事务。
+DataSourceTransactionManager使用savepoint支持PROPAGATION_NESTED时，需要JDBC 3.0以上驱动及1.4以上的JDK版本支持。
+------------------------------------------------------------------------
+事务属性之隔离级别，隔离级别定义了一个事务可能受其他并发事务影响的程度。
+并发事务引起的问题，在应用程序中，多个事务并发运行，经常会操作相同的数据来完成各自的任务。可能会导致一下的问题。
+    脏读（Dirty reads）——脏读发生在一个事务读取了另一个事务改写但尚未提交的数据时。如果改写在稍后被回滚了，那么第一个事务获取的数据就是无效的。
+    不可重复读（Nonrepeatable read）——不可重复读发生在一个事务执行相同的查询两次或两次以上，但是每次都得到不同的数据时。这通常是因为另一个并发事务在两次查询期间进行了更新。
+    幻读（Phantom read）——幻读与不可重复读类似。它发生在一个事务（T1）读取了几行数据，接着另一个并发事务（T2）插入了一些数据时。
+    在随后的查询中，第一个事务（T1）就会发现多了一些原本不存在的记录。
+不可重复读的重点是修改，同样的条件, 第1次和第2次读出来的记录结果不一样。
+幻读的重点在于新增或者删除，同样的条件, 第1次和第2次读出来的记录数不一样。
+从总的结果来看, 似乎不可重复读和幻读都表现为两次读取的结果不一致。但如果从控制的角度来看, 两者的区别就比较大。
+对于前者, 只需要锁住满足条件的记录。对于后者, 要锁住满足条件及其相近的记录。
+ISOLATION_DEFAULT 	        使用后端数据库默认的隔离级别
+ISOLATION_READ_UNCOMMITTED 	最低的隔离级别，允许读取尚未提交的数据变更，可能会导致脏读、幻读或不可重复读
+ISOLATION_READ_COMMITTED 	允许读取并发事务已经提交的数据，可以阻止脏读，但是幻读或不可重复读仍有可能发生
+ISOLATION_REPEATABLE_READ 	对同一字段的多次读取结果都是一致的，除非数据是被本身事务自己所修改，可以阻止脏读和不可重复读，但幻读仍有可能发生
+ISOLATION_SERIALIZABLE 	    最高的隔离级别，完全服从ACID的隔离级别，确保阻止脏读、不可重复读以及幻读，也是最慢的事务隔离级别，因为它通常是通过完全锁定事务相关的数据库表来实现的
+------------------------------------------------------------------------
+spring提供了对编程式事务和声明式事务的支持，编程式事务允许用户在代码中精确定义事务的边界，而声明式事务（基于AOP）有助于用户将操作与事务规则进行解耦。
+编程式事务侵入到了业务代码里面，但是提供了更加详细的事务管理；而声明式事务由于基于AOP，所以既能起到事务管理的作用，又可以不影响业务代码的具体实现。
+
+spring声明式事务配置五种方式:
+a,每个Bean都有一个代理
+<!-- 定义事务管理器（声明式的事务） -->
+<bean id="transactionManager"
+    class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    <property name="sessionFactory" ref="sessionFactory" />
+</bean>
+
+<!-- 配置DAO -->
+<bean id="userDaoTarget" class="com.dao.UserDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+</bean>
+
+<bean id="userDao"
+    class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+       <!-- 配置事务管理器 -->
+       <property name="transactionManager" ref="transactionManager" />
+    <property name="target" ref="userDaoTarget" />
+    <property name="proxyInterfaces" value="com.dao.GeneratorDao" />
+    <!-- 配置事务属性 -->
+    <property name="transactionAttributes">
+        <props>
+            <prop key="*">PROPAGATION_REQUIRED</prop>
+        </props>
+    </property>
+</bean>
+
+b,所有Bean共享一个代理基类
+<!-- 定义事务管理器（声明式的事务） -->
+<bean id="transactionManager"
+    class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    <property name="sessionFactory" ref="sessionFactory" />
+</bean>
+
+<bean id="transactionBase"
+        class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
+        lazy-init="true" abstract="true">
+    <!-- 配置事务管理器 -->
+    <property name="transactionManager" ref="transactionManager" />
+    <!-- 配置事务属性 -->
+    <property name="transactionAttributes">
+        <props>
+            <prop key="*">PROPAGATION_REQUIRED</prop>
+        </props>
+    </property>
+</bean>
+
+<!-- 配置DAO -->
+<bean id="userDaoTarget" class="com.dao.UserDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+</bean>
+
+<bean id="userDao" parent="transactionBase" >
+    <property name="target" ref="userDaoTarget" />
+</bean>
+
+c,使用拦截器
+<!-- 定义事务管理器（声明式的事务） -->
+<bean id="transactionManager"
+    class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    <property name="sessionFactory" ref="sessionFactory" />
+</bean>
+<bean id="transactionInterceptor"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor">
+    <property name="transactionManager" ref="transactionManager" />
+    <!-- 配置事务属性 -->
+    <property name="transactionAttributes">
+        <props>
+            <prop key="*">PROPAGATION_REQUIRED</prop>
+        </props>
+    </property>
+</bean>
+<bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+    <property name="beanNames">
+        <list>
+            <value>*Dao</value>
+        </list>
+    </property>
+    <property name="interceptorNames">
+        <list>
+            <value>transactionInterceptor</value>
+        </list>
+    </property>
+</bean>
+<!-- 配置DAO -->
+<bean id="userDao" class="com.dao.UserDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+</bean>
+
+d,使用tx标签配置的拦截器
+<!-- 定义事务管理器（声明式的事务） -->
+<bean id="transactionManager"
+    class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    <property name="sessionFactory" ref="sessionFactory" />
+</bean>
+<tx:advice id="txAdvice" transaction-manager="transactionManager">
+    <tx:attributes>
+        <tx:method name="*" propagation="REQUIRED" />
+    </tx:attributes>
+</tx:advice>
+<aop:config>
+    <aop:pointcut id="interceptorPointCuts"expression="execution(* com.dao.*.*(..))" />
+    <aop:advisor advice-ref="txAdvice" pointcut-ref="interceptorPointCuts" />
+</aop:config>
+
+e,注解事务
+<context:annotation-config />
+<context:component-scan base-package="com.dao" />
+<tx:annotation-driven transaction-manager="transactionManager"/>
+<!-- 定义事务管理器（声明式的事务） -->
+<bean id="transactionManager"
+    class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    <property name="sessionFactory" ref="sessionFactory" />
+</bean>
+类中注解类似
+@Service("dataService")
+public class DataServiceImpl implements DataService {
+
+    @Autowired
+    private DataDao dataDao;
+
+    /**
+     * propagation 指定事务的传播行为
+     * isolation 指定事务的隔离级别，最常用的取值为READ_COMMITTED
+     * noRollbackFor 指定回滚规则,默认情况下spring的声明式事务对所有的运行时异常进行回滚，可通过此属性进行设置。
+     * readOnly 指定事务是否为只读
+     * timeOut 指定强制回滚之前事务可以占用的时间。
+     */
+    @Transactional(propagation=Propagation.REQUIRED,
+            isolation=Isolation.READ_COMMITTED,
+            noRollbackFor={TtException.class},
+            readOnly=false, timeout=3)
+    public void do(String a, String b) {
+       ......
+    }
+}
+------------------------------------------------------------------------
