@@ -1,0 +1,11 @@
+--------------------------------spring---------------------------------
+spring是J2EE应用程序框架，是轻量级的IoC和AOP的容器框架，主要是针对javaBean的生命周期进行管理的轻量级容器。
+IoC(Inversion of Control)控制反转，对象创建责任的反转，将类与类之间的依赖关系从代码中脱离出来，用配置的方式进行依赖描述。
+在spring中BeanFacotory是IoC容器的核心接口，负责实例化，定位，配置应用程序中的对象及建立这些对象间的依赖。
+应用上下文（com.springframework.context.ApplicationContext）建立在BeanFactory 基础之上。
+几乎所有的应用场合都直接使用ApplicationContext 而非底层的BeanFactory。
+spring中有三种注入方式，一种是set注入，一种是接口注入，另一种是构造方法注入。
+
+AOP模块：Aop是横切逻辑编程的思想。spring提供了满足Aop Alliance规范的实现，还整合了AspectJ这种AOP语言级的框架。
+
+-----------------------------------------------------------------------
