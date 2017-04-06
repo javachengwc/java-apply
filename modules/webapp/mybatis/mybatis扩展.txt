@@ -1,0 +1,37 @@
+-----------------------------------mybatis扩展-----------------------------------
+mybatis在不同处理点预留了接口可供定制化扩展
+1,结果映射的扩展，
+比如某字段在数据库中存储的是秒，在程序中是Date,对此字段的映射需要有一个Date转换成秒，查询时秒转成Date的过程。
+这个类型转换 可实现org.apache.ibatis.type.BaseTypeHandler接口来处理
+在mybatis全局配置文件中加入类似如下配置
+<typeHandlers>
+    <typeHandler javaType="Date" jdbcType="BIGINT"
+                 handler="com.ext.typehandler.Date2BigintTypeHandler"></typeHandler>
+</typeHandlers>
+在具体的mapper配置文件中，此字段的映射配置类似这样
+<resultMap id="ResultMap" type="com.model.Record">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="insert_time" jdbcType="BIGINT" property="insertTime" typeHandler="com.ext.typehandler.Date2BigintTypeHandler" />
+    .....
+</resultMap>
+
+2,对数据源访问拦截的扩展，通过org.apache.ibatis.plugin.Interceptor接口来实现
+比如:
+@Intercepts(@Signature(type = StatementHandler.class, method = "prepare", args = Connection.class))
+public class SqlInterceptor implements Interceptor {
+    public Object intercept(Invocation invocation) throws Throwable {
+        ................
+    }
+}
+在SqlSessionFactoryBean此bean的配置中加上此拦截器，就会对此sqlSessionFactory的数据访问进行拦截处理。
+<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <property name="dataSource" ref="....."/>
+    <property name="mapperLocations" value="....." />
+    <property name="plugins">
+        <array>
+            <bean id="sqlInterceptor" class="com.interceptor.SqlInterceptor"/>
+        </array>
+    </property>
+</bean>
+
+---------------------------------------------------------------------------------
