@@ -1,16 +1,13 @@
 package com.boot.controller;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import com.boot.model.Uu;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-/**
- * 应用访问类
- * @EnableAutoConfiguration注解让Spring Boot根据应用所声明的依赖来对Spring框架进行自动配置
- */
-@RestController
-@EnableAutoConfiguration
+@Controller
+@RequestMapping("/boot")
 public class BootController {
 
     @RequestMapping(value = "/boot")
@@ -19,7 +16,26 @@ public class BootController {
         return  "boot";
     }
 
-    public static void main(String[] args) throws Exception {
-        SpringApplication.run(BootController.class, args);
+    @RequestMapping("/{id}")
+    @ResponseBody
+     public Uu getUser(@PathVariable String id){
+        Uu uu  = new Uu();
+        uu.setId(id);
+        uu.setUsername("uu");
+        return uu;
     }
+
+//    public static void main(String[] args) throws Exception {
+//        SpringApplication.run(RtController.class, args);
+//        new SpringApplicationBuilder().sources(RtController.class).run(args);
+//    }
+
+//    //修改内嵌tomcat端口
+//    @Bean
+//    public EmbeddedServletContainerFactory servletFactory(){
+//        TomcatEmbeddedServletContainerFactory tomcatFactory =new TomcatEmbeddedServletContainerFactory();
+//        tomcatFactory.setPort(8088);
+//        tomcatFactory.setSessionTimeout(10, TimeUnit.SECONDS);
+//        return tomcatFactory;
+//    }
 }

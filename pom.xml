@@ -38,12 +38,12 @@
 		<module>modules/webservice</module>
 		<module>modules/wh8m</module>
 		<module>modules/other</module>
-		<module>modules/bigdata</module>
 		<module>modules/main</module>
 		<module>modules/configcenter</module>
 		<module>modules/shop</module>
 		<module>modules/mountain</module>
 		<module>modules/webboot</module>
+        <module>modules/bigdata</module>
     </modules>
 
 </project>

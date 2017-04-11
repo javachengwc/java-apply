@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.boot.dao.mapper.UuMapper" >
+
+    <resultMap id="UuMap" type="com.boot.model.Uu" >
+        <id column="id" property="id" jdbcType="VARCHAR" />
+        <result column="username" property="username" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <select id="queryUu"  resultMap="UuMap">
+        select * from tb_uu limit 1
+    </select>
+
+</mapper>
