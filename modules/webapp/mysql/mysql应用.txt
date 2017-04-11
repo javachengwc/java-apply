@@ -40,8 +40,21 @@ LEFT JOIN b b1 ON a1.id =b1.aid
 WHERE (SELECT COUNT(1)FROM b b2 WHERE b1.aid=b2.aid AND b1.id>b2.id)<2
 
 -----查询表中按照某字段分组,各分组中再按照另一字段排序的各分组前n条记录
+方式1:
 SELECT b1.* from aa b1
 where (select count(1) from aa b2 where b1.tag=b2.tag and b1.id>b2.id)<5
+
+方式2:
+select c.id,c.wd,c.score from
+(
+	select
+         @rank:=CASE when @wd=a.wd then  @rank+1 else 1 end as rank,
+         @wd:=a.wd as wwd,
+         a.id,a.wd,a.score
+	from  my_tb a ,( select @rank:=1, @wd:='') as b
+	order by a.wd ,a.id
+) c
+where c.rank<=3
 
 -----mysql获取字符串a在另一个字符串b最后一次出现的位置
  select if((char_length('a,b,c,d') - locate(',', reverse('a,b,c,d'))+1)>char_length('a,b,c,d'),0,(char_length('a,b,c,d') - locate(',', reverse('a,b,c,d'))+1) ) as last_pos from dual;
