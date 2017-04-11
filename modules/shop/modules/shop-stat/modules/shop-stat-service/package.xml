@@ -17,17 +17,19 @@
             <directory>${project.build.directory}/classes</directory>
             <outputDirectory>/${appname}/classes</outputDirectory>
         </fileSet>
-        <!--<fileSet>-->
-        <!--<directory>target/dependency</directory>-->
-        <!--<outputDirectory>/${appname}/dependency/</outputDirectory>-->
-        <!--</fileSet>-->
+        <fileSet>
+            <directory>target/dependency</directory>
+            <outputDirectory>/${appname}/dependency/</outputDirectory>
+        </fileSet>
     </fileSets>
 
+    <!--
     <dependencySets>
         <dependencySet>
             <outputDirectory>/${appname}/dependency</outputDirectory>
             <scope>runtime</scope>
         </dependencySet>
     </dependencySets>
+    -->
 </assembly>
 <!--mvn clean compile package dependency:copy-dependencies install -Dmaven.test.skip -Dappname=${appname} -Pdev -->

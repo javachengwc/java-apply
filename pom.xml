@@ -43,6 +43,7 @@
 		<module>modules/configcenter</module>
 		<module>modules/shop</module>
 		<module>modules/mountain</module>
+		<module>modules/webboot</module>
     </modules>
 
 </project>
