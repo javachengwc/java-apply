@@ -7,7 +7,7 @@ import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 
-@ServerEndpoint("/websocket")
+@ServerEndpoint("/wt")
 public class WebsocketController {
 
     //建立连接成功调用
