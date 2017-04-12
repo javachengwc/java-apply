@@ -15,9 +15,9 @@ import java.util.Map;
 @PropertySource(value ="classpath:var.properties",ignoreResourceNotFound=true)
 public class VarConfig {
 
-    public static Map<String, String> a = new HashMap<>();
+    public static Map<String, String> a = new HashMap<String,String>();
 
-    public static Map<String, String> b = new HashMap<>();
+    public static Map<String, String> b = new HashMap<String,String>();
 
     public static String aa;
 

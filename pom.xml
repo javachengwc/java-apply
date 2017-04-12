@@ -43,6 +43,7 @@
 		<module>modules/shop</module>
 		<module>modules/mountain</module>
 		<module>modules/webboot</module>
+		<module>modules/websocket</module>
         <module>modules/bigdata</module>
     </modules>
 
