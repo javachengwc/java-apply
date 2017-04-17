@@ -1,0 +1,24 @@
+------------------------------------redis内部数据结构-----------------------------------
+redis内部数据结构之sds:
+sds(simple dynamic string)是redis的字符串结构，不过redis的底层是先一层robj,再细化为sds或者long。
+sds可动态扩展内存。sds表示的字符串内容可以修改和追加。
+sds的类型定义是一个字符数组和一个header结构，header结构包含字符数组长度，最大容量和类型。
+typedef char * sds;字符数组长度等于最大容量+1，在字符串长度到达最大容量时仍然有一个字节存放结束符NULL。
+
+redis内部数据结构之robj
+对外而言，redis维护了K到V的映射关系，其中key的类型为string，而value类型可能是string,list,hash,set,sort set等。
+redis的这个映射关系是用一个dict来维护的，为了在同一个dict能够存储不同类型的value，redis使用了一个通用结构robj。
+如果value是一个list，则其内部是quicklist，如果value是一个string，则其内部结构可能是个sds或者long。
+typedef struct redisObject {
+    //type表述数据类型,OBJ_STRING--0,OBJ_LIST--1,OBJ_SET--2,OBJ_ZSET--3,OBJ_HASH--4
+    unsigned type:4;
+    //encoding表示编码，当type是OBJ_STRING的时候，编码可以用来区分是long还是sds
+    unsigned encoding:4;
+    unsigned lru:LRU_BITS;
+    //refcount为引用计数
+    int refcount;
+    //ptr表示数据指针
+    void *ptr;
+} robj;
+
+----------------------------------------------------------------------------------------
