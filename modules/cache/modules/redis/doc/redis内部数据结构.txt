@@ -1,14 +1,26 @@
 ------------------------------------redis内部数据结构-----------------------------------
+redis的数据结构从使用层面对外暴露的结构有:string,list,hash,set,sorted set
+redis的数据结构从内部实现层面有:sds,dict,ziplist,quicklist,skiplist
+redis的内部数据结构设计的出发点:
+a,存储效率------redis是专用于存储数据的，它对于计算机资源的主要消耗就在内存，有限的内存中尽可能多的存储数据是redis很重要的一方面。
+                redis的数据结构对压缩数据、减少内存碎片等问题上做了很好的处理，比如ziplist就很好的体现了存储优化这一方面。
+b,快速响应时间--redis是用于提供即时访问的，对于单个请求的响应时间要求很高，redis中dict数据结构的增量式重哈希就是应对快速响应的体现。
+                与快速响应时间相对的，是高吞吐量（high throughput）。有时这两个指标不能兼顾。
+------------------------------------
 redis内部数据结构之sds:
 sds(simple dynamic string)是redis的字符串结构，不过redis的底层是先一层robj,再细化为sds或者long。
 sds可动态扩展内存。sds表示的字符串内容可以修改和追加。
 sds的类型定义是一个字符数组和一个header结构，header结构包含字符数组长度，最大容量和类型。
 typedef char * sds;字符数组长度等于最大容量+1，在字符串长度到达最大容量时仍然有一个字节存放结束符NULL。
-
+-----------------------------------
 redis内部数据结构之robj
-对外而言，redis维护了K到V的映射关系，其中key的类型为string，而value类型可能是string,list,hash,set,sort set等。
+对外而言，redis维护各个database中K到V的映射关系，其中key的类型为string，而value类型可能是string,list,hash,set,sort set等。
 redis的这个映射关系是用一个dict来维护的，为了在同一个dict能够存储不同类型的value，redis使用了一个通用结构robj。
 如果value是一个list，则其内部是quicklist，如果value是一个string，则其内部结构可能是个sds或者long。
+robj可为多多找数据类型提供一种统一的表示方式。允许同一类型数据采用不同的内部表示，从而在某些情况下节省内存。
+robj表示的数据对外可表示string,list,hash,set,sorted set ,而这些数据结果底层实现是用的哪些内部数据结构(sds,ziplist,quicklist,skiplist),
+可通过robj的type,encoding这两个标记值来区分。也就是说，robj是连接2个层面的数据结构的桥梁。
+
 typedef struct redisObject {
     //type表述数据类型,OBJ_STRING--0,OBJ_LIST--1,OBJ_SET--2,OBJ_ZSET--3,OBJ_HASH--4
     unsigned type:4;
@@ -20,5 +32,110 @@ typedef struct redisObject {
     //ptr表示数据指针
     void *ptr;
 } robj;
+---------------------------------
+redis内部数据结构之dict
+dict是用来维护key和value映射关系的数据结构，类似Map或者dictionary类似。
+dict采用哈希算法从key计算得到在哈希表中的位置，采用拉链法解决冲突，并在装载因子到达阈值时自动扩展内存，引发重哈希。
+dict的重哈希是一种增量式重哈希，在需要扩展内存的时候避免一次性对所有key进行重哈希，而是将重哈希操作分散到对dict的各个增删改查操作中去。
+这种方法能做到每次只对一小部分key进行重哈希，而每次重哈希之间不影响dict的操作。以避免了重哈希期间单个请求的响应时间剧烈增加。
+为了增量重哈希，dict的数据结构里包含两个哈希表。在重哈希期间，数据从第一个哈希表向第二个哈希表迁移。
+dict在创建时，内部两个哈希表ht[0]和ht[1]起始都没有分配空间，table指针都赋为NULL。这表示当第一个数据插入时才会真正分配空间。
+//dict定义
+typedef struct dict {
+    //type是一个指向dictType结构的指针。它通过自定义的方式使得dict的key和value能够存储任何类型的数据。
+    dictType *type;
+    //私有数据指针privdata
+    void *privdata;
+    //2个哈希表,只有在重哈希的过程中，ht[0]和ht[1]才都有效。而在平常情况下，只有ht[0]有效，ht[1]里面没有任何数据。
+    dictht ht[2];
+    //rehashidx表示当前重哈希索引，如果值为-1，表示没有在重哈希过程中。否则，表示正在进行重哈希，它的值记录了当前重哈希进行到哪一步。
+    long rehashidx;
+    //当前正在进行遍历的iterator的个数。
+    int iterators;
+} dict;
 
+//哈希表
+typedef struct dictht {
+    //一个链表数组
+    dictEntry **table;
+    //size--标识dictEntry指针数组的长度
+    unsigned long size;
+    unsigned long sizemask;
+    //used记录dict中现有的数据个数。它与size的比值就是装载因子（load factor）。比值越大，表示哈希值冲突概率越高。
+    unsigned long used;
+} dictht;
+
+//链表中的节点entry
+typeof struct dictEntry {
+    void *key;
+    union {
+        void *val;
+        uint64_t u64;
+        int64_t s64;
+        double d;
+    } v;
+    struct dictEntry *next;
+} dictEntry;
+---------------------------------------
+redis内部数据结构之ziplist
+ziplist是一个特殊编码的数据结构，它的设计目标就是为了提高存储效率。ziplist可以用于存储字符串或整数，其中整数是按真正的二进制表示进行编码的，而不是编码成字符串序列。
+一个普通的双向链表，链表中每一项都占用独立的一块内存，各项之间用地址指针（或引用）连接起来。这种方式会带来大量的内存碎片，而且地址指针也会占用额外的内存。
+而ziplist却是将表中每一项存放在前后连续的地址空间内，一个ziplist整体占用一大块内存。
+ziplist的内存结构：<zlbytes><zltail><zllen><entry>...<entry><zlend>
+各个部分在内存上是前后相邻的，它们分别的含义如下：
+    <zlbytes>: 32bit，表示ziplist占用的字节总数（也包括<zlbytes>本身占用的4个字节）。
+    <zltail>: 32bit，表示ziplist表中最后一项（entry）在ziplist中的偏移字节数。<zltail>的存在，可以很方便地找到最后一项（不用遍历整个ziplist），从而可以在ziplist尾端快速地执行push或pop操作。
+    <zllen>: 16bit， 表示ziplist中数据项（entry）的个数。zllen字段因为只有16bit，所以可以表达的最大值为2^16-1。如果ziplist中数据项个数超过了16bit能表达的最大值，ziplist仍然可以来表示。
+             如果<zllen>小于等于2^16-2（也就是不等于2^16-1），那么<zllen>就表示ziplist中数据项的个数；否则，也就是<zllen>等于16bit全为1的情况，那么<zllen>就不表示数据项个数了，
+             这时候要想知道ziplist中数据项总数，那么必须对ziplist从头到尾遍历各个数据项，才能计数出来。
+    <entry>: 表示真正存放数据的数据项，长度不定。一个数据项（entry）也有它自己的内部结构
+    <zlend>: ziplist最后1个字节，是一个结束标记，值固定等于255。
+数据项<entry>的内部结构：<prevrawlen><len><data>。
+在真正的数据（<data>）前面，还有两个字段：
+    <prevrawlen>: 表示前一个数据项占用的总字节数。这个字段的用处是为了让ziplist能够从后向前遍历（从后一项的位置，只需向前偏移prevrawlen个字节，就找到了前一项）。这个字段采用变长编码。
+    <len>: 表示当前数据项的数据长度（即<data>部分的长度）。也采用变长编码。
+ziplist-data.png是一份真实的ziplist数据。解读如如下：
+    这个ziplist一共包含33个字节。字节编号从byte[0]到byte[32]。每个字节的值使用16进制表示。
+    头4个字节（0x21000000）是按小端（little endian）模式存储的<zlbytes>字段。<zlbytes>的值是0x00000021，用十进制表示正好就是33。
+    接下来4个字节（byte[4..7]）是<zltail>，用小端存储模式来解释，它的值是0x0000001D（值为29），表示最后一个数据项在byte[29]的位置（那个数据项为0x05FE14）。
+    接下来2个字节（byte[8..9]），值为0x0004，表示这个ziplist里一共存有4项数据。
+    接下来6个字节（byte[10..15]）是第1个数据项。其中，prevrawlen=0，因为它前面没有数据项；len=4，表示后面4个字节按字符串存储数据，数据的值为”name”。
+    接下来8个字节（byte[16..23]）是第2个数据项，与前面数据项存储格式类似，存储1个字符串”tielei”。
+    接下来5个字节（byte[24..28]）是第3个数据项，与前面数据项存储格式类似，存储1个字符串”age”。
+    接下来3个字节（byte[29..31]）是最后一个数据项，它的格式与前面的数据项存储格式不太一样。其中，第1个字节prevrawlen=5，表示前一个数据项占用5个字节；第2个字节=FE，
+    表示后面还有1个字节用来表示真正的数据，并且以整数表示。它的值是20（0x14）。
+    最后1个字节（byte[32]）表示<zlend>，是固定的值255（0xFF）。
+这个ziplist里存了4个数据项，分别为：字符串: “name”, 字符串: “tielei”,字符串: “age”,整数: 20
+--------------------------------------
+redis内部数据结构之quicklist
+quicklist是一个双向链表，它的每个节点都是一个ziplist。
+ziplist本身也是一个能维持数据项先后顺序的列表（按插入位置），而且是一个内存紧缩的列表（各个数据项在内存上前后相邻）。
+比如，一个包含3个节点的quicklist，如果每个节点的ziplist又包含4个数据项，那么对外表现上，这个list就总共包含12个数据项。
+-------------------------------------
+redis内部数据结构之skiplist
+redis内部数据结构之intset(int类型有序数组)
+--------------------------------------
+redis使用层数据结构的内部实现
+string数据结构内部实现
+long/sds
+
+list数据结构内部实现
+quicklist
+参数list-max-ziplist-size -2 表示按照数据项个数来限定每个quicklist节点上的ziplist长度。当这个参数配置成2时，表示每个quicklist节点的ziplist最多包含2个数据项
+参数list-compress-depth 0 表示一个quicklist两端不被压缩的节点个数，这里的节点个数是指quicklist双向链表的节点个数。
+比如list-compress-depth 2 表示quicklist两端各有2个节点不压缩，中间的节点压缩。0: 是个特殊值，表示都不压缩。
+
+hash数据结构内部实现
+ziplist--dict
+参数hash-max-ziplist-entries 512 表示当hash中的数据项（即field-value对）的数目超过512时，也就是ziplist数据项超过1024时，hash内部实现从ziplist变成dict。
+参数hash-max-ziplist-value 64 表示当hash中插入的任意一个value的长度超过了64时，hash内部实现从ziplist变成dict。
+
+set数据结构内部实现
+intset--dict
+set-max-intset-entries 512
+
+sorted set数据结构内部实现
+ziplist--dict+skiplist
+zset-max-ziplist-entries 128
+zset-max-ziplist-value 64
 ----------------------------------------------------------------------------------------
