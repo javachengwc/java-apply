@@ -76,8 +76,4 @@ proc/sys/vm/overcommit_memory
 默认为0，如果内存情况比较紧张的话，设为1：
     cho 1 > /proc/sys/vm/overcommit_memory
 
-
-
-
-
 -----------------------------------------------------------------
