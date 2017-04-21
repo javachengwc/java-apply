@@ -1,0 +1,118 @@
+-------------------------------------mysql慢查询分析优化--------------------------------------
+mysql慢查询分析以及性能瓶颈定位
+通过show命令查看mysql状态及变量，看是否能找到系统的瓶颈
+show status           -----显示状态信息（扩展show status like 'xxx'）
+show variables        -----显示系统变量（扩展show variables like 'xxx'）
+show innodb status    -----显示InnoDB存储引擎的状态
+show processlist      -----查看当前SQL执行，包括执行状态、是否锁表等
+mysqladmin variables -u username -p password       -----显示系统变量
+mysqladmin extended-status -u username -p password -----显示状态信息
+mysqld –verbose –help                            ------查看状态变量及帮助
+
+慢查询分析mysqldumpslow
+mysqldumpslow -s c -t 10 /database/mysql/slow-query.log   #输出记录次数最多的10条SQL语句。
+-s, 是表示按照何种方式排序，c、t、l、r分别是按照记录次数、时间、查询时间、返回的记录数来排序，ac、at、al、ar，表示相应的倒叙；
+-t, 是top n的意思，即为返回前面多少条的数据；
+-g, 后边可以写一个正则匹配模式，大小写不敏感的；
+
+explain分析查询
+使用explain关键字可以模拟优化器执行SQL查询语句，从而知道mysql是如何处理sql语句的。可以帮助分析查询语句的性能瓶颈。
+通过explain命令可以得到:
+– 表的读取顺序
+– 数据读取操作的操作类型
+– 哪些索引可以使用
+– 哪些索引被实际使用
+– 表之间的引用
+– 每张表有多少行被优化器查询
+explain字段：
+    Table：显示这一行的数据是关于哪张表的
+    possible_keys：显示可能应用在这张表中的索引。
+    key：实际使用的索引。mysql很少会选择优化不足的索引，此时可以在select语句中使用use index(idx)来强制使用一个索引或者用ignore index(idx)来强制忽略索引。
+    key_len：使用的索引的长度。长度越短越好
+    ref：显示索引的哪一列被使用了，如果可能的话，是一个常数
+    rows：mysql认为必须检索的用来返回请求数据的行数
+    type：查询使用何种类型。从最好到最差的连接类型为system、const、eq_ref、ref、range、index和ALL
+          system、const：可以将查询的变量转为常量.  如id=1; id为 主键或唯一键.
+          neq_ref：访问索引,返回某单一行的数据.(通常在联接时出现，查询使用的索引为主键或唯一键)
+          ref：访问索引,返回某个值的数据.(可以返回多行) 通常使用=时发生
+          range：这个连接类型使用索引返回一个范围中的行，比如使用>或<查找东西，并且该字段上建有索引时发生的情况(注:不一定好于index)
+          index：以索引的顺序进行全表扫描，优点是不用排序,缺点是还要全表扫描
+          ALL：全表扫描，应该尽量避免
+    Extra：关于mysql如何解析查询的额外信息，主要有以下几种
+          using index：只用到索引,可以避免访问表.
+          using where：使用到where来过虑数据. 不是所有的where clause都要显示using where. 如以=方式访问索引.
+          using tmporary：用到临时表
+          using filesort：用到额外的排序. (当使用order by v1,而没用到索引时,就会使用额外的排序)
+          range checked for eache record(index map:N)：没有好的索引.
+
+profiling分析查询
+通过慢日志查询可以知道哪些SQL语句执行效率低下，通过explain可以得知SQL语句的具体执行情况，索引使用等，还可以结合show命令查看执行状态。
+如果觉得explain的信息不够详细，可以同通过profiling命令得到更准确的SQL执行消耗系统资源的信息。
+mysql>select @@profiling      #查看profiling状态
+mysql>set profiling=1; #打开profiling
+mysql>select ......   #具体查询
+mysql> show profiles\G; #显示被执行的sql语句的时间和ID
+mysql>show profile for query 1;  #显示对应sql语句执行的详细信息
+show profile命令格式：
+SHOW PROFILE [type [, type] … ]
+    [FOR QUERY n]
+    [LIMIT row_count [OFFSET offset]]
+type:
+    ALL| BLOCK IO| CONTEXT SWITCHES| CPU| IPC| MEMORY| PAGE FAULTS| SOURCE| SWAPS
+
+索引优化
+   见mysql索引优化.txt
+
+配置优化
+  max_connections
+      show variables like ‘max_connections’ 最大连接数
+      show  status like ‘max_used_connections’响应的连接数
+      max_used_connections / max_connections * 100% （理想值≈85%）
+  back_log
+      mysql能暂存的连接数量。当mysql线程在一个很短时间内得到非常多的连接请求，这就起作用。如果MySQL的连接数据达到max_connections时，新来的请求将会被存在堆栈中，以等待某一连接释放资源，
+      该堆栈的数量即back_log，如果等待连接的数量超过back_log，将不被授予连接资源。
+      当观察（mysql> show full processlist），发现大量| unauthenticated user | xxx.xxx.xxx.xxx | NULL | Connect | NULL | login | NULL 的待连接时，就要加大back_log 的值了。
+      默认数值是50，可调优为128，对于Linux系统设置范围为小于512的整数。
+  interactive_timeout
+      一个交互连接在被服务器在关闭前等待行动的秒数。
+  key_buffer_size
+      key_buffer_size指定索引缓冲区的大小，它决定索引处理的速度，尤其是索引读的速度。key_reads / key_read_requests应该尽可能的低，至少是1:100，1:1000更好。
+      key_buffer_size只对MyISAM表起作用。即使不使用MyISAM表，但是内部的临时磁盘表是MyISAM表，也要使用该值。可以使用检查状态值created_tmp_disk_tables得知详情。
+  query_cache_size
+      使用查询缓冲，mysql将查询结果存放在缓冲区中，今后对于同样的select语句（区分大小写），将直接从缓冲区中读取结果。
+  record_buffer_size
+      每个进行一个顺序扫描的线程为其扫描的每张表分配这个大小的一个缓冲区。如果是做很多顺序扫描，可以增加该值。
+  read_rnd_buffer_size
+      随机读缓冲区大小。mysql会为每个连接发放该缓冲空间。当按任意顺序读取行时将分配一个随机读缓存区。进行排序查询时，mysql会首先扫描一遍该缓冲，以避免磁盘搜索，提高查询速度。
+  sort_buffer_size
+      每个需要进行排序的线程分配该大小的一个缓冲区。加速ORDER BY或GROUP BY操作。
+  join_buffer_size
+      联合查询操作所能使用的缓冲区大小
+  table_cache
+      表高速缓存的大小。每当mysql访问一个表时，如果在表缓冲区中还有空间，该表就被打开并放入其中，这样可以更快地访问表内容。
+  max_heap_table_size
+      用户可以创建的内存表(memory table)的大小。这个值用来计算内存表的最大行数值。
+      此变量和tmp_table_size一起限制了内部内存表的大小。如果某个内部heap（堆积）表大小超过tmp_table_size，mysql可以根据需要自动将内存中的heap表改为基于硬盘的MyISAM表。
+  tmp_table_size
+      通过设置tmp_table_size选项来增加一张临时表的大小，例如做高级GROUP BY操作生成的临时表。
+  thread_concurrency
+      并发线程数,推荐设置为服务器cpu核数的2倍
+  wait_timeout
+      指定一个请求的最大连接时间
+  innodb_buffer_pool_size
+      相当于key_buffer_size对于MyISAM表的作用一样。InnoDB使用该参数指定大小的内存来缓冲数据和索引。
+  innodb_log_buffer_size
+      log缓存大小，一般为1-8M，默认为1M，对于较大的事务，可以增大缓存大小。
+  innodb_additional_mem_pool_size
+      指定InnoDB用来存储数据字典和其他内部数据结构的内存池大小。缺省值是1M。
+  innodb_thread_concurrency=8
+      并发线程数,推荐设置为cpu核数的2倍，默认一般为8
+  innodb_flush_log_at_trx_commit
+      控制了innodb将log buffer中的数据写入日志文件并flush磁盘的时间点，取值分别为0、1、2三个。
+      0，表示当事务提交时，不做日志写入操作，而是每秒钟将log buffer中的数据写入日志文件并flush磁盘一次；
+      1，则在每秒钟或是每次事物的提交都会引起日志文件写入、flush磁盘的操作，确保了事务的ACID；
+      2，每次事务提交引起写入日志文件的动作，但每秒钟完成一次flush磁盘操作。
+      实际使用发现，此值对插入数据的速度影响非常大，设置为2时插入10000条记录只需要2秒，设置为0时只需要1秒，而设置为1时则需要229秒。
+      因此，建议尽量将插入操作合并成一个事务，这样可以大幅提高速度。在允许丢失最近部分事务的危险的前提下，可以把该值设为0或2。
+
+----------------------------------------------------------------------------------------------
