@@ -1,0 +1,142 @@
+----------------------------------thrift序列化------------------------------------
+thrift是一个rpc服务框架，用来进行可扩展且跨语言的服务的开发。它用功能强大的软件堆栈和代码生成引擎，允许开发人员定义一个简单的接口定义文件作为输入文件，
+编译器生成跨语言的RPC客户端和服务器通信代码。
+thrift是一个客户端和服务端的rpc架构体系，数据通过socket传输,具有自己内部定义的传输协议规范(TProtocol)和传输数据标准(TTransports)。
+通过自己内部的序列化机制对传输的数据进行简化和压缩提高并发与交互性能。
+thrift支持的数据类型
+    基本类型：
+    　　bool: 布尔值
+    　　byte: 8位有符号整数
+    　　i16: 16位有符号整数
+    　　i32: 32位有符号整数
+    　　i64: 64位有符号整数
+    　　double: 64位浮点数
+    　　string: UTF-8编码的字符串
+    　　binary: 二进制串
+    结构体类型：
+    　　struct: 定义的结构体对象
+    容器类型：
+    　　list: 有序元素列表
+    　　set: 无序无重复元素集合
+    　　map: 有序的key/value集合
+    异常类型：
+    　　exception: 异常类型
+    服务类型：
+    　　service: 具体对应服务的类
+thrift协议
+    thrift在传输协议上总体上划分为文本(text)和二进制(binary)传输协议, 为节约带宽，提供传输效率，一般情况下使用二进制类型的传输协议为多数。
+    1、TBinaryProtocol       -----二进制编码格式进行数据传输。
+    2、TCompactProtocol      -----使用Variable-Length Quantity (VLQ) 编码对数据进行压缩。
+    3、TJSONProtocol         -----使用JSON的数据编码协议进行数据传输。
+    4、TSimpleJSONProtocol   -----只提供JSON只写的协议，适用于通过脚本语言解析
+    5、TDebugProtocol        -----在开发的过程中帮助开发人员调试用的，以文本的形式展现方便阅读。
+thrift传输层
+    1、TSocket               -----使用堵塞式I/O进行传输，也是最常见的模式。
+    2、TFramedTransport      -----使用非阻塞方式，按块的大小，进行传输，就是NIO。
+    3、TFileTransport        -----按照文件的方式进程传输。
+    4、TMemoryTransport      -----使用内存I/O，相当于ByteArrayOutputStream实现。
+    5、TZlibTransport        -----使用执行zlib压缩，未提供Java的实现。
+thrift网络服务模型
+    阻塞服务
+        TSimpleServer          -----单线程阻塞模型,循环监听新请求的到来并完成对请求的处理。由于是一次只能接收和处理一个socket连接，效率比较低，在实际开发过程中很少用到它。
+        TThreadPoolServer      -----解决TSimpleServer不支持并发和多连接的问题, 引入了线程池。仍是多线程阻塞模式,线程池采用可伸缩的模式，队列采用同步队列(SynchronousQueue)。
+    非阻塞服务模型
+        TNonblockingServer     -----用单线程非阻塞(NIO)的模式, 借助Channel/Selector机制, 采用IO事件模型来处理。
+        THsHaServer            -----THsHaServer类是TNonblockingServer类的子类，为解决TNonblockingServer的缺点, 引入了线程池处理业务。
+                                  THsHaServer在完成数据读取之后，将业务处理过程交由一个线程池来完成，主线程直接返回进行下一次循环操作，效率大大提升。
+        TThreadedSelectorServer-----多线程服务器端使用非堵塞式I/O模型，是对TNonblockingServer的扩充, 其分离了Accept和Read/Write的Selector线程, 同时引入Worker工作线程池。
+                                  a,一个AcceptThread线程对象，专门用于处理监听socket上的新连接；
+                                  b,若干个SelectorThread对象专门用于处理业务socket的网络I/O操作，所有网络数据的读写均是有这些线程来完成；
+                                  c,一个负载均衡器SelectorThreadLoadBalancer对象，主要用于AcceptThread线程接收到一个新socket连接请求时，决定将这个新连接请求分配给哪个SelectorThread线程。
+                                  d,一个ExecutorService类型的工作线程池，在SelectorThread线程中，监听到有业务socket中有调用请求过来，
+                                  将请求读取之后，交给ExecutorService线程池中的线程完成此次调用的具体执行。
+thrift序列化与反序列化
+    thrift提供了可扩展序列化机制, 不但兼容性好而且压缩率高。
+    thrift的向后兼容性(Version)借助属性标识(数字编号id + 属性类型type)来实现, 可以理解为在序列化后(属性数据存储由 field_name:field_value => id+type:field_value)
+    Thrift的向后兼容性，需要满足一定的条件,1.域的数字序号不能改变,2.域的类型不能改变,满足这两点，无论增加还是删除域，都可以实现向后兼容。
+    如IDL文件Test.thrift如下:
+    struct Test {
+    　　1: required i32 key
+    　　2: required string value
+    }
+    对上面的Test.thrift文件转换成java源码，thrift -gen java Test.thrift
+    序列化的代码片段如下:
+    public void write(org.apache.thrift.protocol.TProtocol oprot, Test struct) throws org.apache.thrift.TException {
+      struct.validate();
+      //开始写结构体的标识,如果是TBinaryProtocol二进制传输，此处什么都不做。
+      oprot.writeStructBegin(STRUCT_DESC);
+      //写入域的类型以及域的数字序号
+      oprot.writeFieldBegin(KEY_FIELD_DESC);
+      //写入域的值，如果是二进制协议，这里是把int转换为byte数组
+      oprot.writeI32(struct.key);
+      //表示一个域序列化完，如果是TBinaryProtocol二进制传输，此处什么都不做。
+      oprot.writeFieldEnd();
+      if (struct.value != null) {
+        oprot.writeFieldBegin(VALUE_FIELD_DESC);
+        oprot.writeString(struct.value);
+        oprot.writeFieldEnd();
+      }
+      //用于序列化完所有的域后，向序列化的文件里面写入一个字节的0表示序列化结束。
+      oprot.writeFieldStop();
+      oprot.writeStructEnd();
+    }
+    序列化后的文件里面只有域的类型以及域的数字序号，没有域的名称，因此与JSON/XML这种序列化工具相比，thrift序列化后生成的文件体积要小。
+    反序列化的代码片段如下:
+    public void read(org.apache.thrift.protocol.TProtocol iprot, Test struct) throws org.apache.thrift.TException {
+      org.apache.thrift.protocol.TField schemeField;
+      iprot.readStructBegin();
+      while (true)
+      {
+        //iprot.readFieldBegin();就是从序列化文件中构造一个TField类型的对象
+        schemeField = iprot.readFieldBegin();
+        if (schemeField.type == org.apache.thrift.protocol.TType.STOP) {
+          break;
+        }
+        switch (schemeField.id) {
+          case 1: // KEY
+            //域的数字序号相同,域的类型相同,根据域的类型，调用相应的读取方法
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.key = iprot.readI32();
+              struct.setKeyIsSet(true);
+            } else {
+              //域的数字序号相同，但是域的类型不同，则会跳过给该域赋值
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 2: // VALUE
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.value = iprot.readString();
+              struct.setValueIsSet(true);
+            } else {
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          default:
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+        }
+        iprot.readFieldEnd();
+      }
+      iprot.readStructEnd();
+      struct.validate();
+    }
+    public class TField {
+        public final String name;
+        public final byte type;
+        public final short id;
+        public TField() {
+            this("", (byte)0, (short)0);
+        }
+        public TField(String n, byte t, short i) {
+            this.name = n;
+            this.type = t;
+            this.id = i;
+        }
+        public String toString() {
+            return "<TField name:\'" + this.name + "\' type:" + this.type + " field-id:" + this.id + ">";
+        }
+        public boolean equals(TField otherField) {
+            return this.type == otherField.type && this.id == otherField.id;
+        }
+    }
+    反序列化主要代码在while循环这里，schemeField是由域的类型type及域的数字序号id构成的一个类TField。
+----------------------------------------------------------------------------------
