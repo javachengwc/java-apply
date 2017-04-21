@@ -35,13 +35,12 @@ public void execute(Runnable command) {
 }
 
 提交任务处理流程:
-一个任务通过 execute(Runnable)方法被添加到线程池，任务就是一个Runnable类型的对象。
-当一个任务通过execute(Runnable)方法欲添加到线程池时：
-如果当前线程池中的数量小于corePoolSize，并线程池处于Running状态，创建并添加的任务。
-如果当前线程池中的数量等于corePoolSize，并线程池处于Running状态，缓冲队列workQueue未满，那么任务被放入缓冲队列、等待任务调度执行。
-如果当前线程池中的数量大于corePoolSize，缓冲队列workQueue已满，并且线程池中的数量小于maximumPoolSize，新提交任务会创建新线程执行任务。
-如果当前线程池中的数量大于corePoolSize，缓冲队列workQueue已满，并且线程池中的数量等于maximumPoolSize，新提交任务由Handler处理。
-当线程池中的线程数大于corePoolSize时，多余线程空闲时间超过keepAliveTime时，会关闭这部分线程。
+1.当线程池小于corePoolSize时，新提交任务将创建一个新线程执行任务，即使此时线程池中存在空闲线程。
+2.当线程池达到corePoolSize时，新提交任务将被放入workQueue中，等待线程池中任务调度执行
+3.当缓冲队列workQueue已满，且maximumPoolSize>corePoolSize时，新提交任务会创建新线程执行任务
+4.当缓冲队列workQueue已满，并且线程池中的数量等于maximumPoolSize，新提交任务由Handler处理
+5.当线程池中超过corePoolSize线程，空闲时间达到keepAliveTime时，关闭空闲线程
+6.当设置allowCoreThreadTimeOut(true)时，线程池中corePoolSize线程空闲时间达到keepAliveTime也将关闭
 
 RejectedExecutionHandler
 ThreadPoolExecutor.AbortPolicy()              当线程池中的数量等于最大线程数时、直接抛出抛出java.util.concurrent.RejectedExecutionException异常
