@@ -8,18 +8,20 @@ nginx的前置依赖
     yum -y install gcc-c++                                ---安装gcc-c++
 
     2,pcre:支持地址重写rewrite功能
-    wget ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.38.tar.gz
-    tar -zxvf pcre-8.38.tar.gz
-    cd pcre-8.38
+    wget ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.39.tar.gz
+    tar -zxvf pcre-8.39.tar.gz
+    cd pcre-8.39
     ./configure
     make
     make instal
     (中间有报错信息的话，可以./configure, make ,make check, make install, make clean依次执行看输出)
+    如果报错/usr/local/src/pcre-8.39/missing: line 81: aclocal-1.15: command not found
+    需在此目录执行autoreconf -ivf，再./configure ...
 
     3,zlib:gzip模块，需要zlib库支持
-    wget http://zlib.net/zlib-1.2.8.tar.gz
-    tar -zxvf zlib-1.2.8.tar.gz
-    cd zlib-1.2.8
+    wget http://zlib.net/zlib-1.2.11.tar.gz
+    tar -zxvf zlib-1.2.11.tar.gz
+    cd zlib-1.2.11
     ./configure
     make
     make install
@@ -31,6 +33,11 @@ nginx的前置依赖
     ./config
     make
     make install
+    如果编译和安装openssl时出错，POD document had syntax errors
+    POD document had syntax errors at /usr/bin/pod2man line 71.
+    可能是openSSL 1.0.1c 与 perl5.18 不兼容。
+    解决方式:在编译安装openssl还有nginx的时候先移除mv /usr/bin/pod2man /tmp/
+    编译安装完后再复制回来。
 
 建立启用nginx对应的用户组
     groupadd -r nginx
