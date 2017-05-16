@@ -87,9 +87,9 @@ tar -zxvf apache-tomcat-7.0.70.tar.gz
 rpm -qa | grep  mysql
     mysql-libs-5.1.73-3.el6_5.i686
 rpm -e mysql-libs-5.1.73-3.el6_5.i686 --nodeps   #卸载自带的低版本mysql
-wget http://mirrors.sohu.com/mysql/MySQL-5.7/mysql-5.7.14-linux-glibc2.5-i686.tar.gz
-tar -zxvf mysql-5.7.14-linux-glibc2.5-i686.tar.gz
-cp -r mysql-5.7.14-linux-glibc2.5-i686 /usr/local/mysql
+wget http://mirrors.sohu.com/mysql/MySQL-5.7/mysql-5.7.18-linux-glibc2.5-x86_64.tar
+tar -zxvf mysql-5.7.18-linux-glibc2.5-x86_64.tar
+cp -r mysql-5.7.18-linux-glibc2.5-x86_64 /usr/local/mysql
 groupadd mysql
 useradd -r -g mysql mysql
 cd /usr/local/mysql
@@ -290,6 +290,8 @@ http://127.0.0.1:8080/solr                        #访问solr
 ---------------sz,rz
 yum install lrzsz
 
+---------------node
+yum install nodejs
 ---------------------------------------
 #安装过程中找不到相应库解决
 vi /etc/ld.so.conf  #添加相应的库路径在里面
