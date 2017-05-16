@@ -203,5 +203,6 @@ cp -r xx . ---复制某个目录
 unzip xx.zip -d /home  ---解压xx.zip到/home目录下
 tar -zxvf  /aa.tar.gz  ---解压tar.gz文件
 ln -s /home/.../  aa   ---建软连接aa 连向/home/..
+unrar x xx.rar         ---解压rar文件
 ----------------------------
 
