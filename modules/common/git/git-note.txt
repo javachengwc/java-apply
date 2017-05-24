@@ -7,9 +7,9 @@ Please, commit your changes or stash them before you can merge.
 
 如果保留生产服务器上所做的改动,仅仅并入新配置项, 处理方法如下:
 -------------
-git stash
+git stash   -----保留改动
 git pull
-git stash pop
+git stash pop   ----回到改动点
 
 
 然后可以使用git diff -w +文件名 来确认代码自动合并的情况.
@@ -18,7 +18,10 @@ git stash pop
 如果用代码库中的文件完全覆盖本地工作版本. 方法如下:
 
 git reset --hard
+git reset --hard HEAD^    --回到上一个版本
+git reset --hard aabbcc   --回到提交id为aabbcc的版本
 git pull
+git reflog                --查看之前reset操作历史
 
 --------------------------------------------------------
 git clone  git@git.xx.com:xx/xx.git     --->克隆某git工程资源
@@ -30,6 +33,7 @@ git checkout -b local_path origin/remote_path
 git checkout aa                         --->将本地当前分支切换到aa
 git pull origin cheng                   --->拉去cheng的分支到当前分支aa
 git push origin aa:remoteaa             --->推送本地aa分支到远程remoteaa分支s
+git push origin --delete aa             --->删除远程分支aa
 git config --list                       --->查看git配置， 配置文件一般是~/.gitconfig
 git config --global user.name  [username]  --->配置git账号
 git config --global user.email [email]
@@ -81,6 +85,7 @@ git remote add origin git@github.com:defnngj/hibernate-demo.git
     将本地创建的新项目与新仓库建立连接
 
 git remote show name 必须要带name，否则git remote show的作用就是git remote，给出remote name的信息
+git remote show origin
 
 ------------------------------------------------------------
 
@@ -112,6 +117,11 @@ reset命令有3种方式：
 git reset –mixed：此为默认方式，不带任何参数的git reset，即时这种方式，它回退到某个版本，只保留源码，回退commit和index信息
 git reset –soft：回退到某个版本，只回退了commit的信息，不会恢复到index file一级。如果还要提交，直接commit即可
 git reset –hard：彻底回退到某个版本，本地的源码也会变为上一个版本的内容
+
+git tag            ---列出所有tag
+git tag v1         ---创建一个tag在当前commit
+git tag -a "v2" -m "cc"
+                   ---创建一个tag为v2
 
 -------------------------------------------------------------
 
