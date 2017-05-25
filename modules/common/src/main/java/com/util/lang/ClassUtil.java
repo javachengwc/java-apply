@@ -3,8 +3,10 @@ package com.util.lang;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.net.URL;
 import java.util.*;
+import net.sf.cglib.beans.BeanGenerator;
 
 public class ClassUtil {
 
@@ -106,5 +108,16 @@ public class ClassUtil {
             clazz = clazz.getSuperclass();
         }
         return list;
+    }
+
+    public static Class createClass(Parameter[] parameters, Class supperClass) {
+        BeanGenerator generator = new BeanGenerator();
+        generator.setSuperclass(supperClass);
+        for (int i = 0; i < parameters.length; i++) {
+            Parameter parameter = parameters[i];
+            String paramName = parameter.getName();
+            generator.addProperty(paramName, parameter.getType());
+        }
+        return (Class)generator.createClass();
     }
 }

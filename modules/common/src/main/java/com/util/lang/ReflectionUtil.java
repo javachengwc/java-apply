@@ -1,15 +1,11 @@
 package com.util.lang;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import net.sf.cglib.beans.BeanMap;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.beanutils.converters.DateConverter;
@@ -309,5 +305,33 @@ public class ReflectionUtil {
         }
 
         return list;
+    }
+
+    public static void setParamValue(Object target, Parameter[] parameters, Object[] args) {
+        if(target==null || parameters==null || args==null)
+        {
+            return;
+        }
+        if(parameters.length!=args.length)
+        {
+            return;
+        }
+        BeanMap beanMap = BeanMap.create(target);
+        for (int i = 0; i < parameters.length; i++) {
+            Parameter parameter = parameters[i];
+            String paramName = parameter.getName();
+            beanMap.put(paramName, args[i]);
+        }
+    }
+
+    public static Object[] getParamValue(Object target, Parameter[] parameters) {
+        BeanMap beanMap = BeanMap.create(target);
+        Object[] values = new Object[parameters.length];
+        for (int i = 0; i < parameters.length; i++) {
+            Parameter parameter = parameters[i];
+            String paramName =parameter.getName();
+            values[i] = beanMap.get(paramName);
+        }
+        return values;
     }
 }
