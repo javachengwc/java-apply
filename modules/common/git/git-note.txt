@@ -1,27 +1,36 @@
 ------------------git代码冲突-------------------------
 冲突异常:
-
 error: Your local changes to the following files would be overwritten by merge:
         protected/config/main.php
 Please, commit your changes or stash them before you can merge.
 
 如果保留生产服务器上所做的改动,仅仅并入新配置项, 处理方法如下:
--------------
 git stash   -----保留改动
 git pull
 git stash pop   ----回到改动点
-
-
 然后可以使用git diff -w +文件名 来确认代码自动合并的情况.
-----------------
 
 如果用代码库中的文件完全覆盖本地工作版本. 方法如下:
-
 git reset --hard
 git reset --hard HEAD^    --回到上一个版本
-git reset --hard aabbcc   --回到提交id为aabbcc的版本
+git reset --hard aabbcc   --回到提交id为aabbcc的版本,git reset的操作只是让本地代码回退到之前版本，远程库还是最新版本
 git pull
 git reflog                --查看之前reset操作历史
+--------------------------------------------------------
+git远程仓库版本回退
+方法1:
+git reset --hard  aabbcc        ---本地代码回退到aabbcc版本
+git push -f origin master       ---强制push到远程仓库
+
+方法2:一个版本一个版本的revert,比如代码版本一次是a1,a2,a3,现在要回到a1版本
+git revert a2                   ---每一次revert,代码回到对应的版本的内容，但每次revert都是一次提交，项目的版本号是要向上增加的
+git revert a1
+
+方法3:
+git reset --hard  aabbcc           ---本地代码回退到aabbcc版本
+git push origin --delete master    --->删除远程分支master
+git remote add origin master       --->创建远程分支master
+git push origin master:master      --->推送本地master分支到远程master分支
 
 --------------------------------------------------------
 git clone  git@git.xx.com:xx/xx.git     --->克隆某git工程资源
