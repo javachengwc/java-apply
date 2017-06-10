@@ -49,15 +49,37 @@
             <artifactId>jersey-proxy-client</artifactId>
             <version>${jersey.version}</version>
         </dependency>
+        -->
+        <!-- jersey提供的客户端包，封装了一些客户端操作的类 -->
+        <!--
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-client</artifactId>
             <version>${jersey.version}</version>
         </dependency>
+        -->
+        <!-- jersey的核心包-->
+        <!--
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-servlet</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+        -->
+        <!--jersey的文件上传下载支持包-->
+        <!--
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-multipart</artifactId>
             <version>2.22.1</version>
+        </dependency>
+        -->
+        <!--定义jersry支持的常用的数据格式,json,xml等-->
+        <!--
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-moxy</artifactId>
+            <version>${jersey.version}</version>
         </dependency>
         -->
     </dependencies>
