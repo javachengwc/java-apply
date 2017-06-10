@@ -44,6 +44,7 @@
 		<module>modules/mountain</module>
 		<module>modules/webboot</module>
 		<module>modules/websocket</module>
+		<module>modules/webrest</module>
         <module>modules/bigdata</module>
     </modules>
 
