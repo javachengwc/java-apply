@@ -294,6 +294,14 @@ public class AppUtil {
         return mac;
     }
 
+    //获取进程启动时间
+    public static long getProcessStartTime()
+    {
+        RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
+        long startTime = runtimeBean.getStartTime();
+        return startTime;
+    }
+
     public static void main(String[] args) throws Exception
     {
 

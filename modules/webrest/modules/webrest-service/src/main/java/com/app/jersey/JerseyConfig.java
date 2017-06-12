@@ -33,7 +33,7 @@ public class JerseyConfig extends ResourceConfig implements ApplicationContextAw
         //注册json功能
         register(JacksonFeature.class);
         //注册日志
-        register(LoggingFilter.class);
+        //register(LoggingFilter.class);
     }
 
     @Override
