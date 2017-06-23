@@ -6,6 +6,8 @@ public class ListMain2 {
 
 	public static void main(String args [])
 	{
+        checkMixList();
+
         testRemove();
 
         checkClear();
@@ -149,5 +151,52 @@ public class ListMain2 {
         {
             System.out.println("--------------p2:"+p);
         }
+    }
+
+    public static void checkMixList()
+    {
+        List<String> a=new ArrayList<String>();
+        for(int i=90000;i<100000;i++)
+        {
+            a.add("a"+i);
+        }
+        List<String> b=new ArrayList<String>();
+        for(int i=50000;i<150000;i++)
+        {
+            b.add("a"+i);
+        }
+        long now =System.currentTimeMillis();
+        System.out.println(now);
+        List<String> rtList =getMix(a,b);
+        System.out.println("cost:"+(System.currentTimeMillis()-now)/1000);
+        int rtCnt =rtList==null?0:rtList.size();
+        System.out.println(rtCnt);
+    }
+
+    public static  List<String> getMix(List<String>  a,List<String> b)
+    {
+        int cnt1=a==null?0:a.size();
+        int cnt2=b==null?0:b.size();
+        if(cnt1<=0 ||cnt2<=0)
+        {
+            return Collections.EMPTY_LIST;
+        }
+        Set<String> rtSet =new HashSet<String>();
+        int cnt=0;
+        for(String per:a)
+        {
+            cnt++;
+            if(b.contains(per))
+            {
+                rtSet.add(per);
+            }
+            if(cnt%1000==0)
+            {
+                System.out.println("对比了:"+cnt);
+            }
+        }
+        List<String> mixList= new ArrayList<String>(rtSet);
+        rtSet.clear();
+        return mixList;
     }
 }
