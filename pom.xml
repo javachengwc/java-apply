@@ -45,6 +45,7 @@
 		<module>modules/webboot</module>
 		<module>modules/websocket</module>
 		<module>modules/webrest</module>
+		<module>modules/webcloud</module>
         <module>modules/bigdata</module>
     </modules>
 
