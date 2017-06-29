@@ -40,6 +40,11 @@ public interface RestResource {
 
     //查询记录
     @GET
-    @Path("queryRecord")
+    @Path("/queryRecord")
     public  Record  queryRecord(@QueryParam("id") String recordId);
+
+    //检验rest get方法是否支持model传参，结果是不支持，此接口没办法传参
+    @GET
+    @Path("/queryRecordByRecord")
+    public  Record  queryRecordByRecord(Record record);
 }

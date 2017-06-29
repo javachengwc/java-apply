@@ -26,6 +26,8 @@ public class StringMain {
 
     public static void main(String args []) throws Exception
 	{
+        String nullStr=null;
+        System.out.println("aa".equals(nullStr));
         System.out.println("Aa".equalsIgnoreCase("aA"));
         System.out.println("a,".split(",").length);
 

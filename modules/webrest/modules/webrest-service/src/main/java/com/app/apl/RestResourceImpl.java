@@ -62,4 +62,15 @@ public class RestResourceImpl implements RestResource {
         }
         return null;
     }
+
+    public  Record  queryRecordByRecord(Record record)
+    {
+        logger.info("queryRecordByRecord invoked..........");
+        Integer recordId =record.getId();
+        if(recordId!=null)
+        {
+            return recordService.getById(recordId);
+        }
+        return null;
+    }
 }

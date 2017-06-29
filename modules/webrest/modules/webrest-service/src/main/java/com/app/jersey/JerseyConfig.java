@@ -3,7 +3,7 @@ package com.app.jersey;
 import com.app.annotation.RestService;
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
-import org.glassfish.jersey.media.multipart.MultiPartFeature;
+//import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -29,7 +29,7 @@ public class JerseyConfig extends ResourceConfig implements ApplicationContextAw
     //设定jersey配置
     public JerseyConfig() {
 
-        register(MultiPartFeature.class);
+        //register(MultiPartFeature.class);
         //注册json功能
         register(JacksonFeature.class);
         //注册日志
