@@ -13,5 +13,7 @@
         <module>modules/webcloud-manage</module>
         <module>modules/webcloud-appa</module>
 		<module>modules/webcloud-appb</module>
+		<module>modules/webcloud-gateway</module>
+		<module>modules/webcloud-consumer</module>
 	</modules>	
 </project>
