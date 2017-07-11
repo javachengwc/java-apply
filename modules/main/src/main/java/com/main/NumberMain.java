@@ -16,9 +16,11 @@ public class NumberMain {
         //小数的精准计算
         //不能传float或double作为BigDecimal构造参，只能用String作为构造参数
         //如果用float或double作为BigDecimal构造参，multiply后计算的结果也是不精准的
-        BigDecimal vv=new BigDecimal("2.3");
+        BigDecimal vv=new BigDecimal("3333333.33333333333");
+        System.out.println(vv.toString());
         BigDecimal rt =vv.multiply(new BigDecimal(100));
         System.out.println(rt.intValue());
+        System.out.println(new BigDecimal(vv.toString()).multiply(new BigDecimal(100)).intValue()+"--------------");
 
         double percent = 599 /(3600*1.0);
         BigDecimal bd = new BigDecimal("" + percent);

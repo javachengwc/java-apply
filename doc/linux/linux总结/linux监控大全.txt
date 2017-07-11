@@ -22,7 +22,7 @@ count：刷新次数。如果不指定刷新次数，但指定了刷新时间间
 
 输出项说明
 类别 	子项   	说明
-procs 	r 	    运行队列中等待cpu时间片的进程数量，如果长期大于1，说明cpu不足。
+procs 	r 	    运行队列中等待cpu时间片的进程数量，如果长期大于cpu核数，说明cpu不足。
         b 	    在等待资源的进程数（阻塞的进程）,比如正在等待I/O、或者内存交换等。
 memory  swpd 	虚拟内存已使用的大小即切换到内存交换区的内存数量(k表示)
                 如果swpd的值不为0（表示物理内存不够用或者内存泄露了，要查找耗内存进程解决掉），或者比较大，比如超过了100m，只要si、so的值长期为0，系统性能还是正常 。
@@ -246,5 +246,17 @@ session required /lib/security/pam_limits.so
 注意：
 32位系统是添加 session required /lib/security/pam_limits.so
 64位系统是添加 session required /lib64/security/pam_limits.so)
+---------------------------------------------------------
+检查linux系统性能
+    检查所有资源(CPU,内存,磁盘IO等)的利用率(utilization),饱和度(saturation)和错误(error)度量，也就是所谓的USE。
+uptime        ---快速查看机器负载情况
+dmesg |tail   ---查看系统日志最后10行,可以看到诸如tcp丢包，内核oom等日志
+vmstat 1      ---每秒输出一次系统整体情况统计信息
+mpstat -P ALL 1   ---显示每个CPU的占用情况
+pidstat 1         ---输出进程CPU占用率
+iostat -xz 1      ---查看机器磁盘IO情况
+free -m           ---查看系统内存使用情况
+sar -n DEV 1      ---查看网络设备吞吐率
+sar -n TCP,ETCP 1 ---查看TCP连接状态
 
 ----------------------------------------------------------
