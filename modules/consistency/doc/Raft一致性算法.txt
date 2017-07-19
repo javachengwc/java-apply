@@ -1,0 +1,55 @@
+-----------------------------Raft一致性算法--------------------------------
+Raft是以易懂（Understandability）为目标设计的一致性算法，现在已有的Raft算法实现框架，较为出名的有etcd，Google的Kubernetes也是用了etcd作为他的服务发现框架。
+Raft与Paxos不同,Raft强调的是易懂（Understandability），Raft和Paxos一样只要保证n/2+1节点正常就能够提供服务；
+Raft也使用了分而治之的思想把算法流程分为三个子问题：选举（Leader election）、日志复制（Log replication）、安全性（Safety）三个子问题；
+Raft开始时在集群中选举出Leader负责日志复制的管理，Leader接受来自客户端的事务请求（日志）（如果client连接的是follower则follower转发给leader），
+并将它们复制给集群的其他节点，然后负责通知集群中其他节点提交日志，Leader负责保证其他节点与他的日志同步，当Leader宕掉后集群其他节点会发起选举选出新的Leader；
+------------------------------------
+Raft相关点
+1,角色
+Raft把集群中的节点分为三种状态：Leader、 Follower 、Candidate，Raft运行时提供服务的时候只存在Leader与Follower两种状态；
+　　Leader（领导者）：负责日志的同步管理，处理来自客户端的请求，与Follower保持这heartBeat的联系；
+　　Follower（追随者）：刚启动时所有节点为Follower状态，响应Leader的日志同步请求，响应Candidate的请求，把请求到Follower的事务转发给Leader；
+　　Candidate（候选者）：负责选举投票，Raft刚启动时由一个节点从Follower转为Candidate发起选举，选举出Leader后从Candidate转为Leader状态；
+-----------------------------------
+2,Term
+在Raft中使用了一个可以理解为周期（第几届、任期）的概念，用Term作为一个周期，每个Term都是一个连续递增的编号，每一轮选举都是一个Term周期，在一个Term中只能产生一个Leader；
+简单描述下Term的变化流程： Raft开始时所有Follower的Term为1，其中一个Follower逻辑时钟到期后转换为Candidate，Term加1这是Term为2（任期），然后开始选举，
+这时候有几种情况会使Term发生改变：
+　　1：如果当前Term为2的任期内没有选举出Leader或出现异常，则Term递增，开始新一任期选举
+　　2：当这轮Term为2的周期选举出Leader后，过后Leader宕掉了，然后其他Follower转为Candidate，Term递增，开始新一任期选举
+　　3：当Leader或Candidate发现自己的Term比别的Follower小时Leader或Candidate将转为Follower，Term递增
+　　4：当Follower的Term比别的Term小时Follower也将更新Term保持与其他Follower一致；
+可以说每次Term的递增都将发生新一轮的选举，Raft保证一个Term只有一个Leader，在Raft正常运转中所有的节点的Term都是一致的，
+如果节点不发生故障一个Term（任期）会一直保持下去，当某节点收到的请求中Term比当前Term小时则拒绝该请求；
+-----------------------------------
+3,选举
+Raft的选举由定时器来触发，每个节点的选举定时器时间都是不一样的，开始时状态都为Follower某个节点定时器触发选举后Term递增，状态由Follower转为Candidate，向其他节点发起RequestVote RPC请求，这时候有三种可能的情况发生：
+　　1：该RequestVote请求接收到n/2+1（过半数）个节点的投票，从Candidate转为Leader，向其他节点发送heartBeat以保持Leader的正常运转
+　　2：在此期间如果收到其他节点发送过来的AppendEntries RPC请求，如该节点的Term大则当前节点转为Follower，否则保持Candidate拒绝该请求
+　　3：Election timeout发生则Term递增，重新发起选举
+在一个Term期间每个节点只能投票一次，所以当有多个Candidate存在时就会出现每个Candidate发起的选举都存在接收到的投票数都不过半的问题，这时每个Candidate都将Term递增、重启定时器并重新发起选举，
+由于每个节点中定时器的时间都是随机的，所以就不会多次存在有多个Candidate同时发起投票的问题。
+有这么几种情况会发起选举：
+    1：Raft初次启动，不存在Leader，发起选举；
+    2：Leader宕机或Follower没有接收到Leader的heartBeat，发生election timeout从而发起选举;
+       follower有一个选举时间，在该时间内如果未收到leader的心跳信息，则follower转变成candidate，自增term发起新一轮的投票，
+       leader遇到新的term则自动转变成follower的状态
+-----------------------------------
+4、日志复制（Log Replication）
+日志复制（Log Replication）主要作用是用于保证节点的一致性，这阶段所做的操作也是为了保证一致性与高可用性；
+当Leader选举出来后便开始负责客户端的请求，所有事务（更新操作）请求都必须先经过Leader处理，这些事务请求或说成命令也就是这里说的日志，
+要保证节点的一致性就要保证每个节点都按顺序执行相同的操作序列，日志复制（Log Replication）就是为了保证执行相同的操作序列所做的工作；
+在Raft中当接收到客户端的日志（事务请求）后,leader首先将该请求转化成entry，然后添加到自己的log中，得到该entry的index信息。
+entry中就包含了当前leader的term信息和在log中的index信息，然后通过heartbeat把该Entry同步给其他Follower，
+Follower接收到日志后记录日志然后向Leader发送ACK，当Leader收到大多数（n/2+1）Follower的ACK信息后将该日志设置为已提交并追加到本地磁盘中，
+通知客户端并在下个heartbeat中Leader将通知所有的Follower将该日志存储在自己的本地磁盘中。
+-----------------------------------
+5、安全性（Safety）
+安全性是用于保证每个节点都执行相同序列的安全机制，
+如leader针对复制过半的entry提交了，但是某些follower可能还没有这些entry，当leader挂了，该follower如果被选举成leader的时候，就可能会覆盖掉了上述的entry了，造成不一致的问题，
+所以新选出来的leader必须要满足被选举出的leader必须包含所有已经提交的entry这一约束；对于这一约束的简单实现是:
+只要当前server的log比半数server的log都新就可以，谁的lastLog的term越大谁越新，如果term相同，谁的lastLog的index越大谁越新。
+Raft另一个约束是当前term的leader不能“直接”提交之前term的entries，必须要等到当前term有entry过半了，才顺便一起将之前term的entries进行提交。
+Raft靠着这2个约束来进一步保证一致性问题。
+---------------------------------------------------------------------------
