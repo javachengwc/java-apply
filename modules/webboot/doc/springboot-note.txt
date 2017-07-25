@@ -1,0 +1,44 @@
+---------------------------------------------------spring boot-------------------------------------------
+spring boot默认集成的web容器是tomcat,如果用jetty，把pom中的tomcat依赖排除，加入jetty容器的依赖即可，如下:
+<dependencies>
+  <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+    <exclusions>
+      <exclusion>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-tomcat</artifactId>
+      </exclusion>
+    </exclusions>
+  </dependency>
+  <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-jetty</artifactId>
+  </dependency>
+<dependencies>
+----------------------------------------------------------
+如果需要把spring boot部署到独立的web容器中，需要
+1,修改启动类SpringBootServletInitializer,并重写configure方法
+public class SpringBootWebApplication extends SpringBootServletInitializer{
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+        return builder.sources(this.getClass());
+    }
+}
+2,修改pom文件打包方式为war,并排除自身容器依赖
+<!-- <packaging>jar</packaging> -->
+<packaging>war</packaging>
+
+<dependency>
+   <groupId>org.springframework.boot</groupId>
+   <artifactId>spring-boot-starter-web</artifactId>
+   <exclusions>
+       <exclusion>
+           <groupId>org.springframework.boot</groupId>
+           <artifactId>spring-boot-starter-tomcat</artifactId>
+       </exclusion>
+   </exclusions>
+</dependency>
+----------------------------------------------------------
+spring boot的打包，使用spring-boot-maven-plugin插件，直接运行maven生命周期的package就能产生一个整合依赖包的独立的jar包。
+---------------------------------------------------------------------------------------------------------
