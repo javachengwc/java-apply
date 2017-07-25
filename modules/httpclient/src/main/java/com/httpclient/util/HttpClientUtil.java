@@ -2,11 +2,13 @@ package com.httpclient.util;
 import org.apache.http.HttpHost;
 import com.util.lang.RunTimeUtil;
 import org.apache.http.*;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -232,5 +234,46 @@ public class HttpClientUtil {
     //只是个设置代理的简单例子
     public void setProxy() {
         httpClient = HttpClients.custom().setProxy(new HttpHost("127.0.0.1",222)).build();
+    }
+
+    public static String execute(HttpUriRequest request) {
+        logger.info("HttpClientUtil execute start,request =" + request.toString());
+        try {
+            HttpResponse response = httpClient.execute(request);
+            int rtCode = response.getStatusLine().getStatusCode();
+            logger.info("HttpClientUtil execute end ,rtCode={}", rtCode);
+            if (rtCode >= 400) {
+                String responseStr = "";
+                HttpEntity result = response.getEntity();
+                if(result!=null) {
+                    responseStr=EntityUtils.toString(response.getEntity(),UTF8);
+                }
+                request.abort();
+                throw new RuntimeException("response unexpected,rtCode="+rtCode+",response="+responseStr);
+            }
+            HttpEntity result = response.getEntity();
+            if (result == null) {
+                return null;
+            }
+            String resultStr = EntityUtils.toString(response.getEntity(),UTF8);
+            return resultStr;
+        } catch (Exception  e) {
+            logger.error("HttpClientUtil execute error,",e);
+            request.abort();
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <T> T execute(HttpUriRequest request, ResponseHandler<T> handler) {
+        try {
+            logger.info("HttpClientUtil execute start,request =" + request.toString());
+            T t = httpClient.execute(request, handler);
+            logger.info("HttpClientUtil execute end");
+            return t;
+        } catch (Exception e) {
+            logger.error("HttpClientUtil execute error,", e);
+            request.abort();
+            throw new RuntimeException(e);
+        }
     }
 }
