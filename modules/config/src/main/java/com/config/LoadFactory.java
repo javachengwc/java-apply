@@ -1,6 +1,5 @@
 package com.config;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,9 +17,20 @@ public class LoadFactory {
     private static final Logger logger = LoggerFactory.getLogger(LoadFactory.class);
 
     /**文件系统加载**/
+    //配置文件和jar包在同一个目录下可加载
     public static Properties loadFromFile(String name) throws Exception
     {
-        InputStream in = new FileInputStream("config.properties");
+        //name=config.properties
+        InputStream in = new FileInputStream(name);
+        return loadFromInputSteam(in);
+    }
+
+    //从jar包外部目录加载配置文件
+    public static Properties loadFromOutJar(String name) throws Exception
+    {
+        //name=config.properties 和jar包在同一个目录下
+        String path =System.getProperty("user.dir") + "/"+name;
+        InputStream in = new FileInputStream(path);
         return loadFromInputSteam(in);
     }
 
