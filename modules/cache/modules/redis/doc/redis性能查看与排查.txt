@@ -1,0 +1,28 @@
+-------------------------------------redis性能查看与排查---------------------------------
+通过redis-cli访问redis服务器，用info命令查看redis服务信息
+info memory                       -----返回与内存相关的信息
+    used_memory                   -----redis分配的内存总量，以字节（byte）为单位。它包含了实际缓存占用的内存和Redis自身运行所占用的内存(如元数据、lua)。
+    used_memory_human             -----数据和used_memory是一样的值，它以M为单位显示。
+    used_memory_rss               -----从操作系统上显示已经分配的内存总量。
+    mem_fragmentation_ratio       -----内存碎片率。
+    used_memory_lua               -----lua脚本引擎所使用的内存大小。
+    mem_allocator                 -----编译时指定的redis使用的内存分配器，可以是libc、jemalloc、tcmalloc、dlmalloc等。
+info stats                        -----返回redis汇总相关信息
+    total_commands_processed      -----redis服务处理的命令总数
+
+redis的延迟数据是无法从info信息中获取的。要查看延迟时间，可以用 Redis-cli工具加--latency参数运行
+Redis-cli --latency -h 127.0.0.1 -p 6379
+如果延迟是时间过长，成为redis的一个性能问题时，有以下几个办法分析解决性能问题。
+1,使用slowlog查出引发延迟的慢命令
+默认情况下命令若是执行时间超过10ms就会被记录到日志。slowlog只会记录其命令执行的时间，不包含io往返操作，也不记录单由网络延迟引起的响应慢。
+通常1gb带宽的网络延迟，预期在200μs左右，如果一个命令仅执行时间就超过10ms，那比网络延迟慢了近50倍。
+slowlog get命令,返回结果的第三个字段以微妙位单位显示命令的执行时间。如只需查看最后10个慢命令，输入slowlog get 10 即可。
+如要自己定义慢执行的标准，config set slowlog-log-slower-than 3000 设置慢执行为3000微妙，也可在redis.config中进行配置。
+2,
+
+
+
+
+
+
+-----------------------------------------------------------------------------------------
