@@ -130,13 +130,13 @@ everysec，表示每秒同步一次（拆中，默认值）
 
 配置记录慢查询的最大条数
 
-29）hash-max-zipmap-entries 512
+29）hash-max-ziplist-entries 512
 
-配置最大元素数，当超过该配置数据时，redis采用特殊hash算法
+当hash中的数据项（即field-value对）的数目超过512时，也就是ziplist数据项超过1024时，hash内部实现从ziplist变成dict
 
-30）hash-max-zipmap-value 64
+30）hash-max-ziplist-value 64
 
-配置最大元素值，当草果配置值时，采用特殊hash算法
+当hash中插入的任意一个value的长度超过了64时，hash内部实现从ziplist变成dict
 
 31）activerehashing yes
 

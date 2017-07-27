@@ -88,6 +88,9 @@ hdel key field [field ...]        ---删除key对应的hash表中的一个或多
 
 hincrby key field increment       ---为key对应的hash表中的域 field 的值加上增量 increment, 增量也可以为负数，相当于对给定域进行减法操作
 
+shutdown save                     ---强制执行保存操作并关闭redis服务，这样能保证不丢失任何数据。
+                                     在重启后，redis会从硬盘上加载持久化的文件，以确保数据集持续可用。
+
 参考命令在线文档:http://redisdoc.com/
 ---------------------------------------------------
 
