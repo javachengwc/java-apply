@@ -212,4 +212,7 @@ git checkout -- <filename>
 git fetch origin
 git reset --hard origin/master
 
+某个提交从A分支复制到B分支
+在B分支下执行git cherry-pick commitid(A分支的提交id)
+
 -------------------------------------------------------------

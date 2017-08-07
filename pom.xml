@@ -24,6 +24,7 @@
 		<module>modules/frame</module>
 		<module>modules/webapp</module>
 		<module>modules/cache</module>
+		<module>modules/datastore</module>
 		<module>modules/antlr</module>
 		<module>modules/crawler</module>
 		<module>modules/template</module>
