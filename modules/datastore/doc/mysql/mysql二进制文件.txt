@@ -1,0 +1,21 @@
+-------------------------mysql-binlog-------------------
+--二进制文件的查看
+mysql> show binlog events in 'mysql-bin.000002'
+mysqlbinlog mysql_bin.000001
+mysqlbinlog D:\mysqlquery\mysql-bin.000005 > D:\log.txt
+
+--根据二进制文件恢复误删除数据
+
+--根据操作点恢复
+mysqlbinlog --start-position=2568 --stop-position=2703 D:\mysqlquery\mysql-bin.000005 |mysql -uroot -proot
+
+--根据时间恢复
+mysqlbinlog --start-date="2015-01-01 00:00:00" --stop-date="2015-01-31 00:00:00" D:\mysqlquery\mysql-bin.000005|mysql -uroot -proot
+
+备注:通常在数据库第一次打开二进制日志记录的时候，会对数据库做一个全备份，导入到一个备份数据库中。
+当后面因为误删表或则误操作需要恢复到错误之前的那个点的时候，如果直接在当前数据库上通过二进制日志恢复，
+很容易导致之前增改的操作重复执行，这样恢复是有问题的。
+正确的做法是通过备份数据库从最开始的那个起点通过二进制日志恢复到误操作之前的那个点，
+这样恢复的数据才是准确的误操作之前的那个状态的数据。
+
+-------------------------------------------------------
