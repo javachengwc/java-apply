@@ -1,0 +1,61 @@
+--------------------------------------mongodb账号授权--------------------------------
+-----创建管理账户
+use admin
+db.createUser({user:'root',pwd:'root', roles:[{role:'userAdminAnyDatabase', db:'admin'}]}
+
+-----使用账户登录认证
+use admin
+db.auth('root', 'root')
+
+-----创建test账号并授予它在所有库读写所有权限
+use admin
+db.createUser({user:'test',pwd:'test', roles:[{role:'readWriteAnyDatabase', db:'admin'}]})
+
+-----在test库创建账号root,并授予读写权限
+use test
+db.createUser({user:"root",pwd:"root",roles:[{role:"readWrite",db:"test"}]})
+在test上创建的账号, 才是这个数据库的账号,才能在这里完成授权,但是创建用户的信息存放在admin库中
+
+-----在test库修改test账号
+use test
+db.updateUser('test',{pwd:'admin',roles:[{role:'readWrite',db:'test'}]})
+
+-----在test库中删除test账号
+use test
+db.dropUser('test')
+
+-----在admin库下查看所有创建的账号
+use admin
+db.system.users.find()                  ---查看所有账号
+db.system.users.find({user:'root'})     ---查看名称为root的账号
+
+-----在当前数据库下查看当前数据库账号
+show users;
+
+-----查看所有数据库
+show dbs
+
+-----查看当前是哪个数据库
+db
+
+-----------------------------------------
+可授予的角色列表:
+    1. 数据库用户角色：read、readWrite;
+    2. 数据库管理员角色：dbAdmin、dbOwner、userAdmin;
+    3. 集群管理角色：clusterAdmin、clusterManager、clusterMonitor、hostManager;
+    4. 备份还原角色：backup、restore;
+    5. 所有数据库角色：readAnyDatabase、readWriteAnyDatabase、userAdminAnyDatabase、dbAdminAnyDatabase;
+    6. 超级管理员：root
+    这几个角色间接提供了超级用户角色权限(dbOwner 、userAdmin、userAdminAnyDatabase)
+角色说明:
+    Read：允许用户读取指定数据库
+    readWrite：允许用户读写指定数据库
+    dbAdmin：允许用户在指定数据库中执行管理函数，如索引创建、删除，查看统计
+    userAdmin：允许用户向system.users集合写入，可以在指定数据库里创建、删除和管理用户
+    clusterAdmin：只在admin数据库中可用，赋予用户所有分片和复制集相关函数的管理权限。
+    readAnyDatabase：只在admin数据库中可用，赋予用户所有数据库的读权限
+    readWriteAnyDatabase：只在admin数据库中可用，赋予用户所有数据库的读写权限
+    userAdminAnyDatabase：只在admin数据库中可用，赋予用户所有数据库的userAdmin权限
+    dbAdminAnyDatabase：只在admin数据库中可用，赋予用户所有数据库的dbAdmin权限。
+    root：只在admin数据库中可用。超级账号
+-------------------------------------------------------------------------------------

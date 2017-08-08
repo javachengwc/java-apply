@@ -1,0 +1,37 @@
+------------------------------mongodb安装----------------------------
+windows下安装，从官网上下载安装文件,直接执行点下一步到结束即可。
+默认安装路径为:C:\Program Files\MongoDB
+为便于后面在命令行执行mongo相关命令，在环境变量Path中添加mongo的bin目录路径:
+C:\Program Files\MongoDB\Server\3.4\bin
+
+启动mongdb
+mongod --dbpath [数据存放path]          //基本启动
+mongod --dbpath [数据存放path] -auth    //开启授权启动
+
+mongod -dbpath E:\mongodata          -----在命令行中启动mongo服务，不报错表示安装成功
+mongo                                -----客户端连接mongo服务
+
+mongodb启动参数：
+--bind_ip 	               绑定IP
+--logpath 	               设定mongoDB日志文件
+--logappend 	           使用追加的方式写日志
+--dbpath 	               指定数据库路径
+--port 	                   指定服务端口号，默认端口27017
+--serviceName 	           指定服务名称
+--serviceDisplayName 	   指定服务名称
+--install 	               指定作为一个Windows服务
+--rest                     启用mongdb自带的http用户界面功能,MongoDB的Web访问端口比服务的端口多1000
+----------------------------------------
+linux下安装mongodb
+
+curl -O https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-3.0.6.tgz    # 下载
+tar -zxvf mongodb-linux-x86_64-3.0.6.tgz                                   # 解压
+mv  mongodb-linux-x86_64-3.0.6/ /usr/local/mongodb                         # 将解压包拷贝到指定目录
+vi /etc/profile                                                            # 设置环境变量path
+      PATH=/usr/local/mongodb/bin:$PATH
+source /etc/profile                                                        # 环境变量设置生效
+mongo --version                                                            # 查看mongo版本
+mkdir -p /data/db                                                          # 创建mongodb数据库路径
+                                                                           # /data/db是MongoDB 默认的启动的数据库路径(--dbpath)
+
+---------------------------------------------------------------------

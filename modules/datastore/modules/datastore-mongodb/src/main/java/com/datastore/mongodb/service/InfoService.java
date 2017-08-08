@@ -62,7 +62,9 @@ public class InfoService {
         if(info.getCnt()!=null) {
             setObj.put("cnt", info.getCnt());
         }
-        mongoDbCollection.update(queryObj,setObj);
+        BasicDBObject doc = new BasicDBObject();
+        doc.put("$set", setObj);
+        mongoDbCollection.update(queryObj,doc);
         return true;
     }
 }
