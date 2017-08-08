@@ -33,18 +33,4 @@ public class WebController {
 
         return map;
     }
-
-    @RequestMapping(value = "redirect", method = RequestMethod.GET)
-    public String redirect(@RequestParam(value = "url") String url, HttpServletRequest request)
-    {
-        logger.info("WebController redirect invoked.................");
-
-        if(!StringUtils.isBlank(url) && (url.startsWith("http") ||  url.startsWith("www")))
-        {
-            return "redirect:" + url;
-        } else {
-            return "";
-        }
-    }
-
 }

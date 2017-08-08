@@ -10,16 +10,16 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 //rest程序启动入口
 @EnableAutoConfiguration
 @SpringBootApplication
-public class DataStoreServer {
+public class MongoDbServer {
 
-    private static Logger logger= LoggerFactory.getLogger(DataStoreServer.class);
+    private static Logger logger= LoggerFactory.getLogger(MongoDbServer.class);
 
     public static void  main(String args []) throws Exception
     {
-        logger.info("DataStoreServer start  begin........");
+        logger.info("MongoDbServer start  begin........");
 
-        SpringApplicationBuilder builder =new SpringApplicationBuilder(new Object[] { DataStoreServer.class, Config.class }).web(true);
+        SpringApplicationBuilder builder =new SpringApplicationBuilder(new Object[] { MongoDbServer.class, Config.class }).web(true);
         builder.run(args);
-        logger.info("DataStoreServer start success........");
+        logger.info("MongoDbServer start success........");
     }
 }

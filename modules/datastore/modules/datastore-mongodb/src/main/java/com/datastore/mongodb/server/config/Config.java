@@ -4,9 +4,11 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 @Configuration
 @ComponentScan(basePackages = { "com.datastore.mongodb" })
+@Import({MongoDbConfig.class})
 public class Config {
 
     @Bean
