@@ -4,6 +4,7 @@ import com.app.annotation.RestService;
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
 //import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.glassfish.jersey.servlet.ServletProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -29,7 +30,10 @@ public class JerseyConfig extends ResourceConfig implements ApplicationContextAw
     //设定jersey配置
     public JerseyConfig() {
 
+        //property(JspMvcFeature.TEMPLATE_BASE_PATH, "/WEB-INF/jsp");
+
         //register(MultiPartFeature.class);
+        //register(JspMvcFeature.class);
         //注册json功能
         register(JacksonFeature.class);
         //注册日志
@@ -55,7 +59,7 @@ public class JerseyConfig extends ResourceConfig implements ApplicationContextAw
             if (restface != null) {
                 //加载resource
                 register(restObj);
-                Path path = restface.getDeclaredAnnotation(Path.class);
+                Path path = restface.getAnnotation(Path.class);
                 String pathValue =path.value();
                 logger.info("JerseyConfig register restService ["+restClass.getSimpleName()+"],path="+pathValue);
             }else

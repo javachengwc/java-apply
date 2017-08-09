@@ -1,0 +1,87 @@
+----------------------------------------------------------------
+spring-boot-starter-actuator用于集中采集应用的各项指标信息。
+pom:
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+
+springboot启动后此模块提供的接口默认情况下是不允许访问的，会返回401:Unauthorized
+若要关闭验证 application.properties 中设置management.security.enabled=false
+若要开启验证
+    a,pom中加入spring-security依赖
+      <dependency>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-security</artifactId>
+      </dependency>
+     b,在application.properties中加入认证信息,如下:
+     security.user.name=admin
+     security.user.password=admin
+     management.security.enabled=true
+     management.security.role=ADMIN
+     访问http://localhost:8080/env,就看到需要输入用户名和密码了。
+
+     如果在application.properties还有额外的配置项目,比如:
+     management.contextPath=/manage       #设置ContextPath
+     management.port=8081
+     那么访问url就是：http://localhost:8081/manage/env
+
+spring-boot-starter-actuator默认端点Endpoint也就是接口如下:
+应用配置类
+  /autoconfig                    获取应用的自动化配置
+  /beans                         获取应用上下文中创建的所有Bean
+  /configprops                   获取应用中配置的属性信息
+  /env                           获取应用所有可用的环境属性
+  /mappings                      获取应用所有Spring MVC的控制器映射关系
+  /info                          获取应用自定义的信息
+度量指标类
+  /metrics                      返回应用的各类重要度量指标信息
+  /health                       返回应用的各类健康指标信息
+  /dump                         返回程序运行中的线程信息
+  /trace                        返回基本的HTTP跟踪信息
+操作控制类
+  /shutdown                     关闭应用
+端点的启用与禁用可在application.properties中配置
+endpoints.configprops.enabled=false      #禁用cvonfigprops端点
+endpoints.shutdown.enabled=false         #禁用shutdown端点
+-------------------------------
+自定义端点
+a,覆盖已有端点，比如/health端点
+@Component
+public class CustomHealth implements HealthIndicator {
+    public Health health() {
+        return Health.up().build();
+    }
+}
+
+b,创建新端点
+@Component
+public class TestEndpoint implements Endpoint<String> {
+    public String getId() {
+        return "test";
+    }
+    public boolean isEnabled() {
+        return true;
+    }
+    public boolean isSensitive() {
+        return true;
+    }
+    public String invoke() {
+        return "test";
+    }
+}
+
+c,列举所有端点
+@Component
+public class ListEndpoint extends AbstractEndpoint<List<Endpoint>> {
+    private List<Endpoint> endpoints;
+    @Autowired
+    public ListEndpoint(List<Endpoint> endpoints) {
+        super("allEndpoint");
+        this.endpoints = endpoints;
+    }
+    public List<Endpoint> invoke() {
+        return this.endpoints;
+    }
+}
+---------------------------------------------------------------
