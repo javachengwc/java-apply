@@ -15,7 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 与rest接口是互斥的，启rest服务就不能启此http服务，启http服务就不能启rest服务
+ * 与rest接口是互斥的，启rest服务就不能启此mvc服务，启mvc服务就不能启rest服务
+ * 但通过MvcConfig类处理后，既可以启rest服务，有可以启此mvc服务
  * JerseyConfig不标注@Component 就表示不起rest服务
  */
 @Controller

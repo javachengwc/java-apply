@@ -23,6 +23,8 @@ public class RestServer {
         //SpringApplication.run(RestServer.class, args);
 
         SpringApplicationBuilder builder =new SpringApplicationBuilder(new Object[] { RestServer.class, Config.class });
+        //builder.sources(MainConfig.class);
+        //builder.profiles("a","b");
         builder.run(args);
         logger.info("RestServer start success........");
     }
