@@ -1,6 +1,7 @@
 package com.app.jersey;
 
 import com.app.annotation.RestService;
+import com.app.metrics.MetricsResource;
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
 //import org.glassfish.jersey.media.multipart.MultiPartFeature;
@@ -8,6 +9,7 @@ import org.glassfish.jersey.servlet.ServletProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -21,6 +23,9 @@ import java.util.Map;
 public class JerseyConfig extends ResourceConfig implements ApplicationContextAware {
 
     private static final Logger logger = LoggerFactory.getLogger(JerseyConfig.class);
+
+    @Autowired(required = false)
+    private MetricsResource metricsResource;
 
     private ApplicationContext applicationContext;
 
@@ -78,6 +83,12 @@ public class JerseyConfig extends ResourceConfig implements ApplicationContextAw
                 logger.info("JerseyConfig register filter ["+filterName+"]");
                 register(requestFilter);
             }
+        }
+
+        //注册metrics接口
+        if(metricsResource!=null) {
+            logger.info("JerseyConfig register metricsResource");
+            register(metricsResource);
         }
 
     }
