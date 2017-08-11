@@ -17,9 +17,18 @@ public class MetricsResource {
     @Autowired
     private MetricRegistry metricRegistry;
 
+    @Autowired
+    private JvmMetrics jvmMetrics;
+
     @GET
     @Path("/metricRegistry")
     public MetricRegistry getmetricRegistry() {
         return metricRegistry;
+    }
+
+    @GET
+    @Path("/jvm")
+    public MetricRegistry getJvmMetrics() {
+        return jvmMetrics.getJvmMetrics();
     }
 }
