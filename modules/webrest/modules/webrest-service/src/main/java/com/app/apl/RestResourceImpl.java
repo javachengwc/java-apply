@@ -5,6 +5,7 @@ import com.app.annotation.RestService;
 import com.app.model.Record;
 import com.app.model.vo.RspData;
 import com.app.service.RecordService;
+import com.app.service.ServiceFactory;
 import com.util.AppUtil;
 import com.util.base.NumberUtil;
 import org.slf4j.Logger;
@@ -23,6 +24,10 @@ public class RestResourceImpl implements RestResource {
 
     @Autowired
     private RecordService recordService;
+
+    public RecordService getRecordService() {
+        return ServiceFactory.getRecordService();
+    }
 
     public RspData<String> def()
     {
@@ -43,14 +48,14 @@ public class RestResourceImpl implements RestResource {
 
     public  RspData<Integer>  genRecord(Record record)
     {
-        int rt =recordService.insertRecord(record);
+        int rt =getRecordService().insertRecord(record);
         return new RspData<Integer>(0,"success",rt);
     }
 
     public  Record  getRecord(String recordId)
     {
         if(NumberUtil.isNumeric(recordId)) {
-            return recordService.getById(Integer.parseInt(recordId));
+            return getRecordService().getById(Integer.parseInt(recordId));
         }
         return null;
     }
@@ -58,7 +63,7 @@ public class RestResourceImpl implements RestResource {
     public  Record  queryRecord( String recordId)
     {
         if(NumberUtil.isNumeric(recordId)) {
-            return recordService.getById(Integer.parseInt(recordId));
+            return getRecordService().getById(Integer.parseInt(recordId));
         }
         return null;
     }
@@ -69,7 +74,7 @@ public class RestResourceImpl implements RestResource {
         Integer recordId =record.getId();
         if(recordId!=null)
         {
-            return recordService.getById(recordId);
+            return getRecordService().getById(recordId);
         }
         return null;
     }

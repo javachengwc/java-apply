@@ -1,8 +1,16 @@
 package com.app.controller;
 
+import com.app.metrics.CounterMetrics;
+import com.app.metrics.HistogramMetrics;
+import com.app.metrics.MeterMetrics;
+import com.app.metrics.TimerMetrics;
+import com.codahale.metrics.Timer;
+import com.util.base.RandomUtil;
+import com.util.base.ThreadUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,12 +33,27 @@ public class WebController {
 
     private static Logger logger = LoggerFactory.getLogger(WebController.class);
 
+    @Autowired(required = false)
+    private TimerMetrics timerMetrics;
+
+    @Autowired(required = false)
+    private MeterMetrics meterMetrics;
+
+    @Autowired(required = false)
+    private CounterMetrics counterMetrics;
+
+    @Autowired(required = false)
+    private HistogramMetrics histogramMetrics;
+
     @ResponseBody
     @RequestMapping("getWebInfo")
     public Map<String,Object> getWebInfo(HttpServletRequest request, HttpServletResponse response, HttpSession session)
     {
 
         logger.info("WebController getWebInfo invoked.................");
+        Timer.Context timerContext = timerMetrics==null?null:timerMetrics.getRequestTimer().time();
+        if(meterMetrics!=null) { meterMetrics.getMeter().mark();}
+        if(counterMetrics!=null) {counterMetrics.getCounter().inc(); }
 
         Map<String,Object> map  = new HashMap<String,Object>();
 
@@ -49,6 +72,15 @@ public class WebController {
         //webapp的path F:\workproject\java-application\modules\webapp\modules\app-z7z8\src\main\webapp
         String url = session.getServletContext().getRealPath("/");
         map.put("webappRootPath",url);
+
+        if(timerContext!=null) {
+            Integer rdmInt =RandomUtil.nextRandomInt(10,200);
+            ThreadUtil.sleep(rdmInt.longValue());
+            timerContext.stop();
+            if(histogramMetrics!=null) {
+                histogramMetrics.getHistogram().update(rdmInt.intValue());
+            }
+        }
 
         return map;
     }

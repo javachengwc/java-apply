@@ -1,6 +1,7 @@
 package com.app.jersey;
 
 import com.app.annotation.RestService;
+import com.app.health.HealthResource;
 import com.app.metrics.MetricsResource;
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
@@ -26,6 +27,9 @@ public class JerseyConfig extends ResourceConfig implements ApplicationContextAw
 
     @Autowired(required = false)
     private MetricsResource metricsResource;
+
+    @Autowired(required = false)
+    private HealthResource healthResource;
 
     private ApplicationContext applicationContext;
 
@@ -89,6 +93,12 @@ public class JerseyConfig extends ResourceConfig implements ApplicationContextAw
         if(metricsResource!=null) {
             logger.info("JerseyConfig register metricsResource");
             register(metricsResource);
+        }
+
+        //注册health接口
+        if(healthResource!=null) {
+            logger.info("JerseyConfig register healthResource");
+            register(healthResource);
         }
 
     }

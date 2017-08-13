@@ -20,6 +20,24 @@ public class MetricsResource {
     @Autowired
     private JvmMetrics jvmMetrics;
 
+    @Autowired
+    private GaugeMetrics gaugeMetrics;
+
+    @Autowired
+    private TimerMetrics timerMetrics;
+
+    @Autowired
+    private MeterMetrics meterMetrics;
+
+    @Autowired
+    private CounterMetrics counterMetrics;
+
+    @Autowired
+    private HistogramMetrics histogramMetrics;
+
+    @Autowired
+    private EmptyMetrics emptyMetrics;
+
     @GET
     @Path("/metricRegistry")
     public MetricRegistry getmetricRegistry() {
@@ -31,4 +49,41 @@ public class MetricsResource {
     public MetricRegistry getJvmMetrics() {
         return jvmMetrics.getJvmMetrics();
     }
+
+    @GET
+    @Path("/gauge")
+    public MetricRegistry getGaugeMetrics() {
+        return gaugeMetrics.getGaugeMetrics();
+    }
+
+    @GET
+    @Path("/timer")
+    public MetricRegistry getTimerMetrics() {
+        return timerMetrics.getTimerMetrics();
+    }
+
+    @GET
+    @Path("/meter")
+    public MetricRegistry getMeterMetrics() {
+        return meterMetrics.getMeterMetrics();
+    }
+
+    @GET
+    @Path("/counter")
+    public MetricRegistry getCounterMetrics() {
+        return counterMetrics.getCounterMetrics();
+    }
+
+    @GET
+    @Path("/histogram")
+    public MetricRegistry getHistogramMetrics() {
+        return histogramMetrics.getHistogramMetrics();
+    }
+
+    @GET
+    @Path("/empty")
+    public MetricRegistry getEmptyMetrics() {
+        return emptyMetrics.getEmptyMetrics();
+    }
+
 }
