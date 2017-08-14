@@ -1,21 +1,21 @@
 package com.util.encrypt;
 
+import com.util.CharsetUtil;
+import org.apache.commons.codec.digest.DigestUtils;
+
 import java.security.MessageDigest;
 
 /**
- * MD5数字签名算法
+ * MD5数字签名（已破解）,单向加密（即只有加密，没有解密）
  */
 public class MD5
 {
-	public MD5()
+    public static void main (String args[]) throws Exception
     {
-		
-    }
-
-    public static void main(String args[])
-    {
-        String str = "abc";
+        String str = "test";
         System.out.println(getMD5(str));
+        System.out.println("-------------------------------");
+        System.out.println(encodeMd5Hex(str));
     }
 
     public static String getMD5(String source)
@@ -51,6 +51,16 @@ public class MD5
             e.printStackTrace();
         }
         return s;
+    }
+
+    //使用commons codec的md5加密
+    public static byte[] encode(String data) throws Exception {
+        return DigestUtils.md5(data.getBytes(CharsetUtil.UTF8));
+    }
+
+    public static String encodeMd5Hex(String data) throws Exception {
+        //直接使用new String(encodedByte,"UTF-8")不行
+        return new String(DigestUtils.md5Hex(data.getBytes(CharsetUtil.UTF8)));
     }
 }
 
