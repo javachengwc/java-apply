@@ -38,6 +38,9 @@ public class MetricsResource {
     @Autowired
     private EmptyMetrics emptyMetrics;
 
+    @Autowired
+    private MetricsReport metricsReport;
+
     @GET
     @Path("/metricRegistry")
     public MetricRegistry getmetricRegistry() {
@@ -86,4 +89,17 @@ public class MetricsResource {
         return emptyMetrics.getEmptyMetrics();
     }
 
+    @GET
+    @Path("/startReport")
+    public Boolean startReport() {
+        metricsReport.start();
+        return Boolean.TRUE;
+    }
+
+    @GET
+    @Path("/stopReport")
+    public Boolean stopReport() {
+        metricsReport.stop();
+        return Boolean.TRUE;
+    }
 }
