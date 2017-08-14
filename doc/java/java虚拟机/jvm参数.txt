@@ -1,0 +1,72 @@
+----------------------------------------jvm参数------------------------------------------
+堆内存
+    -Xmn128m或-XX:NewSize=128m                       ------新生代内存
+    -Xms512m                                         ------初始堆大小
+    -Xmx2048m                                        ------最大堆内存
+    -XX:NewRatio=3                                   ------年轻代和年老代的比值
+                                                           3，表示年轻代与年老代比值为1:3，年轻代占整个年轻代年老代和的1/4
+    -XX:SurvivorRatio=3                              ------年轻代中Eden区与两个Survivor区的比值，默认为8
+                                                           3，表示Eden:Survivor=3:2，一个Survivor区占整个年轻代的1/5
+    -XX:+HeapDumpOnOutOfMemoryError                  ------内存溢出时导出整个堆信息
+    -XX:HeapDumpPath=/tmp/heap.dump                  ------指定导出堆的存放路径
+    -XX:UseAdaptiveSizePolicy                        ------动态调整java堆中各个区域的大小以及进入老年代的年龄
+                                                           开启该参数，-Xmn/-XX:SurvivorRatio/-XX:PretenureSizeThreshold这些参数就不起作用了，
+                                                           虚拟机会自动收集监控信息，动态调整这些参数以提供最合适的的停顿时间或者最大的吞吐量（GC自适应调节策略）
+    -XX:+HandlePromotionFailure                      ------是否允许新生代收集担保
+                                                           进行一次minor gc后,另一块Survivor空间不足时，将直接会在老年代中保留
+    -XX:+UseFastAccessorMethods                      ------原始类型优化
+    -XX:LargePageSizeInBytes=16m                     ------设置内存页的大小，不可设置过大，会影响Perm的大小
+栈
+    -Xss1m                                           ------栈大小为1m
+持久代(方法区)
+    -XX:PermSize=128m                                ------持久代大小
+    -XX:MaxPermSize=512m                             ------持久代最大大小
+    -XX:-DontCompileHugeMethods                      ------解除大方法(代码行2500以上)的编译限制,需占用更多的持久代。
+                                                           但编译后可让大方法的执行速度变快，且可能提高GC速度
+class
+    -verbose:class                                   ------打印类加载和卸载信息
+对象进入年老代
+    -XX:MaxTenuringThreshold=10                      ------对象复制过10次后进入老年代
+    -XX:PretenureSizeThreshold=10000                 ------大于10000字节的对象直接进入年老代
+JIT(字节码及时编译)
+    -XX:CounterHalfLifeTime                          ------半衰周期
+    -XX:CompileThreshold                             ------在半衰周期内方法调用次数达到一定次数后，将该方法编译为机器码,server模式下默认是10000.
+    -XX:-UseCounterDecay                             ------关闭上述机制，即半衰周期的无穷大
+    -XX:OnStackReplacePercent                        ------计算循环体执行的次数，
+                                                           server模式循环体执行10700次时编译为机器码
+GC
+    -XX:+PrintGC                                     ------打印GC日志
+    -XX:+PrintHeapAtGC                               ------打印GC时heap详情
+    -XX:+PrintGCDetails                              ------打印详细的GC日志
+    -Xloggc:/tmp/gc.log                              ------指定GC日志存放路径
+    -XX:+PrintGCTimeStamps                           ------打印GC带时间信息
+    -XX:+PrintGCDateStamps                           ------打印GC带绝对的日期时间信息
+    -XX:+PrintTenuringDistribution                   ------打印对象年龄信息等
+垃圾回收器
+    -XX:+UseSerialGC                                 ------使用串行收集器进行垃圾回收
+    -XX:+UseParNewGC                                 ------使用ParNew + Serial Old的收集器进行垃圾回收
+    -XX:+UseParallelGC                               ------使用并行收集器
+    -XX:+UseParalledlOldGC                           ------使用并行年老代收集器
+    -XX:+UseConcMarkSweepGC                          ------使用并发收集器
+    -XX:PrintGCApplicationStoppedTime                ------查看STW(stop-the-world)也就是停顿时间
+    -XX:+DisableExplicitGC                           ------完全忽略系统的GC调用,即关闭手动System.gc
+Parallel
+    -XX:ParallelGCThreads=5                          ------设置并行收集器的GC线程数
+    -XX:GCTimeRatio=20                               ------GC时间占总时间的比列，默认值为99，即允许1%的GC时间
+                                                           设为20，表示允许的最大GC时间占总时间的1/(1+20)
+    -XX:MaxGCPauseMillis                             ------GC的最大停顿时间
+CMS
+    -XX:+CMSClassUnloadingEnabled	                                             ------对永久代进行垃圾回收,CMS收集器默认不会对永久代进行垃圾回收
+    -XX:+CMSPermGenSweepingEnabled                                               ------对永久代进行垃圾回收
+    -XX:+CMSConcurrentMTEnabled 	                                             ------并发的CMS阶段将以多线程执行(因此，多个GC线程会与所有的应用程序线程并行工作)。
+    -XX:ConcGCThreads	                                                         ------并发CMS过程运行时的线程数
+    -XX:ParallelCMSThreads=5                                                     ------指定CMS回收线程的数量，默认为：(CPU数+3)/4
+    -XX:CMSInitiatingOccupancyFraction                                           ------指定当年老代空间满了多少后进行垃圾回收。默认68，即68%
+    -XX:+UseCMSCompactAtFullCollection                                           ------在CMS进行FullGC时开启内存碎片整理过程，该过程需要STW
+    -XX:+CMSFullGCBeforeCompaction	                                             ------设置CMS收集器在进行若干次垃圾收集后再进行一次内存碎片整理过程
+    -XX:+CMSIncrementalMode	                                                     ------开启CMS收集器的增量模式
+    -XX:+CMSParallelRemarkEnabled	                                             ------降低标记停顿
+    -XX:+UseCMSInitiatingOccupancyOnly	                                         ------命令JVM不基于运行时收集的数据来启动CMS垃圾收集周期(相当于禁止jvm的悲观策略)
+    -XX:+ExplicitGCInvokesConcurrent	                                         ------JVM调用系统GC，都执行CMS GC，而不是Full GC
+    -XX:+ExplicitGCInvokesConcurrentAndUnloadsClasses	                         ------当有系统GC调用时，永久代也被包括进CMS垃圾回收的范围内
+-----------------------------------------------------------------
