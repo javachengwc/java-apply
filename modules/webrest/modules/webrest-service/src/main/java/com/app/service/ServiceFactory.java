@@ -1,9 +1,9 @@
 package com.app.service;
 
 
+import com.app.aop.AopFactory;
 import com.app.aop.ServiceAop;
 import com.app.util.SpringContextUtils;
-import com.util.aop.AopProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,10 +31,7 @@ public class ServiceFactory {
             logger.info("ServiceFactory begin gen porxy recordService");
             if(serviceMap.get(serviceName)==null) {
                 RecordService bean = (RecordService)SpringContextUtils.getBean(RecordService.class);
-                if(bean==null) {
-
-                }
-                RecordService recordService =(RecordService) AopProxy.getProxyInstance(bean, new ServiceAop());
+                RecordService recordService = AopFactory.wrapRecordService(bean);
                 serviceMap.putIfAbsent(serviceName,recordService);
             }
             logger.info("ServiceFactory end gen porxy recordService");
