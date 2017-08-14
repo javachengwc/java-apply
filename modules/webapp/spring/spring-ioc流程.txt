@@ -1,0 +1,36 @@
+-----------------------------------spring ioc流程-----------------------------------
+1、初始化BeanFactory
+    a,创建BeanFactory实例
+    b,使用ResourceLoader将配置文件装载为Resource对象
+    c,将bean定义文件装入BeanDefinitionRegistry（Bean定义注册表）中
+    d,使用BeanDefinitionReader解析配置信息：将每一个<bean>解析为一个BeanDefinition对象，然后存储到BeanDefinitionRegistry中
+
+2、调用BeanFactoryPostProcessor
+    根据反射从BeanDefinitionRegistry中找出所有实现了BeanFactoryPostProcessor接口的Bean，并调用其postProcessBeanFactory()接口方法，
+    实际上完成的工作主要是:
+        对使用占位符的<bean>进行解析，得到最终的配置值，即将半成品的BeanDefinition转化为完全体的BeanDefinition对象
+        根据反射从BeanDefinitionRegistry中找出所有实现了java.beans.PropertyEditor接口的Bean，并自动将他们注册到ProperEditorRegistry中
+
+3、注册BeanPostProcessor
+    根据反射从BeanDefinitionRegistry中找出所有实现了BeanPostProcessor接口的Bean，并将他们注册到BeanPostProcessor的注册表中，
+    Aop、动态代理都是基于这个实现的
+
+4、初始化国际化信息资源
+
+5、初始化应用上下文事件广播器 - 事件
+
+6、初始化特殊的Bean：钩子方法
+
+7、注册事件监听器到ApplicationEventMulticaster的监听器注册表中
+
+8、初始化所有的单例Bean，使用懒加载的除外,初始化Bean后，放入spring容器的缓冲池（hashMap<beanName, Bean>）
+    取出BeanDefinitionRegistry中的BeanDefinition对象，使用InstantiationStrategy实例化Bean；
+    使用BeanWrapper结合Bean实例和ProperEditorRegistry对Bean进行属性注入操作；
+    使用3中注册好的BeanPostProcessor对已经完成属性设置的Bean进行后续加工，装配置出准备就绪的Bean。
+    初始化 - init-method
+    放入缓冲池（单例）
+
+9、发布上下文刷新事件
+    创建上下文刷新事件，事件广播器负责将这些事件广播到每个注册的事件监听器中 - 事件
+
+------------------------------------------------------------------------------------
