@@ -1,3 +1,0 @@
-Hadoop的管理工具HTools
-实时应用监控平台CAT
-Java 监控解决方案 Apache Sirona,貌似对jdk有要求

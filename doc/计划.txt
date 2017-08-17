@@ -1,8 +1,5 @@
-jenkins
-gitlab
-otter
-nagios,zabbix监控
 ecshop
 docker
 flume
 presto
+Hadoop的管理工具HTools
