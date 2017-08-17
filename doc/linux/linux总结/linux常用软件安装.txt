@@ -355,22 +355,34 @@ vim ./gl/stdio.in.h
     将_GL_WARN_ON_USE (gets, "gets is a security hole - use fgets instead");注释掉,即
     //_GL_WARN_ON_USE (gets, "gets is a security hole - use fgets instead");
 #在apache中配置nagios
+/usr/local/apache2/bin/htpasswd -c /usr/local/nagios/etc/htpasswd.users nagiosadmin
+#创建nagiosadmin账号,根据提示输入nagiosadmin用户的密码,
+#如果这里不创建账号,后面web访问nagios时,点击Current Status栏下Hosts这样的菜单呈现的内容页面会报
+ not have permission to view information for any of the services you requested提示，表示没权限查看.
 vim /usr/local/apache2/conf/httpd.conf
     #直接在最后添加
     #setting for nagios
     ScriptAlias /nagios/cgi-bin "/usr/local/nagios/sbin"
     <Directory "/usr/local/nagios/sbin">
+         AuthType Basic
          Options ExecCGI
          AllowOverride None
          Order allow,deny
          Allow from all
+         AuthName "nagios Access"
+         AuthUserFile /usr/local/nagios/etc/htpasswd.users
+         Require valid-user
     </Directory>
     Alias /nagios "/usr/local/nagios/share"
     <Directory "/usr/local/nagios/share">
+         AuthType Basic
          Options None
          AllowOverride None
          Order allow,deny
          Allow from all
+         AuthName "nagios Access"
+         AuthUserFile /usr/local/nagios/etc/htpasswd.users
+         Require valid-user
     </Directory>
 /usr/local/apache2/bin/apachectl restart   #重启apache
 http://localhost/nagios    能访问nagios页面表示在apache中配置nagios成功
