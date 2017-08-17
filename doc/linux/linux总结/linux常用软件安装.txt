@@ -152,7 +152,6 @@ tar -zxvf httpd-2.2.23.tar.gz
 cd httpd-2.2.23
 ./configure --prefix=/usr/local/apache2  --enable-module=shared
 make && make install
-
 /usr/local/apache2/bin/apachectl start   #启动apache
 
 ---------------zookeeper
