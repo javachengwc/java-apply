@@ -146,6 +146,15 @@ chkconfig --level 345 mysql on   #mysql加入启动项
 ---------------nginx
 参见本工程中nginx安装.txt文件。
 
+---------------apache
+wget http://archive.apache.org/dist/httpd/httpd-2.2.23.tar.gz
+tar -zxvf httpd-2.2.23.tar.gz
+cd httpd-2.2.23
+./configure --prefix=/usr/local/apache2  --enable-module=shared
+make && make install
+
+/usr/local/apache2/bin/apachectl start   #启动apache
+
 ---------------zookeeper
 参见本工程中zookeeper配置安装.txt文件。
 
@@ -292,6 +301,85 @@ yum install lrzsz
 
 ---------------node
 yum install nodejs
+
+---------------php
+#安装php
+yum install -y libxml2-devel
+wget http://cn2.php.net/get/php-5.6.31.tar.gz/from/this/mirror -O php-5.6.31.tar.gz
+tar -zxvf php-5.6.31.tar.gz
+cd php-5.6.31
+./configure --prefix=/usr/local/php --with-apxs2=/usr/local/apache2/bin/apxs
+make && make install
+#配置php
+cp php.ini-development /usr/local/php/lib/php.ini
+#在apache中配置php
+vim /usr/local/apache2/conf/httpd.conf
+    在AddType application/x-gzip .gz .tgz下行添加
+    AddType application/x-httpd-php .php
+    AddType application/x-httpd-php-source .phps
+    修改DirectoryIndex index.html为
+        DirectoryIndex index.html index.php
+vim /usr/local/apache2/htdocs/test.php
+    <?php phpinfo();?>;
+/usr/local/apache2/bin/apachectl restart   #重启apache
+http://localhost/test.php    能访问php页面表示在apache中配置php成功
+
+----------------nagios
+rpm -q gcc glibc glibc-common gd gd-devel xinetd openssl-devel
+对上面未安装的套件进行安装
+yum install -y gcc glibc glibc-common gd gd-devel xinetd openssl-devel
+useradd -s /sbin/nologin nagios
+mkdir /usr/local/nagios
+chown -R nagios.nagios /usr/local/nagios
+#下载安装nagios
+wget http://prdownloads.sourceforge.net/sourceforge/nagios/nagios-3.5.1.tar.gz
+tar zxvf nagios-3.5.1.tar.gz
+cd nagios
+./configure --prefix=/usr/local/nagios
+make all
+make install
+make install-init
+make install-commandmode
+make install-config
+#在/usr/local/nagios目录下有etc、bin、sbin等目录表示安装成功
+#下载安装nagios插件
+wget https://nagios-plugins.org/download/nagios-plugins-1.4.16.tar.gz
+tar zxvf nagios-plugins-1.4.16.tar.gz
+cd nagios-plugins-1.4.16
+./configure --prefix=/usr/local/nagios
+make && make install   --此步骤报错error: 'gets' undeclared here (not in a function)
+#解决上面报错方法
+find -name stdio.in.h     #就在当前目录执行
+    ./gl/stdio.in.h
+vim ./gl/stdio.in.h
+    将_GL_WARN_ON_USE (gets, "gets is a security hole - use fgets instead");注释掉,即
+    //_GL_WARN_ON_USE (gets, "gets is a security hole - use fgets instead");
+#在apache中配置nagios
+vim /usr/local/apache2/conf/httpd.conf
+    #直接在最后添加
+    #setting for nagios
+    ScriptAlias /nagios/cgi-bin "/usr/local/nagios/sbin"
+    <Directory "/usr/local/nagios/sbin">
+         Options ExecCGI
+         AllowOverride None
+         Order allow,deny
+         Allow from all
+    </Directory>
+    Alias /nagios "/usr/local/nagios/share"
+    <Directory "/usr/local/nagios/share">
+         Options None
+         AllowOverride None
+         Order allow,deny
+         Allow from all
+    </Directory>
+/usr/local/apache2/bin/apachectl restart   #重启apache
+http://localhost/nagios    能访问nagios页面表示在apache中配置nagios成功
+#配置nagios
+/usr/local/nagios/etc/目录中配置文件相应调整,默认不调整
+#检测nagios自身配置的正确性
+/usr/local/nagios/bin/nagios -v /usr/local/nagios/etc/nagios.cfg
+/usr/local/nagios/bin/nagios -d /usr/local/nagios/etc/nagios.cfg   --启动nagios
+kill -HUP nagios_pid        --手工平滑重启nagios
 ---------------------------------------
 #安装过程中找不到相应库解决
 vi /etc/ld.so.conf  #添加相应的库路径在里面
