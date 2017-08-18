@@ -1,0 +1,45 @@
+------------------------------------jenkins安装配置-----------------------------------
+wget https://prodjenkinsreleases.blob.core.windows.net/redhat-stable/jenkins-2.7.4-1.1.noarch.rpm
+rpm -ivh jenkins-2.7.4-1.1.noarch.rpm    #安装jenkins
+默认安装后各路径
+    /var/lib/jenkins             #jenkins安装目录
+    /var/lib/jenkins/workspace   #jenkins工作空间
+    /etc/sysconfig/jenkins       #jenkins配置文件
+service jenkins start            #启动jenkins
+#启动中如果报错,根据提示查看报错信息，比如报错Jenkins bash: /usr/bin/java: No such file or directory
+表示在/usr/bin下没找到java命令，可能没装java或者java命令没在此目录下，安装java或建立对应的软连接即可
+http://localhost:8080            #web访问jenkins，默认端口8080
+#根据提示输入密码，然后选择安装插件，设置一个admin账号，jenkins的安装就完成.
+-----------------------------------------
+jenkins配置
+admin账号登录进入jenkins后
+系统管理--Global Tool Configuration中设置系统中maven,jdk相关路径
+
+Credentials--System中添加gitlab地址的domain设置，然后在此domain点击Add Credentials添加连接到此domain的一个认证设置，
+对于gitlab地址来说，此认证设置就是一个能访问此gitlab项目的ssh账号，配置上对应的私钥key内容即可
+
+系统管理--管理用户中添加用户
+
+系统管理--Configure Global Security中设置各用户安全访问控制，勾选启动安全，访问控制中安全域选Jenkins专有用户数据库，
+授权策略选项目矩阵授权策略,然后在这里添加用户，对用户进行授权,这里如果设置误操作,导致管理员账号再次登录时没有Overall/Read权限，
+可按如下方法解决
+    vim /var/lib/jenkins/config.xml找到<authorizationStrategy>节点在里面加上
+    <permission>hudson.model.Hudson.Administer:admin</permission>,admin是具有管理权限的一个账号,
+    然后重启jenkins即可。
+至此jenkins的基本设置完成。
+---------------------------------------
+jenkins创建配置并构建项目
+在jenkins上创建一个自由风格项目
+对项目配置
+a,如果需要启用项目安全，就勾选启用项目安全，就是配置哪些用户对此项目有哪些权限
+b,参数化构建过程,
+c,Git--Repositories中配置项目对应的git地址，并在Credentials中配置对应的有访问项目权限的账号
+在构建中，增加一个execute shell,执行项目的编译打包，比如:
+    export M2_HOME=/usr/local/maven
+    export PATH=$M2_HOME/bin:$PATH
+    mvn clean compile package
+在构建中，再增加一个execute shell,执行项目部署或启动的操作，比如
+    cp -rp ./test/target/*.jar /data/deploy/test
+配置完后，进入项目，点击立即构建，在build history中就能查看到最新的构建列表
+点进此次构建列表项，点击Console Output就能查看此次构建过程详细日志信息了
+--------------------------------------------------------------------------------------
