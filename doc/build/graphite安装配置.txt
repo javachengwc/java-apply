@@ -4,8 +4,12 @@ graphite主要做两件事情：
     实时监控第三方工具传来的数据,
     根据数据绘制图形
 graphite包含3个组件，carbon，whisper，graphite webapp,
-    carbon           ------用于监控数据的 Twisted 守护进程
-    whisper          ------用于存放和操作数据的库
+    carbon           ------负责后端数据采集,实际上是一系列守护进程，这些守护进程用Twisted的事件驱动网络引擎监听时间序列数据。
+        carbon-cache：接受通过各种协议传输来的指标项数据并以尽可能高的效率将它们写入磁盘；
+            在接收到指标项时，将指标项值缓存在RAM中，并用底层的Whisper库按照指定的时间间隔将这些值写入磁盘。
+        carbon-relay：有两个不同的用途：将输入的指标项复制并分区。
+        carbon-aggregator：运行于cache前方，在Whisper中记录指标项之前，缓存这些指标项一段时间。
+    whisper          ------是一个用于存储时间序列数据的数据库。
     graphite webapp  ------用于绘制图形的django webapp
 ----------------------------------------------------------
 graphite的安装:
@@ -73,7 +77,7 @@ vi  /usr/local/nginx/conf/nginx.conf
             root /opt/graphite/webapp;
             }
      }
-python manage.py migrate
+python manage.py migrate              #数据初始化
 vi /opt/graphite/webapp/graphite/local_settings.py
     #取消SECRET_KEY、TIME_ZONE注释，并修改值：
     SECRET_KEY = '@2o8&38gcsb(p*o*dy(fmh!_3-30a1qwq$sadb+6vk243%wj0#'
@@ -95,7 +99,8 @@ python manage.py createsuperuser       #创建登录用户
     Password:                              #密码
     Password (again):
 graphite的启动
-python /opt/graphite/bin/carbon-cache.py start        ---启动carbon,2003端口
+python /opt/graphite/bin/carbon-cache.py start        ---启动carbon-cache,2003端口
+python /opt/graphite/bin/carbon-relay.py start        ---启动carbon-relay,2013端口
 uwsgi --ini /opt/graphite/webapp/uwsgi.ini &          ---8000端口
 /usr/local/nginx/sbin/nginx                           ---启动nginx
 
