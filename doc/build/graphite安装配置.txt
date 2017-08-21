@@ -1,0 +1,105 @@
+-------------------------------------graphite安装配置-----------------------------------
+graphite是一个Python编写的开源监控工具，采用django框架，用来收集服务器所有的即时状态，用户请求信息，操作系统的负载状态。
+graphite主要做两件事情：
+    实时监控第三方工具传来的数据,
+    根据数据绘制图形
+graphite包含3个组件，carbon，whisper，graphite webapp,
+    carbon           ------用于监控数据的 Twisted 守护进程
+    whisper          ------用于存放和操作数据的库
+    graphite webapp  ------用于绘制图形的django webapp
+----------------------------------------------------------
+graphite的安装:
+yum -y install epel-release                #安装epel扩展后pip才能安装
+yum -y install python-pip
+yum -y install python-devel
+yum -y install libffi-devel zlib-devel openssl-devel uwsgi-plugin-python
+yum -y install cairo-devel                #安装python中的绘制图表模块，没有它，graphite图表绘制不出来
+yum -y install uwsgi
+pip install carbon
+pip install whisper
+pip install graphite-web
+pip uninstall django
+pip install django==1.8                    #必须是1.8版本的django,后续graphite的配置启动才不会保错
+pip install scandir
+graphite的配置
+cd /opt/graphite/conf/
+    cp aggregation-rules.conf.example aggregation-rules.conf
+    cp blacklist.conf.example blacklist.conf
+    cp carbon.amqp.conf.example carbon.amqp.conf
+    cp carbon.conf.example carbon.conf
+    cp dashboard.conf.example dashboard.conf
+    cp graphite.wsgi.example graphite.wsgi
+    cp graphTemplates.conf.example graphTemplates.conf
+    cp relay-rules.conf.example relay-rules.conf
+    cp rewrite-rules.conf.example rewrite-rules.conf
+    cp storage-aggregation.conf.example storage-aggregation.conf
+    cp storage-schemas.conf.example storage-schemas.conf
+    cp whitelist.conf.example whitelist.conf
+cd /opt/graphite/webapp/graphite
+    cp local_settings.py.example local_settings.py
+cd /opt/graphite/webapp
+    mv content static
+vi uwsgi.ini
+    [uwsgi]
+    socket = :8000
+    buffer-size = 40000
+    plugins=python
+    chdir=/opt/graphite/webapp
+    daemonize=/var/log/uwsgi.log
+    module = graphite.wsgi
+    master = true
+    processes = 1
+    vacuum = true
+vi manage.py
+    #!/usr/bin/env python
+    import os
+    import sys
+    if __name__ == "__main__":
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "graphite.settings")
+        from django.core.management import execute_from_command_line
+        execute_from_command_line(sys.argv)
+vi  /usr/local/nginx/conf/nginx.conf
+    server {
+         listen  8001;
+         server_name self.graphite.com
+         charset utf-8;
+         access_log  logs/graphite.log  main;
+         location / {
+             include uwsgi_params;
+             uwsgi_pass 127.0.0.1:8000;
+             uwsgi_read_timeout 2;
+            }
+         location /static {
+            root /opt/graphite/webapp;
+            }
+     }
+python manage.py migrate
+vi /opt/graphite/webapp/graphite/local_settings.py
+    #取消SECRET_KEY、TIME_ZONE注释，并修改值：
+    SECRET_KEY = '@2o8&38gcsb(p*o*dy(fmh!_3-30a1qwq$sadb+6vk243%wj0#'
+    TIME_ZONE = 'Asia/Shanghai'
+python manage.py shell                 #通过manage.py shell修改登录网站的用户名和密码
+    >>> from django.contrib.auth.models import User
+    >>> user_list=[x for x in User.objects.all()]
+    >>> print user_list
+    #如果user_list不为空
+    >>>user=user_list[0]
+    >>>user.username='admin'
+    >>>user.set_password='admin'
+    >>>user.save()
+    #如果user_list为空
+    >>>quit()
+python manage.py createsuperuser       #创建登录用户
+    Username (leave blank to use 'root'): admin
+    Email address: cc@cc.com
+    Password:                              #密码
+    Password (again):
+graphite的启动
+python /opt/graphite/bin/carbon-cache.py start        ---启动carbon,2003端口
+uwsgi --ini /opt/graphite/webapp/uwsgi.ini &          ---8000端口
+/usr/local/nginx/sbin/nginx                           ---启动nginx
+
+访问http://127.0.0.1:8001
+如能正常访问,安装成功,这里的访问ip是graphite所在服务器的ip
+
+----------------------------------------------------------------------------------------
