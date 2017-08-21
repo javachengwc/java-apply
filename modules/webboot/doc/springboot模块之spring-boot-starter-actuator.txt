@@ -31,7 +31,7 @@ spring-boot-starter-actuator默认端点Endpoint也就是接口如下:
   /autoconfig                    获取应用的自动化配置
   /beans                         获取应用上下文中创建的所有Bean
   /configprops                   获取应用中配置的属性信息
-  /env                           获取应用所有可用的环境属性
+  /env                           获取应用所有可用的环境属性(可看到配置文件中的配置信息)
   /mappings                      获取应用所有Spring MVC的控制器映射关系
   /info                          获取应用自定义的信息
 度量指标类
