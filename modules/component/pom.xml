@@ -11,5 +11,6 @@
     
 	<modules>
         <module>modules/component-rest</module>
+		<module>modules/component-microservice</module>
 	</modules>	
 </project>
