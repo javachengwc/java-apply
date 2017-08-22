@@ -1,5 +1,6 @@
 package com.cloud.consumer.controller;
 
+import com.cloud.consumer.service.ConsumerService;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,7 @@ public class ConsumerController {
     private static Logger logger = LoggerFactory.getLogger(ConsumerController.class);
 
     @Autowired
-    private RestTemplate restTemplate;
+    private ConsumerService consumerService;
 
     @RequestMapping(value = "/doAdd", method = RequestMethod.GET)
     public String doAdd(@RequestParam Integer a, @RequestParam Integer b) {
@@ -23,17 +24,7 @@ public class ConsumerController {
         String url ="http://"+"webcloud-appa".toUpperCase()+"/web/add";
         String reqUrl =url+"?"+paramStr;
         logger.info("ConsumerController doAdd  reqUrl="+reqUrl);
-        //return restTemplate.getForEntity(reqUrl, String.class).getBody();
-        return invokeAdd(reqUrl);
-    }
-
-    @HystrixCommand(fallbackMethod = "failCallback")
-    public String invokeAdd(String url) {
-        return restTemplate.getForEntity(url, String.class).getBody();
-    }
-
-    public String failCallback() {
-        return "remote invoke error";
+        return consumerService.invokeAdd(reqUrl);
     }
 
 }
