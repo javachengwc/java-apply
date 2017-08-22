@@ -65,6 +65,6 @@ public class ConsumerService {
 
     public Record directRecord(Integer id) {
         logger.info("ConsumerService directRecord invoke,id="+id);
-        throw new RuntimeException("getRecordById error");
+        throw new RuntimeException("directRecord error");
     }
 }
