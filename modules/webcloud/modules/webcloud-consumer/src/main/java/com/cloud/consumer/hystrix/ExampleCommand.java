@@ -5,6 +5,9 @@ import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.util.base.ThreadUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rx.Observable;
+import rx.Observer;
+import rx.functions.Action1;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -57,5 +60,33 @@ public class ExampleCommand extends HystrixCommand<String> {
         ThreadUtil.sleep(2000l);
         String result3 = future.get();
         System.out.println("result3=" + result3);
+
+        //注册观察者事件拦截
+        Observable<String> fs = new ExampleCommand(false).observe();
+        //注册结果回调事件
+        fs.subscribe(new Action1<String>() {
+            public void call(String result) {
+                logger.info("["+Thread.currentThread().getName()+"]ExampleCommand action call....result="+result);
+            }
+        });
+        //注册完整执行生命周期事件
+        fs.subscribe(new Observer<String>() {
+            @Override
+            public void onError(Throwable e) {
+                //异常时回调
+                logger.info("["+Thread.currentThread().getName()+"]Observer onError " + e.getMessage());
+            }
+            @Override
+            public void onNext(String result) {
+                //获取结果后回调
+                logger.info("["+Thread.currentThread().getName()+"]Observer onNext " + result);
+            }
+            @Override
+            public void onCompleted() {
+                //onNext/onError完成之后最后回调
+                logger.info("["+Thread.currentThread().getName()+"]Observer execute onCompleted");
+            }
+        });
+
     }
 }
