@@ -14,8 +14,10 @@ public class DetailCommand extends HystrixCommand<String> {
     public DetailCommand(String name) {
         super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("DetailGroup"))
                 .andCommandKey(HystrixCommandKey.Factory.asKey("DetailKey"))
-                .andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey("DetailPool"))   //执行隔离代码的线程池，此线程池默认10个线程，
-                                                                                      //如果其他HystrixCommand指定的线程池key也是此key,那它运行的线程池跟此Command是同一个线程池
+                //设置执行隔离代码的线程池，此线程池默认10个线程，
+                //如果其他HystrixCommand指定的线程池key也是此key,那它运行的线程池跟此Command是同一个线程池
+                //如果多个Command都没指定线程池key,但都是同一个GroupKey，那它们运行的线程池也是同一个线程池,不管CommandKey相不相同
+                .andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey("DetailPool"))
                 .andCommandPropertiesDefaults(HystrixCommandProperties.Setter().withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.THREAD))
                 .andCommandPropertiesDefaults(HystrixCommandProperties.Setter().withExecutionTimeoutInMilliseconds(500)));///隔离代码执行超时时间设为500毫秒
         this.name=name;
