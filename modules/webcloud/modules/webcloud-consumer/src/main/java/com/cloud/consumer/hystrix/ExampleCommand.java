@@ -16,7 +16,7 @@ public class ExampleCommand extends HystrixCommand<String> {
     private Boolean throwException;
 
     public ExampleCommand(Boolean throwException) {
-        //指定命令组名(CommandGroup)
+        //指定命令组(CommandGroup),只是一个业务分组
         super(HystrixCommandGroupKey.Factory.asKey("ExampleGroup"));
         this.throwException=throwException;
     }
@@ -25,7 +25,7 @@ public class ExampleCommand extends HystrixCommand<String> {
     protected String run() {
         logger.info("["+Thread.currentThread().getName()+"] ExampleCommand run start......");
         //run方法不能超过command定义的超时时间,默认:1秒，如果超时则调用fallback
-        ThreadUtil.sleep(5000l);
+        //ThreadUtil.sleep(2000l);
         if(throwException) {
             throw new RuntimeException("ExampleCommand run exception");
         }
@@ -54,6 +54,7 @@ public class ExampleCommand extends HystrixCommand<String> {
         ExampleCommand  exampleCommand3= new ExampleCommand(true);
         //异步调用,可自由控制获取结果时机
         Future<String> future = exampleCommand3.queue();
+        ThreadUtil.sleep(2000l);
         String result3 = future.get();
         System.out.println("result3=" + result3);
     }
