@@ -1,0 +1,139 @@
+--------------------------------------hystrix配置------------------------------------
+HystrixCommand配置在HystrixCommandProperties中,构造HystrixCommand时通过Setter进行配置
+具体配置如下:
+    static final Integer default_metricsRollingStatisticalWindow = Integer.valueOf(10000);
+    private static final Integer default_metricsRollingStatisticalWindowBuckets = Integer.valueOf(10);
+    private static final Integer default_circuitBreakerRequestVolumeThreshold = Integer.valueOf(20);
+    private static final Integer default_circuitBreakerSleepWindowInMilliseconds = Integer.valueOf(5000);
+    private static final Integer default_circuitBreakerErrorThresholdPercentage = Integer.valueOf(50);
+    private static final Boolean default_circuitBreakerForceOpen = Boolean.valueOf(false);
+    static final Boolean default_circuitBreakerForceClosed = Boolean.valueOf(false);
+    private static final Integer default_executionTimeoutInMilliseconds = Integer.valueOf(1000);
+    private static final ExecutionIsolationStrategy default_executionIsolationStrategy = ExecutionIsolationStrategy.THREAD;
+    private static final Boolean default_executionIsolationThreadInterruptOnTimeout = Boolean.valueOf(true);
+    private static final Boolean default_metricsRollingPercentileEnabled = Boolean.valueOf(true);
+    private static final Boolean default_requestCacheEnabled = Boolean.valueOf(true);
+    private static final Integer default_fallbackIsolationSemaphoreMaxConcurrentRequests = Integer.valueOf(10);
+    private static final Boolean default_fallbackEnabled = Boolean.valueOf(true);
+    private static final Integer default_executionIsolationSemaphoreMaxConcurrentRequests = Integer.valueOf(10);
+    private static final Boolean default_requestLogEnabled = Boolean.valueOf(true);
+    private static final Boolean default_circuitBreakerEnabled = Boolean.valueOf(true);
+    private static final Integer default_metricsRollingPercentileWindow = Integer.valueOf(60000);
+    private static final Integer default_metricsRollingPercentileWindowBuckets = Integer.valueOf(6);
+    private static final Integer default_metricsRollingPercentileBucketSize = Integer.valueOf(100);
+    private static final Integer default_metricsHealthSnapshotIntervalInMilliseconds = Integer.valueOf(500);
+
+    //熔断器在整个统计时间内是否开启的阀值，默认20。也就是10秒钟内至少请求20次，熔断器才发挥起作用
+    private final HystrixProperty<Integer> circuitBreakerRequestVolumeThreshold;
+
+    //熔断器默认工作时间,默认5秒.熔断器中断请求5秒后会进入半打开状态,放部分流量过去重试
+    private final HystrixProperty<Integer> circuitBreakerSleepWindowInMilliseconds;
+
+    //是否启用熔断器,默认true
+    private final HystrixProperty<Boolean> circuitBreakerEnabled;
+
+    //当出错率超过50%后熔断器启动,默认:50%。
+    private final HystrixProperty<Integer> circuitBreakerErrorThresholdPercentage;
+
+    //是否强制开启熔断器阻断所有请求,默认:false,不开启
+    private final HystrixProperty<Boolean> circuitBreakerForceOpen;
+
+    //是否允许熔断器忽略错误,默认false,不开启
+    private final HystrixProperty<Boolean> circuitBreakerForceClosed;
+
+    //使用命令调用隔离方式,默认:采用线程隔离,ExecutionIsolationStrategy.THREAD
+    private final HystrixProperty<ExecutionIsolationStrategy> executionIsolationStrategy;
+
+    //使用线程隔离时，调用超时时间，默认:1秒
+    private final HystrixProperty<Integer> executionTimeoutInMilliseconds;
+
+    //线程池的key,用于决定命令在哪个线程池执行
+    private final HystrixProperty<String> executionIsolationThreadPoolKeyOverride;
+
+    //使用信号量隔离时，命令调用最大的并发数,默认:10
+    private final HystrixProperty<Integer> executionIsolationSemaphoreMaxConcurrentRequests;
+
+    //使用信号量隔离时，命令fallback(降级)调用最大的并发数,默认:10
+    private final HystrixProperty<Integer> fallbackIsolationSemaphoreMaxConcurrentRequests;
+
+    //是否开启fallback降级策略 默认:true
+    private final HystrixProperty<Boolean> fallbackEnabled;
+
+    //使用线程隔离时，是否对命令执行超时的线程调用中断（Thread.interrupt()）操作.默认:true
+    private final HystrixProperty<Boolean> executionIsolationThreadInterruptOnTimeout;
+
+    private final HystrixProperty<Integer> metricsRollingStatisticalWindowInMilliseconds;
+
+    private final HystrixProperty<Integer> metricsRollingStatisticalWindowBuckets;
+
+    //是否开启监控统计功能,默认:true
+    private final HystrixProperty<Boolean> metricsRollingPercentileEnabled;
+
+    //统计滚动的时间窗口,默认:5000毫秒circuitBreakerSleepWindowInMilliseconds
+    private final HystrixProperty<Integer> metricsRollingPercentileWindowInMilliseconds;
+
+    //统计窗口的Buckets的数量,默认:10个,每秒一个Buckets统计
+    private final HystrixProperty<Integer> metricsRollingPercentileWindowBuckets;
+
+    private final HystrixProperty<Integer> metricsRollingPercentileBucketSize;
+
+    private final HystrixProperty<Integer> metricsHealthSnapshotIntervalInMilliseconds;
+
+    //是否开启请求日志,默认:true
+    private final HystrixProperty<Boolean> requestLogEnabled;
+
+    //是否开启请求缓存,默认:true
+    private final HystrixProperty<Boolean> requestCacheEnabled;
+
+命令合并(Collapser)配置
+HystrixCommand合并配置在HystrixCollapserProperties,构造Collapser时通过Setter进行配置
+具体配置如下:
+    private static final Integer default_maxRequestsInBatch = Integer.valueOf(2147483647);
+    private static final Integer default_timerDelayInMilliseconds = Integer.valueOf(10);
+    private static final Boolean default_requestCacheEnabled = Boolean.valueOf(true);
+    static final Integer default_metricsRollingStatisticalWindow = Integer.valueOf(10000);
+    private static final Integer default_metricsRollingStatisticalWindowBuckets = Integer.valueOf(10);
+    private static final Boolean default_metricsRollingPercentileEnabled = Boolean.valueOf(true);
+    private static final Integer default_metricsRollingPercentileWindow = Integer.valueOf(60000);
+    private static final Integer default_metricsRollingPercentileWindowBuckets = Integer.valueOf(6);
+    private static final Integer default_metricsRollingPercentileBucketSize = Integer.valueOf(100);
+
+    //请求合并是允许的最大请求数,默认: Integer.MAX_VALUE
+    private final HystrixProperty<Integer> maxRequestsInBatch;
+
+    //批处理过程中每个命令延迟的时间,默认:10毫秒
+    private final HystrixProperty<Integer> timerDelayInMilliseconds;
+
+    //批处理过程中是否开启请求缓存,默认:开启
+    private final HystrixProperty<Boolean> requestCacheEnabled;
+
+    private final HystrixProperty<Integer> metricsRollingStatisticalWindowInMilliseconds;
+    private final HystrixProperty<Integer> metricsRollingStatisticalWindowBuckets;
+    private final HystrixProperty<Boolean> metricsRollingPercentileEnabled;
+    private final HystrixProperty<Integer> metricsRollingPercentileWindowInMilliseconds;
+    private final HystrixProperty<Integer> metricsRollingPercentileWindowBuckets;
+    private final HystrixProperty<Integer> metricsRollingPercentileBucketSize;
+
+线程池(ThreadPool)配置
+HystrixCommand线程池配置在HystrixThreadPoolProperties,具体配置如下:
+    private Integer default_coreSize = Integer.valueOf(10);
+    private Integer default_keepAliveTimeMinutes = Integer.valueOf(1);
+    private Integer default_maxQueueSize = Integer.valueOf(-1);
+    private Integer default_queueSizeRejectionThreshold = Integer.valueOf(5);
+    private Integer default_threadPoolRollingNumberStatisticalWindow = Integer.valueOf(10000);
+    private Integer default_threadPoolRollingNumberStatisticalWindowBuckets = Integer.valueOf(10);
+
+    //线程池大小,默认值10个.
+    private final HystrixProperty<Integer> corePoolSize;
+
+    private final HystrixProperty<Integer> keepAliveTime;
+
+    //配置线程值等待队列长度,默认值:-1,表示不等待直接拒绝,不建议修改此值。
+    private final HystrixProperty<Integer> maxQueueSize;
+
+    private final HystrixProperty<Integer> queueSizeRejectionThreshold;
+
+    private final HystrixProperty<Integer> threadPoolRollingNumberStatisticalWindowInMilliseconds;
+
+    private final HystrixProperty<Integer> threadPoolRollingNumberStatisticalWindowBuckets;
+-------------------------------------------------------------------------------------
