@@ -64,8 +64,8 @@ public class WebController {
         }
     }
 
-    @RequestMapping(value = "/add" ,method = RequestMethod.GET)
-    public Integer add(@RequestParam Integer a, @RequestParam Integer b) {
+    @RequestMapping(value = "add" ,method = RequestMethod.GET)
+    public Integer add(@RequestParam(value = "a") Integer a, @RequestParam(value = "b") Integer b) {
         ServiceInstance instance = client.getLocalServiceInstance();
         Integer r = a + b;
         logger.info("WebController add, host:" + instance.getHost() + ", serviceId:" + instance.getServiceId() + ", result:" + r);

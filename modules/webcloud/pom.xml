@@ -15,5 +15,6 @@
 		<module>modules/webcloud-appb</module>
 		<module>modules/webcloud-gateway</module>
 		<module>modules/webcloud-consumer</module>
+		<module>modules/webcloud-feign</module>
 	</modules>	
 </project>
