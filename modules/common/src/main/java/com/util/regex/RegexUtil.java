@@ -10,8 +10,6 @@ public final class RegexUtil {
 
 	public static final Pattern TELE_PHONE_PATTERN = Pattern.compile(CommonRegex.TELE_PHONE);
 	
-	public static final Pattern ID_CARD_NO_PATTERN = Pattern.compile(CommonRegex.ID_CARD_NO);
-	
 	public static final Pattern BANK_ACCOUNT_PATTERN = Pattern.compile(CommonRegex.BANK_ACCOUNT);
 	
 	public static final Pattern QQ_PATTERN = Pattern.compile(CommonRegex.QQ);
@@ -25,11 +23,7 @@ public final class RegexUtil {
     //懒惰匹配例子--匹配最短的，以a开始，以b结束的字符串
     public static final Pattern LAZY_PATIERN= Pattern.compile("a.*?b");
 	
-	/**
-	 * 手机号判断
-	 * @param input
-	 * @return
-	 */
+	//手机号判断
 	public static boolean isCellPhone(String input) {
 		if (StringUtils.isNotBlank(input)) {
 			if (CELL_PHONE_PATTERN.matcher(input).matches()) {
@@ -39,56 +33,14 @@ public final class RegexUtil {
 		return false;
 	}
 	
-	/**
-	 * 座机号码判断
-	 * <pre>
-	 * 88886666, 8888666
-	 * 028-88886666
-	 * 028-88886666-1234
-	 * </pre>
-	 * @param input
-	 * @return
-	 */
-	public static boolean isTelePhone(String input) {
-		if (StringUtils.isNotBlank(input)) {
-			if (TELE_PHONE_PATTERN.matcher(input).matches()) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	/**
-	 * 电话号码判断, 包括手机号 和 座机号
-	 * @param input
-	 * @return
-	 */
-	public static boolean isPhoneNum(String input) {
-		if (StringUtils.isNotBlank(input)) {
-			return isCellPhone(input) || isTelePhone(input);
-		}
-		return false;
-	}
-	
-	/**
-	 * 身份证号码判断
-	 * @param input
-	 * @return
-	 */
-	public static boolean isIDCardNo(String input) {
-		if (StringUtils.isNotBlank(input)) {
-			if (ID_CARD_NO_PATTERN.matcher(input).matches()) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	/**
-	 * 银行卡号判断
-	 * @param input
-	 * @return
-	 */
+	//验证身份证号
+    public static boolean checkIdCard(String idCard)
+    {
+        String regex = "[1-9]\\d{13,16}[a-zA-Z0-9]{1}";
+        return Pattern.matches(regex,idCard);
+    }
+
+    //银行卡号判断
 	public static boolean isBankAccount(String input) {
 		if (StringUtils.isNotBlank(input)) {
 			if (BANK_ACCOUNT_PATTERN.matcher(input).matches()) {
@@ -110,4 +62,17 @@ public final class RegexUtil {
 	public static String fetchIpFromText(String input) {
 		return IP_PATTERN.matcher(input).group();
 	}
+
+    // 验证中文
+    public static boolean checkChinese(String chinese) {
+        String regex = "^[\u4E00-\u9FA5]+$";
+        return Pattern.matches(regex,chinese);
+    }
+
+    //验证空白字符，包括：空格、\t、\n、\r、\f、\x0B
+    public static boolean checkBlankSpace(String blankSpace) {
+        String regex = "\\s+";
+        return Pattern.matches(regex,blankSpace);
+    }
+
 }

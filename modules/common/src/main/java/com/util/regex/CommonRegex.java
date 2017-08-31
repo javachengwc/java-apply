@@ -9,7 +9,6 @@ public interface CommonRegex {
 	
 	String TELE_PHONE = "(^((\\d{7,8})|(\\d{4}|\\d{3})-(\\d{7,8})|(\\d{4}|\\d{3})-(\\d{7,8})-(\\d{4}|\\d{3}|\\d{2}|\\d{1})|(\\d{7,8})-(\\d{4}|\\d{3}|\\d{2}|\\d{1}))$)";
 	String CELL_PHONE = "^1\\d{10}$";
-	String ID_CARD_NO = "\\d{18}|\\d{15}";
 	
 	String BANK_ACCOUNT = "\\d{19}";
 	

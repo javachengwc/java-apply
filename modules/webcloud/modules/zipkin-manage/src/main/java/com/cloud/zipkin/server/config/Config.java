@@ -1,14 +1,12 @@
-package com.cloud.appa.server.config;
+package com.cloud.zipkin.server.config;
 
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestTemplate;
 
 @Configuration
-@ComponentScan(basePackages = { "com.cloud.appa" })
+@ComponentScan(basePackages = { "com.cloud.zipkin" })
 public class Config {
 
     @Bean
@@ -26,11 +24,5 @@ public class Config {
                 return o;
             }
         };
-    }
-
-    @Bean
-    @LoadBalanced
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
     }
 }

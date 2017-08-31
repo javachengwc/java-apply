@@ -16,5 +16,6 @@
 		<module>modules/webcloud-gateway</module>
 		<module>modules/webcloud-consumer</module>
 		<module>modules/webcloud-feign</module>
+		<module>modules/zipkin-manage</module>
 	</modules>	
 </project>
