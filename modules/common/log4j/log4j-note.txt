@@ -22,4 +22,15 @@ ERROR     3
 WARN      4
 INFO      6
 DEBUG     7
+
+---------------------------
+log直接输出到mysql表中的配置
+log4j.rootLogger=ERROR,appenderDb
+log4j.appender.appenderDb=org.apache.log4j.jdbc.JDBCAppender
+log4j.appender.appenderDb.driver=com.mysql.jdbc.Driver
+log4j.appender.appenderDb.URL=jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=UTF-8
+log4j.appender.appenderDb.user=root
+log4j.appender.appenderDb.password=root
+log4j.appender.appenderDb.sql=insert into error_log(create_time,log) values ('%d{yyyy-MM-dd hh:mm:ss}', '%c %p %m %n')
+log4j.appender.appenderDb.layout=org.apache.log4j.PatternLayout
 ------------------------------------------------------------------------

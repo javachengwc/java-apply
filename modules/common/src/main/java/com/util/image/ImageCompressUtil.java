@@ -1,4 +1,4 @@
-package com.util;
+package com.util.image;
 
 import java.awt.Graphics2D;
 import java.awt.Image;

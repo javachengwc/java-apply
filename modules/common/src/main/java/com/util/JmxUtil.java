@@ -2,11 +2,14 @@ package com.util;
 
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 
+import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
@@ -164,6 +167,18 @@ public class JmxUtil {
         }
         if (null != mbs) {
             mbs = null;
+        }
+    }
+
+    public void printGc() {
+        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        try {
+            ObjectName youngMBean = new ObjectName("java.lang:type=GarbageCollector,name=MarkSweepCompact");
+            ObjectName tenuredMBean = new ObjectName("java.lang:type=GarbageCollector,name=Copy");
+            System.out.println("YGC:" + mbs.getAttribute(youngMBean, "CollectionCount"));
+            System.out.println("FGC:" + mbs.getAttribute(tenuredMBean, "CollectionCount"));
+        }catch(Exception e) {
+            e.printStackTrace(System.out);
         }
     }
 }

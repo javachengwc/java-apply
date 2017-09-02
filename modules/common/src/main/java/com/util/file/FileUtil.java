@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.channels.FileChannel;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -208,6 +209,31 @@ public final class FileUtil {
                 fos.close();
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    public static void copyFile2( File from, File to ) throws IOException
+    {
+        FileChannel inChannel = new FileInputStream( from ).getChannel();
+        FileChannel outChannel = new FileOutputStream( to ).getChannel();
+        try
+        {
+            long maxCount = Long.MAX_VALUE;
+            long size = inChannel.size();
+            long position = 0;
+            while ( position < size )
+            {
+                position += inChannel.transferTo( position, maxCount, outChannel );
+            }
+        }
+        finally
+        {
+            if (inChannel!=null) {
+                inChannel.close();
+            }
+            if (outChannel!=null) {
+                outChannel.close();
             }
         }
     }
