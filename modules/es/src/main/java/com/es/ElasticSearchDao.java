@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.search.MultiSearchResponse;
@@ -11,6 +12,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.Requests;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.unit.TimeValue;
@@ -248,5 +250,32 @@ public class ElasticSearchDao {
         client.close();//释放资源
 //      System.out.println("索引成功！");
 
+    }
+
+    //创建索引
+    public void createIndex() throws Exception{
+        XContentBuilder builder=XContentFactory.jsonBuilder()
+            .startObject()
+            .startObject("article")
+            .startObject("properties")
+                .startObject("title")
+                .field("type", "string")
+                .field("store", "yes")
+                .field("analyzer","ik")
+                .field("index","analyzed").endObject()
+                .startObject("content")
+                .field("type", "string")
+                .field("store", "no")
+                .field("analyzer","ik")
+                .field("index","analyzed").endObject()
+                .startObject("url")
+                .field("type", "string")
+                .field("store", "yes")
+                .field("index","not_analyzed").endObject()
+            .endObject()
+            .endObject()
+            .endObject();
+        PutMappingRequest mapping = Requests.putMappingRequest("data").type("article").source(builder);
+        client.admin().indices().putMapping(mapping).actionGet();
     }
 }
