@@ -36,9 +36,11 @@ public class ExampleCommand extends HystrixCommand<String> {
        //线程池配置
         HystrixThreadPoolProperties.Setter threadPoolProperties =HystrixThreadPoolProperties.Setter()
                 .withCoreSize(5)
+                //maxQueueSize BlockingQueue 默认－1，的最大队列数，当设为－1，会使用SynchronousQueue,值为正时使用LinkedBlcokingQueue
                 .withMaxQueueSize(Integer.MAX_VALUE)
+                //queueSizeRejectionThreshold限定当前队列大小，即实际队列大小,默认－1
+                //即使maxQueueSize没有达到，达到queueSizeRejectionThreshold该值后，请求也会被拒绝。如果maxQueueSize == -1,该值将不起作用
                 .withQueueSizeRejectionThreshold(5);
-                //queueSizeRejectionThreshold限定当前队列大小，即实际队列大小
        //命令属性配置
         HystrixCommandProperties.Setter commandProperties = HystrixCommandProperties.Setter()
                 .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.THREAD);
