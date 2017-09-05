@@ -137,3 +137,55 @@ HystrixCommand线程池配置在HystrixThreadPoolProperties,具体配置如下:
 
     private final HystrixProperty<Integer> threadPoolRollingNumberStatisticalWindowBuckets;
 -------------------------------------------------------------------------------------
+//隔离方式,默认:采用线程隔离
+hystrix.command.default.execution.isolation.strategy = THREAD
+//使用线程隔离时，调用超时时间，默认:1秒
+hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds = 1000
+//使用线程隔离时，是否对命令执行超时的线程调用中断（Thread.interrupt()）操作.默认:true
+hystrix.command.default.execution.isolation.thread.interruptOnTimeout = true
+//使用线程隔离时，异步操作取消时候线程调用中断（Thread.interrupt()）操作.默认:false
+hystrix.command.default.execution.isolation.thread.interruptOnFutureCancel = false
+//使用信号量隔离时，命令调用最大的并发数,默认:10
+hystrix.command.default.execution.isolation.semaphore.maxConcurrentRequests = 10
+//使用信号量隔离时，命令fallback(降级)调用最大的并发数,默认:10
+hystrix.command.default.fallback.isolation.semaphore.maxConcurrentRequests = 10
+//使用线程隔离时，是否可超时
+hystrix.command.default.execution.timeout.enabled = true
+//是否开启fallback降级策略 默认:true
+hystrix.command.default.fallback.enabled = true
+//是否开启请求缓存,默认:true
+hystrix.command.default.requestCache.enabled = true
+//是否开启请求日志,默认:true
+hystrix.command.default.requestLog.enabled = true
+//是否开启监控统计功能,默认:true
+hystrix.command.default.metrics.rollingPercentile.enabled = true
+hystrix.command.default.metrics.rollingStats.timeInMilliseconds = 10000
+hystrix.command.default.metrics.rollingStats.numBuckets = 10
+hystrix.command.default.metrics.rollingPercentile.timeInMilliseconds = 60000
+hystrix.command.default.metrics.rollingPercentile.numBuckets = 6
+hystrix.command.default.metrics.rollingPercentile.bucketSize = 100
+hystrix.command.default.metrics.healthSnapshot.intervalInMilliseconds = 500
+hystrix.threadpool.default.allowMaximumSizeToDivergeFromCoreSize = false
+//隔离线程池大小,默认值10个.
+hystrix.threadpool.default.coreSize = 10
+hystrix.threadpool.default.maximumSize = 10
+hystrix.threadpool.default.keepAliveTimeMinutes = 1
+//配置线程值等待队列长度,默认值:-1,表示不等待直接拒绝
+hystrix.threadpool.default.maxQueueSize = -1
+//实际队列大小
+hystrix.threadpool.default.queueSizeRejectionThreshold = 5
+hystrix.threadpool.default.metrics.rollingStats.timeInMilliseconds = 10000
+hystrix.threadpool.default.metrics.rollingStats.numBuckets = 10
+//是否启用熔断器
+hystrix.command.default.circuitBreaker.enabled = true
+//熔断器是否开启的阀值，默认20。也就是10秒钟内至少请求20次，熔断器才发挥起作用
+hystrix.command.default.circuitBreaker.requestVolumeThreshold = 20
+//熔断器默认工作时间,默认5秒.熔断器中断请求5秒后会进入半打开状态,放部分流量过去重试
+hystrix.command.default.circuitBreaker.sleepWindowInMilliseconds = 5000
+//当出错率超过50%后熔断器启动,默认:50%
+hystrix.command.default.circuitBreaker.errorThresholdPercentage = 50
+//是否强制开启熔断器阻断所有请求
+hystrix.command.default.circuitBreaker.forceOpen = false
+//是否允许熔断器忽略错误,默认false
+hystrix.command.default.circuitBreaker.forceClosed = false
+----------------------------------------------------------------------------------
