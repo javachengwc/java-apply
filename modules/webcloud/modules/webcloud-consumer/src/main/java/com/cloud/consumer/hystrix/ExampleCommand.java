@@ -1,7 +1,6 @@
 package com.cloud.consumer.hystrix;
 
-import com.netflix.hystrix.HystrixCommand;
-import com.netflix.hystrix.HystrixCommandGroupKey;
+import com.netflix.hystrix.*;
 import com.util.base.ThreadUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +8,8 @@ import rx.Observable;
 import rx.Observer;
 import rx.functions.Action1;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -21,14 +22,39 @@ public class ExampleCommand extends HystrixCommand<String> {
     public ExampleCommand(Boolean throwException) {
         //指定命令组(CommandGroup),只是一个业务分组
         super(HystrixCommandGroupKey.Factory.asKey("ExampleGroup"));
+        //super(setter());
         this.throwException=throwException;
+    }
+
+    private static Setter setter() {
+       //服务组
+        HystrixCommandGroupKey groupKey = HystrixCommandGroupKey.Factory.asKey("ExampleGroup");
+       //服务key
+        HystrixCommandKey commandKey =HystrixCommandKey.Factory.asKey("ExampleKey");
+       //线程池key
+        HystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKey.Factory.asKey("ExamplePool");
+       //线程池配置
+        HystrixThreadPoolProperties.Setter threadPoolProperties =HystrixThreadPoolProperties.Setter()
+                .withCoreSize(5)
+                .withMaxQueueSize(Integer.MAX_VALUE)
+                .withQueueSizeRejectionThreshold(5);
+                //queueSizeRejectionThreshold限定当前队列大小，即实际队列大小
+       //命令属性配置
+        HystrixCommandProperties.Setter commandProperties = HystrixCommandProperties.Setter()
+                .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.THREAD);
+        return HystrixCommand.Setter
+                .withGroupKey(groupKey)
+                .andCommandKey(commandKey)
+                .andThreadPoolKey(threadPoolKey)
+                .andThreadPoolPropertiesDefaults(threadPoolProperties)
+                .andCommandPropertiesDefaults(commandProperties);
     }
 
     @Override
     protected String run() {
         logger.info("["+Thread.currentThread().getName()+"] ExampleCommand run start......");
         //run方法不能超过command定义的超时时间,默认:1秒，如果超时则调用fallback
-        //ThreadUtil.sleep(2000l);
+        ThreadUtil.sleep(100l);
         if(throwException) {
             throw new RuntimeException("ExampleCommand run exception");
         }
@@ -88,5 +114,20 @@ public class ExampleCommand extends HystrixCommand<String> {
             }
         });
 
+//        ExecutorService executorService= Executors.newFixedThreadPool(5);
+//        int i=0;
+//        while(i<1000) {
+//            executorService.execute(new Runnable() {
+//                @Override
+//                public void run() {
+//                    logger.info("ExecutorService thread-->"+Thread.currentThread().getName());
+//                    ExampleCommand exampleCommandK = new ExampleCommand(false);
+//                    String rt = exampleCommandK.execute();
+//                    System.out.println("rt=" + rt);
+//                }
+//            });
+//            i++;
+//        }
+//        executorService.shutdown();
     }
 }

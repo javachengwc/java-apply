@@ -18,8 +18,8 @@ public class DetailCommand extends HystrixCommand<String> {
                 //如果其他HystrixCommand指定的线程池key也是此key,那它运行的线程池跟此Command是同一个线程池
                 //如果多个Command都没指定线程池key,但都是同一个GroupKey，那它们运行的线程池也是同一个线程池,不管CommandKey相不相同
                 .andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey("DetailPool"))
-                .andCommandPropertiesDefaults(HystrixCommandProperties.Setter().withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.THREAD))
-                .andCommandPropertiesDefaults(HystrixCommandProperties.Setter().withExecutionTimeoutInMilliseconds(500)));///隔离代码执行超时时间设为500毫秒
+                .andCommandPropertiesDefaults(HystrixCommandProperties.Setter().withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.THREAD)
+                .withExecutionTimeoutInMilliseconds(500)));///隔离代码执行超时时间设为500毫秒
         this.name=name;
     }
 
@@ -49,13 +49,11 @@ public class DetailCommand extends HystrixCommand<String> {
         //这里通过jstack pid打印线程信息，会发现ExampleCommand,DetailCommand是在不同的线程池执行的，每个线程池默认大小是10个线程，
         //如果ExampleCommand与DetailCommand设置同样的ThreadPoolKey,则运行的线程池是同一个线程池
         int i=0;
-        while(i<100) {
+        while(i<1000) {
             ExampleCommand exampleCommand = new ExampleCommand(false);
             String result3 = exampleCommand.execute();
             System.out.println("result3=" + result3);
             i++;
         }
-
-        ThreadUtil.sleep(5000000l);
     }
 }

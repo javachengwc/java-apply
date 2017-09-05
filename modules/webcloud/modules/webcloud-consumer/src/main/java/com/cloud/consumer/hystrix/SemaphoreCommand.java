@@ -25,8 +25,9 @@ public class SemaphoreCommand extends HystrixCommand<String> {
     public SemaphoreCommand(String value) {
         super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("SemaphoreGroup"))
             //设置隔离方式为信号量隔离
-            .andCommandPropertiesDefaults(HystrixCommandProperties.Setter().withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.SEMAPHORE))
-            //添加isolation相关额外配置居然会改变隔离方式为线程，不知道是不是hystrix本身的问题
+            .andCommandPropertiesDefaults(HystrixCommandProperties.Setter().withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.SEMAPHORE)
+            //使用信号量隔离时，命令调用最大的并发数,默认:10
+            .withExecutionIsolationSemaphoreMaxConcurrentRequests(2))
         );
         this.value = value;
     }
@@ -46,7 +47,7 @@ public class SemaphoreCommand extends HystrixCommand<String> {
 
     public static void main(String[] args) throws Exception{
 
-        ExecutorService executorService=Executors.newFixedThreadPool(1);
+        ExecutorService executorService=Executors.newFixedThreadPool(10);
         int i=0;
         while(i<1000) {
             executorService.execute(new Runnable() {
