@@ -66,7 +66,9 @@ class MyThread extends Thread {
     public void run() {
         try {
             //从此信号量获取给定数目的许可
-            pool.getSp().acquire(x);
+            System.out.println(threadname + "当前可用信号量数:"+pool.getSp().availablePermits());
+            pool.getSp().acquire(x);//如果信号量不够，将阻塞
+            //boolean rt =pool.getSp().tryAcquire(x); 尝试获取信号量，不会阻塞，但如果信号量不够，将返回false;
             System.out.println(threadname + "成功获取了" + x + "个许可！");
             if(threadname=="任务B")
             {
