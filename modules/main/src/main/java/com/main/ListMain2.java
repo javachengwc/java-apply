@@ -6,6 +6,8 @@ public class ListMain2 {
 
 	public static void main(String args [])
 	{
+        checkListEleAbleNull();
+
         checkMixList();
 
         testRemove();
@@ -17,7 +19,28 @@ public class ListMain2 {
 		//checkSubList();
 
 	}
-	
+
+    /**subList相关**/
+    public static void checkListEleAbleNull() {
+        List<String> listA = new ArrayList<String>();
+
+        String abc = new String("abc");
+        String a = "a";
+        String b = "b";
+        String c = "c";
+        String d=null;
+
+        listA.add(abc);
+        listA.add(null);
+        listA.add(a);
+        listA.add(b);
+        listA.add(c);
+        listA.add(d);
+
+        System.out.println(listA.size());
+        System.out.println(" list second ele is "+ listA.get(1));
+    }
+
 	/**subList相关**/
 	public static void checkSubList()
 	{
