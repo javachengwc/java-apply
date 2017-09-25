@@ -1,4 +1,5 @@
 --------------------------------mongodb导入导出---------------------------------
 mongodump --port=27017 -utest -ptest --db=test -o backup   #只要读权限就可以备份
 mongorestore --port=27017 -utest -ptest --db=test backup/test  #读写权限可以进行还原
+mongoimport
 --------------------------------------------------------------------------------
