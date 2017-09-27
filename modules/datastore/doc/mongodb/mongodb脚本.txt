@@ -39,7 +39,17 @@ db.data.update({"name":"t3"},{$pull:{tags:"book"} });
 db.data.update({"name":"t3"},{$pull:{"comments": {"name":"aa"}} })
 db.data.update({"name":"t3"},{$pull:{votes: 7} }); ######移除数组字段中满足pull语句声明的查询条件的所有元素。
 db.data.find({name:{$ne:"a"}})                     ######查找name字段不等于a的文档
+db.data.find({},{"name":1,"age":1})                ######查找集合返回name,age字段
 db.data.find({tags:{$all:["a","b","c"]}})          ######查找tags字段包含数组a,b,c所有元素的文档
+db.data.find({tags:{$size:3}})                     ######查找tags数组字段包含3个元素的文档
+##size必须指定一个值，不能接受一个范围值，不能与其他查询子句组合比如 gt"。
+##如果查询需求就是需要一个长度范围，可创建一个计数器字段，当增加元素的同时增加计数器字段值,如:
+##db.data.update({"name":"t3"},{ $push:{tags:"ab"},$inc:{count:1} } )
+##db.data.update({"name":"t3"},{ $push:{tags:"cd"},$inc:{count:1} } )
+##db.data.find({count:{$gt:1}})
+db.data.find({},{ comments: { $slice: 5 } });      ######查询集合返回comments数组中前5个元素
+db.data.find({},{ comments: { $slice: -5 } });     ######查询集合返回comments数组中后5个元素
+db.data.find({},{ comments: {$slice:[20,10]} });   ######查询集合返回comments数组中limit 20,10的元素
 db.data.find({means:{$gt:20}})                     ######查找means字段大于20的文档
 db.data.find({means:{$gte:20}})                    ######查找means字段大于等于20的文档
 db.data.find({means:{$lt:20}})                     ######查找means字段小于20的文档
@@ -56,8 +66,12 @@ db.data.find({ $or: [{ amount: { $gt: 50 } }, { name: "t1" }] })
                                                    ######查找name=t1或amount>50的文档
 
 db.data.find({ a: { $exists: false } })            ######查找不存在a字段的文档
+db.data.find({sex:{$in:[null],$exists:true }})     ######查找字段sex存在,且值为null的文档
 db.data.find({ amount: { $exists: true, $nin: [ 16, 58 ] } })
                                                    ######查找amount字段存在，且值不等于16和58的文档
+db.data.find({"comment":{"$elemMatch":{"author":"aa","score":{"$gt":4}}}});
+                                                   ######查找comment数组字段中存在单条元素的
+                                                   author=aa且score>4的文档
 db.data.find( { name: /.3/i } );                   ######查找name字段包含3但不是依3开头的文档
 db.data.find( { name: { $regex: '.3', $options: 'i' } } );
 db.data.find( { name: /3$/i } );                   ######查找name字段依3结尾的文档
