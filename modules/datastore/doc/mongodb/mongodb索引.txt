@@ -1,3 +1,130 @@
 ------------------------------------mongodb索引----------------------------------
-
+db.data.getIndexes()                           ######查看data集合的索引
+db.data.ensureIndex({"name":1})                ######对name字段创建索引，
+                                               ######默认索引名定义规则是key_1或者key_-1,1--升序,-1--降序
+db.data.ensureIndex({"age":1},{"background":true})
+                                               ######后台执行创建索引
+db.data.ensureIndex({x:1,y:1,z:1,{name:"idx_a"})
+                                               ######创建x,y,z字段的复合索引,命名为idx_a,索引名长度一般有限制125字节
+db.data.dropIndex("idx_a")                     ######删除idx_a的索引
+db.data.dropIndex({name:1})                    ######删除name字段的索引
+db.data.ensureIndex({x:1,y:1},{unigue:true})   ######唯一索引
+db.data.ensureIndex({x:1,y:1},{sparse:true})   ######指定索引是否稀疏,mongodb索引默认是不稀疏的。
+稀疏性表示mongodb在处理索引中存在但是文档中不存在的字段的两种不同的方法。
+比如，集合data的x字段指定了索引，但文档{y:1,z:1}这种不存在x字段的数据，如果索引为不稀疏的，
+mongodb依然会为这个数据创建索引，如果索引为稀疏索引，那么就不会为此数据创建索引。
+ep:
+db.data.insert({"m":1})
+db.data.insert({"n":1})
+db.data.ensureIndex({m:1},{sparse:true})       ######为此集合m字段创建稀疏索引
+因为第二个文档不存在m字段，所以此文档不会创建这个索引。
+如果使用稀疏索引查找不存在稀疏索引字段的文档，是查询不到对应文档的
+db.data.find({m:{$exists:false}})
+可以查到数据,在查找没有m字段第二个文档时,不使用索引去查找,而是正常的查找，是能查出结果的。
+但通过hint强制使用索引，就不会查到数据了
+db.data.find({m:{$exists:false}}).hint("m_1")  #查不出数据，因为第二个文档没有m字段的索引
+---------------------------------------------------------------------
+mongodb索引分类
+1,_id索引
+     默认索引,每插入一条记录，mongodb自动生成对应的一个唯一的_id字段值。
+2,单键索引
+     单键索引是最普通的索引,一般字段值为一个单一的值。
+3,文档索引
+     建立索引的字段的值是一个文档。
+4,复合索引(也叫组合索引)
+     查询多个条件时,建立复合索引,也遵从最左匹配原则，但mongodb的复合索引的使用跟查询条件字段以及排序字段的顺序非常相关。
+     可查看后面复合索引例子来看查询顺序或者排序顺序是否命中索引。
+     ep:db.data.ensureIndex({name:1,amount:1})          ######建立name,amount字段的复合索引,1--升序,-1--降序
+5,过期索引
+     在一段时间后会过期的索引，在索引过期后，相应的数据会被删除,适合存储在一段时间之后会失效的数据
+     ep:db.data.ensureIndex({time:1},{expireAfterSeconds:30})    ######创建time字段30秒过期的索引
+     存储在过期索引字段的值必须是指定的时间类型，必须是ISODate或者ISODate数组，不能使用时间戳，否则不能自动删除。
+     如果指定的是ISODate数组，则按照最小的时间进行删除。过期索引不能是复合索引。因为不能指定两个过期时间。
+     删除时间是不精确的。删除过程是由mongodb的后台进程每60s跑一次的，而且删除也需要一定时间，所以存在误差。
+6,全文索引
+     对字符串与字符串数组创建全文课搜索的索引,目前mongodb的全文索引还不支持中文
+     ep: db.data.ensureIndex({"name":"text"})    ######对集合data在name字段上创建全文索引,value-固定字符串text。
+     全文索引的查找:
+     1：使用全文索引查询不需要指定全文索引的字段名字——直接使用$text,$search即可
+     2：mongodb中每个数据集合只允许创建一个全文索引，不过这个全文索引可以针对一个、多个、全部的数据集合的字段来创建。
+     3：查询多个关键词，可以使用空格将多个关键词分开, 空格-----或的关系
+     4：指定不包含的字段使用-来表示,- -----非的关系
+     5：引号包括起来表示与的关系, \" \"-----与的关系
+     ep:db.data.find({$text:{$search:"cc"}})
+        db.data.find({$text:{$search:"aa bb cc"}})              #空格代表或操作，aa或bb或cc
+        db.data.find({$text:{$search:"aa bb -cc"}})             #-号为非操作，即不包含cc的
+        db.data.find({$text:{$search: "\"aa\" \"bb\" \"cc\""}}) #加双引号可以提供与关系操作
+        db.data.find({$text:{$search:"aa bb"}},{score:{$meta:"textScore"}})
+                                     ######查询结果会多出一个score字段，这个得分越高，相关度越高
+        db.data.find({$text:{$search:"aa bb"}},{score:{$meta:"textScore"}}).sort({score:{$meta:"textScore"}
+                                     ######对查询结果根据得分进行排序
+7,地理位置索引
+     将一些点的位置存储在mongodb中，创建索引后，可以按照位置来查找其他点
+     地理位置索引分为两类:2D索引(用于存储和查找平面上的点),2Dsphere索引(用于存储和查找球面上的点)。
+     两者的区别在于计算距离时使用的计算方式不同（平面距离还是球面距离）
+     ep:db.data.ensureIndex({w:"2d"})          ######对w字段创建2d索引
+        ##2D地理位置索引的取值范围以及表示方法 经纬度[经度,纬度],经纬度取值范围 经度[-180,180] 纬度[-90,90]
+        db.data.insert({w:[180,90]})           ######插入一条记录
+        db.data.find({w:{$near:[x,y]}})        ######使用$near查询距离某个点最近的点 ,默认返回最近的100个点
+        db.data.find({w:{$near:[x,y],$maxDistance:z}})   ######使用$maxDistance限制返回的最远距离
+        db.data.ensureindex({key: '2dsphere'}) ######对key字段创建2dsphere索引
+        ##2dsphere位置表示方式:GeoJSON:描述一个点，一条直线，多边形等形状
+--------------------------------------------------------
+索引实例:
+db.person.drop();                                ######删除原来的集合
+for(var i=0;i<1000000;i++){
+    db.person.insert({"name":"a"+i%1000,"age":20+i%10});
+}
+                                                 ######插入100万记录
+db.person.ensureIndex({"age":1})
+db.person.ensureIndex({"name":1,"age":1})
+db.person.ensureIndex({"age":1,"name":1})        ######创建索引
+db.person.find({"age":{"$gte":27,"$lte":30},"name":"a107"}).hint({"age":1}).explain("executionStats");
+db.person.find({"age":{"$gte":27,"$lte":30},"name":"a107"}).hint({"age":1,"name":1}).explain("executionStats");
+                                                 ######对比单索引与复合索引执行计划中的查询耗时
+                                                 ######结果是命中的复合索引查询优于单索引
+db.person.find({"age":{"$gte":27,"$lte":30}}).sort({"name":1}).limit(100).hint({"age":1,"name":1}).explain("executionStats");
+###此种方式需找到所有符合条件的值,但是找到后，需要对文档在内存中进行排序,，这个步骤消耗了非常多的时间。
+db.person.find({"age":{"$gte":27,"$lte":30}}).sort({"name":1}).limit(100).hint({"name":1,"age":1}).explain("executionStats");
+###此种方式效果非常好，不需要在内存中对大量数据进行排序。
+###也就是说，在有对字段排序且条件是范围查询的情景下索引应该这样建{"sortKey":1,"queryCriteria":1}。
+在查询中有等值条件、排序及范围过滤的索引建立方法：
+首先等值条件:在索引中加入所有需要做等值测试的字段，任意顺序。
+其次排序字段:根据查询的顺序有序的向索引中添加字段。
+再次范围过滤:以字段的基数（collection中字段的不同值的数量）从低到高的向索引中添加范围过滤字段。
+如果索引中的等值或者范围查询字段不能过滤出collection中90%以上的文档，那么把它移除索引估计会更好一些。
+并且如果在一个collection上有多个索引，那么适当的hint强制索引查询更合适一些。
+---------------------------------------------
+explain 执行计划可以很好地观察系统如何使用索引来加快检索同时可以针对性优化索引。
+关键的字段说明:
+cursor 	                      返回游标类型(BasicCursor或BtreeCursor)
+nscanned 	                  扫描字段索引的条数
+nscannedObjects               扫描的文档数目
+n 	                          返回的文档数量
+scanAndOrder                  是否内存排序,false--非,true--是
+millis 	                      耗时(毫秒)
+indexBounds 	              所使用的索引
+executionTimeMillis           query整体的耗时
+totalDocsExamined             文档扫描条数
+stage                         查询的类型,COLLSCAN--全表扫描,FETCH+IXSCAN--索引扫描+根据索引去检索指定document
+executionStages.executionTimeMillisEstimate
+                              检索document获得数据的耗时
+nscanned >= nscannedObjects >= n。
+对于简单查询可能期望3个数字是相等的。这意味着mongodb使用的索引比较好
+---------------------------------------------
+profile优化器
+有两种方式可以控制Profiling的开关和级别
+    1,启动mongodb时加上 -profile=级别参数即可
+    2,在客户端执行db.setProfilingLevel(级别)命令来实时配置profile
+      db.getProfilingLevel()查看当前profile级别
+profile的级别如下:
+    0 – 不开启
+    1 – 记录慢命令(默认为>100ms)
+    2 – 记录所有命令
+上面说到其默认为100ms，其设置方法为:
+    通过添加 -slowms 启动参数配置。
+    调用db.setProfilingLevel时加上第二个参数db.setProfilingLevel(1,200);
+mongodb记录profile记录是直接存在system.profile，所以只要查询这个Collection的记录就可以获取到profile记录。
+db.system.profile.find( { millis : { $gt : 50 } } )    ######查询执行时间长度大于50ms的profile记录
+db.system.profile.find().sort({$natural:-1}).limit(1)  ######查询最新的一条profile记录
 ---------------------------------------------------------------------------------
