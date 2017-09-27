@@ -9,6 +9,9 @@ mongod --dbpath [数据存放path]          //基本启动
 mongod --dbpath [数据存放path] -auth    //开启授权启动
 
 mongod -dbpath E:\mongodata          -----在命令行中启动mongo服务，不报错表示安装成功
+mongod --fork -dbpath /data/db --logpath /data/log &
+                                     -----后台启动mongod服务,必须这样启动,才不会在退出shell的时候关闭mongod服务，
+                                     通常一般服务用nohup的方式也能后台启动，但mongod即便用nohup启动,退出shell也会关闭mongod服务
 mongo                                -----客户端连接mongo服务
 
 mongodb启动参数：

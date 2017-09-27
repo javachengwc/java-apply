@@ -7,7 +7,65 @@ db.version()              ------查看mongodb版本
 db.data.insert({"a":"a","b":"b"})                  ######插入数据(data是集合名)
 db.data.find()                                     ######查询数据
 db.data.count()                                    ######集合计数
+db.data.findOne()                                  ######查询满足条件的一条数据
+db.data.remove()                                   ######删除data集合所有文档，不会删除集合本身
+db.data.remove({"a":"a"})                          ######删除字段a值为a的文档
+db.drop_collection(collection_name)                ######直接删除集合
+db.data.update({"_id" : ObjectId("62727822e75fdd1d6c815702")},{"$set" : {"hobby" :"read"}} )
+                                                   ######根据id修改文档
+db.data.update({"author.name":"a"},{"$set":{"author.name":"b","author.age":18}})
+                                                   ######根据条件修改文档
+db.data.update({"name":"t3"},{"$unset" : {"author" :1} })
+                                                   ######从文档中移除author字段
+db.data.update({"name":"t3"},{"$inc":{"amount":1}})
+                                                   ######"$inc”修改器增加amount的值
+##"$inc"只能用于整数、长整数或双精度浮点数。用在其他类型的数据上会导致操作失败
+db.data.update({"name":"t3"},{ $rename: { 'nickname': 'alias', 'cell': 'mobile' }} )
+                                                   ######文档中"nickname"字段重命名为"alias"、"cell"字段重命名为"mobile"
+db.data.update({"name":"t3"}, { $rename: { "name.first": "name.fname" } })
+                                                   ######重命名文档中的子字段名
+db.data.update({age :25}, {$inc :{"age" :3}}, true)######upsert选项操作文档，update方法会首先查找与第一个参数匹配的记录，在用第二个参数更新之，
+                     如果找不到与第一个参数匹配的的记录，就会以这个条件和更新文档为基础创建一个新的文档。如果找到了匹配的文档，则正常更新。
+db.data.update(
+                    {"name":"t3"},
+                    { $setOnInsert: { defaultQty: 500, inStock: true },
+                      $set: { item: "apple" }
+                    },
+                    { upsert: true }
+              )                                    ######upsert操作文档，若update方法执行的update操作而不是insert操作，那么$setOnInsert操作符将无效。
+db.data.update({"name":"t3"},{$push:{"comments":{"name":"aa","content":"cc"}}})
+##"$push"修改器如果指定的字段已存在，会向已有的数组末尾加入一个元素，如果不存在就会创建一个新的数组。
+db.data.update({"name":"t3"},{$pull:{tags:"book"} });
+db.data.update({"name":"t3"},{$pull:{"comments": {"name":"aa"}} })
+db.data.update({"name":"t3"},{$pull:{votes: 7} }); ######移除数组字段中满足pull语句声明的查询条件的所有元素。
+db.data.find({name:{$ne:"a"}})                     ######查找name字段不等于a的文档
+db.data.find({tags:{$all:["a","b","c"]}})          ######查找tags字段包含数组a,b,c所有元素的文档
+db.data.find({means:{$gt:20}})                     ######查找means字段大于20的文档
+db.data.find({means:{$gte:20}})                    ######查找means字段大于等于20的文档
+db.data.find({means:{$lt:20}})                     ######查找means字段小于20的文档
+db.data.find({means:{$lte:20}})                    ######查找means字段小于等于20的文档
+db.data.find({name:{$in:["a","b"]}})               ######查找name字段in ('a','b')的文档
+db.data.find({name:{$nin:["a","b"]}})              ######查找name字段not in ('a','b')的文档
+db.data.find({ $and:[{name:"t1"},{amount:{$lt:50} }] })
+db.data.find({name:"t1",amount:{$lt:50}})          ######查找name=t1且amount<50的文档
+db.data.find({ $nor: [{ name:"t1"},{amount:{$lte:50} }] })
+                                                   ######查找name=t1且amount<=50都不满足的文档
+db.data.find({ amount: { $not: { $gt: 50 } } })    ######查找amount不大于50的文档
+##$not操作符不能独立使用，必须跟其他操作一起使用（除$regex）
+db.data.find({ $or: [{ amount: { $gt: 50 } }, { name: "t1" }] })
+                                                   ######查找name=t1或amount>50的文档
 
-
+db.data.find({ a: { $exists: false } })            ######查找不存在a字段的文档
+db.data.find({ amount: { $exists: true, $nin: [ 16, 58 ] } })
+                                                   ######查找amount字段存在，且值不等于16和58的文档
+db.data.find( { name: /.3/i } );                   ######查找name字段包含3但不是依3开头的文档
+db.data.find( { name: { $regex: '.3', $options: 'i' } } );
+db.data.find( { name: /3$/i } );                   ######查找name字段依3结尾的文档
+##regex装饰符i-----大小写不敏感匹配
+##regex装饰符s-----模式中的点号元字符匹配所有字符，包含换行符。如果没有这个修饰符，点号不匹配换行符
+db.data.find({ $where: "this.amount % 4 == 0" })   ######带where的查询, amount为null的文档也会被查出来
+db.data.find({ $where: "this.a == this.b" })       ######查找a字段等于b字段的文档
+db.data.find({ $where: "obj.a == obj.b" })
+db.data.find({ $where: function() { return (this.a == this.b) } })
 
 --------------------------------------------------------------------------------
