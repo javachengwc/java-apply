@@ -1,5 +1,44 @@
 --------------------------------mongodb导入导出---------------------------------
-mongodump --port=27017 -utest -ptest --db=test -o backup   #只要读权限就可以备份
-mongorestore --port=27017 -utest -ptest --db=test backup/test  #读写权限可以进行还原
-mongoimport
+数据导出
+mongoexport -d dbname -c collectionname -o file --type json/csv -f field
+参数说明：
+    -d ：数据库名
+    -c ：collection名
+    -o ：输出的文件名
+    --type ： 输出的格式，默认为json
+    -f ：输出的字段，如果-type为csv，则需要加上-f "字段名"
+ep:
+    mongoexport -d test -c uu -o /data/uu.json --type json -f  "_id,user_id,user_name,age,status"
+
+数据导入
+mongoimport -d dbname -c collectionname --file filename --headerline --type json/csv -f field
+参数说明：
+    -d ：数据库名
+    -c ：collection名
+    --type ：导入的格式默认json
+    -f ：导入的字段名
+    --headerline ：如果导入的格式是csv，则可以使用第一行的标题作为导入的字段
+    --file ：要导入的文件
+ep:
+    mongoimport -d test -c uu --file /data/uu.json --type json
+
+数据备份
+mongodump -h dbhost --port=27017 -utest -ptest -d dbname -o backupdir
+参数说明：
+    -h： 服务器地址，也可以带上端口号,如127.0.0.1:27017
+    -d： 需要备份的数据库实例
+    -o： 备份的数据存放位置
+ep:
+    mongodump -h 127.0.0.1:27017 -d test -o /data/mongodump
+
+数据恢复
+mongorestore -h dbhost -d dbname --dir dbdirectory
+参数或名：
+    -h： 服务器地址
+    -d： 需要恢复的数据库实例
+    --dir： 备份数据所在位置
+    --drop： 恢复的时候，先删除当前数据，然后恢复备份的数据。
+ep:
+    mongorestore -h 127.0.0.1:27017 -d test --dir /data/mongodump
+
 --------------------------------------------------------------------------------
