@@ -1,0 +1,109 @@
+------------------------------------linux硬盘分区及挂载-----------------------------
+fdisk -l                      -----列出指定的外围设备的分区表状况,能查看到未挂载的磁盘
+
+1,创建分区
+fdisk /dev/xvdb               选择磁盘进行操作
+     a,输入m列出可执行的命令
+         command (m for help): m
+         Command action
+             ......
+             d delete a partition
+             ......
+             p print the partition table
+             n add a new partition
+             m print this menu
+             ......
+             w write table to disk and exit
+     b,输入p列出磁盘目前分区情况
+         Command (m for help): p
+             Disk /dev/sdb: 3221 MB,......
+             Device Boot ......
+             /dev/sdb1     Linux LVM
+             /dev/sdb2     Linux
+     c.输入d然后选择分区，删除现有分区
+         Command (m for help): d
+            Partition number (1-4): 1
+         Command (m for help): d
+            Selected partition 2
+     d,输入pc查看分区情况，确认分区是否已删除
+         Command (m for help): p
+             ......
+             Device Boot Start End Blocks Id System
+     (如果是一个新的磁盘,b,c,d三步骤直接跳过)
+     e,输入n建立新的磁盘分区
+         Command (m for help): n
+             Command action
+                e extended
+                p primary partition (1-4)
+             键入p //建立主分区
+             Partition number (1-4):  键入1 //分区号
+             First cylinder (1-391, default 1): 直接回车 //分区起始位置
+             Using default value 1
+             last cylinder or +size or +sizeM or +sizeK (1-391, default 391): 键入100 //分区结束位置，单位为扇区
+         Command (m for help): 键入n //再建立一个分区
+              Command action
+                  e extended
+                  p primary partition (1-4)
+              键入p //建立另一个主分区
+              Partition number (1-4): 键入2 //分区号为2
+              First cylinder (101-391, default 101): 直接回车 //分区起始位置
+              Using default value 101 Last cylinder or +size or +sizeM or +sizeK (101-391, default 391): 键入200 //分区结束位置
+         Command (m for help): 键入p  //查看建立的分区
+              ......
+              Device  Boot  Start  End  Blocks  Id  System
+              /dev/sdb1  .......                      Linux
+              /dev/sdb2  .......                      Linux
+         Command (m for help): n   //键入n创建扩展分区
+             Command action
+                 e extended
+                 p primary partition (1-4)
+             键入e //选择扩展分区
+             Partition number (1-4): 键入3
+             First cylinder (201-391, default 201): 直接回车
+             Using default value 201
+             Last cylinder or +size or +sizeM or +sizeK (126-391, default 391): 直接回车
+             Using default value 391
+         Command (m for help): n   //键入n在扩展分区上建立2个逻辑分区
+             Command action
+                 l logical (5 or over)
+                 p primary partition (1-4)
+             键入l //选择逻辑分区
+             First cylinder (201-391, default 201): 直接回车
+             Using default value 126
+             Last cylinder or +size or +sizeM or +sizeK (201-391, default 391): 300
+         Command (m for help): n   //键入n创建第2个逻辑分区
+             Command action
+                 l logical (5 or over)
+                 p primary partition (1-4)
+             键入l //选择逻辑分区
+             First cylinder (301-391, default 301):  直接回车
+             Using default value 301
+             Last cylinder or +size or +sizeM or +sizeK (301-391, default 391): 直接回车
+             Using default value 391
+         Command (m for help): p   //键入p确认逻辑分区创建成功
+             ......
+             Device  Boot  Start  End  Blocks  Id  System
+             /dev/sdb1  .......                      Linux
+             /dev/sdb2  .......                      Linux
+             /dev/sdb3  .......                      Extended
+             /dev/sdb5  .......                      Linux
+             /dev/sdb6  .......                      Linux
+     f,对分区操作进行保存
+         Command (m for help): w
+             The partition table has been altered!
+             Calling ioctl() to re-read partition table.
+             Syncing disks.
+     (根据磁盘大小来创建相应的分区，简单情况下创建一个主分区就可以了)。
+2,格式化分区
+    mkfs.ext3 /dev/xvdb1       ------在xvdb1上建立ext3分区
+    (mkfs.ext2 /dev/sdb1        ------在sdb1上建立ext2分区)
+3,挂载分区
+    mkdir /data                ------创建挂载目录
+    mount /dev/xvdb1 /data     ------挂载分区
+4,设置开机自动挂载
+    vim /etc/fstab
+        /dev/xvdb1    /data    ext3    defaults     0 0
+5,检验分区及挂载
+    reboot          ------长期
+    df -h           ------查看分区挂载情况
+------------------------------------------------------------------------------------
