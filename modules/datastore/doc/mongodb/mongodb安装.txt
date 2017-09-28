@@ -13,6 +13,9 @@ mongod --fork -dbpath /data/db --logpath /data/log &
                                      -----后台启动mongod服务,必须这样启动,才不会在退出shell的时候关闭mongod服务，
                                      通常一般服务用nohup的方式也能后台启动，但mongod即便用nohup启动,退出shell也会关闭mongod服务
 mongo                                -----客户端连接mongo服务
+mongo -u root -p root -authenticationDatabase admin  或
+mongo admin -u root -p root
+                                     -----带账号密码链接mongo服务
 
 mongodb启动参数：
 --bind_ip 	               绑定IP

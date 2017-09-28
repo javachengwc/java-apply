@@ -3,6 +3,7 @@ MongoDB自带简洁但功能强大的JavaScript shell
 db.help()                 ------查看数据库级别的命令的帮助
 db.foo.help()             ------查看集合命令的帮助
 db.version()              ------查看mongodb版本
+show collections;         ------显示当前数据库下所有集合
 
 db.data.insert({"a":"a","b":"b"})                  ######插入数据(data是集合名)
 db.data.find()                                     ######查询数据

@@ -1,24 +1,40 @@
 --------------------------------------mongodb账号授权--------------------------------
 -----创建管理账户
 use admin
-db.createUser({user:'root',pwd:'root', roles:[{role:'userAdminAnyDatabase', db:'admin'}]}
+db.createUser({user:'root',pwd:'root', roles:[{role:'userAdminAnyDatabase', db:'admin'}]})
 
 -----使用账户登录认证
+mongo admin -u root -p root
 use admin
 db.auth('root', 'root')
+在给具体数据库创建账号或授权的时候需要切换到admin库，用root或管理账号认证后，再切换到对应数据库给相应账号授权
 
 -----创建test账号并授予它在所有库读写所有权限
 use admin
 db.createUser({user:'test',pwd:'test', roles:[{role:'readWriteAnyDatabase', db:'admin'}]})
 
------在test库创建账号root,并授予读写权限
+-----在test库创建账号test,并授予读写权限
 use test
-db.createUser({user:"root",pwd:"root",roles:[{role:"readWrite",db:"test"}]})
+db.createUser({user:"test",pwd:"test",roles:[{role:"readWrite",db:"test"}]})
 在test上创建的账号, 才是这个数据库的账号,才能在这里完成授权,但是创建用户的信息存放在admin库中
+
+-----修改账号密码
+usr test
+db.changeUserPassword('test','test1');
 
 -----在test库修改test账号
 use test
-db.updateUser('test',{pwd:'admin',roles:[{role:'readWrite',db:'test'}]})
+db.updateUser('test',{pwd:'test2',roles:[{role:'readWrite',db:'test'}]})
+
+----添加角色
+use test
+db.grantRolesToUser(  "test",  [ { role: "dbAdmin",db:"test"} ] )
+db.grantRolesToUser(  "test",  [ { role: "userAdmin",db:"test"} ] )
+db.grantRolesToUser(  "test",  [ { role: "read",db:"admin"} ] )
+
+----回收角色
+use test
+db.revokeRolesFromUser("test",[ { role: "read",db:"admin"} ] )
 
 -----在test库中删除test账号
 use test
@@ -32,16 +48,20 @@ db.system.users.find({user:'root'})     ---查看名称为root的账号
 -----在当前数据库下查看当前数据库账号
 show users;
 
------查看所有数据库
-show dbs
+-----查看所有数据库（要显示数据库，需要至少插入一个文档，空的数据库是不显示出来的）
+show dbs  (admin库的账户才能查看)
 
 -----查看当前是哪个数据库
 db
 
+----创建数据库
+mongodb使用 use DATABASE_NAME命令来创建数据库,
+如果指定的数据库不存在，则该命令将创建一个新的数据库，否则返回现有的数据库
+
 -----------------------------------------
 可授予的角色列表:
-    1. 数据库用户角色：read、readWrite;
-    2. 数据库管理员角色：dbAdmin、dbOwner、userAdmin;
+    1. 数据库读写角色：read、readWrite;
+    2. 数据库管理角色：dbAdmin、dbOwner、userAdmin;
     3. 集群管理角色：clusterAdmin、clusterManager、clusterMonitor、hostManager;
     4. 备份还原角色：backup、restore;
     5. 所有数据库角色：readAnyDatabase、readWriteAnyDatabase、userAdminAnyDatabase、dbAdminAnyDatabase;
