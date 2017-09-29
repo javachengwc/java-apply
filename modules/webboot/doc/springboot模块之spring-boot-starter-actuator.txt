@@ -44,6 +44,8 @@ spring-boot-starter-actuator默认端点Endpoint也就是接口如下:
 端点的启用与禁用可在application.properties中配置
 endpoints.configprops.enabled=false      #禁用cvonfigprops端点
 endpoints.shutdown.enabled=false         #禁用shutdown端点
+endpoints.metrics.filter.enabled=false   #禁用metrics servlet filter
+spring.metrics.servo.enabled=false       #禁用metrics服务
 -------------------------------
 自定义端点
 a,覆盖已有端点，比如/health端点
