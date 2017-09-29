@@ -140,8 +140,7 @@ public class Config implements EnvironmentAware {
 //        sqlSessionFactoryBean.setMapperLocations(ls);
         sqlSessionFactoryBean.setConfiguration(config);
 //        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-//        sqlSessionFactoryBean.setMapperLocations(resolver.getResources("classpath:/mapper/*.xml"));
-
+//        sqlSessionFactoryBean.setMapperLocations(resolver.getResources("classpath*:/mapper/*.xml"));
         return sqlSessionFactoryBean;
     }
 

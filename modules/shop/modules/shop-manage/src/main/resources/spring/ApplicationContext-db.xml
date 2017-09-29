@@ -89,6 +89,10 @@
         <aop:advisor advice-ref="txAdvice" pointcut-ref="interceptorPointCut"/>
     </aop:config>
 
+    <!--
+     classpath：只会在classes路径中查找找文件
+     classpath*：不仅会到classes路径，还包括jar文件中(classes路径)进行查找。
+    -->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
         <property name="configLocation" value="classpath:mybatis/mybatis-config.xml"/>
