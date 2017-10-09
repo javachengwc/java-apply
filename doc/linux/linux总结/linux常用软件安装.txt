@@ -88,12 +88,14 @@ rpm -qa | grep  mysql
     mysql-libs-5.1.73-3.el6_5.i686
 rpm -e mysql-libs-5.1.73-3.el6_5.i686 --nodeps   #卸载自带的低版本mysql
 wget http://mirrors.sohu.com/mysql/MySQL-5.7/mysql-5.7.18-linux-glibc2.5-x86_64.tar
-tar -zxvf mysql-5.7.18-linux-glibc2.5-x86_64.tar
+tar -xvf mysql-5.7.18-linux-glibc2.5-x86_64.tar
+tar -zxvf  mysql-5.7.18-linux-glibc2.5-x86_64.tar.gz
 cp -r mysql-5.7.18-linux-glibc2.5-x86_64 /usr/local/mysql
 groupadd mysql
 useradd -r -g mysql mysql
 cd /usr/local/mysql
 mkdir data                 #创建mysql数据目录
+touch error.log
 chown -R mysql:mysql ./
 yum install libaio
 ./bin/mysqld --initialize --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data

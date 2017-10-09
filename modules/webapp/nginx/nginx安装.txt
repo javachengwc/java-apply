@@ -17,6 +17,7 @@ nginx的前置依赖
     (中间有报错信息的话，可以./configure, make ,make check, make install, make clean依次执行看输出)
     如果报错/usr/local/src/pcre-8.39/missing: line 81: aclocal-1.15: command not found
     需在此目录执行autoreconf -ivf，再./configure ...
+    pcre-config --version                               ---查看pcre版本
 
     3,zlib:gzip模块，需要zlib库支持
     wget http://zlib.net/zlib-1.2.11.tar.gz
@@ -62,7 +63,8 @@ nginx的前置依赖
 
     说明:
     --with-pcre=/usr/src/pcre-8.38 指的是pcre-8.38的源码路径。
-    --with-zlib=/usr/src/zlib-1.2.8 指的是zlib-1.2.8的源码路径
+    --with-zlib=/usr/src/zlib-1.2.8 指的是zlib-1.2.8的源码路径,
+    如果在前面都make install了pcre,zlib,openssl,在安装nginx执行./configure的时候可以不带--with-pcre,--with-zlib,--with-openssl这些选项的
 -------------------------------------
 nginx编译选项
     configure命令是用来检测系统的目标特征的。它定义了系统的各个方面，包括nginx的被允许使用的连接处理的方法，比如它会检测是不是有CC或GCC。它是个shell脚本，执行结束时，它会创建一个Makefile文件。
