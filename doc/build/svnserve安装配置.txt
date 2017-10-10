@@ -1,0 +1,38 @@
+----------------------------------------svn服务端安装配置-------------------------------------
+yum install subversion
+mkdir -p /data/svnrepo/project
+svnadmin create /data/svnrepo/project           ---设定版本库目录
+cd /data/svnrepo/project
+ll
+    conf                    ---配置文件目录
+        authz               ---权限控制文件
+        passwd              ---帐号密码文件
+        svnserve.conf       ---svn服务配置文件
+    db
+    format
+    hooks
+    locks
+vim ./conf/passwd
+    [users]
+    test1=test1
+    test2=test2
+    cheng=cheng             ---添加svn用户
+vim ./conf/authz
+    [groups]
+    group1=test1,test2      ---用户组group1包含test1,test2用户
+    [/]
+    @group1=r               ---用户组group1有访问版本库所有目录读权限
+    cheng=rw                ---cheng有读写权限
+    *=                      ---其他用户无任何权限
+vim ./conf/svnserve.conf
+    anon-access = read      ---匿名用户可读
+    auth-access = write     ---授权用户可写
+    password-db = passwd    ---使用哪个文件作为账号文件
+    authz-db = authz        ---使用哪个文件作为权限文件
+    realm =/data/svnrepo/project          ---认证空间名，必须是版本库所在目录
+
+svnserve -d -r /data/svnrepo/project      ---启动svnserve,默认启动端口是3690
+svnserve -d -r /data/svnrepo/project --listen-port 3000      ---指定启动端口启动svnserve
+killall svnserve                          ---停止svnserve
+
+---------------------------------------------------------------------------------------------
