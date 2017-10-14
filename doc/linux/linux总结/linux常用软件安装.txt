@@ -60,6 +60,17 @@ vi /etc/profile 设置全局变量
 source /etc/profile
 mvn -v #显示了版本信息表示maven安装成功。
 
+---------------gradle
+wget https://services.gradle.org/distributions/gradle-4.2.1-bin.zip
+unzip -d /usr/local gradle-4.2.1-bin.zip
+vi /etc/profile 设置全局变量
+    GRADLE_HOME=/usr/local/gradle-4.2.1
+    export GRADLE_HOME
+    PATH=$PATH:${GRADLE_HOME}/bin
+    export PATH
+source /etc/profile
+gradle -version #显示了版本信息表示gradle安装成功。
+
 ---------------git
 yum install curl-devel expat-devel gettext-devel openssl-devel zlib-devel perl-ExtUtils-MakeMaker #安装依赖包
 wget https://github.com/git/git/archive/v2.7.0-rc3.tar.gz
