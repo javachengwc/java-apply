@@ -1,0 +1,14 @@
+--------------------------------gitlab安装配置---------------------------------
+gitlab是用ruby on rails开发的一个开源的版本管理系统，实现git管理的一个代码托管平台.
+1,安装依赖软件
+    rpm -qa curl openssh-server openssh-clients postfix cronie   -----查看这些包是否安装
+    yum install curl.....                                        -----如果上面检查有未安装的宝,这里安装
+2,设置postfix开机自启，并启动
+    service postfix start                                        -----开启postfix邮件服务,
+    ##若报错postfix: fatal: parameter inet_interfaces: no local interface found for ::1
+    ##vim  /etc/postfix/main.cf
+        inet_interfaces = all
+        inet_protocols = al
+
+
+-------------------------------------------------------------------------------

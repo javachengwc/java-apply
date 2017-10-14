@@ -1,0 +1,121 @@
+----------------------------------linux服务管理--------------------------------
+linux的服务管理前后经历过2个服务,一是init搭配service,另一个是systemd。
+linux 的启动一直采用init进程,比如/etc/init.d/apache2 start或service apache2 start
+init进程是串行启动，只有前一个进程启动完，才会启动下一个进程。
+init进程只是执行启动脚本，不管其他事情。脚本需要自己处理各种情况。
+systemd 为了改进init而诞生。它的目标是为系统的启动和管理提供一套完整的解决方案。
+systemd 的优点是功能强大，使用方便，缺点是体系庞大，非常复杂
+使用systemd，就不需要再用init了。systemd 取代了initd，成为系统的第一个进程(PID等于1)，其他进程都是它的子进程。
+
+------------chkconfig详解------------
+chkconfig是一个Linux系统下的服务管理程序，他主要是用来设置服务在Linux系统启动时在每个运行级别下的状态(on为开启；off为关闭)
+chkconfig命令主要用来更新（启动或停止）和查询系统服务的运行级信息。谨记chkconfig不是立即自动禁止或激活一个服务，它只是简单的改变了符号连接
+
+语法:chkconfig [--add][--del][--list][系统服务] 或 chkconfig [--level <等级代号>][系统服务][on/off/reset]
+
+chkconfig --list [name]             ---显示所有运行级系统服务的运行状态信息（on或off）。如果指定了name，那么只显示指定的服务在不同运行级的状态。
+chkconfig --add name                ---增加一项新的服务。chkconfig确保每个运行级有一项启动(S)或者杀死(K)入口。如有缺少，则会从缺省的init脚本自动建立。
+chkconfig --del name                ---删除服务，并把相关符号连接从/etc/rc[0-6].d删除。
+chkconfig [--level levels] name     ---设置某一服务在指定的运行级是被启动，停止还是重置
+
+运行级文件：
+每个被chkconfig管理的服务需要在对应的/etc/init.d/下的脚本加上两行或者更多行的注释。
+第一行告诉chkconfig缺省启动的运行级以及启动和停止的优先级也就是启动停止的顺序。如果某服务缺省不在任何运行级启动，那么使用 - 代替运行级。
+第二行对服务进行描述，可以用\ 跨行注释。
+例如，random.init包含三行：
+# chkconfig: 2345 20 80
+# description: Saves and restores system entropy pool for \
+# higher quality random number generation.
+
+使用范例：
+chkconfig --list                    ---列出所有的系统服务
+chkconfig --add httpd               ---增加httpd服务
+chkconfig --del httpd               ---删除httpd服务
+chkconfig --level httpd 2345 on     ---设置httpd在运行级别为2、3、4、5的情况下都是on（开启）的状态
+chkconfig --list mysqld             ---列出mysqld服务设置情况
+chkconfig mysqld on                 ---设定mysqld在各等级为on，“各等级”包括2、3、4、5等级
+
+如何增加一个服务：
+1.服务脚本必须存放在/etc/ini.d/目录下；
+2.chkconfig --add servicename
+    在chkconfig工具服务列表中增加此服务，此时服务会被在/etc/rc.d/rcN.d中赋予K/S入口了；
+3.chkconfig --level 35 mysqld on
+    修改服务的默认启动等级。
+
+------------service详解--------------
+service是Redhat Linux系统中的一个脚本程序，可以通过这个脚本调用位于/etc/rc.d/init.d目录下的各种服务的管理脚本
+service运行指定服务（称之为System V初始脚本）时，把大部分环境变量去掉了，只保留LANG和TERM两个环境变量，并且把当前路径置为/，
+也就是说是在一个可以预测的非常干净的环境中运行服务脚本
+
+service <service>              ---打印指定服务<service>的命令行使用帮助。
+service <service> start        ---启动指定的系统服务<service>
+service <service> stop         ---停止指定的系统服务<service>
+service <service> restart      ---重新启动指定的系统服务<service>，即先停止（stop），然后再启动（start）。
+service <service> status       ---查看系统服务<service>的状态
+
+------------systemd详解--------------
+systemd 并不是一个命令，而是一组命令，涉及到系统管理的方方面面。
+systemctl是systemd的主命令，用于管理系统。
+
+systemctl --version                                ---查看版本
+systemctl reboot                                   ---重启系统
+systemctl poweroff                                 ---关闭系统，切断电源
+systemctl halt                                     ---cpu停止工作
+systemctl suspend                                  ---暂停系统
+systemctl rescue                                   ---启动进入救援状态(单用户状态)
+systemctl status httpd.service                     ---查看httpd服务启动状态
+systemctl -H root@192.168.2.2 status httpd.service ---查看192.168.2.2机器上http服务启动状态
+systemctl start apache.service                     ---启动apache服务
+systemctl stop apache.service                      ---停止apache服务
+systemctl restart apache.service                   ---重启apache服务
+systemctl kill apache.service                      ---杀死apache服务以及所有子进程
+systemctl reload apache.service                    ---重新加载apache服务的配置文件
+systemctl daemon-reload                            ---重载所有修改过的配置文件
+systemctl show httpd.service                       ---显示httpd服务的所有底层参数
+systemctl show -p CPUShares httpd.service          ---显示httpd服务的指定属性值
+systemctl set-property httpd.service CPUShares=500 ---设置httpd服务的指定属性值
+systemctl list-dependencies nginx.service          ---列出nginx服务的所有依赖
+systemctl enable nginx.service                     ---开机启动nginx服务
+systemctl disable nginx.service                    ---取消开机启动nginx服务
+systemctl list-unit-files                          ---列出所有配置文件
+systemctl list-unit-files --type=service           ---列出指定类型的配置文件
+systemctl list-unit-files --type=target            ---查看当前系统的所有Target
+systemctl list-dependencies multi-user.target      ---查看一个 Target 包含的所有 Unit
+systemctl get-default                              ---查看启动时的默认 Target
+systemctl set-default multi-user.target            ---设置启动时的默认 Target
+systemctl isolate multi-user.target                ---关闭Target
+systemctl cat atd.service                          ---查看配置文件的内容
+systemd-analyze                                    ---查看启动耗时
+systemd-analyze blame                              ---查看每个服务的启动耗时
+hostnamectl                                        ---显示当前主机的信息
+hostnamectl set-hostname aaa                       ---设置主机名为aaa
+localectl                                          ---查看本地化设置
+localectl set-locale LANG=en_GB.utf8               ---设置本地化参数
+localectl set-keymap en_GB
+timedatectl                                        ---查看当前时区设置
+timedatectl list-timezones                         ---显示所有可用的时区
+timedatectl set-timezone Asia/Shanghai             ---设置当前时区
+loginctl list-users                                ---列出当前登录用户
+loginctl show-user cheng                           ---显示用户cheng的信息
+systemctl list-units                               ---列出正在运行的Unit
+systemctl list-units --type=service                ---列出正在运行的、类型为service的Unit
+systemctl list-units --failed                      ---列出所有加载失败的 Unit
+systemctl list-units --all --state=inactive        ---列出所有没有运行的 Unit
+systemctl list-units --all                         ---列出所有Unit，包括没有找到配置文件的或者启动失败的
+systemd日志的配置文件是/etc/systemd/journald.conf
+journalctl                                         ---查看所有日志（默认情况下 ，只保存本次启动的日志）
+journalctl -k                                      ---查看内核日志（不显示应用日志）
+journalctl -b 或 journalctl -b -0                  ---查看系统本次启动的日志
+journalctl -b -1                                   ---查看上一次启动的日志
+journalctl -n 20                                   ---显示尾部指定行数的日志
+journalctl -f                                      ---实时滚动显示最新日志
+journalctl --since "2017-01-10" --until "2017-01-11"  ---查看指定时间的日志
+journalctl --since="2017-10-30 18:00:00"           ---查看指定时间的日志
+journalctl /usr/lib/systemd/systemd                ---查看指定服务的日志
+journalctl _PID=1                                  ---查看指定进程的日志
+journalctl /usr/bin/bash                           ---查看某个路径的脚本的日志
+journalctl -u nginx.service                        ---查看nginx服务的日志
+journalctl --disk-usage                            ---显示日志占据的硬盘空间
+journalctl --vacuum-size=1G                        ---指定日志文件占据的最大空间
+journalctl --vacuum-time=1years                    ---指定日志文件保存多久
+-------------------------------------------------------------------------------

@@ -61,54 +61,6 @@
     bash的设置之所以如此繁琐，是由于历史原因造成的。早期的时候，计算机运行速度很慢，载入配置文件需要很长时间，Bash的作者只好把配置文件分成了几个部分，阶段性载入。
     系统的通用设置放在 /etc/profile，用户个人的、需要被所有子进程继承的设置放在~/.profile，不需要被继承的设置放在~/.bashrc。
 
-------------chkconfig详解------------
-
-chkconfig是一个Linux系统下的服务管理程序，他主要是用来设置服务在Linux系统启动时在每个运行级别下的状态(on为开启；off为关闭)
-chkconfig命令主要用来更新（启动或停止）和查询系统服务的运行级信息。谨记chkconfig不是立即自动禁止或激活一个服务，它只是简单的改变了符号连接
-
-语法:chkconfig [--add][--del][--list][系统服务] 或 chkconfig [--level <等级代号>][系统服务][on/off/reset]
-
-chkconfig --list [name]             ---显示所有运行级系统服务的运行状态信息（on或off）。如果指定了name，那么只显示指定的服务在不同运行级的状态。
-chkconfig --add name                ---增加一项新的服务。chkconfig确保每个运行级有一项启动(S)或者杀死(K)入口。如有缺少，则会从缺省的init脚本自动建立。
-chkconfig --del name                ---删除服务，并把相关符号连接从/etc/rc[0-6].d删除。
-chkconfig [--level levels] name     ---设置某一服务在指定的运行级是被启动，停止还是重置
-
-运行级文件：
-每个被chkconfig管理的服务需要在对应的/etc/init.d/下的脚本加上两行或者更多行的注释。
-第一行告诉chkconfig缺省启动的运行级以及启动和停止的优先级也就是启动停止的顺序。如果某服务缺省不在任何运行级启动，那么使用 - 代替运行级。
-第二行对服务进行描述，可以用\ 跨行注释。
-例如，random.init包含三行：
-# chkconfig: 2345 20 80
-# description: Saves and restores system entropy pool for \
-# higher quality random number generation.
-
-使用范例：
-chkconfig --list                    ---列出所有的系统服务
-chkconfig --add httpd               ---增加httpd服务
-chkconfig --del httpd               ---删除httpd服务
-chkconfig --level httpd 2345 on     ---设置httpd在运行级别为2、3、4、5的情况下都是on（开启）的状态
-chkconfig --list mysqld             ---列出mysqld服务设置情况
-chkconfig mysqld on                 ---设定mysqld在各等级为on，“各等级”包括2、3、4、5等级
-
-如何增加一个服务：
-1.服务脚本必须存放在/etc/ini.d/目录下；
-2.chkconfig --add servicename
-    在chkconfig工具服务列表中增加此服务，此时服务会被在/etc/rc.d/rcN.d中赋予K/S入口了；
-3.chkconfig --level 35 mysqld on
-    修改服务的默认启动等级。
-
-------------service详解--------------
-
-service是Redhat Linux系统中的一个脚本程序，可以通过这个脚本调用位于/etc/rc.d/init.d目录下的各种服务的管理脚本
-service运行指定服务（称之为System V初始脚本）时，把大部分环境变量去掉了，只保留LANG和TERM两个环境变量，并且把当前路径置为/，
-也就是说是在一个可以预测的非常干净的环境中运行服务脚本
-
-service <service>              ---打印指定服务<service>的命令行使用帮助。
-service <service> start        ---启动指定的系统服务<service>
-service <service> stop         ---停止指定的系统服务<service>
-service <service> restart      ---重新启动指定的系统服务<service>，即先停止（stop），然后再启动（start）。
-service <service> status       ---查看系统服务<service>的状态
-
 ------------ntsysv详解---------------
 
 tsysv用于直观方便的设置各个服务是否自动启动，它具有互动式操作界面，用户可以轻易地利用方向键和空格键等，开启，关闭操作系统在每个执行等级中，设置系统的各种服务。
