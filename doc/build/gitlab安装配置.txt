@@ -14,9 +14,13 @@ gitlab是用ruby on rails开发的一个开源的版本管理系统，实现git�
     wget https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/yum/el7/gitlab-ce-9.5.8-ce.0.el7.x86_64.rpm
     rpm -ivh gitlab-ce-9.5.8-ce.0.el7.x86_64.rpm
 4,配置启动gitlab
+    gitlab目录为/opt/gitlab
+    gitlab各组件目录为/var/opt/gitlab
+    gitlab代码数据默认目录为/var/opt/gitlab/git-data/repositories
     vim  /etc/gitlab/gitlab.rb                                   -----gitlab配置文件修改
     gitlab-ctl reconfigure                                       -----重新编译gitlab
     gitlab-ctl restart                                           -----重启gitlab
+    gitlab-ctl restart postgresql                                -----重启gitlab的postgresql
     gitlab-ctl start                                             -----启动gitlab
     gitlab-ctl stop                                              -----关闭gitlab
     gitlab-ctl status                                            -----查看gitlab的组件服务状态
@@ -56,6 +60,33 @@ gitlab是用ruby on rails开发的一个开源的版本管理系统，实现git�
     gitlab-rake gitlab:backup:create                      ------备份gitlab
     gitlab-rake gitlab:backup:restore BACKUP=1573198886   ------备份的仓库恢复
     注:恢复时，先停掉服务，以免双写导致数据错误。
+7.2,连接访问gitlab的postgresql数据库
+    cd /var/opt/gitlab/postgresql/data
+    vim pg_hba.conf
+      host    all         all  192.168.1.0/24  trust   ------192.168.1.0/24这个段的ip地址不需要密码可以连接
+    vim postgresql.conf
+      listen_addresses = '192.168.1.12'                ------修改监听地址ip为服务器的ip
+    gitlab-ctl restart postgresql
+    /opt/gitlab/embedded/bin/psql -U gitlab -d gitlabhq_production -h 192.168.1.12    ------不用输入密码进入postgresql
+    gitlabhq_production=> alter user gitlab with password 'gitlab'                    ------修改gitlab密码
+    gitlabhq_production-> \q                              ------退出
+    cd /var/opt/gitlab/postgresql/data
+    vim pg_hba.conf
+     host    all         all  192.168.1.0/24  md5      ------修改trust 为md5 ，即连接需要密码
+    gitlab-ctl restart postgresql
+    /opt/gitlab/embedded/bin/psql -U gitlab -d gitlabhq_production -h 192.168.1.12   ------需要密码才能进入了
+    ##修改了数据库gitlab用户的密码，gitlab服务器中数据库配置文件，也需要修改
+    vim /var/opt/gitlab/gitlab-rails/etc/database.yml
+        production:
+        adapter: postgresql
+        encoding: unicode
+        database: gitlabhq_production
+        pool: 10
+        username: 'gitlab'
+        password: 'gitlab'                   //添加设置的密码
+        host: 192.168.1.12                   //更改为ip地址
+        port: 5432
+    gitlab-ctl restart
 8,问题及解决
     a,在浏览器中访问gitlab出现502错误
         内存不足,gitlab至少要占用2g内存,所以一般需要系统内存为4g
