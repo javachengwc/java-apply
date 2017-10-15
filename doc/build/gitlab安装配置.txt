@@ -107,7 +107,7 @@ gitlab是用ruby on rails开发的一个开源的版本管理系统，实现git�
         vim /etc/gitlab/gitlab.rb
             将# unicorn['port'] = 8080改成unicorn['port'] = 9090
         gitlab-ctl reconfigure
-    c,gitLab头像无法正常显示
+    c,gitlab头像无法正常显示
         gravatar被墙
         vim /etc/gitlab/gitlab.rb
             将#gitlab_rails['gravatar_plain_url'] = 'http://gravatar.duoshuo.com/avatar/%{hash}?s=%{size}&d=identicon'注释去掉
