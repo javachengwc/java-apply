@@ -1,3 +1,16 @@
 ---------------------------------nexus安装配置---------------------------
-
+nexus可作为maven私服仓库
+wget https://sonatype-download.global.ssl.fastly.net/nexus/oss/nexus-2.12.0-01-bundle.tar.gz
+tar -zxvf nexus-2.12.0-01-bundle.tar.gz
+cp -rf  nexus-2.12.0-01 /usr/local/nexus
+vim /etc/profile
+    NEXUS_HOME=/usr/local/nexus
+    PATH=$NEXUS_HOME/bin:$PATH
+    export NEXUS_HOME PATH
+source /etc/profile
+nexus start                                  ------启动nexus
+nexus stop                                   ------关闭nexus
+tail -100f /usr/local/nexus/logs/wrapper.log  ------查看日志
+nexus的默认端口是8081,默认账户：admin 密码：admin123
+http://127.0.0.1:8081/nexus                  ------访问nexus私服网站
 -------------------------------------------------------------------------
