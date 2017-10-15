@@ -1,14 +1,92 @@
 --------------------------------gitlab安装配置---------------------------------
 gitlab是用ruby on rails开发的一个开源的版本管理系统，实现git管理的一个代码托管平台.
 1,安装依赖软件
-    rpm -qa curl openssh-server openssh-clients postfix cronie   -----查看这些包是否安装
+    rpm -qa curl openssh-server openssh-clients postfix cronie policycoreutils     -----查看这些包是否安装
     yum install curl.....                                        -----如果上面检查有未安装的宝,这里安装
 2,设置postfix开机自启，并启动
-    service postfix start                                        -----开启postfix邮件服务,
+    service postfix start  或 systemctl start postfix            -----开启postfix邮件服务,
     ##若报错postfix: fatal: parameter inet_interfaces: no local interface found for ::1
     ##vim  /etc/postfix/main.cf
         inet_interfaces = all
-        inet_protocols = al
-
-
+        inet_protocols = all
+    systemctl enable postfix                                     -----开机自启postfix
+3,下载安装gitlab
+    wget https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/yum/el7/gitlab-ce-9.5.8-ce.0.el7.x86_64.rpm
+    rpm -ivh gitlab-ce-9.5.8-ce.0.el7.x86_64.rpm
+4,配置启动gitlab
+    vim  /etc/gitlab/gitlab.rb                                   -----gitlab配置文件修改
+    gitlab-ctl reconfigure                                       -----重新编译gitlab
+    gitlab-ctl restart                                           -----重启gitlab
+    gitlab-ctl start                                             -----启动gitlab
+    gitlab-ctl stop                                              -----关闭gitlab
+    gitlab-ctl status                                            -----查看gitlab的组件服务状态
+    gitlab-ctl tail                                              -----查看日志信息
+    gitlab-ctl tail redis                                        -----查看gitlab组件redis的日志
+    gitlab-ctl service-list                                      -----列举gitlab启动的组件服务
+    systemctl disable gitlab-runsvdir.service                    -----取消gitlab开启自动启动,gitlab太耗内存
+5,访问设置gitlab
+    http://ip                    ##默认帐号:root 5iveL!fe
+    配置gitlab默认发信邮箱
+    echo "Test mail from postfix" | mail -s "Test Postfix" xxx@xxx.com    ##xxx@xxx.com是收件地址
+    vim /etc/gitlab/gitlab.rb
+        gitlab_rails['gitlab_email_from'] = 'from@xx'                     ##from@xx是上面收件中的发送地址
+    gitlab-ctl reconfigure                                        -----重新编译gitlab
+6,gitlab自身组件
+    gitaly                            ------一个git RPC服务，用于处理gitlab发出的所有git调用
+    gitlab-monitor                    ------gitlab监视器导出器可测量各种gitlab指标
+    gitlab-workhorse                  ------一个敏捷的反向代理。它会处理一些大的http请求，比如文件上传、文件下载、git push/pull和git包下载。
+    logrotate                         ------logrotate可自动对日志进行截断（或轮循）、压缩以及删除旧的日志文件
+    nginx                             ------gitlab的内置nginx，默认端口80
+    node-exporter                     ------节点导出器可测量各种机器资源，如内存，磁盘和CPU利用率。默认端口9100
+    postgres-exporter                 ------postgres导出器可测量各种PostgreSQL度量。
+    postgresql                        ------gitlab使用的postgres数据库，默认端口5432
+    prometheus                        ------监控gitlab
+    redis                             ------gitlab使用的缓存，存储所有用户会话和后台任务队列
+    redis-exporter                    ------redis出口商可测量各种Redis指标。
+    sidekiq                           ------gitlab中的多线程进程处理后台作业
+    unicorn                           ------ruby的http server,默认端口8080
+7,gitlab的维护
+7.1,gitlab的备份与恢复
+    vim /etc/gitlab/gitlab.rb
+        gitlab_rails['manage_backup_path'] = true
+        gitlab_rails['backup_path'] = "/var/opt/gitlab/backups"
+        gitlab_rails['backup_archive_permissions'] = 0644
+        gitlab_rails['backup_pg_schema'] = 'public'
+    gitlab-ctl reconfigure
+    gitlab-rake gitlab:backup:create                      ------备份gitlab
+    gitlab-rake gitlab:backup:restore BACKUP=1573198886   ------备份的仓库恢复
+    注:恢复时，先停掉服务，以免双写导致数据错误。
+8,问题及解决
+    a,在浏览器中访问gitlab出现502错误
+        内存不足,gitlab至少要占用2g内存,所以一般需要系统内存为4g
+        如果linux没开起虚拟内存,可开启虚拟内存缓解内存压力
+            dd if=/dev/zero of=/swap bs=1M count=1024             -----创建一个大小为1G，用于硬盘存储的空白文件
+            mkswap -f /swap                                       -----使用mkswap格式化文件为swap文件系统
+            wapon /swap                                           -----启动刚刚创建的swap文件系统
+            free -m                                               -----查看swap分区大小是否为1023M
+            cat /proc/sys/vm/swappiness                           -----查看swap分区使用策略,
+                                                                       swappiness=0的时候表示最大限度使用物理内存，然后才是swap空间
+                                                                       swappiness＝100的时候表示积极的使用swap分区，并且把内存上的数据及时的搬运到swap空间里面
+            sysctl vm.swappiness=10                               -----及时修改swappiness参数值,重启失效
+            echo 'vm.swappiness=10' >>/etc/sysctl.conf            -----永久修改swappiness参数值
+            vim /etc/fstab
+                /swap swap swap defaults 0 0                      -----开机时启动此swap文件
+    b,8080端口冲突
+        unicorn默认使用的是8080端口。
+        vim /etc/gitlab/gitlab.rb
+            将# unicorn['port'] = 8080改成unicorn['port'] = 9090
+        gitlab-ctl reconfigure
+    c,gitLab头像无法正常显示
+        gravatar被墙
+        vim /etc/gitlab/gitlab.rb
+            将#gitlab_rails['gravatar_plain_url'] = 'http://gravatar.duoshuo.com/avatar/%{hash}?s=%{size}&d=identicon'注释去掉
+        gitlab-ctl reconfigure
+        gitlab-rake cache:clear RAILS_ENV=production
+    d,gitlab管理员密码忘记，怎么重置密码
+        gitlab-rails console production                       -----使用rails工具打开终端
+            ##完整的操作如下ruby脚本
+            user = User.where(id: 1).first                    -----id:1 表示root账号
+            user.password = ‘新密码‘
+            user.password_confirmation = ‘新密码‘
+            user.save!
 -------------------------------------------------------------------------------
