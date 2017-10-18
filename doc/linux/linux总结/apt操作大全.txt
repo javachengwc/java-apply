@@ -27,10 +27,12 @@ apt-get install package               ---安装包
 apt-get -f install                    ---修复安装"-f =--fix-missing", 修复被破坏的依赖性
                                          等同于新立得软件包管理器中的“编辑->修正（依赖关系）损毁的软件包”再点击“应用。
                                          如果提示“unmet dependencies”的时候，可执行这行命令
+apt-get --reinstall install softname  ---重新安装softname
 apt-get install build-essential pkg   ---???
 apt-get build-dep package             ---安装包相关的编译环境
 apt-get source package                ---下载该包的源代码
           ep:apt-get source --compile zhcon    //抓回 source rpm 编译为二进制的rpm。--compile参数功能等同于rpm -ba
+dpkg -i package_name.deb              ---普通安装
 ----------更新和升级--------
 apt-get update                        ---更新源,从默认服务器下载软件包数据库
                                          更改了/etc/apt/sources.list 或 /etc/apt/preferences 后，需要运行这个命令以令改动生效
@@ -102,7 +104,18 @@ apt-key export                        ---output the key
 apt-key exportall                     ---output all trusted keys
 apt-key update                        ---update keys using the keyring package
 apt-key list                          ---list keys
-
+------------------------dpkg---------------------------------------------
+dpkg --info  "软件包名"               ---列出软件包解包后的包名称.
+dpkg -l                               ---列出当前系统中所有的包.可以和参数less一起使用在分屏查看. (类似于rpm -qa)
+dpkg -l |grep -i "软件包名"           ---查看系统中与"软件包名"相关联的包.
+dpkg -s                               查询已安装的包的详细信息.
+dpkg -L                               查询系统中已安装的软件包所安装的位置. (类似于rpm -ql)
+dpkg -S                               查询系统中某个文件属于哪个软件包. (类似于rpm -qf)
+dpkg -I                               查询deb包的详细信息,在一个软件包下载到本地之后看看用不用安装
+dpkg -i                               手动安装软件包(不能解决软件包依赖问题),如果遇到软件依赖的问题,可以用apt-get -f install来解决依赖性问题.
+dpkg -r                               卸载软件包.不是完全的卸载,它的配置文件还存在.
+dpkg -P                               全部卸载(但是还是不能解决软件包的依赖性的问题)
+dpkg -reconfigure                     重新配置
 ----------常用参数-------------------------------------------------------
 apt-cache
 
