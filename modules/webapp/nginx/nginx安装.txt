@@ -1,4 +1,4 @@
----------------------nginx安装----------------------
+---------------------nginx安装----------------------------------
 nginx的源码编译安装
 参考网站:http://www.nginx.cn
 
@@ -192,5 +192,20 @@ nginx平滑升级
 
    6,如果升级成功,查看下新版本
      nginx -V
+-----------------------debian下安装nginx----------------------------
+dpkg -s libpcre3 libpcre3-dev libperl-dev
+dpkg -s openssl libssl-dev   zlib1g                    ---检查依赖包是否已安装
+apt-get update
+apt-get install libpcre3 libpcre3-dev libperl-dev
+apt-get install openssl libssl-dev zlib1g              ---安装依赖包
+groupadd -r nginx
+useradd -s /sbin/nologin -g nginx -r nginx
+wget http://nginx.org/download/nginx-1.10.3.tar.gz
+tar -zxvf nginx-1.10.3.tar.gz
+cd nginx-1.10.3
+./configure --user=nginx --group=nginx --with-http_ssl_module
+make
+make install                                           ---编译安装
+/usr/local/nginx/sbin/nginx                            ---启动nginx
 
----------------------------------------------------
+--------------------------------------------------------------------
