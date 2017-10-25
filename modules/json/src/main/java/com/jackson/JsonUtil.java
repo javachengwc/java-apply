@@ -1,7 +1,6 @@
 package com.jackson;
 
 import org.apache.commons.lang3.StringUtils;
-import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.type.TypeReference;
@@ -10,6 +9,10 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
+/**
+ * Jackson 1.x版本的包名是codehaus
+ * Jackson 2.x版本的包名是fasterxml,Jackson从2.0开始改用新的包名fasterxml
+ */
 public class JsonUtil {
     private ObjectMapper mapper;
 
