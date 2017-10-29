@@ -2,6 +2,13 @@
 yum install subversion
 mkdir -p /data/svnrepo/project
 svnadmin create /data/svnrepo/project           ---设定版本库目录
+cd /tmp
+svn co svn://127.0.0.1/project
+mkdir trunk
+mkdir branches
+mkdir tags
+svn add branches trunk tags
+svn ci -m 'create branches trunk tags dir'      ---创建版本库目录中3个分支目录,trunk--主线,branch--支线,tag-标记
 cd /data/svnrepo/project
 ll
     conf                    ---配置文件目录
