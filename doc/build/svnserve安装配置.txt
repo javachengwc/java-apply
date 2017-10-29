@@ -8,7 +8,7 @@ mkdir trunk
 mkdir branches
 mkdir tags
 svn add branches trunk tags
-svn ci -m 'create branches trunk tags dir'      ---创建版本库目录中3个分支目录,trunk--主线,branch--支线,tag-标记
+svn ci -m 'create branches trunk tags dir'      ---创建版本库目录中3个分支目录,trunk--主干,branches--分支,tag三-标记
 cd /data/svnrepo/project
 ll
     conf                    ---配置文件目录

@@ -45,7 +45,26 @@ svn unlock targer ---解锁
 svn switch url    ---将WC转向一个其他的库地址同步
     eg：svn sw http://svn.myProject.com/repos/trunk/vendors          ---将当前WC切换到另一个URL
 
------------------------------------------------------------------------------
+svn cp -m "create branch" http://svn_server/xxx_repository/trunk/pro1 http://svn_server/xxx_repository/branches/pro1
+                 ---对项目pro1创建对应的branches分支
+svn co http://svn_server/xxx_repository/branches/pro1
+cd pro1
+svn merge http://svn_server/xxx_repository/trunk/pro1
+                ---把主干trunk上pro1项目的最新代码合并到分支branches上
+svn mergeinfo http://svn_server/xxx_repository/trunk --show-revs eligible
+或使用svn merge --dry-run选项
+                ---预览合并详细信息。
+cd trunk/pro1
+svn merge --reintegrate http://svn_server/xxx_repository/branches/pro1
+               ---把分支branches上pro1项目的最新代码合并到主干trunk上
 
+svn copy http://svn_server/xxx_repository/trunk http://svn_server/xxx_repository/tags/release-1.0 -m "1.0 released"
+                                                             ---给当前整个trunk打分支为1.0版本
+svn rm http://svn_server/xxx_repository/branches/pro1        ---删除分支中某项目
+
+svn rm http://svn_server/xxx_repository/tags/release-1.0     ---删除tags下某版本内容
+-----------------------------------------------------------------------------
 find . -name .svn -print0 | xargs -0 rm -rf
 ---移除所有.svn目录
+
+-----------------------------------------------------------------------------
