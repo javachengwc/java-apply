@@ -1,0 +1,9 @@
+---------------------------------postgresql帐号及授权---------------------------------
+psql -U postgres -d postgres -p 5432 -W                           ---密码登陆访问postgresql
+postgres=# create user dbuser with password 'password';           ---新增帐号
+postgres=# alter user dbuser with password '123456';              ---修改帐户
+postgres=# create database exampledb owner dbuser;
+postgres=# grant all privileges on database exampledb to dbuser;  ---授予dbuser所有对数据库exampledb的权限
+postgres=# \q                                                     ---退出psql
+
+--------------------------------------------------------------------------------------

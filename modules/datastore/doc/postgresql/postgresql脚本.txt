@@ -1,0 +1,21 @@
+--------------------------------------postgresql脚本------------------------------------
+postgresql基本sql与mysql基本sql比较相似
+
+----------------------------------------
+psql中的交互命令
+    \?                                            ------查看psql命令列表。
+    \l                                            ------列出所有数据库。
+    \c [dbname]                                   ------连接其他数据库。
+    \d                                            ------列出当前数据库的所有表格。
+    \d [table_name]                               ------列出某一张表格的结构。
+    \du                                           ------列出所有用户。
+    \conninfo                                     ------列出当前数据库和连接的信息。
+    crate table t_a(name varchar(20), crt_date date);    ------建表
+    insert into t_a values('aa','2016-12-22');           ------插入数据
+    select * from t_a;                                   ------查询
+    alter table t_a add column email varchar(40);        ------添加列
+    alter table t_a rename to t_aa;                      ------表重命名
+    alter table t_a alter column crt_date set not null;  ------改表列结构
+    alter table t_a remane column crt_date to crt_dt;    ------列重命名
+
+----------------------------------------------------------------------------------------

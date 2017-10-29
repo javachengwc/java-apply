@@ -1,0 +1,66 @@
+-------------------------------postgresql安装---------------------------
+linux下安装
+yum install https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-centos96-9.6-3.noarch.rpm
+yum install postgresql96
+yum install postgresql96-server
+/usr/pgsql-9.6/bin/postgresql96-setup initdb          ---初始数据库
+systemctl enable postgresql-9.6
+systemctl start postgresql-9.6                        ---启动postgresql
+安装目录:
+    /usr/pgsql-9.6
+    /var/lib/pgsql/9.6/
+    /var/lib/pgsql/9.6/data/postgresql.conf           ---postgresql配置文件
+    /var/lib/pgsql/9.6/data/pg_hba.conf               ---帐号验证配置文件
+su  postgres
+psql                     ---第一次直接切换到postgres系统用户,用psql直接访问postgresql数据库,
+                         ---能这样免密连接访问是因为用跟系统用户同名的数据库用户访问同名数据库postgres，默认验证方式系统用户验证，可直接访问
+    postgres=# select * from pg_shadow ;                  ---查询数据库用户帐号
+    postgres=# alter user postgres with password  'postgres';     ----改密码，在psql中语句执行是依';'结束
+    或者
+    postgres=# \password postgres
+    postgres=# select * from pg_shadow ;
+    postgres=# create user dbuser with password '123456';
+    postgres=# create database exampledb owner dbuser;
+    postgres=# grant all privileges on database exampledb to dbuser;
+    postgres=# create database test;                     ---创建test数据库
+    postgres=# \c test                                   ---切换到test数据库
+    test=# create table t_name (id integer,name varchar(20));
+    test=# insert into t_neme values (1,'test');
+    test=# select * from t_name ;                        ---建表，查询表
+psql -U postgres -d postgres -W                          ---用postgres用户访问postgres数据库，进行密码验证
+这里密码正确，也是返回psql: FATAL:  Peer authentication failed for user "postgres"
+是因为postgresql对帐号访问验证方式作了一定的配置,同机器中访问验证方式默认是peer,也就是用系统帐号的验证方式来验证
+psql -U postgres -d postgres -p 5432 -h 192.16.11.11 -W  ---在其他机器上通过此命令来连本机器服务的postgresql,会匹配如下
+验证规则的第二条验证方式，也就是md5加密的密码验证方式,就能正确验证通过。
+vim /var/lib/pgsql/9.6/data/pg_hba.conf
+    # "local" is for Unix domain socket connections only
+    local   all             all                                     peer
+    # IPv4 local connections:
+    host    all             all             0.0.0.0/0               md5
+    # IPv6 local connections:
+    host    all             all             ::1/128                 md5
+systemctl restart postgresql-9.6
+##重启后,密码验证登陆就能验证成功了
+vim /var/lib/pgsql/9.6/data/postgresql.conf
+    listen_addresses = '*'
+    port = 5432                             ----默认监听端口
+    tcp_keepalives_idle = 360
+
+pg_ctl 用于启动、停止、重启 PostgreSQL 后端服务器(postgres)，或者显示一个运行着的服务器的状态
+pg_ctl start [-w] [-s] [-D datadir] [-l filename] [-o options] [-p path]
+pg_ctl stop [-W] [-s] [-D datadir] [-m s[mart] | f[ast] | i[mmediate] ]
+pg_ctl restart [-w] [-s] [-D datadir] [-m s[mart] | f[ast] | i[mmediate] ] [-o options]
+pg_ctl reload [-s] [-D datadir]
+pg_ctl status [-D datadir]
+pg_ctl kill [signal_name] [process_id]
+
+---------------------------------------------------------------------
+debian系统安装postgresql
+aptitude install postgresql-9.6
+vim /etc/postgresql/9.6/main/postgresql.conf
+    内容如上
+vim /etc/postgresql/9.6/main/pg_hba.conf
+    内容如上
+----------------------------------------------------------------------
+
+
