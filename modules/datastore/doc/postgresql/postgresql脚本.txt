@@ -16,6 +16,12 @@ psql中的交互命令
     alter table t_a add column email varchar(40);        ------添加列
     alter table t_a rename to t_aa;                      ------表重命名
     alter table t_a alter column crt_date set not null;  ------改表列结构
-    alter table t_a remane column crt_date to crt_dt;    ------列重命名
+    alter table t_a rename column crt_date to crt_dt;    ------列重命名
+    alter table t_a drop column crt_date;                ------删除列
+    alter table t_a alter column name type varchar(80);  ------改列类型
+    alter table t_a alter column name drop not null;     ------去掉列限制
+    alter table t_a add constraint ct_len check (char_length(zipcode) = 5);
+                                                         ------增加表约束
+    alter table t_a drop constraint ct_len;              ------去掉表约束
 
 ----------------------------------------------------------------------------------------
