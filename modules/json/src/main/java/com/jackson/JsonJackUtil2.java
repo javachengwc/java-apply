@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 使用Jackson 2.x版本的工具类
@@ -57,5 +59,13 @@ public class JsonJackUtil2 {
             e.printStackTrace();
         }
         return json;
+    }
+
+    public static void main(String  [] args) {
+        Map<String,Object> obj=new HashMap<String,Object>();
+        Map<String,Object> map=new HashMap<String,Object>();
+        map.put("aa",obj);
+        String str = obj2Json(map);
+        System.out.println(str);
     }
 }
