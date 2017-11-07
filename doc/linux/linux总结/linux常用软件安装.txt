@@ -109,6 +109,7 @@ mkdir data                 #创建mysql数据目录
 touch error.log
 chown -R mysql:mysql ./
 yum install libaio
+######debian系统安装libaio是apt-get install libaio1 libaio-dev
 ./bin/mysqld --initialize --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data
    [Note] A temporary password is generated for root@localhost: f4(t0cvr*Dtq #此临时密码需要记住
 ./bin/mysql_ssl_rsa_setup  --datadir=/usr/local/mysql/data

@@ -10,6 +10,12 @@ service jenkins start            #启动jenkins
 表示在/usr/bin下没找到java命令，可能没装java或者java命令没在此目录下，安装java或建立对应的软连接即可
 http://localhost:8080            #web访问jenkins，默认端口8080
 #根据提示输入密码，然后选择安装插件，设置一个admin账号，jenkins的安装就完成.
+
+##debian系统下安装jenkins
+wget -q -O - https://pkg.jenkins.io/debian/jenkins-ci.org.key | sudo apt-key add -
+sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+sudo apt-get update
+sudo apt-get install jenkins
 -----------------------------------------
 jenkins配置
 admin账号登录进入jenkins后
