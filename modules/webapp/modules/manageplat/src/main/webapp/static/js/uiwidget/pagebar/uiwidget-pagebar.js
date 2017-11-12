@@ -31,13 +31,17 @@
 			if(cfg){
 				$.extend(this, cfg);
 			}
-			if (!t.url && t.totalCount) {//直接返回，不执行ajax
+
+            //初始渲染数据
+			if (!t.url && t.totalCount!=null) {//url为空的情况下直接返回，不执行ajax
+                //一般都是执行这一步来初始首次载入的第一页数据
 				t.render({totalCount:t.totalCount});
 				t.changePage(t);
 				return;
 			}
 			t.params.pageNo = t.pageNo;
 			t.params.pageSize = t.pageSize;
+            //url不为空的情况下
 			$.ajax({
 			    url: t.url,
 			    type: t.type || 'post',
