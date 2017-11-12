@@ -4,6 +4,8 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Calendar;
 import java.util.Date;
@@ -105,8 +107,25 @@ public class AttachManager {
 		m_logger.info("AttachManager save file path is "+savePath);
 		return savePath;
 	}
-	
-	//返回绝对路径以保存到数据库
+
+    public String saveImage(BufferedImage image,String fileName,String defaultSuffix)
+    {
+        File dir =getCurDateDir();
+        String newFileName =getNewFileName(fileName,defaultSuffix);
+        m_logger.info("AttachManager saveImage newFimeName is "+newFileName);
+        File file = new File(dir,newFileName);
+        try{
+            ImageIO.write(image,defaultSuffix,file);
+        }catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        String savePath=file.getPath();
+        m_logger.info("AttachManager saveImage file path is "+savePath);
+        return savePath;
+    }
+
+    //返回绝对路径以保存到数据库
 	public String saveFile(File file,String fileName,String defaultSuffix)
 	{
 		File dir =getCurDateDir();

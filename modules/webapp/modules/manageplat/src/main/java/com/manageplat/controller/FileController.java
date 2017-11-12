@@ -13,18 +13,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import javax.imageio.ImageIO;
 
 /**
  * 文件处理入口
@@ -92,6 +100,23 @@ public class FileController {
         output(file,response);
     }
 
+
+    @RequestMapping("/showPicWithPath")
+    public void showPic(HttpServletResponse response,String path) throws IOException {
+
+        logger.info("FileController showPicWithPath start,path={}",path);
+        if(StringUtils.isBlank(path))
+        {
+            return;
+        }
+        File file  =new File(path);
+        if(!file.exists())
+        {
+            return ;
+        }
+        output(file,response);
+    }
+
     public void output( File file,HttpServletResponse response)
     {
         response.setHeader("Pragma", "no-cache");
@@ -119,7 +144,10 @@ public class FileController {
         }
     }
 
-    /**添加**/
+    /**
+     * @RequestParam("file") 将name=file控件得到的文件封装成CommonsMultipartFile 对象
+     * 上传文件
+     */
     @RequestMapping(value = "/addFile")
     public void addFile(HttpServletResponse response,@RequestParam(value = "file", required = false) MultipartFile file,
                         String name,String linkAddress,Integer type )
@@ -146,6 +174,11 @@ public class FileController {
                 String defaultSuffix=".jpg";
                 InputStream input = file.getInputStream();
                 path = AttachManager.getInstance().saveFile(input,filename,defaultSuffix);
+
+                //String path="E:/"+new Date().getTime()+file.getOriginalFilename();
+                //File newFile=new File(path);
+                //通过CommonsMultipartFile的方法直接写文件
+                //file.transferTo(newFile);
             }
         }catch(Exception e)
         {
@@ -198,5 +231,75 @@ public class FileController {
         map.put("now", System.currentTimeMillis());
         HttpRenderUtil.renderJSON(map.toString(), response);
     }
+
+    @RequestMapping(value = "/uploadPicHandle")
+    public void uploadPicHandle(HttpServletRequest request,HttpServletResponse response) throws Exception{
+
+        logger.info("FileController uploadPicHandle start");
+        //ServletContext context = ContextLoader.getCurrentWebApplicationContext().getServletContext();
+        //在web.xml中有 org.springframework.web.context.request.RequestContextListener  监听器才能这样获取request
+        //这样获取request在转换(MultipartHttpServletRequest)request的时候会报类型转换错误
+        //HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        Map<String,Object> map = uploadSinglePic(request);
+        logger.debug("FileController upload pic ,result:" + map);
+        if(null == map ||map.size()<=0) {
+            JSONObject error = new JSONObject();
+            error.put("result", 1);
+            error.put("msg", "图片上传,处理失败");
+            HttpRenderUtil.renderJSON(error.toString(), response);
+            return;
+        } else if(map.containsKey("result")) {
+            JSONObject info = new JSONObject();
+            for(Map.Entry<String,Object> entry:map.entrySet()) {
+                info.put(entry.getKey(),entry.getValue());
+            }
+            HttpRenderUtil.renderJSON(info.toString(), response);
+        }
+    }
+
+    public static  Map<String,Object>  uploadSinglePic(HttpServletRequest request) throws Exception{
+        Map<String,Object> rtMap = new HashMap<String,Object>();
+        try {
+            //将当前上下文初始化给  CommonsMutipartResolver （多部分解析器）
+            CommonsMultipartResolver multipartResolver=new CommonsMultipartResolver( request.getSession().getServletContext());
+            //检查form中是否有enctype="multipart/form-data"
+            if(multipartResolver.isMultipart(request))
+            {
+                //将request变成多部分request
+                MultipartHttpServletRequest multiRequest=(MultipartHttpServletRequest)request;
+                //获取multiRequest 中所有的文件名
+                Iterator iter=multiRequest.getFileNames();
+                while(iter.hasNext())
+                {
+                    //一次遍历所有文件
+                    MultipartFile file=multiRequest.getFile(iter.next().toString());
+                    String fileName =file.getOriginalFilename();
+                    long fileSize =file.getSize();
+                    String contentType=file.getContentType();
+                    String fileExtName =fileName.substring(fileName.lastIndexOf(".") + 1);
+                    logger.info("FileController uploadSinglePic file name={},size={},contentType={}",fileName,""+fileSize);
+                    if(file!=null)
+                    {
+                        InputStream input = file.getInputStream();
+                        BufferedImage bis = ImageIO.read(input);
+                        int w = bis.getWidth();
+                        int h = bis.getHeight();
+                        if(file.getSize()>1024*1024*10){
+                            rtMap.put("msg", "图片尺寸过大");
+                            rtMap.put("result", 3);
+                            return rtMap;
+                        }
+                        String path = AttachManager.getInstance().saveImage(bis,fileName,fileExtName);
+                        rtMap.put("path", path);
+                        rtMap.put("result", 0);
+                    }
+                }
+            }
+        } catch(Exception e) {
+            logger.error("FileController uploadSinglePic error,",e);
+        }
+        return rtMap;
+    }
+
 
 }

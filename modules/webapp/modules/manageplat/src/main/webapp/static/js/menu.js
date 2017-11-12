@@ -6,6 +6,7 @@ var menusInfos=[
 	,{fileManager:{
 		fileUpload:{name: '文件上传',url: 'file/add.html'},
 		fileDelete:{name: '文件删除',url: 'file/list.html'},
+        filePreview:{name: '文件预览',url: 'file/preview.html'},
 		text:'文件管理'
 	}}
     ,{tongyongManage:{

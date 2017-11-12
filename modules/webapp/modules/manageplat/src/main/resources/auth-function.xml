@@ -9,11 +9,12 @@
 <!--0:公告管理-->noticeManager_noticeManager:listNotice
 <!--1:文件上传-->fileManager_fileUpload:listFile,uploadFile
 <!--2:文件删除-->fileManager_fileDelete:listFile,delFile
-<!--3:通用列表-->tongyongManage_tyList:queryEntityPage,listPage
-<!--4:通用实例-->tongyongManage_entityManage:queryEntityPage
-<!--5:实例列项-->tongyongManage_entityItem:queryItemPage
-<!--6:实例条件-->tongyongManage_entityCdn:queryCdnPage
-<!--7:任务列表-->jobManage_jobList:queryJobPage,queryJobMonitPage,createJob,changeJob,changeJobStatus,startJob,endJob,recordJobExeOver,uptJobExeNote,queryAllJob,getPerDrivedJobs,getDrivedJobs,hasDrivedJob,driveAllJob,stopAllJob,directExeJob,monitJob,getMonitJobsCount,traceJob
+<!--3:文件预览-->fileManager_filePreview:listFile,delFile
+<!--4:通用列表-->tongyongManage_tyList:queryEntityPage,listPage
+<!--5:通用实例-->tongyongManage_entityManage:queryEntityPage
+<!--6:实例列项-->tongyongManage_entityItem:queryItemPage
+<!--7:实例条件-->tongyongManage_entityCdn:queryCdnPage
+<!--8:任务列表-->jobManage_jobList:queryJobPage,queryJobMonitPage,createJob,changeJob,changeJobStatus,startJob,endJob,recordJobExeOver,uptJobExeNote,queryAllJob,getPerDrivedJobs,getDrivedJobs,hasDrivedJob,driveAllJob,stopAllJob,directExeJob,monitJob,getMonitJobsCount,traceJob
 </entry>
 <entry key="commonFunctions">
 mainPage

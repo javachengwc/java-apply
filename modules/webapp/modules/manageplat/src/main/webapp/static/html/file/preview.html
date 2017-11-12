@@ -1,0 +1,145 @@
+<style>
+    #pics img{
+        width:200px;
+        height:100px;
+        cursor: pointer;
+    }
+
+    .pop_box{ width:426px; position:absolute; left:0px; top:0px; z-index:999; background:#fff; display:none;}
+    .pop_title{ width:100%; height:38px;}
+    .pop_title_left{  height:38px;}
+    .pop_title_right{ margin:0 0 0 3px;}
+    .pop_title_midle{ height:38px; line-height:38px; margin:0 3px 0 0; font-size:14px; color:#000; padding:0 0 0 10px; font-weight:bold; position:relative;}
+    .pop_close{ position:absolute; right:18px; top:15px; width:10px; height:9px; cursor:pointer;}
+    .pop_content{ width:424px; height:100%; overflow:hidden; border:1px #d8d8d8 solid; border-top:none; text-align:left;  font-size:14px; color:#666666;background:#fff; padding:10px 0;}
+    .pop_content .libao td{ padding-bottom:10px;}
+    .pop_content a{ color:#095379;}
+    .pop_content p{ line-height:22px;}
+
+</style>
+<h2 class="template_title">预览图片</h2>
+<div class="template_con">
+    <div id="pics">
+        <span>图片1:</span><img id="img1" src="../images/a.gif"/>&nbsp;&nbsp;&nbsp;&nbsp;
+        <span>图片2:</span><img id="img2" src="../images/b.gif"/>&nbsp;&nbsp;&nbsp;&nbsp;
+        <span>图片3:</span><img id="img3" src="../images/c.gif"/>&nbsp;&nbsp;&nbsp;&nbsp;
+    </div>
+    <form id="add_form" name="add_form" method="post" enctype="multipart/form-data">
+        <span>文件1(隐藏):</span><input type="file" id="file1" name ="file1" style="display: none" /><br/><br/>
+        <span>文件2:</span><input type="file" id="file2" name ="file2" /><br/><br/>
+        <span>文件3:</span><a href="#" onclick="popUploadWindow();">上传图片3</a><br/>
+        <span>[注：图片规格200*100 &nbsp;格式:png]</span>
+    </form>
+</div>
+
+<form class="uploadForm" id="uploadForm" method="post" enctype="multipart/form-data">
+    <div id="uploadDiv" class="pop_box" style="">
+        <div class="pop_title">
+            <div class="pop_title_left">
+                <div class="pop_title_right">
+                    <div class="pop_title_midle">上传图片</div>
+                    <span class="pop_close" title="关闭" onclick="$.uiwidget.popupHide({id:'uploadDiv'})"></span>
+                </div>
+            </div>
+        </div>
+        <div class="pop_content">
+            <div class="temp_pop_con">
+                <p>从电脑中选择：<input type="file" name="previewPic" id="previewPic"/></p>
+                <p class="thincolor">温馨提示：<span id="picNote">图片格式为jpg格式</span></p>
+                <p class="subcon">
+                    <input type="button" class="upload_button" value="　确　定　" />&nbsp;&nbsp;
+                    <input type="button" value="　取　消　" onclick="$.uiwidget.popupHide({id:'uploadDiv'})" />
+                </p>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript">
+
+    function getObjectURL(file) {
+        var url = null ;
+        if (window.createObjectURL!=undefined) { // basic
+            url = window.createObjectURL(file) ;
+        } else if (window.URL!=undefined) { // mozilla(firefox)
+            url = window.URL.createObjectURL(file) ;
+        } else if (window.webkitURL!=undefined) { // webkit or chrome
+            url = window.webkitURL.createObjectURL(file) ;
+        }
+        return url ;
+    }
+
+    $(document).ready(function(){
+
+        //图片1点击事件函数
+        $("#img1").click(function () {
+            $("#file1").click();
+            $("#file1").on("change",function(){
+                //获取图片的路径，该路径不是图片在本地的路径
+                var objUrl = getObjectURL(this.files[0]) ;
+                if (objUrl) {
+                    $("#img1").attr("src", objUrl) ;
+                }
+            })
+        })
+
+        //文件2点击事件函数
+        $("#file2").click(function () {
+            $("#file2").on("change",function(){
+                //获取图片的路径，该路径不是图片在本地的路径
+                var objUrl = getObjectURL(this.files[0]) ;
+                if (objUrl) {
+                    $("#img2").attr("src", objUrl) ;
+                }
+            })
+        })
+
+        $('#uploadForm').bind('submit', function() {
+            $(this).ajaxSubmit({
+                url: '/file/uploadPicHandle.do',
+                type:"post",
+                success:function(data){
+                    if(!data){
+                        top.$.messagebox({type:'error', msg:'上传失败，请稍候重试！'});
+                        return ;
+                    }
+                    if(data.result == 0)
+                    {
+                        top.$.messagebox({
+                            type: 'success',
+                            msg: '上传处理成功！',
+                            fn: function(button, msg){
+                                var path =data.path;
+                                $("#img3").attr("src", "/file/showPicWithPath.do?path="+path) ;
+                                $.uiwidget.popupHide({id:'uploadDiv'});
+                            }
+                        });
+                        return ;
+                    }
+                    if(data.result == 3){
+                        top.$.messagebox({type:'error', msg:'对不起，图片不能超过1M！'});
+                        return ;
+                    }
+                    top.$.messagebox({type:'error', msg:data.msg});
+                    return ;
+
+                }
+                ,dataType:"json"
+                ,eventTarget:this
+            });
+            return false;
+        });
+
+        $('.upload_button').click(function(){
+            var fileValue = $(this).parent().siblings('p').find('input[type=file]').val();
+            //alert(fileValue);
+            $('#uploadForm').submit();
+        });
+
+    });
+
+    function popUploadWindow(){
+        $("#previewPhoto").val("");
+        $.uiwidget.popupShow({id:'uploadDiv'});
+    }
+</script>
