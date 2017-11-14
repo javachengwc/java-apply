@@ -19,6 +19,9 @@
 	<modules>
         <module>modules/shop-manage</module>
 		<module>modules/shop-stat</module>
+		<module>modules/shop-web</module>
+		<module>modules/shop-server</module>
+		<module>modules/shop-static</module>
 	</modules>
 
 </project>
