@@ -89,4 +89,9 @@ public class DateTimeUtil {
         }
         return minute;
     }
+
+    public static void  main(String args []) {
+        DateTime tt =new DateTime(new Date());
+        System.out.println(tt.toString("yyyyMMdd HH:mm:ss"));
+    }
 }

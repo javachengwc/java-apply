@@ -26,6 +26,15 @@ public class StringMain {
 
     public static void main(String args []) throws Exception
 	{
+	    String abcc="ahiw_hsdihfi_sdhiihf";
+	    String star="ahiw_";
+	    System.out.println(abcc.indexOf("_",5));
+        int len = star.length();
+        int inx =abcc.indexOf("_",len);
+        String pre=abcc.substring(len,inx);
+        String nodeName =abcc.substring(inx+1);
+        System.out.println(pre+"      "+nodeName);
+
         String nullStr=null;
         System.out.println("aa".equals(nullStr));
         System.out.println("Aa".equalsIgnoreCase("aA"));

@@ -1,4 +1,5 @@
 ------------------------------------jenkins安装配置-----------------------------------
+前提:已安装jdk
 wget https://prodjenkinsreleases.blob.core.windows.net/redhat-stable/jenkins-2.7.4-1.1.noarch.rpm
 rpm -ivh jenkins-2.7.4-1.1.noarch.rpm    #安装jenkins
 默认安装后各路径
@@ -16,6 +17,20 @@ wget -q -O - https://pkg.jenkins.io/debian/jenkins-ci.org.key | sudo apt-key add
 sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
 sudo apt-get update
 sudo apt-get install jenkins
+如果报错
+jenkins : Depends: default-jre-headless (>= 2:1.8) but it is not going to be installed or
+                    java8-runtime-headless but it is not installable
+通过相应的包来安装
+wget https://mirrors.tuna.tsinghua.edu.cn/jenkins/debian-stable/jenkins_2.32.1_all.deb
+dpkg -i jenkins_2.32.1_all.deb
+如果任然报同样的错误
+那是安装的jdk是通过tar包解压缩安装的，而debian的包管理器（package manager）并不清楚已经安装了最新的jdk，
+因此需要将安装的jdk信息加入到Ubuntu的包管理器当中，依次运行如下命令
+sudo apt-get update
+sudo apt-get remove default-jre default-jdk
+sudo apt-get update
+sudo apt-get install default-jre default-jdk
+
 -----------------------------------------
 jenkins配置
 admin账号登录进入jenkins后
