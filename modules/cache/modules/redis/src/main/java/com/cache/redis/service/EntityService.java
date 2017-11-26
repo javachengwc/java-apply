@@ -1,4 +1,4 @@
-package com.cache.redis.demo;
+package com.cache.redis.service;
 
 import com.cache.model.DemoEntity;
 import com.util.date.CalendarUtil;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class DemoEntityService {
+public class EntityService {
 
     @Autowired
     private RedisTemplate redisTemplate;

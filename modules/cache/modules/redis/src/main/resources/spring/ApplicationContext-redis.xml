@@ -11,9 +11,9 @@
         <constructor-arg type="java.lang.Class" value="java.lang.Object"/>
     </bean>
 
-    <bean id="jdkSerializationRedisSerializer" class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer"/>
-
     <bean id="objectMapper" class="org.codehaus.jackson.map.ObjectMapper" />
+
+    <bean id="jdkSerializationRedisSerializer" class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer"/>
 
     <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig" scope="prototype">
         <property name="maxWaitMillis" value="#{redisProps['redis.pool.maxActive']}"/>
@@ -26,7 +26,7 @@
           p:port="#{redisProps['redis.port']}"
           p:database="#{redisProps['redis.database']}"
           p:usePool="true"
-          p:poolConfig-ref="jedisPoolConfig" p:timeout="5000"/>
+          p:poolConfig-ref="jedisPoolConfig"/>
 
     <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"
           p:connectionFactory-ref="jedisConnectionFactory"

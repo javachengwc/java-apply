@@ -1,4 +1,4 @@
-package com.cache.redis.demo;
+package com.cache;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCommands;
@@ -8,7 +8,7 @@ import redis.clients.jedis.JedisShardInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimplePrg {
+public class SimpleMain {
 
     public static void main(String[] args) {
         testBasic();

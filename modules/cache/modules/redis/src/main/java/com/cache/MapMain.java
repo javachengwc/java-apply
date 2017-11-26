@@ -1,6 +1,6 @@
 package com.cache;
 
-import com.cache.redis.demo.MapService;
+import com.cache.redis.service.MapService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -8,9 +8,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Main {
+public class MapMain {
 
-    private static Logger logger = LoggerFactory.getLogger(Main.class);
+    private static Logger logger = LoggerFactory.getLogger(MapMain.class);
 
     public static void main(String args [])
     {
