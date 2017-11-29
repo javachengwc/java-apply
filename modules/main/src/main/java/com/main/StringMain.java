@@ -24,8 +24,19 @@ public class StringMain {
     private static  Pattern pattern = Pattern.compile("C\\d{6}0*([1-9]\\d*)");
 
 
+    //${}匹配
+    private static String programTemplateStr="\\$\\{(.*?)\\}";
+
     public static void main(String args []) throws Exception
 	{
+
+	    String aa="${title}wwwaaabbb${aa}";
+	    Pattern p = Pattern.compile(programTemplateStr);
+        Matcher mt=p.matcher(aa);
+        while(mt.find()) {
+            System.out.println("---------------aac:" + mt.group(1));
+        }
+
 	    String abcc="ahiw_hsdihfi_sdhiihf";
 	    String star="ahiw_";
 	    System.out.println(abcc.indexOf("_",5));
