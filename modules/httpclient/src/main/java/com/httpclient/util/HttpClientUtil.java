@@ -10,6 +10,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -23,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -215,6 +217,14 @@ public class HttpClientUtil {
             he = new UrlEncodedFormEntity(formparams, UTF8);
             post.setEntity(he);
         }
+        return post;
+    }
+
+    public static HttpPost buildBodyJsonPost(String url, String bodyJsonStr) throws UnsupportedEncodingException, URISyntaxException {
+        HttpPost post = new HttpPost(url);
+        post.addHeader(HTTP.CONTENT_TYPE,"application/json; charset=utf-8");
+        post.setHeader("Accept", "application/json");
+        post.setEntity(new StringEntity(bodyJsonStr, Charset.forName(UTF8)));
         return post;
     }
 

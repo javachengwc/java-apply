@@ -172,15 +172,10 @@ public class HttpsClientUtil {
 
         // 实现一个X509TrustManager接口，用于绕过验证
         X509TrustManager trustManager = new X509TrustManager() {
-            @Override
             public void checkClientTrusted(X509Certificate[] cert,String param) throws CertificateException {
             }
-
-            @Override
             public void checkServerTrusted(X509Certificate[] cert,String param) throws CertificateException {
             }
-
-            @Override
             public X509Certificate[] getAcceptedIssuers() {
                 return null;
             }
