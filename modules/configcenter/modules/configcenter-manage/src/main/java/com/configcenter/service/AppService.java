@@ -6,6 +6,7 @@ import com.configcenter.dao.biz.AppDao;
 import com.configcenter.dao.biz.ConfigItemDao;
 import com.configcenter.model.App;
 import com.configcenter.service.core.BaseService;
+import com.configcenter.service.manager.LogManager;
 import com.configcenter.vo.CommonQueryVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

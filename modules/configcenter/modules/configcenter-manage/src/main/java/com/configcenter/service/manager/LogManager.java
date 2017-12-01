@@ -1,6 +1,7 @@
-package com.configcenter.service;
+package com.configcenter.service.manager;
 
 import com.configcenter.model.OperateRecord;
+import com.configcenter.service.OperateRecordService;
 import com.configcenter.util.SpringContextUtils;
 import com.configcenter.vo.OnlineUser;
 import com.util.base.ThreadUtil;

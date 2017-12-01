@@ -7,7 +7,7 @@ import com.configcenter.dao.rbac.RoleResourceDao;
 import com.configcenter.model.rbac.Resource;
 import com.configcenter.model.rbac.Role;
 import com.configcenter.model.rbac.RoleResource;
-import com.configcenter.service.LogManager;
+import com.configcenter.service.manager.LogManager;
 import com.configcenter.service.SessionManager;
 import com.configcenter.service.core.BaseService;
 import com.configcenter.vo.CommonQueryVo;

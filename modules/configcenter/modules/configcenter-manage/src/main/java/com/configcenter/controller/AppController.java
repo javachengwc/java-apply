@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.configcenter.constant.Constant;
 import com.configcenter.model.App;
 import com.configcenter.service.AppService;
-import com.configcenter.service.LogManager;
+import com.configcenter.service.manager.LogManager;
 import com.configcenter.service.SessionManager;
 import com.configcenter.service.SynService;
 import com.configcenter.vo.CommonQueryVo;

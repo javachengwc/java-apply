@@ -5,7 +5,7 @@ import com.configcenter.dao.rbac.TagRelaUserOrRoleDao;
 import com.configcenter.dao.rbac.UserDao;
 import com.configcenter.dao.rbac.UserRoleDao;
 import com.configcenter.model.rbac.*;
-import com.configcenter.service.LogManager;
+import com.configcenter.service.manager.LogManager;
 import com.configcenter.service.SessionManager;
 import com.configcenter.service.core.BaseService;
 import com.configcenter.vo.TreeNode;

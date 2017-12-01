@@ -3,7 +3,7 @@ package com.configcenter.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.configcenter.constant.Constant;
 import com.configcenter.model.rbac.User;
-import com.configcenter.service.LogManager;
+import com.configcenter.service.manager.LogManager;
 import com.configcenter.service.SessionManager;
 import com.configcenter.service.rbac.UserService;
 import com.configcenter.vo.OnlineUser;
