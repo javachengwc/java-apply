@@ -20,9 +20,9 @@ import java.security.SecureRandom;
  */
 public class AES {
 
-    private static final String KEY_ALGORITHM = "AES";//产生密钥的算法
+    public static final String KEY_ALGORITHM = "AES";//产生密钥的算法
 
-    private static final String INNER_ALGORITHM = "AES/ECB/PKCS5Padding";//加解密算法 格式：算法/工作模式/填充模式
+    public static final String INNER_ALGORITHM = "AES/ECB/PKCS5Padding";//加解密算法 格式：算法/工作模式/填充模式
 
     //产生密钥
     public static byte[] getKey(String pwd) throws NoSuchAlgorithmException {

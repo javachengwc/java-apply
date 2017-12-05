@@ -14,6 +14,10 @@ public class Base64Ext {
         return Base64.encodeBase64String(data.getBytes(CharsetUtil.UTF8));
     }
 
+    public static String encodeByte(byte[] bytes)  throws UnsupportedEncodingException {
+        return Base64.encodeBase64String(bytes);
+    }
+
     //安全Base64加密
     public static String encodeSafe(String data) throws UnsupportedEncodingException{
         byte[] encodedByte = Base64.encodeBase64(data.getBytes(CharsetUtil.UTF8), true);
@@ -29,6 +33,11 @@ public class Base64Ext {
     public static String decode(String data) throws UnsupportedEncodingException{
         byte[] decodedByte = Base64.decodeBase64(data.getBytes(CharsetUtil.UTF8));
         return new String(decodedByte, CharsetUtil.UTF8);
+    }
+
+    public static byte[] decode2Byte(String data) throws UnsupportedEncodingException{
+        byte[] decodedByte = Base64.decodeBase64(data.getBytes(CharsetUtil.UTF8));
+        return decodedByte;
     }
 
     public static void main(String args []) throws Exception {
