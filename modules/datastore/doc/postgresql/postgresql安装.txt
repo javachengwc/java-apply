@@ -6,6 +6,7 @@ yum install postgresql96-server
 /usr/pgsql-9.6/bin/postgresql96-setup initdb          ---初始数据库
 systemctl enable postgresql-9.6
 systemctl start postgresql-9.6                        ---启动postgresql
+或bin/postgres -D /var/lib/pgsql/9.6/data -c config_file=/var/lib/pgsql/9.6/data/postgresql.conf
 安装目录:
     /usr/pgsql-9.6
     /var/lib/pgsql/9.6/
