@@ -2,6 +2,8 @@
 
 redis-cli -h 127.0.0.1            ---登陆redis
 
+auth pwd                          ---密码验证
+
 select num                        ---选择reids上存储数据的dbindex
 
 set mykey2 "hello"                ---设置mykey2值为hello
