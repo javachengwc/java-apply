@@ -6,11 +6,9 @@ public class RandomUtil {
 	
 	private static String randamStr= "abcdefghijklmnopqrstuvwxyz0123456789";
 
-    private static final Random rand = new Random(System.currentTimeMillis());
-
     public static int nextRandomInt(int min, int max) {
         int value = max - min + 1;
-        return rand.nextInt((value <= 0)?1:value) + min;
+        return  new Random().nextInt((value <= 0)?1:value) + min;
     }
 
     /**
