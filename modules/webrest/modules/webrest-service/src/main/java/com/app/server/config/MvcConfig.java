@@ -81,6 +81,7 @@ public class MvcConfig {
     public List<String> getSwaggerStaticResource() {
         List<String> resources = new ArrayList<String>();
         resources.add("/swagger-ui.html");
+        resources.add("/swagger-index.html");
         resources.add("/webjars/springfox-swagger-ui/css/typography.css");
         resources.add("/webjars/springfox-swagger-ui/css/reset.css");
         resources.add("/webjars/springfox-swagger-ui/css/screen.css");
@@ -105,6 +106,31 @@ public class MvcConfig {
         resources.add("/webjars/springfox-swagger-ui/fonts/droid-sans-v6-latin-regular.woff");
         resources.add("/webjars/springfox-swagger-ui/fonts/droid-sans-v6-latin-700.ttf");
         resources.add("/webjars/springfox-swagger-ui/fonts/droid-sans-v6-latin-regular.ttf");
+
+        resources.add("/webjars/swagger-ui/css/typography.css");
+        resources.add("/webjars/swagger-ui/css/reset.css");
+        resources.add("/webjars/swagger-ui/css/screen.css");
+        resources.add("/webjars/swagger-ui/css/print.css");
+        resources.add("/webjars/swagger-ui/lib/object-assign-pollyfill.js");
+        resources.add("/webjars/swagger-ui/lib/jquery-1.8.0.min.js");
+        resources.add("/webjars/swagger-ui/lib/jquery.slideto.min.js");
+        resources.add("/webjars/swagger-ui/lib/jquery.wiggle.min.js");
+        resources.add("/webjars/swagger-ui/lib/jquery.ba-bbq.min.js");
+        resources.add("/webjars/swagger-ui/lib/handlebars-4.0.5.js");
+
+        resources.add("/webjars/swagger-ui/lib/lodash.min.js");
+        resources.add("/webjars/swagger-ui/lib/backbone-min.js");
+        resources.add("/webjars/swagger-ui/swagger-ui.js");
+        resources.add("/webjars/swagger-ui/lib/highlight.9.1.0.pack.js");
+        resources.add("/webjars/swagger-ui/lib/highlight.9.1.0.pack_extended.js");
+        resources.add("/webjars/swagger-ui/lib/jsoneditor.min.js");
+
+        resources.add("/webjars/swagger-ui/lib/marked.js");
+        resources.add("/webjars/swagger-ui/lib/swagger-oauth.js");
+        resources.add("/webjars/swagger-ui/lang/translator.js");
+        resources.add("/webjars/swagger-ui/lang/zh-cn.js");
+        resources.add("/webjars/swagger-ui/images/logo_small.png");
+
 
         return resources;
     }
