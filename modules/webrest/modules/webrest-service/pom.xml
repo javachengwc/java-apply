@@ -20,6 +20,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <swagger.version>1.5.12</swagger.version>
+        <springfox-swagger2.version>2.2.2</springfox-swagger2.version>
     </properties>
 
     <build>
@@ -44,6 +46,14 @@
                     <outputDirectory>${basedir}/src/generated-code</outputDirectory>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -60,6 +70,11 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.3.2</version>
+        </dependency>
         <dependency>
             <groupId>com.app</groupId>
             <artifactId>webrest-api</artifactId>
@@ -143,6 +158,21 @@
             <version>2.25</version>
         </dependency>
         -->
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-jersey2-jaxrs</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>${springfox-swagger2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>${springfox-swagger2.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

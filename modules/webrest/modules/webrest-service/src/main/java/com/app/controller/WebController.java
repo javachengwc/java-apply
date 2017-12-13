@@ -7,6 +7,8 @@ import com.app.metrics.TimerMetrics;
 import com.codahale.metrics.Timer;
 import com.util.base.RandomUtil;
 import com.util.base.ThreadUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +30,8 @@ import java.util.Map;
  * JerseyConfig不标注@Component 就表示不起rest服务
  */
 @Controller
-@RequestMapping("web")
+@RequestMapping("/web")
+@Api(value = "WebController相关接口")
 public class WebController {
 
     private static Logger logger = LoggerFactory.getLogger(WebController.class);
@@ -46,7 +49,8 @@ public class WebController {
     private HistogramMetrics histogramMetrics;
 
     @ResponseBody
-    @RequestMapping("getWebInfo")
+    @RequestMapping(value="/getWebInfo",method = RequestMethod.GET)
+    @ApiOperation(value = "getWebInfo", notes = "getWebInfo")
     public Map<String,Object> getWebInfo(HttpServletRequest request, HttpServletResponse response, HttpSession session)
     {
 
@@ -85,7 +89,8 @@ public class WebController {
         return map;
     }
 
-    @RequestMapping(value = "redirect", method = RequestMethod.GET)
+    @RequestMapping(value = "/redirect", method = RequestMethod.GET)
+    @ApiOperation(value = "redirect", notes = "redirect")
     public String redirect(@RequestParam(value = "url") String url, HttpServletRequest request)
     {
         logger.info("WebController redirect invoked.................");

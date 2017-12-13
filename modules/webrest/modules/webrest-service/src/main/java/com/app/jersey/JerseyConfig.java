@@ -6,6 +6,7 @@ import com.app.metrics.MetricsResource;
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
 //import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.glassfish.jersey.server.wadl.internal.WadlResource;
 import org.glassfish.jersey.servlet.ServletProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,6 +102,13 @@ public class JerseyConfig extends ResourceConfig implements ApplicationContextAw
             register(healthResource);
         }
 
+        register(WadlResource.class);
+
+        //swagger的rest服务注册到jersey中
+        //available at localhost:port/swagger.json
+        register(io.swagger.jaxrs.listing.ApiListingResource.class);
+        register(io.swagger.jaxrs.listing.AcceptHeaderApiListingResource.class);
+        register(io.swagger.jaxrs.listing.SwaggerSerializers.class);
     }
 
     private Class<?> getRestInterfaceWithPath(Class<?>[] interfaces) {

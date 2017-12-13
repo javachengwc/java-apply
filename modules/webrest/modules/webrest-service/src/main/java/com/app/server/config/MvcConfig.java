@@ -71,6 +71,41 @@ public class MvcConfig {
                 }
             }
         }
+        List<String> swaggerStaticResources =getSwaggerStaticResource();
+        for(String perResource:swaggerStaticResources) {
+            registration.addUrlMappings(perResource);
+        }
         return registration;
+    }
+
+    public List<String> getSwaggerStaticResource() {
+        List<String> resources = new ArrayList<String>();
+        resources.add("/swagger-ui.html");
+        resources.add("/webjars/springfox-swagger-ui/css/typography.css");
+        resources.add("/webjars/springfox-swagger-ui/css/reset.css");
+        resources.add("/webjars/springfox-swagger-ui/css/screen.css");
+
+        resources.add("/webjars/springfox-swagger-ui/lib/jquery-1.8.0.min.js");
+        resources.add("/webjars/springfox-swagger-ui/lib/jquery.slideto.min.js");
+        resources.add("/webjars/springfox-swagger-ui/lib/jquery.wiggle.min.js");
+        resources.add("/webjars/springfox-swagger-ui/lib/jquery.ba-bbq.min.js");
+        resources.add("/webjars/springfox-swagger-ui/lib/handlebars-2.0.0.js");
+        resources.add("/webjars/springfox-swagger-ui/lib/underscore-min.js");
+        resources.add("/webjars/springfox-swagger-ui/lib/backbone-min.js");
+        resources.add("/webjars/springfox-swagger-ui/swagger-ui.min.js");
+        resources.add("/webjars/springfox-swagger-ui/springfox.js");
+        resources.add("/webjars/springfox-swagger-ui/lib/highlight.7.3.pack.js");
+        resources.add("/webjars/springfox-swagger-ui/lib/marked.js");
+        resources.add("/webjars/springfox-swagger-ui/lib/swagger-oauth.js");
+
+        resources.add("/webjars/springfox-swagger-ui/images/logo_small.png");
+        resources.add("/webjars/springfox-swagger-ui/fonts/droid-sans-v6-latin-700.woff2");
+        resources.add("/webjars/springfox-swagger-ui/fonts/droid-sans-v6-latin-regular.woff2");
+        resources.add("/webjars/springfox-swagger-ui/fonts/droid-sans-v6-latin-700.woff");
+        resources.add("/webjars/springfox-swagger-ui/fonts/droid-sans-v6-latin-regular.woff");
+        resources.add("/webjars/springfox-swagger-ui/fonts/droid-sans-v6-latin-700.ttf");
+        resources.add("/webjars/springfox-swagger-ui/fonts/droid-sans-v6-latin-regular.ttf");
+
+        return resources;
     }
 }
