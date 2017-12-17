@@ -22,6 +22,8 @@
 		<module>modules/shop-web</module>
 		<module>modules/shop-server</module>
 		<module>modules/shop-static</module>
+		<module>modules/shop-user</module>
+		<module>modules/shop-order</module>
 	</modules>
 
 </project>
