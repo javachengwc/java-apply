@@ -10,6 +10,7 @@
     <packaging>pom</packaging>
     
 	<modules>
+		<module>modules/webcloud-framework</module>
         <module>modules/webcloud-manage</module>
         <module>modules/webcloud-appa</module>
 		<module>modules/webcloud-appb</module>
