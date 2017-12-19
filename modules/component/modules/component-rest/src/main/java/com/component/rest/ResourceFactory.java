@@ -92,7 +92,6 @@ public class ResourceFactory implements ApplicationListener<ContextRefreshedEven
         return (T) Proxy.newProxyInstance(t.getClass().getClassLoader(), t.getClass().getInterfaces(), handler);
     }
 
-    @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         if(applicationContext == event.getApplicationContext()){
             logger.info("ResourceFactory onApplicationEvent ...................");

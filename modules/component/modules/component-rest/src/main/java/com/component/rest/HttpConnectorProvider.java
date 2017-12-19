@@ -16,8 +16,7 @@ public class HttpConnectorProvider extends HttpUrlConnectorProvider {
 	}
 
 	public static class HttpConnectionFactory implements ConnectionFactory{
-		
-		@Override
+
 		public HttpURLConnection getConnection(URL url) throws IOException {
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			if(curHttpConnection.get() != null){

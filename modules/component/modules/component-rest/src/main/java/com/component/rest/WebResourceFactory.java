@@ -96,8 +96,7 @@ public final class WebResourceFactory implements InvocationHandler {
         this.cookies = cookies;
         this.form = form;
     }
-    
-    @Override
+
     public Object invoke(final Object proxy, final Method method, final Object[] args)
                                                                                       throws Throwable {
         if (args == null && method.getName().equals("toString")) {
@@ -378,27 +377,22 @@ public final class WebResourceFactory implements InvocationHandler {
 			this.obj = obj;
 		}
 
-		@Override
 		public boolean cancel(boolean mayInterruptIfRunning) {
 			return true;
 		}
 
-		@Override
 		public boolean isCancelled() {
 			return false;
 		}
 
-		@Override
 		public boolean isDone() {
 			return true;
 		}
 
-		@Override
 		public Object get() throws InterruptedException, ExecutionException {
 			return obj;
 		}
 
-		@Override
 		public Object get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
 			return obj;
 		}

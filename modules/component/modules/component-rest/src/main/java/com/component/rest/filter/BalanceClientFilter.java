@@ -45,12 +45,10 @@ public class BalanceClientFilter implements ClientRequestFilter, ApplicationCont
     @Value("${spring.application.name:noname-service}")
     private String appName;
 
-    @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
         environment = applicationContext.getEnvironment();
     }
 
-    @Override
     public void filter(ClientRequestContext requestContext) throws IOException {
         transferRequestContext(requestContext);
         restConsistent.set(requestContext.getHeaderString(REST_CONSISTENT_KEY));

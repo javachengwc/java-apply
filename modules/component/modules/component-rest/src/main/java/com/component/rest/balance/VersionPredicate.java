@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Profile;
 @Profile("microservice")
 public class VersionPredicate extends AbstractServerPredicate {
 
-    @Override
     public boolean apply(PredicateKey input) {
         Server server = input.getServer();
         if (server == null || !(server instanceof DiscoveryEnabledServer)) {

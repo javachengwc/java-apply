@@ -1,7 +1,6 @@
 package com.component.rest.interceptor;
 
 
-import com.component.rest.balance.ClientLoadBalancer;
 import com.component.rest.filter.BalanceClientFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +23,6 @@ public class RestTemplateHeaderInterceptor implements ClientHttpRequestIntercept
     @Value("${spring.application.name:noname-service}")
     private String appName;
 
-    @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
             throws IOException {
 

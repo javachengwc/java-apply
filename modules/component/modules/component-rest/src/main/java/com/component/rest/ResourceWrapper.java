@@ -22,7 +22,6 @@ public class ResourceWrapper implements InvocationHandler {
         return obj;
     }
 
-    @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         try {
             return method.invoke(obj, args);
