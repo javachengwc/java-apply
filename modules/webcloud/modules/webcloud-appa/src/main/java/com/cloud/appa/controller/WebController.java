@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,8 +15,8 @@ import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 
-@RestController
-@RequestMapping("web")
+@Controller
+@RequestMapping("/web")
 public class WebController {
 
     private static Logger logger = LoggerFactory.getLogger(WebController.class);
@@ -24,7 +25,7 @@ public class WebController {
     private DiscoveryClient client;
 
     @ResponseBody
-    @RequestMapping("getWebInfo")
+    @RequestMapping("/getWebInfo")
     public Map<String,Object> getWebInfo(HttpServletRequest request, HttpServletResponse response, HttpSession session)
     {
 
@@ -51,7 +52,7 @@ public class WebController {
         return map;
     }
 
-    @RequestMapping(value = "redirect", method = RequestMethod.GET)
+    @RequestMapping(value = "/redirect", method = RequestMethod.GET)
     public String redirect(@RequestParam(value = "url") String url, HttpServletRequest request)
     {
         logger.info("WebController redirect invoked.................");
@@ -64,11 +65,12 @@ public class WebController {
         }
     }
 
-    @RequestMapping(value = "add" ,method = RequestMethod.GET)
+    @RequestMapping(value = "/add" ,method = RequestMethod.GET)
+    @ResponseBody
     public Integer add(@RequestParam(value = "a") Integer a, @RequestParam(value = "b") Integer b) {
-        ServiceInstance instance = client.getLocalServiceInstance();
+        //ServiceInstance instance = client.getLocalServiceInstance();
         Integer r = a + b;
-        logger.info("WebController add, host:" + instance.getHost() + ", serviceId:" + instance.getServiceId() + ", result:" + r);
+        //logger.info("WebController add, host:" + instance.getHost() + ", serviceId:" + instance.getServiceId() + ", result:" + r);
         return r;
     }
 

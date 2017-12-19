@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CalServiceHystric implements CalService {
+public class CalServiceHystric implements CalService{
 
     private static Logger logger= LoggerFactory.getLogger(CalServiceHystric.class);
 

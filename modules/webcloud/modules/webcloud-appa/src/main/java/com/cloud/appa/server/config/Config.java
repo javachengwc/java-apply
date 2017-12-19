@@ -14,14 +14,12 @@ public class Config {
     @Bean
     public BeanPostProcessor beanPostProcessor() {
         return new BeanPostProcessor() {
-            @Override
             public Object postProcessBeforeInitialization(Object o, String s) {
 
                 System.out.println("BeanPostProcessor object:"+o.getClass().getSimpleName());
                 return o;
             }
 
-            @Override
             public Object postProcessAfterInitialization(Object o, String s) {
                 return o;
             }
