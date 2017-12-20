@@ -26,7 +26,7 @@ public class ConsumerController {
         String url ="http://"+"webcloud-appa".toUpperCase()+"/web/add";
         String reqUrl =url+"?"+paramStr;
         logger.info("ConsumerController doAdd  reqUrl="+reqUrl);
-        ThreadUtil.sleep(2000l);
+        //ThreadUtil.sleep(2000l);
         return consumerService.invokeAdd(reqUrl);
     }
 

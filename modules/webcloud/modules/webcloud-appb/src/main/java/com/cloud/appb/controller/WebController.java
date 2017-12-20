@@ -68,7 +68,7 @@ public class WebController {
     public Integer add(@RequestParam Integer a, @RequestParam Integer b) {
         ServiceInstance instance = client.getLocalServiceInstance();
         Integer r = a + b;
-        logger.info("WebController add, host:" + instance.getHost() + ", serviceId:" + instance.getServiceId() + ", result:" + r);
+        logger.info("WebController b add, host:" + instance.getHost() + ", serviceId:" + instance.getServiceId() + ", result:" + r);
         return r;
     }
 

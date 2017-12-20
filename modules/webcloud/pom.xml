@@ -12,6 +12,8 @@
 	<modules>
 		<module>modules/webcloud-framework</module>
         <module>modules/webcloud-manage</module>
+		<module>modules/webcloud-zk01</module>
+		<module>modules/webcloud-zk02</module>
         <module>modules/webcloud-appa</module>
 		<module>modules/webcloud-appb</module>
 		<module>modules/webcloud-gateway</module>

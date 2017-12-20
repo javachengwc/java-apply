@@ -23,7 +23,7 @@ public class ConsumerService {
     @HystrixCommand(fallbackMethod = "failCallback")
     public String invokeAdd(String url) {
         logger.info("ConsumerService invokeAdd invoke,url="+url);
-        ThreadUtil.sleep(2000l);
+        //ThreadUtil.sleep(2000l);
         return restTemplate.getForEntity(url, String.class).getBody();
     }
 
