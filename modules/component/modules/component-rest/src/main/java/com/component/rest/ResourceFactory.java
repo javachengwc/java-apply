@@ -15,11 +15,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientRequestFilter;
-import javax.ws.rs.client.ClientResponseFilter;
-import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.client.*;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
@@ -84,7 +82,7 @@ public class ResourceFactory implements ApplicationListener<ContextRefreshedEven
         logger.info("ResourceFactory getResource gen url, appName={},url={}",appName, url);
 
         WebTarget target = createJerseyClient().target(url);
-        T t = WebResourceFactory.newResource(resourceClass, target);
+        T t = RestResourceFactory.newResource(resourceClass, target);
         return newResource(t, new ResourceWrapper(t));
     }
 
@@ -96,5 +94,25 @@ public class ResourceFactory implements ApplicationListener<ContextRefreshedEven
         if(applicationContext == event.getApplicationContext()){
             logger.info("ResourceFactory onApplicationEvent ...................");
         }
+    }
+
+    public <T> T getMvcResource(Class<T> resourceClass,RestTemplate restTemplate) {
+        String appName = RestUtil.getApplicationName(resourceClass);
+        if (StringUtils.isBlank(appName)) {
+            return null;
+        }
+        String resourceClassName= resourceClass.getName();
+        logger.info("ResourceFactory getMvcResource resourceClassName={},appName={}", resourceClassName, appName);
+
+        String url = null;
+        if (balanceClientFilter != null) {
+            url = "http://" + appName;
+        } else {
+            url = resourceLocator.locate(appName);
+        }
+        logger.info("ResourceFactory getMvcResource gen url, appName={},url={}",appName, url);
+
+        T t = MvcResourceFactory.newResource(resourceClass,url,restTemplate);
+        return newResource(t, new ResourceWrapper(t));
     }
 }

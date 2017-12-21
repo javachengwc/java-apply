@@ -46,9 +46,9 @@ import org.springframework.util.StringUtils;
 import com.codahale.metrics.Timer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public final class WebResourceFactory implements InvocationHandler {
+public final class RestResourceFactory implements InvocationHandler {
 
-    private static final Logger         logger = LoggerFactory.getLogger(WebResourceFactory.class);
+    private static final Logger         logger = LoggerFactory.getLogger(RestResourceFactory.class);
     
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -84,13 +84,13 @@ public final class WebResourceFactory implements InvocationHandler {
         return (C) Proxy.newProxyInstance(
             AccessController.doPrivileged(ReflectionHelper.getClassLoaderPA(resourceInterface)),
             new Class[] { resourceInterface },
-            new WebResourceFactory(ignoreResourcePath ? target : addPathFromAnnotation(
+            new RestResourceFactory(ignoreResourcePath ? target : addPathFromAnnotation(
                 resourceInterface, target), headers, cookies, form));
     }
 
-    private WebResourceFactory(final WebTarget target,
-                               final MultivaluedMap<String, Object> headers,
-                               final List<Cookie> cookies, final Form form) {
+    private RestResourceFactory(final WebTarget target,
+                                final MultivaluedMap<String, Object> headers,
+                                final List<Cookie> cookies, final Form form) {
         this.target = target;
         this.headers = headers;
         this.cookies = cookies;
@@ -230,7 +230,7 @@ public final class WebResourceFactory implements InvocationHandler {
 
         if (httpMethod == null) {
             // the method is a subresource locator
-            return WebResourceFactory.newResource(responseType, newTarget, true, headers, cookies,form);
+            return RestResourceFactory.newResource(responseType, newTarget, true, headers, cookies, form);
         }
 
         // accepted media types
