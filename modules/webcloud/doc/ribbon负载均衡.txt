@@ -1,0 +1,38 @@
+---------------------------ribbon负载均衡---------------------
+Ribbon实现客户端的负载均衡，负载均衡器提供很多对http和tcp的行为控制。
+Ribbon主要包括如下功能
+    1.支持通过DNS和IP和服务端通信
+    2.可以根据算法从多个服务中选取一个服务进行访问
+    3.通过将客户端和服务器分成几个区域（zone）来建立客户端和服务器之间的关系。
+      客户端尽量访问和自己在相同区域(zone)的服务，减少服务的延迟
+    4.保留服务器的统计信息，ribbon可以实现用于避免高延迟或频繁访问故障的服务器
+    5.保留区域(zone)的统计数据，ribbon可以实现避免可能访问失效的区域(zone)
+
+ribbon的6个主要组件：
+    IRule、
+    IPing、
+    ServerList 、
+    ServerListFilter、
+    ServerListUpdater、
+    ILoadBalancer
+
+ribbon负载均衡配置
+如果没有配置任何属性，则ribbon会使用com.netflix.client.config.DefaultClientConfigImpl里的值
+<clientName>.<nameSpace>.<propertyName>=<value>
+<clientName>：调用ribbon的客户端名称，如果此值没配置，则属性作用到所有的客户端。
+<nameSpace>：ribbon
+<propertyName>：所有的可用的属性都在com.netflix.client.conf.CommonClientConfigKey。
+
+ribbon.ConnectionTimeout=500       #连接超时时间
+ribbon.ReadTimeout=500             #读取超时时间
+ribbon.OkToRetryOnAllOperatotions  #对所有操作请求都进行重试
+ribbon.MaxAutoRetriesNextServer    #切换服务器实例的重试次数
+ribbon.MaxAutoRetries              #对当前实例的重试次数
+ribbon.ServerListRefreshInterval   #刷新服务列表源的间隔时间,默认值30秒
+                                    此默认值在PollingServerListUpdater.LISTOFSERVERS_CACHE_REPEAT_INTERVAL = 30 * 1000设置
+                                    PollingServerListUpdater是ribbon中updateListOfServers的定时任务,它执行会更新service list。
+<client>.ribbon.<key>=<value>  #<client> 为使用 @FeignClient 注解的 name 属性或者 value属性指定的服务名，区分大小写
+
+
+
+------------------------------------------------------------------

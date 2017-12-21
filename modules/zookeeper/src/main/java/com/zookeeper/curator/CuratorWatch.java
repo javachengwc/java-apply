@@ -10,6 +10,8 @@ import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.ZKPaths;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * 使用curator监听zookeeper节点
  */
@@ -29,6 +31,11 @@ public class CuratorWatch {
         CuratorFramework zclient = builder.build();
         zkclient=zclient;
         zkclient.start();
+        try {
+            zkclient.blockUntilConnected(5000, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+        }
     }
 
     public static void main(String[] args) throws Exception{
@@ -43,7 +50,7 @@ public class CuratorWatch {
 
         System.out.println("监听开始/zk........");
         PathChildrenCacheListener plis=new PathChildrenCacheListener() {
-            @Override
+
             public void childEvent(CuratorFramework client, PathChildrenCacheEvent event)
                     throws Exception {
                 switch ( event.getType() )

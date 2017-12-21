@@ -1,0 +1,14 @@
+------------------------------springcloud问题集--------------------------------
+1,服务节点变化(新增或关闭)的感知延迟
+当新增或关闭一个服务节点，调用方一般要隔个半分钟才能感知服务节点的变化
+假设现在有调用方client1和服务节点service1, 当service1异常关闭后,client1去调用,会提示错误.
+service1正常启动后,此时,client1并不会立刻知道service1已经启动,需要等待一定时间才能知道。
+这里面涉及2个定时任务，EurekaClient的定时任务(com.netflix.discovery.DiscoveryClient.refreshRegistry()),
+另一个是Ribbon的定时任务(com.netflix.loadbalancer.PollingServerListUpdater.start()) .
+EurekaClient的定时任务是从注册中心获取最新的service list.
+eureka.client.registry-fetch-interval-seconds 这个值就是Eureka Client 定时向 Eureka Server 获取 服务列表的间隔.
+Ribbon的定时任务是获取EurekaClient中最新的的service list.  ribbon.ServerListRefreshInterval这个值是其间隔时间.
+当一个服务调用另一个服务的时候, Ribbon会缓存请求和 service list.通过定时任务PollingServerListUpdater
+更新最新的service list,上面的等待时间一部分就是等待updateListOfServers 定时任务执行,它执行的时候,就会更新service list.
+
+-------------------------------------------------------------------------------
