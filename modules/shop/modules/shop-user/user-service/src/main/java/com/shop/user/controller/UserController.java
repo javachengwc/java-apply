@@ -1,6 +1,7 @@
 package com.shop.user.controller;
 
-import com.shop.user.model.UserInfo;
+import com.shop.user.api.model.UserInfo;
+import com.shop.user.api.rest.UserResource;
 import com.shop.user.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @Api(value = "用户接口")
 @RestController
 @RequestMapping(value="/user")
-public class UserController {
+public class UserController implements UserResource{
 
     @Autowired
     private UserService userService;

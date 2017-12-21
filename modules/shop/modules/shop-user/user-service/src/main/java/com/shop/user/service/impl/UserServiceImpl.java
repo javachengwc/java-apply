@@ -1,7 +1,7 @@
 package com.shop.user.service.impl;
 
+import com.shop.user.api.model.UserInfo;
 import com.shop.user.dao.mapper.ShopUserMapper;
-import com.shop.user.model.UserInfo;
 import com.shop.user.model.pojo.ShopUser;
 import com.shop.user.service.UserService;
 import com.util.date.DateUtil;

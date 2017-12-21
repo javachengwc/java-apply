@@ -1,4 +1,4 @@
-package com.shop.user.model;
+package com.shop.user.api.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
