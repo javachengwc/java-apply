@@ -10,7 +10,8 @@
     <packaging>pom</packaging>
     
 	<modules>
-        <module>modules/component-rest</module>
+        <module>modules/component-rest-jersey</module>
+		<module>modules/component-rest-springmvc</module>
 		<module>modules/component-microservice</module>
 	</modules>	
 </project>
