@@ -4,7 +4,6 @@ import com.component.rest.springmvc.filter.BalanceClientFilter;
 import com.component.rest.springmvc.util.RestTemplateUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.util.http.UrlUtil;
-import org.glassfish.jersey.internal.util.ReflectionHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.MultiValueMap;
@@ -80,7 +79,7 @@ public final class MvcResourceFactory implements InvocationHandler {
                                     final List<Cookie> cookies, final Form form) {
 
         return (C) Proxy.newProxyInstance(
-                AccessController.doPrivileged(ReflectionHelper.getClassLoaderPA(resourceInterface)),
+                resourceInterface.getClassLoader(),
                 new Class[]{resourceInterface},
                 new MvcResourceFactory(resourceInterface,url,restTemplate, headers, cookies, form));
     }

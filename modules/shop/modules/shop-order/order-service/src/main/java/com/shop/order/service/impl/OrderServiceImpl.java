@@ -1,7 +1,7 @@
 package com.shop.order.service.impl;
 
+import com.shop.order.api.model.OrderInfo;
 import com.shop.order.dao.mapper.ShopOrderMapper;
-import com.shop.order.model.OrderInfo;
 import com.shop.order.model.pojo.ShopOrder;
 import com.shop.order.service.OrderService;
 import com.util.date.DateUtil;

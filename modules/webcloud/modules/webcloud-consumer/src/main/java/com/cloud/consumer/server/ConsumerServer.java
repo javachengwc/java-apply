@@ -11,6 +11,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.netflix.hystrix.EnableHystrix;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 //rest程序启动入口
@@ -26,7 +27,12 @@ public class ConsumerServer {
     @Bean
     @LoadBalanced
     public RestTemplate restTemplate() {
-        return new RestTemplate();
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(1000); //连接超时时间
+        requestFactory.setReadTimeout(1000);  //请求超时时间
+
+        //HttpComponentsClientHttpRequestFactory  允许用户配置带有认证和http连接池的httpclient
+        return new RestTemplate(requestFactory);
     }
 
     public static void  main(String args []) throws Exception

@@ -1,6 +1,7 @@
 package com.shop.order.controller;
 
-import com.shop.order.model.OrderInfo;
+import com.shop.order.api.model.OrderInfo;
+import com.shop.order.api.rest.OrderResource;
 import com.shop.order.service.OrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(value = "订单接口")
 @RestController
 @RequestMapping(value="/order")
-public class OrderController {
+public class OrderController implements OrderResource {
 
     @Autowired
     private OrderService orderService;

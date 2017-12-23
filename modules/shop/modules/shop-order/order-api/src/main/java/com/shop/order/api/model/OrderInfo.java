@@ -1,4 +1,4 @@
-package com.shop.order.model;
+package com.shop.order.api.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
