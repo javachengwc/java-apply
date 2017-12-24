@@ -4,7 +4,12 @@ import com.shop.order.api.model.OrderInfo;
 import com.shop.order.dao.mapper.ShopOrderMapper;
 import com.shop.order.model.pojo.ShopOrder;
 import com.shop.order.service.OrderService;
+import com.shop.order.service.remote.UserService;
+import com.shop.user.api.model.UserInfo;
+import com.shop.user.api.model.base.Rep;
 import com.util.date.DateUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,8 +19,13 @@ import java.util.Date;
 @Service
 public class OrderServiceImpl implements OrderService {
 
+    private static Logger logger= LoggerFactory.getLogger(OrderServiceImpl.class);
+
     @Autowired
     private ShopOrderMapper shopOrderMapper;
+
+    @Autowired
+    private UserService userService;
 
     public ShopOrder getById(Long orderId) {
 
@@ -30,6 +40,21 @@ public class OrderServiceImpl implements OrderService {
         }
         OrderInfo orderInfo = new OrderInfo();
         BeanUtils.copyProperties(shopOrder,orderInfo);
+
+        //获取用户信息
+        Long userId=orderInfo.getUserId();
+        try{
+            logger.info("OrderServiceImpl getOrderInfo invoke getUserInfo begin,userId ={}",userId);
+            Rep<UserInfo> rep= userService.getUserInfo2(userId);
+            logger.info("OrderServiceImpl rep={}",rep);
+            if(rep!=null && rep.getData()!=null) {
+                orderInfo.setUserMobile(rep.getData().getMobile());
+                orderInfo.setUserName(rep.getData().getName());
+            }
+        }catch(Exception e) {
+            logger.error("OrderServiceImpl getOrderInfo invoke getUserInfo error,userId={},",userId,e);
+        }
+
         //删除时间
         Date cancelTime = orderInfo.getCancelTime();
         String cancelTimeStr=transDateTimeStr(cancelTime);

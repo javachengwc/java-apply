@@ -29,7 +29,7 @@ public class ClientLoadBalancer {
     @Autowired
     private LoadBalancerClient loadBalancer;
 
-    @Autowired
+    @Autowired(required = false)
     private ResourceLocator resourceLocator;
 
     public ClientLoadBalancer() {
@@ -93,6 +93,10 @@ public class ClientLoadBalancer {
         String host = DEFAULT_HOST;
         int port = DEFAULT_PORT;
         String serviceName = uri.getHost();
+        if(resourceLocator==null) {
+            logger.info("ClientLoadBalancer reconstructLocalUri resourceLocator is null");
+            return uri;
+        }
         String localUrl = resourceLocator.locate(serviceName);
 
         logger.warn(String.format("ClientLoadBalancer reconstLocalUri serviceName={} found in local config file" +

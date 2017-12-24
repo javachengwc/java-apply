@@ -1,27 +1,20 @@
 package com.component.rest.springmvc;
 
-import com.component.rest.springmvc.filter.BalanceClientFilter;
+import com.component.rest.springmvc.util.ClassUtil;
 import com.component.rest.springmvc.util.RestTemplateUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.util.http.UrlUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.MethodParameter;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import javax.ws.rs.*;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
-import java.security.AccessController;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public final class MvcResourceFactory implements InvocationHandler {
 
@@ -96,7 +89,7 @@ public final class MvcResourceFactory implements InvocationHandler {
         String methodName = method.getName();
         logger.info("MvcResourceFactory invoke start, methodName={},url={}",methodName,url);
         //resource接口
-        final Class<?> proxyIfc = proxy.getClass().getInterfaces()[0];
+        final Class<?> interfaceClass = proxy.getClass().getInterfaces()[0];
         //返回结果类型
         final Class<?> responseType = method.getReturnType();
 
@@ -111,20 +104,14 @@ public final class MvcResourceFactory implements InvocationHandler {
             }
         }
 
-        String realUrl = addPathFromAnnotation(method,url);
+        String realUrl = addPathFromAnnotation(interfaceClass,url);
+        realUrl = addPathFromAnnotation(method,realUrl);
         logger.info("MvcResourceFactory invoke realUrl={},httpMethod={}",realUrl,httpMethod);
         if (httpMethod == null) {
-            if (realUrl.equals(url)) {
-                // no path annotation on the method -> fail
-                throw new UnsupportedOperationException("Not a resource method.");
-            } else if (!responseType.isInterface()) {
-                throw new UnsupportedOperationException("Return type not an interface");
-            }
             throw new UnsupportedOperationException("httpMethod is null ");
         }
 
-        final MultivaluedHashMap<String, Object> headers = new MultivaluedHashMap<String, Object>(
-                this.headers);
+        final MultivaluedHashMap<String, String> headers = new MultivaluedHashMap<String, String>(this.headers);
         final LinkedList<Cookie> cookies = new LinkedList<Cookie>(this.cookies);
         final Form form = new Form();
         if(this.form!=null) {
@@ -132,9 +119,13 @@ public final class MvcResourceFactory implements InvocationHandler {
         }
 
         final Annotation[][] paramAnns = method.getParameterAnnotations();
+        int annsLen = paramAnns==null?0:paramAnns.length;
+        logger.info("MvcResourceFactory annsLen length={}",annsLen);
         Object entity = null; //参数值
         Type entityType = null; //参数类型
         Map<String,Object> queryParams= new HashMap<String,Object>();
+        Map<String,Object> pathParams = new HashMap<String,Object>();
+
         for (int i = 0; i < paramAnns.length; i++) {
 
             //PathParam.class pathParam
@@ -143,14 +134,19 @@ public final class MvcResourceFactory implements InvocationHandler {
                 anns.put(ann.annotationType(), ann);
             }
             Annotation ann;
-            entityType = method.getGenericParameterTypes()[i];
+            Class paramClass =method.getParameterTypes()[i];
             String paramName =method.getParameters()[i].getName();
             Object value = args[i];
+            logger.info("MvcResourceFactory paramAnns "+i+" ,paramName="+paramName+",value="+value+",paramClass="+paramClass);
             if (!hasAnyParamAnnotation(anns)) {
                 //参数没有诸如QueryParam的注解的时候
-                entity = value;
-                if(GET.equalsIgnoreCase(httpMethod)) {
+                if(ClassUtil.isSimpleClass(paramClass)) {
+                    //获取不到真正的paramName,需要用spring的实现来获取paramName
                     queryParams.put(paramName,value);
+                    logger.info("MvcResourceFactory queryParams add with noting,paramName={},value={}",paramName,value);
+                } else if(i==0) {
+                    entity = value;
+                    entityType = method.getGenericParameterTypes()[i];
                 }
             } else {
                 if (value == null && (ann = anns.get(DefaultValue.class)) != null) {
@@ -161,16 +157,19 @@ public final class MvcResourceFactory implements InvocationHandler {
                     continue;
                 }
                 if ((ann = anns.get(PathParam.class)) != null) {
-                    logger.warn("MvcResourceFactory invoke mvc not support PathParam,methodName={},realUrl={}",methodName,realUrl);
-                    throw new UnsupportedOperationException("mvc not support PathParam");
+                    pathParams.put(paramName,value);
+                    logger.info("MvcResourceFactory pathParams add with PathParam,paramName={},value={}",paramName,value);
                 } else if ((ann = anns.get((QueryParam.class))) != null) {
                     paramName=((QueryParam) ann).value();
                     queryParams.put(paramName,value);
+                    logger.info("MvcResourceFactory queryParams add with QueryParam,paramName={},value={}",paramName,value);
                 } else if ((ann = anns.get((HeaderParam.class))) != null) {
                     if (value instanceof Collection) {
-                        headers.addAll(((HeaderParam) ann).value(), convert((Collection) value));
+                        for (final Object v : ((Collection) value)) {
+                            headers.addAll(((HeaderParam) ann).value(), v.toString());
+                        }
                     } else {
-                        headers.addAll(((HeaderParam) ann).value(), value);
+                        headers.addAll(((HeaderParam) ann).value(), value.toString());
                     }
 
                 } else if ((ann = anns.get((CookieParam.class))) != null) {
@@ -219,73 +218,59 @@ public final class MvcResourceFactory implements InvocationHandler {
         }
 
         // accepted media types
+        String accepts = null;
         Produces produces = method.getAnnotation(Produces.class);
         if (produces == null) {
-            produces = proxyIfc.getAnnotation(Produces.class);
+            produces = interfaceClass.getAnnotation(Produces.class);
         }
-        final String[] accepts = (produces == null) ? EMPTY : produces.value();
-
-        // determine content type
+        if (produces != null && produces.value().length > 0) {
+            accepts = produces.value()[0];
+        }
         String contentType = null;
         if (entity != null) {
-            final List<Object> contentTypeEntries = headers.get(HttpHeaders.CONTENT_TYPE);
-            if ((contentTypeEntries != null) && (!contentTypeEntries.isEmpty())) {
-                contentType = contentTypeEntries.get(0).toString();
-            } else {
-                Consumes consumes = method.getAnnotation(Consumes.class);
-                if (consumes == null) {
-                    consumes = proxyIfc.getAnnotation(Consumes.class);
-                }
-                if (consumes != null && consumes.value().length > 0) {
-                    contentType = consumes.value()[0];
-                }
+            List<String> contentTypes= headers.get(HttpHeaders.CONTENT_TYPE);
+            if(contentTypes!=null && contentTypes.size()>0) {
+                contentType=contentTypes.get(0);
             }
+        }
+        Consumes consumes = method.getAnnotation(Consumes.class);
+        if (consumes == null) {
+            consumes = interfaceClass.getAnnotation(Consumes.class);
+        }
+        if (consumes != null && consumes.value().length > 0) {
+            contentType = consumes.value()[0];
+        }
+        if( contentType==null ) {
+            contentType=MediaType.APPLICATION_JSON;
+        }
+        if(contentType.indexOf("charset")<0) {
+            contentType = contentType + "; charset=UTF-8";//默认编码
         }
 
-        if(args != null){
-            StringBuffer buf = new StringBuffer();
-            for(Object arg : args){
-                buf.append(objectMapper.writeValueAsString(arg));
-                buf.append(" , ");
-            }
+        headers.addAll(HttpHeaders.CONTENT_TYPE,contentType);
+        headers.addAll(HttpHeaders.ACCEPT, accepts);
+        MultiValueMap<String,String> toHeaders =new LinkedMultiValueMap<String,String>();
+        for(String key:headers.keySet()) {
+            toHeaders.put(key,headers.get(key));
         }
-        BalanceClientFilter.appendHeaderValues(proxyIfc.getName(), UrlUtil.getDomain(realUrl));
-
-        if (entity == null && !form.asMap().isEmpty()) {
-            entity = form;
-            contentType = MediaType.APPLICATION_FORM_URLENCODED;
-        } else {
-            if (contentType == null) {
-                contentType = MediaType.APPLICATION_OCTET_STREAM;
-            }
-            if (!form.asMap().isEmpty() && entity instanceof Form ) {
-                ((Form) entity).asMap().putAll(form.asMap());
-            }
-        }
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        MediaType type = MediaType.parseMediaType("application/json; charset=UTF-8");
-//        headers.setContentType(type);
-//        headers.add("Accept", MediaType.APPLICATION_JSON.toString());
+        logger.info("MvcResourceFactory invoke....ContentType={},Accept={}",contentType,accepts);
 
         Object result = null;
-
         try {
-            Type returnType = method.getGenericReturnType();
-            Class returnClass =method.getReturnType();
-            Type[] types = ((ParameterizedType)returnClass.getGenericSuperclass()).getActualTypeArguments();
-//
-//            if (entity != null) {
-//                if (entityType instanceof ParameterizedType) {
-//                    entity = new GenericEntity(entity, entityType);
-//                }
-//                result = (Object)RestTemplateUtil.request(restTemplate,realUrl,httpMethod,queryParams,headers,null,returnClass);
-//            } else {
-//                result = (Object)RestTemplateUtil.request(restTemplate,realUrl,httpMethod,queryParams,headers,null,returnClass);
-//            }
+            Type returnType =method.getGenericReturnType();
+            Class<?> returnClass =method.getReturnType();
+            boolean isParamType=false;
+            if(returnType instanceof ParameterizedType) {
+                isParamType=true;
+                Type entType = ((ParameterizedType)returnType).getActualTypeArguments()[0];
+            }
+            logger.info("MvcResourceFactory invoke resttemplate begin ,realUrl={}",realUrl);
+            result= RestTemplateUtil.request(restTemplate,realUrl,httpMethod,
+                    pathParams,queryParams,entity,toHeaders,returnClass,isParamType,returnType);
+
         }
         catch(Exception e){
-            logger.error("MvcResource invoke restTemplate req error,realUri={}",realUrl,e);
+            logger.error("MvcResourceFactory invoke restTemplate req error,realUri={}",realUrl,e);
             throw e;
         }
         return result;
@@ -300,10 +285,6 @@ public final class MvcResourceFactory implements InvocationHandler {
         return false;
     }
 
-    private Object[] convert(final Collection value) {
-        return value.toArray();
-    }
-
     private static String addPathFromAnnotation(final AnnotatedElement ae, String url) {
         String realUrl=new String(url);
         final Path p = ae.getAnnotation(Path.class);
@@ -312,8 +293,10 @@ public final class MvcResourceFactory implements InvocationHandler {
             if(!nextPath.startsWith("/")) {
                 nextPath="/"+nextPath;
             }
+            if(realUrl.endsWith("/")) {
+                realUrl= realUrl.substring(0,realUrl.length()-1);
+            }
             realUrl+=nextPath;
-            realUrl= realUrl.replace("//","/");
         }
         return realUrl;
     }

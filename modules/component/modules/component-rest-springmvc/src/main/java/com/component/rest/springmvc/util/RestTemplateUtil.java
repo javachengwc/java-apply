@@ -1,22 +1,18 @@
 package com.component.rest.springmvc.util;
 
-import javax.ws.rs.core.Cookie;
-
-import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
-import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RequestCallback;
+import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.lang.reflect.Type;
 import java.net.URI;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class RestTemplateUtil {
@@ -24,6 +20,8 @@ public class RestTemplateUtil {
     private static Logger logger= LoggerFactory.getLogger(RestTemplateUtil.class);
 
     public static Map<String,HttpMethod> httpMethodMap= new HashMap<String,HttpMethod>();
+
+//    private static ObjectMapper objectMapper = new ObjectMapper();
 
     static {
         httpMethodMap.put("GET",HttpMethod.GET);
@@ -95,69 +93,117 @@ public class RestTemplateUtil {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public static <T> T post(RestTemplate restTemplate, String url, Map<String, Object> params,Class<T> returnClass) {
-        return request(restTemplate, url, "POST", params,null,null,null,returnClass);
-    }
-
-    public static  <T> T  get(RestTemplate restTemplate, String url, Map<String, Object> params,Class<T> returnClass) {
-        return request(restTemplate, url, "GET",params,null,null,null,returnClass);
-    }
-
-    public static  <T> T  delete(RestTemplate restTemplate, String url, Map<String, Object> params,Class<T> returnClass) {
-        return request(restTemplate, url, "DELETE", params,null,null,null,returnClass);
-    }
-
-    public static  <T> T  put(RestTemplate restTemplate, String url, Map<String, Object> params,Class<T> returnClass) {
-        return request(restTemplate, url, "PUT", params,null,null,null,returnClass);
-    }
-
     public static <T> T request(RestTemplate restTemplate, String url, String  httpMethod,
-                                           Map<String, Object> params,Object body,
-                                           MultiValueMap<String,String> headers,
-                                           List<Cookie> cookies ,Class<T> returnClass) {
+                                Map<String,Object> pathParams,Map<String, Object> queryParams,
+                                Object body,MultiValueMap<String,String> headers,
+                                Class<T> returnClass,boolean isParamType,Type returnType){
 
-        HttpEntity<String> requestEntity=null;
+        String invokeUrl =url;
+        if(pathParams!=null && pathParams.size()>0) {
+            for(String key:pathParams.keySet()) {
+                String value =pathParams.get(key).toString();
+                invokeUrl=invokeUrl.replace(key,value);
+            }
+        }
+        if(queryParams!=null && queryParams.size()>0) {
+            StringBuffer buffer =new StringBuffer();
+            for(String key:queryParams.keySet()) {
+                String value =queryParams.get(key).toString();
+                buffer.append(key).append("=").append(value).append("&");
+            }
+            String queryStr ="?"+buffer.toString();
+            if(queryStr.endsWith("&")) {
+                queryStr=queryStr.substring(0,queryStr.length()-1);
+            }
+            invokeUrl=invokeUrl+queryStr;
+        }
+        logger.info("RestTemplateUtil request invokeUrl={},isParamType={},returnClass={}",invokeUrl,isParamType,returnClass);
+        HttpEntity<Object> requestEntity=null;
         if(body!=null) {
-            String bodyJsonStr =new Gson().toJson(body);
-            requestEntity = new HttpEntity<String>(bodyJsonStr, headers);
+            requestEntity  = new HttpEntity<Object>(body, headers);
         }
-        ResponseEntity<T> rt = restTemplate.exchange(url, transHttpMethod(httpMethod), requestEntity, returnClass);
-        if(rt==null) {
-            return null;
+        HttpMethod httpMd =transHttpMethod(httpMethod);
+
+        T resps=null;
+        if(!isParamType) {
+            if("GET".equalsIgnoreCase(httpMethod)) {
+                resps =restTemplate.getForEntity(invokeUrl,returnClass).getBody();
+            } else {
+                //postForEntity
+                resps = restTemplate.exchange(url, httpMd, requestEntity, returnClass).getBody();
+            }
+        } else {
+            if("GET".equalsIgnoreCase(httpMethod)) {
+                resps =restTemplate.getForEntity(invokeUrl,returnClass).getBody();
+                //泛型处理有问题
+            } else {
+                resps = (T) restTemplate.exchange(invokeUrl,httpMd, requestEntity,
+                        new ParameterizedTypeReference<Object>() {
+                            public Type getType() {
+                                return returnType;
+                            }
+                        }
+                ).getBody();
+            }
         }
-        HttpStatus httpStatus =rt.getStatusCode();
-        logger.info("RestTemplateUtil request return httpStatus={},url={}",httpStatus,url);
-        T t= rt.getBody();
-        System.out.println("--------------------t:"+t);
-        return t;
+        logger.info("--------------------RestTemplateUtil request over,invokeUrl={},resps={}",invokeUrl,resps);
+        return resps;
+
     }
 
     public static HttpMethod transHttpMethod(String httpMethod) {
         return httpMethodMap.get(httpMethod);
     }
-
-
-    public static void main(String args []) {
-        String url ="http://ccc.com/aa";
-        RestTemplate restTemplate = new RestTemplate();
-
-        HttpHeaders headers = new HttpHeaders();
-        MediaType type = MediaType.parseMediaType("application/json; charset=UTF-8");
-        headers.setContentType(type);
-        headers.add("Accept", MediaType.APPLICATION_JSON.toString());
-
-        Req<Long> reqst = new Req<Long>();
-        reqst.setData(12004L);
-
-        //HttpEntity<String> formEntity = new HttpEntity<String>(jsonObj.toString(), headers);
-
-        Rep<SimpleOrderVo> resps = new Rep<SimpleOrderVo>();
-        Class returnClazz =resps.getClass();
-        resps= (Rep<SimpleOrderVo>)request(restTemplate,url,"POST",null,reqst,headers,null,returnClazz);
-        if(resps==null) {
-            System.out.println("resps is null");
-        } else {
-            System.out.println(resps);
-        }
-    }
+//
+//    public static String obj2Json(Object obj) {
+//        String json = null;
+//        try {
+//            json = objectMapper.writeValueAsString(obj);
+//        } catch (Exception  e) {
+//            logger.info("RestTemplateUtil obj2Json error,",e);
+//        }
+//        return json;
+//    }
+//
+//    public static void main(String args [])  throws  Exception {
+//        String url ="http://localhost:8288/order/getOrderInfo2";
+//        RestTemplate restTemplate = new RestTemplate();
+//
+//        HttpHeaders headers = new HttpHeaders();
+//        MediaType type = MediaType.parseMediaType("application/json; charset=UTF-8");
+//        headers.setContentType(type);
+//        headers.add("Accept", MediaType.APPLICATION_JSON.toString());
+//
+//        Req<Long> reqst = new Req<Long>();
+//        reqst.setData(12004L);
+//
+//        HttpEntity<String> formEntity = new HttpEntity<String>(null, headers);
+//
+//        Rep<SimpleOrderVo> resps = new Rep<SimpleOrderVo>();
+//        final Class returnClazz =resps.getClass();
+//        //resps= (Rep<SimpleOrderVo>)request(restTemplate,url,"POST",null,reqst,headers,null,returnClazz);
+//
+//        Method method= OrderRest.class.getMethod("query",Long.class);
+//        Type returnType =method.getGenericReturnType();
+//        //resps=(Rep<SimpleOrderVo>)restTemplate.getForObject(url+"?orderId=1",returnClazz);
+//        Type tp = ((ParameterizedType)returnType).getActualTypeArguments()[0];
+//
+//        System.out.println("------------------------------");
+//        resps= (Rep<SimpleOrderVo>)restTemplate.exchange(url+"?orderId=1",
+//                HttpMethod.GET,
+//                null,
+//                new ParameterizedTypeReference<Object>() {
+//                    @Override
+//                    public Type getType() {
+//                        return returnType;
+//                    }
+//                }
+//        ).getBody();
+//        if(resps==null) {
+//            System.out.println("resps is null");
+//        } else {
+//            System.out.println(resps);
+//            System.out.println("---------------"+resps.getData().getOrderNo());
+//        }
+//    }
 }
