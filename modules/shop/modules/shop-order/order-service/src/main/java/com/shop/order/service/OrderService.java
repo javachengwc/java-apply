@@ -8,4 +8,7 @@ public interface OrderService {
     public ShopOrder getById(Long orderId);
 
     public OrderInfo getOrderInfo(Long orderId);
+
+    public OrderInfo getOrderInfo2(Long orderId);
+
 }

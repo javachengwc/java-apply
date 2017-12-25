@@ -22,7 +22,7 @@ public class UserController implements UserResource{
     private UserService userService;
 
     @ApiOperation(value = "获取用户信息", notes = "获取用户信息")
-    @RequestMapping(value="/getUserInfo",method= RequestMethod.GET)
+    @RequestMapping(value="/getUserInfo",method= RequestMethod.POST)
     public UserInfo getUserInfo(@RequestParam(value = "userId",required = false) Long userId){
         logger.info("UserController getUserInfo start,userId={}",userId);
         if(userId==null) {
@@ -33,7 +33,7 @@ public class UserController implements UserResource{
 
 
     @ApiOperation(value = "获取用户信息", notes = "获取用户信息")
-    @RequestMapping(value="/getUserInfo2",method= RequestMethod.POST)
+    @RequestMapping(value="/getUserInfo2",method= RequestMethod.GET)
     public Rep<UserInfo> getUserInfo2(@RequestParam(value = "userId",required = false) Long userId) {
         logger.info("UserController getUserInfo2 start,userId={}",userId);
 

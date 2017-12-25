@@ -15,12 +15,12 @@ import javax.ws.rs.core.MediaType;
 public interface UserResource {
 
     @ApiOperation(value = "获取用户信息", notes = "获取用户信息")
-    @GET
+    @POST
     @Path("/getUserInfo")
     public UserInfo getUserInfo(@QueryParam("userId") Long userId);
 
     @ApiOperation(value = "获取用户信息", notes = "获取用户信息")
-    @POST
+    @GET
     @Path("/getUserInfo2")
     public Rep<UserInfo> getUserInfo2(@QueryParam("userId") Long userId);
 }

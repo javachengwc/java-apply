@@ -35,25 +35,25 @@ public class RestTemplateUtil {
     }
 
     //restTemplate自身支持的GET方法
-    public static <T> T getForObject(RestTemplate restTemplate,String url,
+    public static <T> T getForEntity(RestTemplate restTemplate,String url,
                                      Class<T> responseType, Object... urlVariables) throws RestClientException {
 
-        //String result = restTemplate.getForObject("http://example.com/aa/{p1}/bb/{p2}", String.class,"p11", "p22");
-        return restTemplate.getForObject(url,responseType,urlVariables);
+        //String result = restTemplate.getForEntity("http://example.com/aa/{p1}/bb/{p2}", String.class,"p11", "p22").getBody();
+        return restTemplate.getForEntity(url,responseType,urlVariables).getBody();
     }
-    public static <T> T getForObject(RestTemplate restTemplate,String url,
+    public static <T> T getForEntity(RestTemplate restTemplate,String url,
                                      Class<T> responseType, Map<String, ?> urlVariables) throws RestClientException {
 
         //Map<String, String> vars = Collections.singletonMap("p1", "p11");
-        //String result = restTemplate.getForObject("http://example.com/aa/{p1}", String.class, vars);
-        return restTemplate.getForObject(url,responseType,urlVariables);
+        //String result = restTemplate.getForEntity("http://example.com/aa/{p1}", String.class, vars).getBody();
+        return restTemplate.getForEntity(url,responseType,urlVariables).getBody();
     }
 
-    public static <T> T getForObject(RestTemplate restTemplate,URI url,
+    public static <T> T getForEntity(RestTemplate restTemplate,URI url,
                                      Class<T> responseType) throws RestClientException {
 
-        //String result=restTemplate.getForObject("http://example.com/aa?id=1&name=ab", String.class );
-        return restTemplate.getForObject(url,responseType);
+        //String result=restTemplate.getForEntity("http://example.com/aa?id=1&name=ab", String.class ).getBody();
+        return restTemplate.getForEntity(url,responseType).getBody();
     }
 
     //restTemplate自身支持的POST方法
@@ -129,22 +129,20 @@ public class RestTemplateUtil {
             if("GET".equalsIgnoreCase(httpMethod)) {
                 resps =restTemplate.getForEntity(invokeUrl,returnClass).getBody();
             } else {
-                //postForEntity
-                resps = restTemplate.exchange(url, httpMd, requestEntity, returnClass).getBody();
+                //一般的post处理
+                logger.info("RestTemplateUtil request post noparamType url invokeUrl={}",invokeUrl);
+                resps = restTemplate.exchange(invokeUrl, httpMd, requestEntity, returnClass).getBody();
             }
         } else {
-            if("GET".equalsIgnoreCase(httpMethod)) {
-                resps =restTemplate.getForEntity(invokeUrl,returnClass).getBody();
-                //泛型处理有问题
-            } else {
-                resps = (T) restTemplate.exchange(invokeUrl,httpMd, requestEntity,
-                        new ParameterizedTypeReference<Object>() {
-                            public Type getType() {
-                                return returnType;
-                            }
+            //GET POST请求都能处理
+            logger.info("RestTemplateUtil request deal paramType url invokeUrl={}",invokeUrl);
+            resps = (T) restTemplate.exchange(invokeUrl,httpMd, requestEntity,
+                    new ParameterizedTypeReference<Object>() {
+                        public Type getType() {
+                            return returnType;
                         }
-                ).getBody();
-            }
+                    }
+            ).getBody();
         }
         logger.info("--------------------RestTemplateUtil request over,invokeUrl={},resps={}",invokeUrl,resps);
         return resps;

@@ -32,16 +32,16 @@ public class OrderController implements OrderResource {
     @ApiOperation(value = "获取订单信息", notes = "获取订单信息")
     @RequestMapping(value="/getOrderInfo2",method= RequestMethod.GET)
     public Rep<OrderInfo> getOrderInfo2(@RequestParam("orderId") Long orderId) {
-        boolean aa=true;
-        if(aa) {
-            return null;
-        }
+//        boolean aa=true;
+//        if(aa) {
+//            return null;
+//        }
         Rep<OrderInfo> rep= new Rep<OrderInfo>();
         if(orderId==null) {
             rep.getHeader().setRet("F");
             return rep;
         }
-        OrderInfo orderInfo = orderService.getOrderInfo(orderId);
+        OrderInfo orderInfo = orderService.getOrderInfo2(orderId);
         rep.setData(orderInfo);
         rep.getHeader().setRet("S");
         return rep;
