@@ -29,6 +29,9 @@ public class StringMain {
 
     public static void main(String args []) throws Exception
 	{
+        String abce="1y94932749237";
+        int ablen =abce.length();
+        System.out.println(abce.substring(ablen-3));
 
 	    String aa="${title}wwwaaabbb${aa}";
 	    Pattern p = Pattern.compile(programTemplateStr);

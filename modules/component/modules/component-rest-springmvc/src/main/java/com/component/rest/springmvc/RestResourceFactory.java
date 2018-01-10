@@ -5,7 +5,6 @@ import com.component.rest.springmvc.util.RestTemplateUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.MethodParameter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -16,9 +15,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
 
-public final class MvcResourceFactory implements InvocationHandler {
+public final class RestResourceFactory implements InvocationHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(MvcResourceFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(RestResourceFactory.class);
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -44,12 +43,12 @@ public final class MvcResourceFactory implements InvocationHandler {
     private final List<Cookie> cookies;
     private final Form form;
 
-    private MvcResourceFactory(final Class resourceInterface,
-                               final String url,
-                               final RestTemplate restTemplate,
-                               final MultivaluedMap<String, String> headers,
-                               final List<Cookie> cookies,
-                               final Form form) {
+    private RestResourceFactory(final Class resourceInterface,
+                                final String url,
+                                final RestTemplate restTemplate,
+                                final MultivaluedMap<String, String> headers,
+                                final List<Cookie> cookies,
+                                final Form form) {
         this.resourceInterface = resourceInterface;
         this.url=url;
         this.restTemplate =restTemplate;
@@ -74,7 +73,7 @@ public final class MvcResourceFactory implements InvocationHandler {
         return (C) Proxy.newProxyInstance(
                 resourceInterface.getClassLoader(),
                 new Class[]{resourceInterface},
-                new MvcResourceFactory(resourceInterface,url,restTemplate, headers, cookies, form));
+                new RestResourceFactory(resourceInterface,url,restTemplate, headers, cookies, form));
     }
 
     public Object invoke(final Object proxy, final Method method, final Object[] args)

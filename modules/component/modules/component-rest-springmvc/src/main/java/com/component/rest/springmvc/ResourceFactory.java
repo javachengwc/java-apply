@@ -6,12 +6,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.lang.reflect.InvocationHandler;
@@ -47,7 +45,7 @@ public class ResourceFactory implements ApplicationListener<ContextRefreshedEven
         }
         logger.info("ResourceFactory getSpringMvcResource gen url, appName={},url={}",appName, url);
 
-        T t = MvcResourceFactory.newResource(resourceClass,url,restTemplate);
+        T t = RestResourceFactory.newResource(resourceClass,url,restTemplate);
         return newResource(t, new ResourceWrapper(t));
     }
 

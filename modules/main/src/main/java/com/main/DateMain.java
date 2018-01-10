@@ -1,13 +1,19 @@
 package com.main;
 
+import com.util.date.DateUtil;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.format.DateTimeFormatter;
+
+import java.util.Date;
 
 public class DateMain {
 
 	public static void main(String args [])
 	{
+	    Date defDate =new Date(0);
+	    System.out.println(DateUtil.formatDate(defDate,DateUtil.FMT_YMD_HMS));
+
 		DateTime now = new DateTime();
 		System.out.println(now.toString("yyyy/MM/dd"));
 		System.out.println(now.getYear()+"/"+now.getMonthOfYear()+"/"+now.getDayOfMonth());
