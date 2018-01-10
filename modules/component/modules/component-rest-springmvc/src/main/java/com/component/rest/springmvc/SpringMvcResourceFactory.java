@@ -7,6 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.MatrixVariable;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 
@@ -20,19 +23,14 @@ public class SpringMvcResourceFactory  implements InvocationHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(SpringMvcResourceFactory.class);
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
-
-    private static final String[] EMPTY  = {};
     private static final MultivaluedMap<String, String> EMPTY_HEADERS            = new MultivaluedHashMap<String, String>();
-    private static final Form EMPTY_FORM               = new Form();
 
     private static final List<Class> PARAM_ANNOTATION_CLASSES = Arrays.<Class> asList(
             RequestParam.class,
-            QueryParam.class,
-            HeaderParam.class,
-            CookieParam.class,
-            MatrixParam.class,
-            FormParam.class);
+            PathVariable.class,
+            MatrixVariable.class,
+            RequestBody.class
+            );
 
     private static final String GET="GET";
     private static final String POST="POST";
