@@ -2,15 +2,11 @@ package com.component.rest.springmvc;
 
 import com.component.rest.springmvc.util.ClassUtil;
 import com.component.rest.springmvc.util.RestTemplateUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.MatrixVariable;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.ws.rs.*;
@@ -23,56 +19,76 @@ public class SpringMvcResourceFactory  implements InvocationHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(SpringMvcResourceFactory.class);
 
-    private static final MultivaluedMap<String, String> EMPTY_HEADERS            = new MultivaluedHashMap<String, String>();
+    private static final String GET="GET";
+    private static final String POST="POST";
+    private static final String HEAD="HEAD";
+    private static final String PUT="PUT";
+    private static final String PATCH="PATCH";
+    private static final String DELETE="DELETE";
+    private static final String OPTIONS="OPTIONS";
+    private static final String TRACE="TRACE";
+
+    private static Map<RequestMethod,String> requestMethodMap= new HashMap<RequestMethod,String>();
+
+    private static final MultivaluedMap<String, String> EMPTY_HEADERS   = new MultivaluedHashMap<String, String>();
 
     private static final List<Class> PARAM_ANNOTATION_CLASSES = Arrays.<Class> asList(
             RequestParam.class,
             PathVariable.class,
             MatrixVariable.class,
-            RequestBody.class
+            RequestBody.class,
+            ModelAttribute.class
             );
 
-    private static final String GET="GET";
-    private static final String POST="POST";
+    static {
+        requestMethodMap.put(RequestMethod.GET,GET);
+        requestMethodMap.put(RequestMethod.POST,POST);
+        requestMethodMap.put(RequestMethod.HEAD,HEAD);
+        requestMethodMap.put(RequestMethod.PUT,PUT);
+        requestMethodMap.put(RequestMethod.PATCH,PATCH);
+        requestMethodMap.put(RequestMethod.DELETE,DELETE);
+        requestMethodMap.put(RequestMethod.OPTIONS,OPTIONS);
+        requestMethodMap.put(RequestMethod.TRACE,TRACE);
+    }
 
     private final Class resourceInterface;
     private final String url;
     private final RestTemplate restTemplate;
     private final MultivaluedMap<String, String> headers;
     private final List<Cookie> cookies;
-    private final Form form;
+    private final Object entityParam;
 
     private SpringMvcResourceFactory(final Class resourceInterface,
                                 final String url,
                                 final RestTemplate restTemplate,
                                 final MultivaluedMap<String, String> headers,
                                 final List<Cookie> cookies,
-                                final Form form) {
+                                final Object entityParam) {
         this.resourceInterface = resourceInterface;
         this.url=url;
         this.restTemplate =restTemplate;
         this.headers = headers;
         this.cookies = cookies;
-        this.form = form;
+        this.entityParam = entityParam;
     }
 
     public static <C> C newResource(final Class<C> resourceInterface,
                                     final String url,final RestTemplate restTemplate) {
         String resourceClassName= resourceInterface.getName();
-        logger.info("MvcResourceFactory newResource start, resourceClassName={},url={}",resourceClassName,url);
+        logger.info("SpringMvcResourceFactory newResource start, resourceClassName={},url={}",resourceClassName,url);
         return newResource(resourceInterface, url,restTemplate, EMPTY_HEADERS,
-                Collections.<Cookie> emptyList(), EMPTY_FORM);
+                Collections.<Cookie> emptyList(), null);
     }
 
     public static <C> C newResource(final Class<C> resourceInterface, final String url,
                                     final RestTemplate restTemplate,
                                     final MultivaluedMap<String, String> headers,
-                                    final List<Cookie> cookies, final Form form) {
+                                    final List<Cookie> cookies, final Object entityParam) {
 
         return (C) Proxy.newProxyInstance(
                 resourceInterface.getClassLoader(),
                 new Class[]{resourceInterface},
-                new SpringMvcResourceFactory(resourceInterface,url,restTemplate, headers, cookies, form));
+                new SpringMvcResourceFactory(resourceInterface,url,restTemplate, headers, cookies, entityParam));
     }
 
     public Object invoke(final Object proxy, final Method method, final Object[] args)
@@ -85,7 +101,7 @@ public class SpringMvcResourceFactory  implements InvocationHandler {
             return url.hashCode();
         }
         String methodName = method.getName();
-        logger.info("MvcResourceFactory invoke start, methodName={},url={}",methodName,url);
+        logger.info("SpringMvcResourceFactory invoke start, methodName={},url={}",methodName,url);
         //resource接口
         final Class<?> interfaceClass = proxy.getClass().getInterfaces()[0];
         //返回结果类型
@@ -104,7 +120,7 @@ public class SpringMvcResourceFactory  implements InvocationHandler {
 
         String realUrl = addPathFromAnnotation(interfaceClass,url);
         realUrl = addPathFromAnnotation(method,realUrl);
-        logger.info("MvcResourceFactory invoke realUrl={},httpMethod={}",realUrl,httpMethod);
+        logger.info("SpringMvcResourceFactory invoke realUrl={},httpMethod={}",realUrl,httpMethod);
         if (httpMethod == null) {
             throw new UnsupportedOperationException("httpMethod is null ");
         }
@@ -300,7 +316,22 @@ public class SpringMvcResourceFactory  implements InvocationHandler {
     }
 
     private static String getHttpMethodName(final AnnotatedElement ae) {
-        final HttpMethod a = ae.getAnnotation(HttpMethod.class);
-        return a == null ? null : a.value();
+        RequestMapping reqMapping = ae.getAnnotation(RequestMapping.class);
+        RequestMethod requestMethod = null;
+        if(reqMapping!=null && reqMapping.method()!=null) {
+            RequestMethod [] requestMethods =reqMapping.method();
+            for(RequestMethod per:requestMethods) {
+                if(per==RequestMethod.GET || per== RequestMethod.POST) {
+                    return requestMethodMap.get(per);
+                }
+                if(requestMethod==null) {
+                    requestMethod=per;
+                }
+            }
+        }
+        if(requestMethod==null) {
+            return null;
+        }
+        return requestMethodMap.get(requestMethod);
     }
 }
