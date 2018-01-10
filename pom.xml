@@ -19,6 +19,7 @@
         <module>modules/xml</module>
         <module>modules/captcha</module>
         <module>modules/email</module>
+		<module>modules/spring-study</module>
         <module>modules/solr</module>
 		<module>modules/zookeeper</module>
 		<module>modules/frame</module>

@@ -45,6 +45,26 @@ public class ResourceFactory implements ApplicationListener<ContextRefreshedEven
         }
         logger.info("ResourceFactory getSpringMvcResource gen url, appName={},url={}",appName, url);
 
+        T t = SpringMvcResourceFactory.newResource(resourceClass,url,restTemplate);
+        return newResource(t, new ResourceWrapper(t));
+    }
+
+    public <T> T getRestResource(Class<T> resourceClass,RestTemplate restTemplate) {
+        String appName = RestUtil.getApplicationName(resourceClass);
+        if (StringUtils.isBlank(appName)) {
+            return null;
+        }
+        String resourceClassName= resourceClass.getName();
+        logger.info("ResourceFactory getRestResource resourceClassName={},appName={}", resourceClassName, appName);
+
+        String url = null;
+        if (balanceClientFilter != null) {
+            url = "http://" + appName;
+        } else {
+            url = resourceLocator.locate(appName);
+        }
+        logger.info("ResourceFactory getRestResource gen url, appName={},url={}",appName, url);
+
         T t = RestResourceFactory.newResource(resourceClass,url,restTemplate);
         return newResource(t, new ResourceWrapper(t));
     }
