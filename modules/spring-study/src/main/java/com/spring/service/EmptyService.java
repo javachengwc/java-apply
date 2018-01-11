@@ -1,13 +1,6 @@
 package com.spring.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public interface EmptyService {
 
-public class EmptyService {
-
-    private static Logger logger = LoggerFactory.getLogger(EmptyService.class);
-
-    public Integer dodo(String aa) {
-        return 1;
-    }
+    public Integer dodo(String aa) ;
 }

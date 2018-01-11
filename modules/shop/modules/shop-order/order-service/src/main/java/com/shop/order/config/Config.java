@@ -1,6 +1,7 @@
 package com.shop.order.config;
 
 import com.component.rest.springmvc.ResourceFactory;
+import com.shop.user.api.rest.UserResCtrl;
 import com.shop.user.api.rest.UserResource;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
@@ -49,7 +50,7 @@ public class Config {
 
     @Bean
     @Autowired
-    public UserResource userResource(ResourceFactory resourceFactory) {
-        return resourceFactory.getSpringMvcResource(UserResource.class,restTemplate());
+    public UserResCtrl userResCtrl(ResourceFactory resourceFactory) {
+        return resourceFactory.getSpringMvcResource(UserResCtrl.class,restTemplate());
     }
 }

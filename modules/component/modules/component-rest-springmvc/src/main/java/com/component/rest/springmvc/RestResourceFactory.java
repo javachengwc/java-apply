@@ -140,7 +140,7 @@ public final class RestResourceFactory implements InvocationHandler {
             if (!hasAnyParamAnnotation(anns)) {
                 //参数没有诸如QueryParam的注解的时候
                 if(ClassUtil.isSimpleClass(paramClass)) {
-                    //获取不到真正的paramName,需要用spring的实现来获取paramName
+                    //获取不到真正的paramName,用spring的实现来获取paramName也获取不了，因为是接口类
                     queryParams.put(paramName,value);
                     logger.info("MvcResourceFactory queryParams add with noting,paramName={},value={}",paramName,value);
                 } else if(i==0) {

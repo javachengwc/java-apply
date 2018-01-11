@@ -7,6 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.DefaultParameterNameDiscoverer;
+import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -21,6 +22,7 @@ import javax.ws.rs.core.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,7 +62,10 @@ public class SpringMvcResourceFactory  implements InvocationHandler {
         PatchMapping.class
     );
 
-    private static ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
+    private static final ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
+
+    //接口--接口的一个空实现类
+    public static ConcurrentHashMap<String,Object> interClassMap = new ConcurrentHashMap<String,Object>();
 
     static {
         requestMethodMap.put(RequestMethod.GET,GET);
@@ -159,11 +164,10 @@ public class SpringMvcResourceFactory  implements InvocationHandler {
             for (final Annotation ann : paramAnns[i]) {
                 anns.put(ann.annotationType(), ann);
             }
+            String paramName =method.getParameters()[i].getName();
             Annotation ann;
             Class paramClass =method.getParameterTypes()[i];
-            String paramName =parameterNameDiscoverer.getParameterNames(method)[i];
             Object value = args[i];
-
             logger.info("SpringMvcResourceFactory paramAnns "+i+" ,paramName="+paramName+",value="+value+",paramClass="+paramClass);
             if (!hasAnyParamAnnotation(anns)) {
                 //方法参数没带注释
@@ -520,5 +524,22 @@ public class SpringMvcResourceFactory  implements InvocationHandler {
         }
         String rt =buffer.toString();
         return  rt;
+    }
+
+    public Object getEmptyInstanceObject(Class clazz) {
+        String clazzName =clazz.getName();
+        Object instanceObject =interClassMap.get(clazzName);
+        if(instanceObject==null) {
+            ClassLoader loader = clazz.getClassLoader();
+            Class [] interfaces = new Class[] {clazz};
+            instanceObject= Proxy.newProxyInstance(loader, interfaces, new InvocationHandler() {
+                @Override
+                public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                    return null;
+                }
+            });
+            interClassMap.putIfAbsent(clazzName,instanceObject);
+        }
+        return instanceObject;
     }
 }

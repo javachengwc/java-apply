@@ -9,4 +9,6 @@ public interface UserService {
     public UserInfo getUserInfo(Long userId);
 
     public Rep<UserInfo> getUserInfo2(Long userId);
+
+    public Rep<UserInfo> queryUserInfo3(Long userId);
 }
