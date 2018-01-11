@@ -2,18 +2,27 @@ package com.component.rest.springmvc;
 
 import com.component.rest.springmvc.util.ClassUtil;
 import com.component.rest.springmvc.util.RestTemplateUtil;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.DefaultParameterNameDiscoverer;
+import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import javax.ws.rs.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SpringMvcResourceFactory  implements InvocationHandler {
 
@@ -23,22 +32,35 @@ public class SpringMvcResourceFactory  implements InvocationHandler {
     private static final String POST="POST";
     private static final String HEAD="HEAD";
     private static final String PUT="PUT";
-    private static final String PATCH="PATCH";
+    private static final String PATCH="PATCH"; //表示部分更新，把它当更新就行了
     private static final String DELETE="DELETE";
     private static final String OPTIONS="OPTIONS";
     private static final String TRACE="TRACE";
 
+    private static String PATH_URL_PATTERN="\\{(.*?)\\}";
+
     private static Map<RequestMethod,String> requestMethodMap= new HashMap<RequestMethod,String>();
 
-    private static final MultivaluedMap<String, String> EMPTY_HEADERS   = new MultivaluedHashMap<String, String>();
-
+    //参数注解
     private static final List<Class> PARAM_ANNOTATION_CLASSES = Arrays.<Class> asList(
-            RequestParam.class,
-            PathVariable.class,
-            MatrixVariable.class,
-            RequestBody.class,
-            ModelAttribute.class
-            );
+        RequestParam.class,
+        PathVariable.class,
+        MatrixVariable.class, //类似Map<String,List<String>>这样的参数绑定,可以从url中提取，暂不支持
+        RequestBody.class,
+        ModelAttribute.class  //绑定对象，把它当一个对象传参就行
+    );
+
+    //方法注解
+    private static final List<Class> METHOD_ANNOTATION_CLASSES = Arrays.<Class>asList(
+        RequestMapping.class,
+        GetMapping.class,
+        PutMapping.class,
+        PostMapping.class,
+        DeleteMapping.class,
+        PatchMapping.class
+    );
+
+    private static ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
 
     static {
         requestMethodMap.put(RequestMethod.GET,GET);
@@ -51,44 +73,26 @@ public class SpringMvcResourceFactory  implements InvocationHandler {
         requestMethodMap.put(RequestMethod.TRACE,TRACE);
     }
 
-    private final Class resourceInterface;
-    private final String url;
-    private final RestTemplate restTemplate;
-    private final MultivaluedMap<String, String> headers;
-    private final List<Cookie> cookies;
-    private final Object entityParam;
+    private Class resourceInterface;
+    private String url;
+    private RestTemplate restTemplate;
 
     private SpringMvcResourceFactory(final Class resourceInterface,
                                 final String url,
-                                final RestTemplate restTemplate,
-                                final MultivaluedMap<String, String> headers,
-                                final List<Cookie> cookies,
-                                final Object entityParam) {
+                                final RestTemplate restTemplate) {
         this.resourceInterface = resourceInterface;
         this.url=url;
         this.restTemplate =restTemplate;
-        this.headers = headers;
-        this.cookies = cookies;
-        this.entityParam = entityParam;
     }
 
     public static <C> C newResource(final Class<C> resourceInterface,
                                     final String url,final RestTemplate restTemplate) {
         String resourceClassName= resourceInterface.getName();
         logger.info("SpringMvcResourceFactory newResource start, resourceClassName={},url={}",resourceClassName,url);
-        return newResource(resourceInterface, url,restTemplate, EMPTY_HEADERS,
-                Collections.<Cookie> emptyList(), null);
-    }
-
-    public static <C> C newResource(final Class<C> resourceInterface, final String url,
-                                    final RestTemplate restTemplate,
-                                    final MultivaluedMap<String, String> headers,
-                                    final List<Cookie> cookies, final Object entityParam) {
-
         return (C) Proxy.newProxyInstance(
                 resourceInterface.getClassLoader(),
                 new Class[]{resourceInterface},
-                new SpringMvcResourceFactory(resourceInterface,url,restTemplate, headers, cookies, entityParam));
+                new SpringMvcResourceFactory(resourceInterface,url,restTemplate));
     }
 
     public Object invoke(final Object proxy, final Method method, final Object[] args)
@@ -118,156 +122,146 @@ public class SpringMvcResourceFactory  implements InvocationHandler {
             }
         }
 
-        String realUrl = addPathFromAnnotation(interfaceClass,url);
-        realUrl = addPathFromAnnotation(method,realUrl);
+        //根据类，方法组装出url
+        String realUrl = addPathFromClassAnnotation(interfaceClass,url);
+        realUrl = addPathFromMethodAnnotation(method,realUrl);
         logger.info("SpringMvcResourceFactory invoke realUrl={},httpMethod={}",realUrl,httpMethod);
+
         if (httpMethod == null) {
             throw new UnsupportedOperationException("httpMethod is null ");
         }
 
-        final MultivaluedHashMap<String, String> headers = new MultivaluedHashMap<String, String>(this.headers);
-        final LinkedList<Cookie> cookies = new LinkedList<Cookie>(this.cookies);
-        final Form form = new Form();
-        if(this.form!=null) {
-            form.asMap().putAll(this.form.asMap());
-        }
+        List<String> pathNameList=getUrlPathNames(realUrl);
 
+        //提取的数据
+        MultivaluedHashMap<String, String> headers = new MultivaluedHashMap<String, String>();
+        LinkedList<Cookie> cookies = new LinkedList<Cookie>();
+        Object bodyEntity=null; //body参
+        Object entity = null; //实体参
+        Map<String,Object> queryParams= new HashMap<String,Object>();//查询参数
+        Map<String,Object> pathParams = new HashMap<String,Object>();//路径参数
+        String contentType = null;
+
+        Annotation [] methodAnns = method.getDeclaredAnnotations();
         final Annotation[][] paramAnns = method.getParameterAnnotations();
-        int annsLen = paramAnns==null?0:paramAnns.length;
-        logger.info("MvcResourceFactory annsLen length={}",annsLen);
-        Object entity = null; //参数值
-        Type entityType = null; //参数类型
-        Map<String,Object> queryParams= new HashMap<String,Object>();
-        Map<String,Object> pathParams = new HashMap<String,Object>();
+        int paramAnnsLen = paramAnns==null?0:paramAnns.length;
 
+        if(methodAnns!=null && methodAnns.length>0) {
+            if(Arrays.asList(methodAnns).contains(ResponseBody.class)) {
+                contentType=MediaType.APPLICATION_JSON;
+            }
+        }
+        logger.info("SpringMvcResourceFactory paramAnnsLen length={}",paramAnnsLen);
+        int entityIndex=0;
         for (int i = 0; i < paramAnns.length; i++) {
-
-            //PathParam.class pathParam
+            logger.info("SpringMvcResourceFactory invoke deal param, paramIndex={}",i);
             final Map<Class, Annotation> anns = new HashMap<Class, Annotation>();
             for (final Annotation ann : paramAnns[i]) {
                 anns.put(ann.annotationType(), ann);
             }
             Annotation ann;
             Class paramClass =method.getParameterTypes()[i];
-            String paramName =method.getParameters()[i].getName();
+            String paramName =parameterNameDiscoverer.getParameterNames(method)[i];
             Object value = args[i];
-            logger.info("MvcResourceFactory paramAnns "+i+" ,paramName="+paramName+",value="+value+",paramClass="+paramClass);
+
+            logger.info("SpringMvcResourceFactory paramAnns "+i+" ,paramName="+paramName+",value="+value+",paramClass="+paramClass);
             if (!hasAnyParamAnnotation(anns)) {
-                //参数没有诸如QueryParam的注解的时候
+                //方法参数没带注释
                 if(ClassUtil.isSimpleClass(paramClass)) {
-                    //获取不到真正的paramName,需要用spring的实现来获取paramName
                     queryParams.put(paramName,value);
-                    logger.info("MvcResourceFactory queryParams add with noting,paramName={},value={}",paramName,value);
-                } else if(i==0) {
-                    entity = value;
-                    entityType = method.getGenericParameterTypes()[i];
+                    logger.info("SpringMvcResourceFactory queryParams add with noting,paramName={},value={}",paramName,value);
+                } else {
+                    if(paramClass==HttpServletRequest.class || paramClass== HttpServletResponse.class
+                            || paramClass==HttpSession.class || paramClass ==Errors.class) {
+                        continue;
+                    }
+                    if(entityIndex==0) {
+                        entity = value;
+                    }
+                    entityIndex++;
                 }
             } else {
-                if (value == null && (ann = anns.get(DefaultValue.class)) != null) {
-                    //通过默认Annotation获取默认值
-                    value = ((DefaultValue) ann).value();
-                }
+                //方法参数带了注解
                 if(value==null) {
                     continue;
                 }
-                if ((ann = anns.get(PathParam.class)) != null) {
-                    pathParams.put(paramName,value);
-                    logger.info("MvcResourceFactory pathParams add with PathParam,paramName={},value={}",paramName,value);
-                } else if ((ann = anns.get((QueryParam.class))) != null) {
-                    paramName=((QueryParam) ann).value();
-                    queryParams.put(paramName,value);
-                    logger.info("MvcResourceFactory queryParams add with QueryParam,paramName={},value={}",paramName,value);
-                } else if ((ann = anns.get((HeaderParam.class))) != null) {
-                    if (value instanceof Collection) {
-                        for (final Object v : ((Collection) value)) {
-                            headers.addAll(((HeaderParam) ann).value(), v.toString());
-                        }
-                    } else {
-                        headers.addAll(((HeaderParam) ann).value(), value.toString());
+                if ((ann = anns.get(PathVariable.class)) != null) {
+                    String pathName =((PathVariable) ann).value();
+                    if(StringUtils.isBlank(pathName)) {
+                        pathName=paramName;
                     }
-
-                } else if ((ann = anns.get((CookieParam.class))) != null) {
-                    final String name = ((CookieParam) ann).value();
-                    Cookie c;
-                    if (value instanceof Collection) {
-                        for (final Object v : ((Collection) value)) {
-                            if (!(v instanceof Cookie)) {
-                                c = new Cookie(name, v.toString());
-                            } else {
-                                c = (Cookie) v;
-                                if (!name.equals(((Cookie) v).getName())) {
-                                    // is this the right thing to do? or should I fail? or ignore the difference?
-                                    c = new Cookie(name, c.getValue(), c.getPath(),
-                                            c.getDomain(), c.getVersion());
-                                }
-                            }
-                            cookies.add(c);
+                    pathParams.put(pathName,value);
+                    logger.info("SpringMvcResourceFactory pathParams add with PathVariable,pathName={},value={}",pathName,value);
+                } else if ((ann = anns.get((RequestParam.class))) != null) {
+                    String queryName=((RequestParam) ann).value();
+                    if(StringUtils.isBlank(queryName)) {
+                        queryName=paramName;
+                    }
+                    queryParams.put(queryName,value);
+                    logger.info("SpringMvcResourceFactory queryParams add with RequestParam,queryName={},value={}",queryName,value);
+                } else if ((ann = anns.get((RequestBody.class))) != null) {
+                    contentType=MediaType.APPLICATION_JSON;
+                    bodyEntity = value;
+                } else if ((ann = anns.get((MatrixVariable.class))) != null) {
+                    logger.warn("SpringMvcResourceFactory invoke  not support MatrixVariable,methodName={},realUrl={}",methodName,realUrl);
+                    throw new UnsupportedOperationException("not support MatrixVariable");
+                } else if ((ann = anns.get((ModelAttribute.class))) != null) {
+                    logger.info("SpringMvcResourceFactory find ModelAttribute,paramName={},value={}",paramName,value);
+                    if(ClassUtil.isSimpleClass(paramClass)) {
+                        continue;
+                    }
+                    Map<String,Object> valueMap = obj2Map(value);
+                    for(Map.Entry<String,Object> per:valueMap.entrySet()) {
+                        Object curValue=per.getValue();
+                        if(curValue==null) {
+                            continue;
                         }
-                    } else {
-                        if (!(value instanceof Cookie)) {
-                            cookies.add(new Cookie(name, value.toString()));
+                        String key =per.getKey();
+                        if(pathNameList!=null && pathNameList.contains(key)) {
+                            pathParams.put(key,curValue);
                         } else {
-                            c = (Cookie) value;
-                            if (!name.equals(((Cookie) value).getName())) {
-                                // is this the right thing to do? or should I fail? or ignore the difference?
-                                cookies.add(new Cookie(name, c.getValue(), c.getPath(), c
-                                        .getDomain(), c.getVersion()));
-                            }
+                            queryParams.put(key,curValue);
                         }
-                    }
-                } else if ((ann = anns.get((MatrixParam.class))) != null) {
-                    logger.warn("MvcResourceFactory invoke mvc not support MatrixParam,methodName={},realUrl={}",methodName,realUrl);
-                    throw new UnsupportedOperationException("mvc not support MatrixParam");
-                } else if ((ann = anns.get((FormParam.class))) != null) {
-                    if (value instanceof Collection) {
-                        for (final Object v : ((Collection) value)) {
-                            form.param(((FormParam) ann).value(), v.toString());
-                        }
-                    } else {
-                        form.param(((FormParam) ann).value(), value.toString());
                     }
                 }
-                ////参数有诸如QueryParam的注解的解析,结束
+                ////参数有诸如RequestParam的注解的解析,结束
             }
         }
 
-        // accepted media types
-        String accepts = null;
-        Produces produces = method.getAnnotation(Produces.class);
-        if (produces == null) {
-            produces = interfaceClass.getAnnotation(Produces.class);
+        //处理entity
+        if(entity!=null) {
+             Map<String,Object> entityMap = obj2Map(entity);
+             for(Map.Entry<String,Object> per:entityMap.entrySet()) {
+                 Object value=per.getValue();
+                 if(value==null) {
+                     continue;
+                 }
+                 String key =per.getKey();
+                 queryParams.put(key,value);
+             }
         }
-        if (produces != null && produces.value().length > 0) {
-            accepts = produces.value()[0];
+
+        //把解析出来的queryParams,pathParams,bodyEntity打印出来
+        if(logger.isDebugEnabled()) {
+            logger.debug("SpringMvcResourceFactory invoke parse end, realUrl={},queryParams={},pathParams={},bodyEntity={}",
+                    realUrl,map2Str(queryParams),map2Str(pathParams),bodyEntity);
         }
-        String contentType = null;
-        if (entity != null) {
-            List<String> contentTypes= headers.get(HttpHeaders.CONTENT_TYPE);
-            if(contentTypes!=null && contentTypes.size()>0) {
-                contentType=contentTypes.get(0);
-            }
-        }
-        Consumes consumes = method.getAnnotation(Consumes.class);
-        if (consumes == null) {
-            consumes = interfaceClass.getAnnotation(Consumes.class);
-        }
-        if (consumes != null && consumes.value().length > 0) {
-            contentType = consumes.value()[0];
-        }
+
+        //处理contentType
         if( contentType==null ) {
             contentType=MediaType.APPLICATION_JSON;
         }
-        if(contentType.indexOf("charset")<0) {
-            contentType = contentType + "; charset=UTF-8";//默认编码
-        }
+//        if(contentType.indexOf("charset")<0) {
+//            contentType = contentType + "; charset=UTF-8";//默认编码
+//        }
 
+        //处理header
         headers.addAll(HttpHeaders.CONTENT_TYPE,contentType);
-        headers.addAll(HttpHeaders.ACCEPT, accepts);
+        headers.addAll(HttpHeaders.ACCEPT, "*");
         MultiValueMap<String,String> toHeaders =new LinkedMultiValueMap<String,String>();
         for(String key:headers.keySet()) {
             toHeaders.put(key,headers.get(key));
         }
-        logger.info("MvcResourceFactory invoke....ContentType={},Accept={}",contentType,accepts);
 
         Object result = null;
         try {
@@ -278,13 +272,13 @@ public class SpringMvcResourceFactory  implements InvocationHandler {
                 isParamType=true;
                 Type entType = ((ParameterizedType)returnType).getActualTypeArguments()[0];
             }
-            logger.info("MvcResourceFactory invoke resttemplate begin ,realUrl={}",realUrl);
+            logger.info("SpringMvcResourceFactory invoke restTemplate begin ,realUrl={}",realUrl);
             result= RestTemplateUtil.request(restTemplate,realUrl,httpMethod,
-                    pathParams,queryParams,entity,toHeaders,returnClass,isParamType,returnType);
+                    pathParams,queryParams,bodyEntity,toHeaders,returnClass,isParamType,returnType);
 
         }
         catch(Exception e){
-            logger.error("MvcResourceFactory invoke restTemplate req error,realUri={}",realUrl,e);
+            logger.error("SpringMvcResourceFactory invoke restTemplate req error,realUri={}",realUrl,e);
             throw e;
         }
         return result;
@@ -299,11 +293,18 @@ public class SpringMvcResourceFactory  implements InvocationHandler {
         return false;
     }
 
-    private static String addPathFromAnnotation(final AnnotatedElement ae, String url) {
+    private static String addPathFromClassAnnotation(final AnnotatedElement ae, String url) {
         String realUrl=new String(url);
-        final Path p = ae.getAnnotation(Path.class);
+        final RequestMapping p = ae.getAnnotation(RequestMapping.class);
         if (p != null) {
-            String nextPath = p.value();
+            String nextPaths [] = p.value();
+            if(nextPaths==null || nextPaths.length<=0) {
+                nextPaths = p.path();
+            }
+            if(nextPaths==null || nextPaths.length<=0) {
+                return realUrl;
+            }
+            String nextPath= nextPaths[0];
             if(!nextPath.startsWith("/")) {
                 nextPath="/"+nextPath;
             }
@@ -312,6 +313,56 @@ public class SpringMvcResourceFactory  implements InvocationHandler {
             }
             realUrl+=nextPath;
         }
+        return realUrl;
+    }
+
+    private static String addPathFromMethodAnnotation(final AnnotatedElement ae, String url) {
+        String realUrl=new String(url);
+        Annotation [] ans= ae.getDeclaredAnnotations();
+        if(ans==null || ans.length<=0) {
+           return realUrl;
+        }
+        String nextPath=null;
+        for(Annotation an:ans) {
+            Class anType = an.annotationType();
+            if(!METHOD_ANNOTATION_CLASSES.contains(anType)) {
+                continue;
+            }
+            if(anType== RequestMapping.class) {
+                RequestMapping p = (RequestMapping)an;
+                nextPath=getAnPath(p);
+            }
+            if(anType== GetMapping.class) {
+                GetMapping p = (GetMapping)an;
+                nextPath=getAnPath(p);
+            }
+            if(anType== PostMapping.class) {
+                PostMapping p = (PostMapping)an;
+                nextPath=getAnPath(p);
+            }
+            if(anType== PutMapping.class) {
+                PutMapping p = (PutMapping)an;
+                nextPath=getAnPath(p);
+            }
+            if(anType== DeleteMapping.class) {
+                DeleteMapping p = (DeleteMapping)an;
+                nextPath=getAnPath(p);
+            }
+            if(anType== PatchMapping.class) {
+                PatchMapping p = (PatchMapping)an;
+                nextPath=getAnPath(p);
+            }
+        }
+        if(StringUtils.isBlank(nextPath)) {
+            return realUrl;
+        }
+        if(!nextPath.startsWith("/")) {
+            nextPath="/"+nextPath;
+        }
+        if(realUrl.endsWith("/")) {
+            realUrl= realUrl.substring(0,realUrl.length()-1);
+        }
+        realUrl+=nextPath;
         return realUrl;
     }
 
@@ -333,5 +384,141 @@ public class SpringMvcResourceFactory  implements InvocationHandler {
             return null;
         }
         return requestMethodMap.get(requestMethod);
+    }
+
+    private static String getAnPath(RequestMapping rqsMapping) {
+        String pathValue=null;
+        String nextPaths [] = rqsMapping.value();
+        if(nextPaths==null || nextPaths.length<=0) {
+            nextPaths = rqsMapping.path();
+        }
+        if(nextPaths==null && nextPaths.length<=0) {
+            return  null;
+        }
+        pathValue =nextPaths[0];
+        return pathValue;
+    }
+
+    private static String getAnPath(GetMapping getMapping) {
+        String pathValue=null;
+        String nextPaths [] = getMapping.value();
+        if(nextPaths==null || nextPaths.length<=0) {
+            nextPaths = getMapping.path();
+        }
+        if(nextPaths==null && nextPaths.length<=0) {
+            return  null;
+        }
+        pathValue =nextPaths[0];
+        return pathValue;
+    }
+
+    private static String getAnPath(PostMapping postMapping) {
+        String pathValue=null;
+        String nextPaths [] = postMapping.value();
+        if(nextPaths==null || nextPaths.length<=0) {
+            nextPaths = postMapping.path();
+        }
+        if(nextPaths==null && nextPaths.length<=0) {
+            return  null;
+        }
+        pathValue =nextPaths[0];
+        return pathValue;
+    }
+
+    private static String getAnPath(PutMapping putMapping) {
+        String pathValue=null;
+        String nextPaths [] = putMapping.value();
+        if(nextPaths==null || nextPaths.length<=0) {
+            nextPaths = putMapping.path();
+        }
+        if(nextPaths==null && nextPaths.length<=0) {
+            return  null;
+        }
+        pathValue =nextPaths[0];
+        return pathValue;
+    }
+
+    private static String getAnPath(DeleteMapping delMapping) {
+        String pathValue=null;
+        String nextPaths [] = delMapping.value();
+        if(nextPaths==null || nextPaths.length<=0) {
+            nextPaths = delMapping.path();
+        }
+        if(nextPaths==null && nextPaths.length<=0) {
+            return  null;
+        }
+        pathValue =nextPaths[0];
+        return pathValue;
+    }
+
+    private static String getAnPath(PatchMapping patchMapping) {
+        String pathValue=null;
+        String nextPaths [] = patchMapping.value();
+        if(nextPaths==null || nextPaths.length<=0) {
+            nextPaths = patchMapping.path();
+        }
+        if(nextPaths==null && nextPaths.length<=0) {
+            return  null;
+        }
+        pathValue =nextPaths[0];
+        return pathValue;
+    }
+
+    private static String getPathValue(PathVariable pathVariable) {
+        String pathValue=pathVariable.value();
+        if(pathValue==null) {
+            pathValue = pathVariable.name();
+        }
+        if(pathValue==null) {
+            return "";
+        }
+        return pathValue;
+    }
+
+    public static <T> Map<String,Object> obj2Map(T obj) {
+        Map<String,Object> map = new HashMap<String,Object>();
+        try {
+            Class clazz = obj.getClass();
+            while(clazz!=null && clazz!=Object.class)
+            {
+                Field[] fields = clazz.getDeclaredFields();
+                for(Field field :fields)
+                {
+                    String fieldName = field.getName();
+                    Object fieldValue = BeanUtils.getProperty(obj, fieldName);
+                    map.put(fieldName,fieldValue);
+                }
+                clazz = clazz.getSuperclass();
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        return map;
+    }
+
+    public List<String> getUrlPathNames(String url) {
+        List<String> list =null;
+        Pattern p = Pattern.compile(PATH_URL_PATTERN);
+        Matcher mt=p.matcher(url);
+        while(mt.find()) {
+            String pathName =mt.group(1);
+            if(list==null) {
+                list= new ArrayList<String>();
+            }
+            list.add(pathName);
+        }
+        return list;
+    }
+
+    public String map2Str(Map<String,Object> map) {
+        StringBuffer buffer= new StringBuffer("");
+        if(map==null ||map.size()<=0) {
+            return buffer.toString();
+        }
+        for(Map.Entry<String,Object> entry:map.entrySet()) {
+            buffer.append(entry.getKey()).append("=").append(entry.getValue()).append(",");
+        }
+        String rt =buffer.toString();
+        return  rt;
     }
 }
