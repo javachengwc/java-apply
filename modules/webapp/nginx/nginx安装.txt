@@ -13,7 +13,7 @@ nginx的前置依赖
     cd pcre-8.39
     ./configure
     make
-    make instal
+    make install
     (中间有报错信息的话，可以./configure, make ,make check, make install, make clean依次执行看输出)
     如果报错/usr/local/src/pcre-8.39/missing: line 81: aclocal-1.15: command not found
     需在此目录执行autoreconf -ivf，再./configure ...
@@ -55,7 +55,7 @@ nginx的前置依赖
     --group=nginx
     --with-http_ssl_module
     --with-pcre=/usr/local/src/pcre-8.38
-    --with-zlib=/usr/local/src/zlib-1.2.8
+    --with-zlib=/usr/local/src/zlib-1.2.11
     --with-openssl=/usr/local/src/openssl-1.0.1c
 
     make
@@ -63,7 +63,7 @@ nginx的前置依赖
 
     说明:
     --with-pcre=/usr/src/pcre-8.38 指的是pcre-8.38的源码路径。
-    --with-zlib=/usr/src/zlib-1.2.8 指的是zlib-1.2.8的源码路径,
+    --with-zlib=/usr/src/zlib-1.2.11 指的是zlib-1.2.11的源码路径,
     如果在前面都make install了pcre,zlib,openssl,在安装nginx执行./configure的时候可以不带--with-pcre,--with-zlib,--with-openssl这些选项的
 -------------------------------------
 nginx编译选项

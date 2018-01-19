@@ -1,0 +1,148 @@
+---------------------------------linux系统日志--------------------------------
+日志服务
+rsyslogd-----普通日志管理服务,采集各种服务产生的信息根据日志服务配置文件内容将信息进行分类保存。
+             配置文件:/etc/rsyslog.conf
+             服务启动:systemctl start rsyslog.service 或 systemctl restart rsyslog.server
+klogd   -----内核信息日志文件服务,专门记录内核信息
+logrotate ---日志文件轮替服务,解决日志文件内容过多消耗内存的日志文件替换服务
+systemd-journald---统一日志管理服务，红帽7.0后新一代的系统中使用systemd管理服务。
+             Journald日志服务，捕获记录管理系统日志信息，内核日志信息以及来自原始RAM磁盘的信息，
+             早期启动信息以及所有服务写入标准输出流，标准错误流的信息。
+             它是一个不同于rsyslog服务的一个新的日志服务，有日志分析，以及日志清空，节约空间的优势，
+             但是不能代替传统的集中日志服务，如rsyslog服务。它不存在日志同步共享性也不能保存关机前的日志信息。
+             配置文件:/etc/systemd/journal.conf
+             日志文件：/run/log/journal中,是二进制文件。
+日志目录文件分类
+/var/log/kern         ##系统内核消息
+/var/log/daemon       ##某些守护进程产生的日志
+/var/log/ntp          ##网络时间协议(ntp)产生的消息
+/var/log/user         ##记录所有等级用户信息的日志。
+/var/log/lastlog      ##记录所有用户的最近信息,用lastlog命令查看内容。
+/var/log/btmp         ##记录Linux登陆失败的用户、时间以及远程IP地址
+/var/log/syslog       ##普通日志,只记录警告信息，常常是系统出问题的信息，使用lastlog查看,
+/var/log/messages     ##普通日志,记录Linux操作系统常见的系统和服务错误信息
+/var/log/cron         ##crontab 任务调度日志
+/var/log/maillog      ##邮件日志
+/var/log/secure       ##用户认证时产生的日志，如login命令、su命令,RedHat 和 CentOS 使用
+/var/log/auth         ##用户认证时产生的日志，如login命令、su命令,Ubuntu 和 Debian 使用
+/var/log/faillog      ##包含用户登录失败信息。此外，错误登录命令也会记录在本文件中。
+/var/log/wtmp         ##记录每个用户登录、注销及系统的启动、停机的事件，使用last命令查看
+/var/run/utmp         ##记录有关当前登录的每个用户的信息。如 who、w、users、finger等就需要访问这个文件
+/var/log/yum.log      ##yum使用日志
+/var/log/journal      ##统一日志管理器journald管理记录的日志
+/var/log/dmesg        ##在系统启动时，会在屏幕上显示许多与硬件有关的信息。可以用dmesg查看它们
+/var/log/boot.log     ##包含系统启动时的日志
+/var/log/dpkg.log     ##包括安装或dpkg命令清除软件包的日志
+/var/log/kern.log     ##包含内核产生的日志，有助于在定制内核时解决问题
+/var/log/anaconda.log ##在安装Linux时，所有安装信息都储存在这个文件中。
+
+vim /etc/systemd/journald.conf
+如下配置可用于限定journal体积的膨胀速度：
+SystemMaxUse=: 指定journal所能使用的最高持久存储容量。
+SystemKeepFree=: 指定journal在添加新条目时需要保留的剩余空间。
+SystemMaxFileSize=: 控制单一journal文件大小，符合要求方可被转为持久存储。
+RuntimeMaxUse=: 指定易失性存储中的最大可用磁盘容量（/run文件系统之内）。
+RuntimeKeepFree=: 指定向易失性存储内写入数据时为其它应用保留的空间量（/run文件系统之内）。
+RuntimeMaxFileSize=: 指定单一journal文件可占用的最大易失性存储容量（/run文件系统之内）。
+
+日志信息等级：
+0 debug               ##调试程序产生的信息
+1 info                ##基本信息说明
+2 notice              ##需要注意的内容
+3 warning             ##警示信息
+4 err                 ##一般错误消息
+5 crit                ##严重错误，危险情况，例如硬盘错误，可能会阻碍程序的部分功能
+6 alert               ##警告，需要立即修复，例如系统数据库损坏
+7 emerg(panic)        ##严重错误警告,紧急情况，系统不可用（例如系统崩溃）
+
+日志查看管理相关命令
+journalctl              ##查看日志
+journalctl -n 5         ##查看最近5条日志
+journalctl -p err       ##查看系统报错
+journalctl --since 时间("2018-01-01 13:00;00") --until ("2018-01-22 13:30:00")
+                        ##查看某个时间段的日志
+journalctl -o verbose   ##查看日志能够使用的条件参数详细信息
+journalctl _PID=        ##查看某进程日志
+journalctl _SYSTEMD_UNIT=    ##查看某服务的日志
+journalctl -k -b -1     ##显示上一次启动所产生的所有内核日志
+journalctl -f -u apache ##持续显示 apache.service 服务不断生成的日志
+journalctl --disk-usage ##用于显示所有日志文件(归档文件与活动文件)的磁盘占用总量。
+journalctl -f           ##像tailf命令，默认显示十行。随着匹配日志的增长而持续输出。
+journalctl -p err..alert ##显示错误、冲突和重要告警信息
+
+journalctl命令选项
+--no-full, --full, -l    如果字段内容超长则以省略号(…)截断以适应列宽。 默认显示完整的字段内容。
+-a, --all                完整显示所有字段内容， 即使其中包含不可打印字符或者字段内容超长。
+-f, --follow             只显示最新的日志项，并且不断显示新生成的日志项。
+-e, --pager-end          在分页工具内立即跳转到日志的尾部。
+-n, --lines=             限制显示最新的日志行数。
+--no-tail                显示所有日志行， 也就是用于撤销已有的 --lines= 选项(即使与 -f 连用)。
+-r, --reverse            反转日志行的输出顺序， 也就是最先显示最新的日志。
+-o, --output=            控制日志的输出格式。 可以使用如下选项：
+                         short--默认值， 其输出格式与传统的 syslog 文件的格式相似， 每条日志一行。
+                         short-iso--与 short 类似，只是将时间戳字段以 ISO 8601 格式显示。
+                         short-precise--与 short 类似，只是将时间戳字段的秒数精确到微秒级别。
+                         short-monotonic--与 short 类似，只是将时间戳字段的零值从内核启动时开始计算。
+                         short-unix--与 short 类似，只是将时间戳字段显示为从"UNIX时间原点"(1970-1-1 00:00:00 UTC)以来的秒数。 精确到微秒级别。
+                         verbose--以结构化的格式显示每条日志的所有字段。
+                         export--将日志序列化为二进制字节流(大部分依然是文本) 以适用于备份与网络传输(详见 Journal Export Format 文档)。
+                         json--将日志项按照JSON数据结构格式化。
+                         json-pretty--将日志项按照JSON数据结构格式化， 但是每个字段一行， 以便于人类阅读。
+                         json-sse--将日志项按照JSON数据结构格式化，每条日志一行，但是用大括号包围， 以适应 Server-Sent Events 的要求。
+                         cat--仅显示日志的实际内容， 而不显示与此日志相关的任何元数据(包括时间戳)。
+--utc                    以世界统一时间(UTC)表示时间
+--no-hostname            不显示来源于本机的日志消息的主机名字段。 此选项仅对 short 系列输出格式(见上文)有效。
+-x, --catalog            在日志的输出中增加一些解释性的短文本， 以帮助进一步说明日志的含义。
+-q, --quiet              当以普通用户身份运行时， 不显示任何警告信息与提示信息。
+-m, --merge              混合显示包括远程日志在内的所有可见日志。
+-b [ID][±offset], --boot=[ID][±offset]
+                         显示特定于某次启动的日志
+--list-boots             列出每次启动的 序号(也就是相对于本次启动的偏移量)、32字符的ID、 第一条日志的时间戳、最后一条日志的时间戳。
+-k, --dmesg              显示内核日志。
+-t, --identifier=SYSLOG_IDENTIFIER               仅显示 syslog 识别符为 SYSLOG_IDENTIFIER 的日志项。
+-u, --unit=UNIT|PATTERN  显示属于特定单元的日志。
+--user-unit=             显示属于特定用户会话单元的日志。
+-p, --priority=          根据日志等级(包括等级范围)过滤输出结果。 日志等级数字与其名称之间的对应关系：
+                         "emerg" (0), "alert" (1), "crit" (2), "err" (3), "warning" (4), "notice" (5), "info" (6), "debug" (7) 。
+-c, --cursor=            从指定的游标(cursor)开始显示日志。
+--after-cursor=          从指定的游标(cursor)之后开始显示日志。
+--show-cursor            在最后一条日志之后显示游标。
+-S, --since=, -U, --until=
+                         显示晚于指定时间(--since=)的日志、显示早于指定时间(--until=)的日志。
+-F, --field=             显示所有日志中某个字段的所有可能值。 类似于SQL语句："SELECT DISTINCT 某字段 FROM 全部日志"
+-N, --fields             输出所有日志字段的名称
+--system, --user         仅显示系统服务与内核的日志(--system)、 仅显示当前用户的日志(--user)。
+-M, --machine=           显示来自于正在运行的、特定名称的本地容器的日志。 参数必须是一个本地容器的名称。
+-D DIR, --directory=DIR  显示来自于特定目录中的日志
+--file=GLOB              GLOB 是一个可以包含"?"与"*"的文件路径匹配模式。显示来自与指定的 GLOB 模式匹配的文件中的日志。
+--new-id128              用于重新生成一个标识日志分类的 128-bit ID 。
+--header                 用于显示日志文件内部的头信息(类似于元数据)。
+--disk-usage             用于显示所有日志文件(归档文件与活动文件)的磁盘占用总量。
+--vacuum-size=, --vacuum-time=, --vacuum-files=
+                         用于清理日志归档文件(并不清理活动的日志文件)， 以释放磁盘空间。
+--vacuum-size=           用于限制归档文件的最大磁盘使用量 (可以使用 "K", "M", "G", "T" 后缀)；
+--vacuum-time=           用于清除指定时间之前的归档 (可以使用 "s", "m", "h", "days", "weeks", "months", "years" 后缀)；
+--vacuum-files=          可用于限制日志归档文件的最大数量。
+--list-catalog [128-bit-ID...]
+                         简要列出日志分类信息， 其中包括对分类信息的简要描述。
+                         如果明确指定了分类ID(128-bit-ID)， 那么仅显示指定的分类。
+--dump-catalog [128-bit-ID...]
+                          详细列出日志分类信息 (格式与 .catalog 文件相同)。
+                          如果明确指定了分类ID(128-bit-ID)， 那么仅显示指定的分类。
+--update-catalog          更新日志分类索引二进制文件。 每当安装、删除、更新了分类文件，都需要执行一次此动作。
+--setup-keys              用于生成一个新的FSS(Forward Secure Sealing)密钥对。 此密钥对包含一个"sealing key"与一个"verification key"。
+                          "sealing key"保存在本地日志目录中， 而"verification key"则必须保存在其他地方。
+--force                   与 --setup-keys 连用， 表示即使已经配置了FSS(Forward Secure Sealing)密钥对， 也要强制重新生成。
+--interval=               与 --setup-keys 连用，指定"sealing key"的变化间隔。
+                          较短的时间间隔会导致占用更多的CPU资源， 但是能够减少未检测的日志变化时间。 默认值是 15min
+--verify                  检查日志文件的内在一致性。 如果日志文件在生成时开启了FSS特性，
+                          并且使用 --verify-key= 指定了FSS的"verification key"， 那么，同时还将验证日志文件的真实性。
+--verify-key=             与 --verify 选项连用， 指定FSS的"verification key"
+--sync                    将所有未写入磁盘的日志数据刷写到磁盘上， 并且一直阻塞到刷写操作实际完成之后才返回。
+                          因此该命令可以保证当它返回的时候， 所有在调用此命令的时间点之前的日志， 已经全部安全的刷写到了磁盘中。
+--flush                   将 /run/log/journal 中的日志数据 刷写到 /var/log/journal 中 (如果持久存储设备当前可用的话)。
+                          此操作会一直阻塞到操作完成之后才会返回， 因此可以确保在该命令返回时， 数据转移确实已经完成。
+--rotate                  滚动日志文件。 此命令会一直阻塞到滚动完成之后才会返回。
+--no-pager                不将程序的输出内容管道(pipe)给分页程序。
+
+------------------------------------------------------------------------------

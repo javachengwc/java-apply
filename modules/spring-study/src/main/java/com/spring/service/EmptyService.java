@@ -1,6 +1,8 @@
 package com.spring.service;
 
-public interface EmptyService {
+public class EmptyService {
 
-    public Integer dodo(String aa) ;
+    public Integer dodo(String aa) {
+        return null;
+    }
 }
