@@ -44,7 +44,7 @@ public class OrderServiceImpl implements OrderService {
         //获取用户信息
         Long userId=orderInfo.getUserId();
         try{
-            logger.info("OrderServiceImpl getOrderInfo invoke getUserInfo begin,userId ={}",userId);
+            logger.info("OrderServiceImpl getOrderInfo invoke getUserInfo2 begin,userId ={}",userId);
             Rep<UserInfo> rep= userService.getUserInfo2(userId);
             logger.info("OrderServiceImpl rep={}",rep);
             if(rep!=null && rep.getData()!=null) {
@@ -52,7 +52,7 @@ public class OrderServiceImpl implements OrderService {
                 orderInfo.setUserName(rep.getData().getName());
             }
         }catch(Exception e) {
-            logger.error("OrderServiceImpl getOrderInfo invoke getUserInfo error,userId={},",userId,e);
+            logger.error("OrderServiceImpl getOrderInfo invoke getUserInfo2 error,userId={},",userId,e);
         }
 
         //删除时间
@@ -102,15 +102,16 @@ public class OrderServiceImpl implements OrderService {
         //获取用户信息
         Long userId=orderInfo.getUserId();
         try{
-            logger.info("OrderServiceImpl getOrderInfo2 invoke getUserInfo begin,userId ={}",userId);
-            UserInfo userInfo= userService.getUserInfo(userId);
+            logger.info("OrderServiceImpl getOrderInfo2 invoke queryUserInfo3 begin,userId ={}",userId);
+            Rep<UserInfo> rep= userService.queryUserInfo3(userId);
+            UserInfo userInfo =rep==null?null:rep.getData();
             logger.info("OrderServiceImpl userInfo={}",userInfo);
             if(userInfo!=null ) {
                 orderInfo.setUserMobile(userInfo.getMobile());
                 orderInfo.setUserName(userInfo.getName());
             }
         }catch(Exception e) {
-            logger.error("OrderServiceImpl getOrderInfo2 invoke getUserInfo error,userId={},",userId,e);
+            logger.error("OrderServiceImpl getOrderInfo2 invoke queryUserInfo3 error,userId={},",userId,e);
         }
 
         //删除时间

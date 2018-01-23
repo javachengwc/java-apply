@@ -1,6 +1,5 @@
 package com.component.rest.springmvc;
 
-import com.component.rest.springmvc.filter.BalanceClientFilter;
 import com.component.rest.springmvc.util.RestUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -26,9 +25,6 @@ public class ResourceFactory implements ApplicationListener<ContextRefreshedEven
     @Autowired(required = false)
     protected ResourceLocator resourceLocator;
 
-    @Autowired(required = false)
-    protected BalanceClientFilter balanceClientFilter;
-
     public <T> T getSpringMvcResource(Class<T> resourceClass,RestTemplate restTemplate) {
         String appName = RestUtil.getApplicationName(resourceClass);
         if (StringUtils.isBlank(appName)) {
@@ -38,7 +34,7 @@ public class ResourceFactory implements ApplicationListener<ContextRefreshedEven
         logger.info("ResourceFactory getSpringMvcResource resourceClassName={},appName={}", resourceClassName, appName);
 
         String url = null;
-        if (balanceClientFilter != null) {
+        if (resourceLocator == null) {
             url = "http://" + appName;
         } else {
             url = resourceLocator.locate(appName);
@@ -58,7 +54,7 @@ public class ResourceFactory implements ApplicationListener<ContextRefreshedEven
         logger.info("ResourceFactory getRestResource resourceClassName={},appName={}", resourceClassName, appName);
 
         String url = null;
-        if (balanceClientFilter != null) {
+        if (resourceLocator== null) {
             url = "http://" + appName;
         } else {
             url = resourceLocator.locate(appName);
