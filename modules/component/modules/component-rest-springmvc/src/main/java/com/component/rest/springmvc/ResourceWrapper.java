@@ -3,7 +3,6 @@ package com.component.rest.springmvc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.WebApplicationException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -28,9 +27,7 @@ public class ResourceWrapper implements InvocationHandler {
         } catch (InvocationTargetException e) {
             Throwable throwable = e.getTargetException();
             String methodName= method.getName();
-            boolean isWebApplicationException=(throwable instanceof WebApplicationException);
-            logger.error("ResourceWrapper invoke error.method={},isWebApplicationException={}",
-                    methodName,isWebApplicationException,throwable);
+            logger.error("ResourceWrapper invoke error.method={}", methodName,throwable);
             throw throwable;
         }
     }

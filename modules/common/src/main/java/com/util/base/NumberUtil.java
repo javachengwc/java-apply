@@ -171,7 +171,7 @@ public final class NumberUtil {
 
     /**
      * DecimalFormat实现千位符
-     * 比如:parseMoney(-8850002210.03,"###,###.##")
+     * 比如:parseMoney(-8850002210.03,"###,###.##"),###,###.00
      */
     public static  String parseMoney(Number amount,String pattern){
         DecimalFormat df=new DecimalFormat(pattern);
@@ -180,6 +180,9 @@ public final class NumberUtil {
 
     public static void main(String args[])
     {
+        String aa = getDivide100(2500010);
+        Double dd = Double.parseDouble(aa);
+        System.out.println(parseMoney(dd,"###,###.00"));
 
         System.out.println(getDivide100(25));
         System.out.println(getDivide(25,3,2));
