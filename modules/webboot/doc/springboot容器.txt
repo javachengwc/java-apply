@@ -1,0 +1,105 @@
+---------------------------spring boot容器------------------------------
+spring boot默认集成的web容器是tomcat,可通过如下方式配置端口与最大线程数
+server.port=8081
+server.tomcat.max-threads=1000
+# tomcat的URI编码
+server.tomcat.uri-encoding=UTF-8
+# 存放Tomcat的日志、Dump等文件的临时文件夹，默认为系统的tmp文件夹
+server.tomcat.basedir=H:/springboot-tomcat-tmp
+# 打开Tomcat的Access日志，并可以设置日志格式的方法：
+#server.tomcat.access-log-enabled=true
+#server.tomcat.access-log-pattern=
+# accesslog目录，默认在basedir/logs
+#server.tomcat.accesslog.directory=logs
+# 日志文件目录
+logging.path=E:/springboot-tomcat-log
+# 日志文件名称，默认为spring.log
+logging.file=info.log
+
+spring boot对容器的初始化,大致有如下两种方式:
+1,@Component()
+  public class MyContainerFactory extends TomcatEmbeddedServletContainerFactory
+  {
+      public EmbeddedServletContainer getEmbeddedServletContainer(ServletContextInitializer... initializers)
+      {
+          this.setPort(8080);
+          return super.getEmbeddedServletContainer(initializers);
+      }
+      protected void customizeConnector(Connector connector)
+      {
+          super.customizeConnector(connector);
+          Http11NioProtocol protocol = (Http11NioProtocol)connector.getProtocolHandler();
+          //设置最大连接数
+          protocol.setMaxConnections(1000);
+          //设置最大线程数
+          protocol.setMaxThreads(500);
+          protocol.setConnectionTimeout(30000);
+      }
+  }
+2,@Configuration
+  public class WebServerConfiguration
+  {
+      @Bean
+      public EmbeddedServletContainerFactory createEmbeddedServletContainerFactory()
+      {
+          TomcatEmbeddedServletContainerFactory tomcatFactory = new TomcatEmbeddedServletContainerFactory();
+          tomcatFactory.setPort(8080);
+          tomcatFactory.addConnectorCustomizers(new MyConnectorCustomizer());
+          return tomcatFactory;
+      }
+  }
+  class MyConnectorCustomizer implements TomcatConnectorCustomizer
+  {
+      public void customize(Connector connector)
+      {
+          Http11NioProtocol protocol = (Http11NioProtocol) connector.getProtocolHandler();
+          //设置最大连接数
+          protocol.setMaxConnections(1000);
+          //设置最大线程数
+          protocol.setMaxThreads(500);
+          protocol.setConnectionTimeout(30000);
+      }
+  }
+--------------------------------------------------------------------
+如果用jetty，把pom中的tomcat依赖排除，加入jetty容器的依赖即可，如下:
+<dependencies>
+  <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+    <exclusions>
+      <exclusion>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-tomcat</artifactId>
+      </exclusion>
+    </exclusions>
+  </dependency>
+  <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-jetty</artifactId>
+  </dependency>
+<dependencies>
+----------------------------------------------------------
+如果需要把spring boot部署到独立的web容器中，需要
+1,修改启动类SpringBootServletInitializer,并重写configure方法
+public class SpringBootWebApplication extends SpringBootServletInitializer{
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+        return builder.sources(this.getClass());
+    }
+}
+2,修改pom文件打包方式为war,并排除自身容器依赖
+<!-- <packaging>jar</packaging> -->
+<packaging>war</packaging>
+
+<dependency>
+   <groupId>org.springframework.boot</groupId>
+   <artifactId>spring-boot-starter-web</artifactId>
+   <exclusions>
+       <exclusion>
+           <groupId>org.springframework.boot</groupId>
+           <artifactId>spring-boot-starter-tomcat</artifactId>
+       </exclusion>
+   </exclusions>
+</dependency>
+----------------------------------------------------------
+------------------------------------------------------------------------

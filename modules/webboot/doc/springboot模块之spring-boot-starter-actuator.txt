@@ -34,6 +34,12 @@ spring-boot-starter-actuator默认端点Endpoint也就是接口如下:
   /env                           获取应用所有可用的环境属性(可看到配置文件中的配置信息)
   /mappings                      获取应用所有Spring MVC的控制器映射关系
   /info                          获取应用自定义的信息
+                                 默认情况下，该端点只会返回一个空的json内容。
+                                 在application.properties配置文件中通过info前缀来设置一些属性，比如：
+                                 info.app.name=spring-boot-hello
+                                 info.app.version=v1.0.0
+                                 通过此接口访问能返回对应的json数据
+
 度量指标类
   /metrics                      返回应用的各类重要度量指标信息
   /health                       返回应用的各类健康指标信息

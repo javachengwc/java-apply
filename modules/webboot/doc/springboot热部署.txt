@@ -1,0 +1,27 @@
+-----------------------------spring boot热部署----------------------------
+devtools是spring boot的一个热部署工具，当修改了classpath下的文件（包括类文件、属性文件、页面等）时，会重新启动应用
+（由于其采用的双类加载器机制，这个启动会非常快，如果发现这个启动比较慢，可以选择使用jrebel）
+双类加载器机制：boot使用了两个类加载器来实现重启（restart）机制：base类加载器（简称bc）+restart类加载器（简称rc）。
+bc：用于加载不会改变的jar,第三方依赖的jar
+rc：用于加载正在开发的jar,也就是项目中自己编写的类。
+当应用重启后，原先的rc被丢掉、重新new一个rc来加载这些修改过的东西，而bc却不需要动一下。这是devtools重启速度快的原因。
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-devtools</artifactId>
+    <optional>true</optional>
+    <!-- optional=true,依赖不会传递。该项目依赖devtools,依赖此项目的项目如果想要使用devtools，需要重新引入 -->
+</dependency>
+
+仅仅加入devtools在eclipse中还不起作用，还需要对之前添加的spring-boot-maven-plugin做一些修改，如下：
+<plugin>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-maven-plugin</artifactId>
+    <configuration>
+        <fork>true</fork>
+        <!-- 如果没有该项配置，devtools不会起作用，即应用不会restart -->
+    </configuration>
+</plugin>
+
+如果想非classpath下的文件发生变化时应用得以重启，使用：spring.devtools.restart.additional-paths，这样devtools就会将该目录列入了监听范围。
+-------------------------------------------------------------------------

@@ -1,44 +1,18 @@
 ---------------------------------------------------spring boot-------------------------------------------
-spring boot默认集成的web容器是tomcat,如果用jetty，把pom中的tomcat依赖排除，加入jetty容器的依赖即可，如下:
-<dependencies>
-  <dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-web</artifactId>
-    <exclusions>
-      <exclusion>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-tomcat</artifactId>
-      </exclusion>
-    </exclusions>
-  </dependency>
-  <dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-jetty</artifactId>
-  </dependency>
-<dependencies>
-----------------------------------------------------------
-如果需要把spring boot部署到独立的web容器中，需要
-1,修改启动类SpringBootServletInitializer,并重写configure方法
-public class SpringBootWebApplication extends SpringBootServletInitializer{
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-        return builder.sources(this.getClass());
+spring boot的打包，使用spring-boot-maven-plugin插件，
+直接运行maven生命周期的package就能产生一个整合依赖包的独立的jar包。
+
+spring boot启动后数据加载或初始化之--CommandLineRunner
+实际应用中，在项目服务启动的时候可能会去加载一些数据或做一些事情来初始化。
+为了解决这样的问题，Spring boot提供了一个方式来实现项目的初始化，通过实现接口 CommandLineRunner 来实现业务初始化。
+@Component
+@Order(value=2)
+public class StartupRunner2 implements CommandLineRunner {
+
+   @Override
+    public void run(String... args) throws Exception {
+        System.out.println("////////////////////执行数据加载开始////////////////////");
     }
 }
-2,修改pom文件打包方式为war,并排除自身容器依赖
-<!-- <packaging>jar</packaging> -->
-<packaging>war</packaging>
 
-<dependency>
-   <groupId>org.springframework.boot</groupId>
-   <artifactId>spring-boot-starter-web</artifactId>
-   <exclusions>
-       <exclusion>
-           <groupId>org.springframework.boot</groupId>
-           <artifactId>spring-boot-starter-tomcat</artifactId>
-       </exclusion>
-   </exclusions>
-</dependency>
-----------------------------------------------------------
-spring boot的打包，使用spring-boot-maven-plugin插件，直接运行maven生命周期的package就能产生一个整合依赖包的独立的jar包。
 ---------------------------------------------------------------------------------------------------------
