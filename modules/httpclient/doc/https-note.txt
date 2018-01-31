@@ -58,4 +58,38 @@ https协议原理
             3,对将用于保护会话的共享主密钥达成一致;
             4,验证握手消息是否被第三方团体修改;
     应用数据协议携带着应用消息，只以TLS的角度考虑的话，这些就是数据缓冲区。记录层使用当前连接安全参数对这些消息进行打包、碎片整理和加密。
+--------------------------------------------------
+自制https证书
+###证书颁发机构
+1,生成CA机构私钥
+    openssl genrsa -out ca.key 2048
+2,生成CA证书
+    openssl req -x509 -new -key ca.key -out ca.crt
+###服务端
+1,生成服务端私钥
+    openssl genrsa -out server.key 2048
+2,生成服务端证书请求文件
+    openssl req -new -key server.key -out server.csr
+3,使用CA证书生成服务端证书
+    openssl x509 -req -sha256 -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -days 3650 -out server.crt
+    注:关于sha256，默认使用的是sha1，在新版本的chrome中会被认为是不安全的，因为使用了过时的加密算法。
+4,打包服务端的资料为pkcs12格式(非必要，只是换一种格式存储上一步生成的证书)
+    openssl pkcs12 -export -in server.crt -inkey server.key -out server.pkcs12
+5,生成服务端的keystore（.jks文件, 非必要，Java程序通常使用该格式的证书）
+    keytool -importkeystore -srckeystore server.pkcs12 -destkeystore server.jks -srcstoretype pkcs12
+6,把ca证书放到keystore中（非必要）
+    keytool -importcert -keystore server.jks -file ca.crt
+###客户端
+1,导入根证书ca.crt到浏览器受信任的根证书颁发机构列表中
+###nginx配置https
+server {
+    listen      127.0.0.1:443 ssl;
+    ssl on;
+    ssl_certificate Server.crt;
+    ssl_certificate_key Server.key;
+    ...
+}
+注:crt、jks、pkcs12都是用来保存证书的不同格式，不同的服务器软件可能会使用不同格式的证书文件。
+OpenSSl、Keytool都是可以用来生成Https证书的工具软件，其中OpenSSl功能更多更复杂，Keytool随JDK安装而安装。
+证书的格式是多样的，生成证书的软件工具有很多，不同服务器程序的配置方法不尽相同，要达成目的有很多种方法。
 ----------------------------------------------------------------------------------

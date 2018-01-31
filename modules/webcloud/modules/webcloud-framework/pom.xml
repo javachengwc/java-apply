@@ -54,7 +54,7 @@
         </dependency>
 		<dependency>
             <groupId>com.app</groupId>
-            <artifactId>component-rest</artifactId>
+            <artifactId>component-rest-jersey</artifactId>
             <version>1.0-SNAPSHOT</version>
 		</dependency>
         <dependency>

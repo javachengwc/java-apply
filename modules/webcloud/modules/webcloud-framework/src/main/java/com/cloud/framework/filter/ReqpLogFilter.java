@@ -37,13 +37,11 @@ public class ReqpLogFilter  implements ContainerRequestFilter, ContainerResponse
     @Value("${spring.application.name}")
     private String appName;
 
-    @Override
     public void filter(ContainerRequestContext containerRequestContext) throws IOException {
         MDC.put("appName", appName);
         containerRequestContext.setProperty(REQUEST_START_TIME, System.currentTimeMillis());
     }
 
-    @Override
     public void filter(ContainerRequestContext containerRequestContext, ContainerResponseContext containerResponseContext) throws IOException {
         Object startTime = containerRequestContext.getProperty(REQUEST_START_TIME);
         long costTime = 0L;

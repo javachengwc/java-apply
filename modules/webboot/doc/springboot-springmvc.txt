@@ -1,0 +1,135 @@
+-------------------------------springboot-springmvc------------------------
+Spring Boot为Spring MVC提供适用于多数应用的自动配置功能。在Spring默认基础上，自动配置添加了以下特性：
+    引入ContentNegotiatingViewResolver和BeanNameViewResolver beans。
+    对静态资源的支持，包括对WebJars的支持。
+    自动注册Converter，GenericConverter，Formatter beans。
+    对HttpMessageConverters的支持。
+    自动注册MessageCodeResolver。
+    对静态index.html的支持。
+    对自定义Favicon的支持。
+    字段使用 ConfigurableWebBindingInitializer bean。
+
+如果想全面控制Spring MVC，可以添加自己的@Configuration，并使用@EnableWebMvc对其注解。
+如果想保留Spring Boot MVC的特性，并只是添加其他的MVC配置(拦截器，formatters，视图控制器等)，
+可以添加自己的WebMvcConfigurerAdapter类型的@Bean。
+
+Spring MVC使用HttpMessageConverter接口转换HTTP请求和响应。合理的缺省值被包含的恰到好处（out of the box），
+例如对象可以自动转换为JSON（使用Jackson库）或XML（如果Jackson XML扩展可用则使用它，否则使用JAXB）。
+字符串默认使用UTF-8编码。
+
+Spring MVC有一个策略，用于从绑定的errors产生用来渲染错误信息的错误码：MessageCodesResolver。
+如果设置spring.mvc.message-codes-resolver.format属性为PREFIX_ERROR_CODE或POSTFIX_ERROR_CODE
+（具体查看DefaultMessageCodesResolver.Format枚举值），Spring Boot会创建一个MessageCodesResolver。
+
+spring boot的静态内容，默认情况下，从classpath下/static（/public，/resources或/META-INF/resources）的文件夹
+或从ServletContext根目录提供静态内容。这使用了Spring MVC的ResourceHttpRequestHandler，所以可以通过添加自己的
+WebMvcConfigurerAdapter并覆写addResourceHandlers方法来改变这个行为（加载静态文件）。
+
+@Configuration
+public class ClientResourcesConfig extends WebMvcConfigurerAdapter {
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/**")
+                .addResourceLocations("/WEB-INF/resources/")
+                .setCachePeriod(0);
+    }
+}
+
+在一个单独的web应用中，容器默认的servlet是开启的，如果Spring决定不处理某些请求，
+默认的servlet作为一个回退（降级）将从ServletContext根目录加载内容。
+大多数时候，这不会发生（除非修改默认的MVC配置），因为Spring总能够通过DispatcherServlet处理请求。
+此外，上述标准的静态资源位置有个例外情况是Webjars内容。任何在/webjars/**路径下的资源都将从jar文件中提供，只要它们以Webjars的格式打包。
+注：如果应用将被打包成jar，那就不要使用src/main/webapp文件夹。尽管该文件夹是一个共同的标准，但它仅在打包成war的情况下起作用，
+并且如果产生一个jar，多数构建工具都会静悄悄的忽略它。
+刷新静态资源的缓存，可以定义一个使用HASH结尾的URL，例如：<link href="/css/spring-1231ehidfhih23sfhidfhs1hsi2.css"/>。
+为此，需要使用以下配置：
+spring.resources.chain.strategy.content.enabled=true
+spring.resources.chain.strategy.content.paths=/**
+这里使用了ResourceUrlEncodingFilter过滤器，对于Thymeleaf和Velocity，该过滤器已经自动配置。
+其他的模板引擎，可以通过ResourceUrlProvider来定义。当资源文件自动加载的时候，javascript模块加载器会重命名静态文件。
+
+Spring MVC使用WebBindingInitializer来为一个特定的请求初始化WebDataBinder。
+如果项目自定义了一个ConfigurableWebBindingInitializer @Bean，Spring Boot会自动配置Spring MVC来使用它。
+
+Spring Boot为FreeMarker，Groovy，Velocity，Thymeleaf，Mustache这些模板引擎提供自动配置支持,
+注：如果可能的话，应该忽略JSPs，因为在内嵌的servlet容器使用它们时存在一些已知的限制。
+当使用这些引擎的任何一种，并采用默认的配置，模板将会从src/main/resources/templates目录下自动加载。
+以下是springboot 整合freemarker的依赖以及说明
+spring-boot-starter-freemarker
+    spring-boot-starter
+    spring-boot-starter-web
+        spring-boot-starter
+             spring-core
+             spring-boot
+             spring-boot-autoconfigure
+        spring-web
+        spring-webmvc
+    freemarker
+    spring-context-support
+spring-boot-dependencies管理了所有spring boot系列的各包版本
+spring-boot-starter-parent的parent就是spring-boot-dependencies
+spring-boot-autoconfigure定义了很多自动配置的类，比如redis，elasticsearch、mongo、freemarker、velocity等等自动配置的类。
+以freemarker为例，看一下它的自动化配置类：
+@Configuration
+//需要freemarker.template.Configuration和FreeMarkerConfigurationFactory这两个类存在在classpath中才会进行自动配置
+@ConditionalOnClass({ freemarker.template.Configuration.class,FreeMarkerConfigurationFactory.class })
+@AutoConfigureAfter(WebMvcAutoConfiguration.class)
+@EnableConfigurationProperties(FreeMarkerProperties.class) // 使用FreeMarkerProperties类中的配置
+public class FreeMarkerAutoConfiguration { ...
+
+    @Configuration // 自动配置的类
+    @ConditionalOnClass(Servlet.class) // 需要运行在Servlet容器下
+    @ConditionalOnWebApplication // 需要在Web项目下
+    public static class FreeMarkerWebConfiguration extends FreeMarkerConfiguration {...}
+}
+
+//freemarker对应的配置类
+@ConfigurationProperties(prefix = "spring.freemarker") // 使用配置文件中以spring.freemarker开头的配置
+public class FreeMarkerProperties extends AbstractTemplateViewResolverProperties {
+    public static final String DEFAULT_TEMPLATE_LOADER_PATH = "classpath:/templates/"; // 默认路径
+    public static final String DEFAULT_PREFIX = ""; // 默认前缀
+    public static final String DEFAULT_SUFFIX = ".ftl"; // 默认后缀
+    ...
+}
+
+//freemarker在application.properties中的配置项
+spring.freemarker.allow-request-override=false
+spring.freemarker.allow-session-override=false
+spring.freemarker.cache=false
+spring.freemarker.charset=UTF-8
+spring.freemarker.check-template-location=true
+spring.freemarker.content-type=text/html
+spring.freemarker.enabled=true
+spring.freemarker.expose-request-attributes=false
+spring.freemarker.expose-session-attributes=false
+spring.freemarker.expose-spring-macro-helpers=true
+spring.freemarker.prefer-file-system-access=true
+spring.freemarker.prefix=
+spring.freemarker.request-context-attribute=
+spring.freemarker.settings.*=
+spring.freemarker.suffix=
+spring.freemarker.template-loader-path=classpath:/templates/
+spring.freemarker.view-names=
+
+Spring Boot默认提供一个/error映射用来以合适的方式处理所有的错误，并且它在servlet容器中注册了一个全局的错误页面。
+对于机器客户端（相对于浏览器而言，浏览器偏重于人的行为），它会产生一个具有详细错误，HTTP状态，异常信息的JSON响应。
+对于浏览器客户端，它会产生一个白色标签样式（whitelabel）的错误视图，该视图将以HTML格式显示同样的数据。
+为了完全替换默认的行为，可以实现ErrorController，并注册一个该类型的bean定义，
+或简单地添加一个ErrorAttributes类型的bean以使用现存的机制，只是替换显示的内容。
+
+springboot接口跨域的支持，可以在接口方法上使用@CrossOrigin注解，或者配置一个全局的设置
+@Configuration
+public class MyConfiguration {
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurerAdapter() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/api/**");
+            }
+        };
+    }
+}
+
+---------------------------------------------------------------------------

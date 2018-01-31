@@ -1,0 +1,21 @@
+---------------------------springboot日志----------------------
+spring boot默认采用的日志系统是Logback。
+
+spring boot集成log4j
+修改pom.xml如下:
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter</artifactId>
+    <exclusions>
+        <exclusion>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-logging</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-log4j</artifactId>
+</dependency>
+如果是集成log4j2,只需要将spring-boot-starter-log4j改为spring-boot-starter-log4j2即可
+---------------------------------------------------------------
