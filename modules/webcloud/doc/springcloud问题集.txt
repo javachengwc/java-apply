@@ -11,4 +11,13 @@ Ribbon的定时任务是获取EurekaClient中最新的的service list.  ribbon.S
 当一个服务调用另一个服务的时候, Ribbon会缓存请求和 service list.通过定时任务PollingServerListUpdater
 更新最新的service list,上面的等待时间一部分就是等待updateListOfServers 定时任务执行,它执行的时候,就会更新service list.
 
+2,eureka服务端不剔除已关停的节点
+某服务已关闭，但在注册中心，该服务却一直存在，且为UP状态，
+在大约十分钟后，出现一行红色大字：EMERGENCY! EUREKA MAY BE INCORRECTLY CLAIMING INSTANCES ...
+原因：自我保护机制。Eureka Server在运行期间，会统计心跳失败的比例在15分钟之内是否低于85%，
+如果出现低于的情况（在单机调试的时候很容易满足，实际在生产环境上通常是由于网络不稳定导致），
+Eureka Server会将当前的实例注册信息保护起来，同时提示这个警告。
+解决方法:关闭自我保护,
+eureka.server.enable-self-preservation=false
+eureka.server.eviction-interval-timer-in-ms=20000
 -------------------------------------------------------------------------------
