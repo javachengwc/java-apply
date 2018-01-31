@@ -1,0 +1,33 @@
+------------------------------------springboot自定义starter---------------------------------------
+自定义一个starter的maven项目，然后打包成springboot starter类型的jar包。
+首先pom.xml需要加入如下依赖:
+<parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starters</artifactId>
+    <version>X.X.X.RELEASE</version>
+</parent>
+<dependencies>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter</artifactId>
+    </dependency>
+</dependencies>
+
+然后在项目代码中定义一个配置类
+@ConfigurationProperties(prefix = "xxx")
+public class XxxProperties { ... }
+
+然后定义一个AutoConfiguration类
+@Configuration
+@EnableConfigurationProperties(XxxProperties.class)
+public class XxxAutoConfiguration { ... }
+
+最后在resources/META-INF/spring.factories中加入这个AutoConfiguration：
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+xxx.xxx.xxx.XxxAutoConfiguration
+
+在其他项目中依赖此starter包，并在配置文件中加入xxx.aaa之类的相关配置，就能使用此starter了。
+自定义springboot的starter,如果自动化配置类需要在程序启动的时候就加载，可以在META-INF/spring.factories文件中定义。
+如果本次加载还需要其他一些lib的话，可以使用ConditionalOnClass注解协助
+如果自动化配置类要在使用自定义注解后才加载，可以使用自定义注解+@Import注解或@ImportSelector注解完成。
+--------------------------------------------------------------------------------------------------
