@@ -171,7 +171,7 @@ public final class NumberUtil {
 
     /**
      * DecimalFormat实现千位符
-     * 比如:parseMoney(-8850002210.03,"###,###.##"),###,###.00
+     * 比如:parseMoney(-8850002210.03,"###,###.##"),###,###.00, ###,##0.00
      */
     public static  String parseMoney(Number amount,String pattern){
         DecimalFormat df=new DecimalFormat(pattern);
