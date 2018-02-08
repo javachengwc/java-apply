@@ -1,6 +1,7 @@
 package com.shop.order.service.impl;
 
 import com.shop.order.api.model.OrderInfo;
+import com.shop.order.api.model.OrderVo;
 import com.shop.order.dao.mapper.ShopOrderMapper;
 import com.shop.order.model.pojo.ShopOrder;
 import com.shop.order.service.OrderService;
@@ -26,6 +27,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private UserService userService;
+
+    public OrderInfo createOrder(OrderVo orderVo) {
+        Long userId = orderVo.getUserId();
+        logger.info("OrderServiceImpl createOrder start ,userId={}",userId);
+        return null;
+    }
 
     public ShopOrder getById(Long orderId) {
 

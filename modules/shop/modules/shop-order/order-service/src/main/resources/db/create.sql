@@ -92,3 +92,35 @@ create table order_pay
 
 --
 insert into shop_order values(1,'20171217001',1,1,1,'阿一','11111111111','',1,'全球杂货店','',0,0,null,'',10000,1000,0,0,'',0,null,null,null,null,0,0,null,null,null,null,null,110000,'四川',111100,'成都',111111,'无名区','无名小区','无名','12222222222',null,0,null,null,8,0,0,0,null,'','',now(),now(),1);
+
+create table order_operate_record (
+   id bigint not null auto_increment,
+   order_no varchar(32) comment '订单编号',
+   pre_statu int comment '之前状态',
+   cur_statu int comment '当前状态',
+   operate_action int comment '操作动作 1--创建订单 2--付款',
+   operate_desc varchar(128) comment '操作描述',
+   operator_id bigint comment '操作人id',
+   operator_name varchar(20) comment '操作人名',
+   note varchar(256) comment '备注',
+   create_time datetime comment '创建时间',
+   modified_time datetime comment '修改时间',
+   primary key(id),
+   key idx_order(order_no),
+   key idx_create_order(create_time,order_no)
+) engine=InnoDB default charset=utf8 comment '订单操作流水表';
+
+create table order_statu_change (
+   id bigint not null auto_increment,
+   order_no varchar(32) comment '订单编号',
+   pre_statu int comment '之前状态',
+   cur_statu int comment '当前状态',
+   operator_id bigint comment '操作人id',
+   operator_name varchar(20) comment '操作人名',
+   operate_desc varchar(128) comment '操作描述',
+   create_time datetime comment '创建时间',
+   modified_time datetime comment '修改时间',
+   primary key(id),
+   key idx_order(order_no),
+   key idx_create_order(create_time,order_no)
+) engine=InnoDB default charset=utf8 comment '订单状态变更表';
