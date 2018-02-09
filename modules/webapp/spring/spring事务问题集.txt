@@ -1,0 +1,41 @@
+-------------------------------spring事务问题集-------------------------------
+1,基于spring的项目中国，对象调用自己方法事务失效问题
+@Service
+public class ClassA implements IA{
+
+    @Transactional
+    public void methodA(){
+    }
+
+    //调用methodA() 的事务将会失效
+    public void methodB(){
+        this.methodA();
+    }
+}
+分析:只要脱离了Spring容器管理的所有对象 ,对于SpringAOP的注解都会失效,不仅仅是事务。
+因为它们不是Spring容器的代理类,SpringAOP,就切入不了。
+
+解决方法:
+1,在调用事务方法时,先获取对应的spring容器的代理类对象，通过代理类对象来调用事务方法。
+   a,   public void methodB(){
+    　　    ClassA a =SpringUtil.getBean(ClassA.class);
+            a.methodA();
+        }
+   或则
+   b,  @EnableAspectJAutoProxy(exposeProxy = true)
+       public class Application{
+           public static void main(String[] args) {
+               SpringApplication.run(Application.class, args);
+           }
+       }
+       public void methodB(){
+           //获取此对象Spring的代理类
+           ((ClassA)AopContext.currentProxy()).methodA();
+       }
+       ##SpringBoot注解开启cglib代理,开启exposeProxy = true,暴露代理对象
+       否则AopContext.currentProxy()) 会抛出异常java.lang.IllegalStateException:
+       Cannot find current proxy: Set 'exposeProxy' property on Advised to 'true' to make it available
+       如果用xml配置，则是<aop:aspectj-autoproxy expose-proxy="true"/>
+
+2,直接在当前类@Autowire 注入自己,然后用注入的bean调用方法
+------------------------------------------------------------------------------

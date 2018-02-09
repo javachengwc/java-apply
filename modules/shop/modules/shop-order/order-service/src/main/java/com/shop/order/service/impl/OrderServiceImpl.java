@@ -18,6 +18,7 @@ import com.util.date.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.AopContext;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -123,7 +124,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional
     public Boolean recordOrderCreate(ShopOrder shopOrder) {
-        boolean throwFlag=true;
+        boolean throwFlag=false;
         String orderNo = shopOrder.getOrderNo();
         logger.info("OrderServiceImpl recordOrderCreate start,orderNo={}",orderNo);
         Integer rt =addOrder(shopOrder);
@@ -299,5 +300,20 @@ public class OrderServiceImpl implements OrderService {
 
         return orderInfo;
 
+    }
+
+    //是否代理对象
+    public boolean isAopProxy() {
+        return AopUtils.isAopProxy(AopContext.currentProxy());
+    }
+
+    //是否cglib代理
+    public boolean isCglibProxy() {
+        return AopUtils.isCglibProxy(AopContext.currentProxy());
+    }
+
+    //是否jdk动态代理
+    public boolean isJdkProxy() {
+        return AopUtils.isJdkDynamicProxy(AopContext.currentProxy());
     }
 }
