@@ -45,6 +45,15 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private UserService userService;
 
+    private volatile OrderService txOrderService;
+
+    public OrderService gainTxOrderService() {
+        if(txOrderService==null) {
+            txOrderService= SpringContextUtils.getBean(OrderService.class);
+        }
+        return txOrderService;
+    }
+
     public OrderInfo createOrder(OrderVo orderVo) {
         Long userId = orderVo.getUserId();
         logger.info("OrderServiceImpl createOrder start ,userId={}",userId);
@@ -62,7 +71,8 @@ public class OrderServiceImpl implements OrderService {
         //((OrderService) AopContext.currentProxy()).recordOrderCreate(shopOrder);
         //必须这样,service类中的非事物方法调用同类中的事物方法,
         //必须通过获取spring容器管理的此类的代理对象来调用事物方法，事物才生效
-        OrderService orderService =SpringContextUtils.getBean(OrderService.class);
+        //OrderService orderService =SpringContextUtils.getBean(OrderService.class);
+        OrderService orderService=gainTxOrderService();
         orderService.recordOrderCreate(shopOrder);
 
         Long orderId = shopOrder.getId();
