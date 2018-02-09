@@ -1,19 +1,16 @@
 package com.shop.order.api.enums;
 
-public enum OrderStatuEnum {
+public enum PayStateEnum {
 
-    INIT(0,"初始"),
-    PENDING_PAY(1,"待支付"),
-    PENDING_DELIVER(2,"待发货"),
-    DELIVERED(3,"已发货"),
-    FINISH(5,"交易成功"),
-    CLOSE(7,"交易关闭");
+    INIT(0,"未支付"),
+    DONE(1,"已支付"),
+    FAIL(2,"支付失败");
 
     private Integer value;
 
     private String name;
 
-    OrderStatuEnum(Integer value,String name) {
+    PayStateEnum(Integer value,String name) {
         this.value=value;
         this.name=name;
     }

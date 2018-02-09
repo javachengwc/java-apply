@@ -2,6 +2,7 @@ package com.shop.user.controller;
 
 import com.shop.user.api.model.UserInfo;
 import com.shop.user.api.model.base.Rep;
+import com.shop.user.api.model.base.RepHeader;
 import com.shop.user.api.model.base.Req;
 import com.shop.user.api.rest.User2Resource;
 import com.shop.user.service.UserService;
@@ -33,12 +34,12 @@ public class User2Controller implements User2Resource {
 
         Rep<UserInfo> rep= new Rep<UserInfo>();
         if(userId==null) {
-            rep.getHeader().setRet("F");
+            rep.getHeader().setRt(RepHeader.FAIL);
             return rep;
         }
         UserInfo userInfo = userService.getUserInfo(userId);
         rep.setData(userInfo);
-        rep.getHeader().setRet("S");
+        rep.getHeader().setRt(RepHeader.SUCCESS);
         return rep;
     }
 
@@ -46,17 +47,17 @@ public class User2Controller implements User2Resource {
         logger.info("User2Controller queryByCdn start,req={}",req);
         Rep<UserInfo> rep = new Rep<UserInfo>();
         if(req==null || req.getData()==null) {
-            rep.getHeader().setRet("F");
+            rep.getHeader().setRt(RepHeader.FAIL);
             return rep;
         }
         Long userId = req.getData().getId();
         if(userId==null) {
-            rep.getHeader().setRet("F");
+            rep.getHeader().setRt(RepHeader.FAIL);
             return rep;
         }
         UserInfo userInfo = userService.getUserInfo(userId);
         rep.setData(userInfo);
-        rep.getHeader().setRet("S");
+        rep.getHeader().setRt(RepHeader.SUCCESS);
         return rep;
     }
 }

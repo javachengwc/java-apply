@@ -2,6 +2,7 @@ package com.shop.user.controller;
 
 import com.shop.user.api.model.UserInfo;
 import com.shop.user.api.model.base.Rep;
+import com.shop.user.api.model.base.RepHeader;
 import com.shop.user.api.model.base.Req;
 import com.shop.user.api.rest.UserResCtrl;
 import com.shop.user.api.rest.UserResource;
@@ -43,12 +44,12 @@ public class UserController implements UserResource,UserResCtrl{
 
         Rep<UserInfo> rep= new Rep<UserInfo>();
         if(userId==null) {
-            rep.getHeader().setRet("F");
+            rep.getHeader().setRt(RepHeader.FAIL);
             return rep;
         }
         UserInfo userInfo = userService.getUserInfo(userId);
         rep.setData(userInfo);
-        rep.getHeader().setRet("S");
+        rep.getHeader().setRt(RepHeader.SUCCESS);
         return rep;
     }
 
@@ -59,12 +60,12 @@ public class UserController implements UserResource,UserResCtrl{
         Long userId =req.getData();
         Rep<UserInfo> rep= new Rep<UserInfo>();
         if(userId==null) {
-            rep.getHeader().setRet("F");
+            rep.getHeader().setRt(RepHeader.FAIL);
             return rep;
         }
         UserInfo userInfo = userService.getUserInfo(userId);
         rep.setData(userInfo);
-        rep.getHeader().setRet("S");
+        rep.getHeader().setRt(RepHeader.SUCCESS);
         return rep;
     }
 }
