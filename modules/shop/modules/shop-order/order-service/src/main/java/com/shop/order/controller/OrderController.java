@@ -8,6 +8,7 @@ import com.shop.order.api.model.base.Req;
 import com.shop.order.api.model.base.ReqHeader;
 import com.shop.order.api.rest.OrderResCtrl;
 import com.shop.order.api.rest.OrderResource;
+import com.shop.order.service.OrderExtendService;
 import com.shop.order.service.OrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -26,6 +27,9 @@ public class OrderController implements OrderResource,OrderResCtrl {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private OrderExtendService orderExtendService;
 
     @ApiOperation(value = "创建订单", notes = "创建订单")
     @RequestMapping(value = "/createOrder", method = RequestMethod.POST)
@@ -90,5 +94,25 @@ public class OrderController implements OrderResource,OrderResCtrl {
         rep.setData(orderInfo);
         rep.getHeader().setRt(RepHeader.SUCCESS);
         return rep;
+    }
+
+    @ApiOperation(value = "取消订单", notes = "取消订单")
+    @RequestMapping(value = "/cancelOrder", method = RequestMethod.POST)
+    public Rep<Integer> cancelOrder(@RequestParam("orderId") Long orderId) {
+        logger.info("OrderController cancelOrder start,orderId={}",orderId);
+        Rep<Integer> rep= new Rep<Integer>();
+        if(orderId==null) {
+            rep.getHeader().setRt(RepHeader.FAIL);
+            return rep;
+        }
+        try{
+            rep= orderExtendService.cancelOrder(orderId);
+            return  rep;
+        } catch (Exception e) {
+            logger.error("OrderController cancelOrder error,orderId={}",orderId,e);
+            rep.getHeader().setRt(RepHeader.FAIL);
+            rep.getHeader().setMsg("服务处理失败");
+            return rep;
+        }
     }
 }

@@ -302,6 +302,11 @@ public class OrderServiceImpl implements OrderService {
 
     }
 
+    public Integer uptOrder(ShopOrder uptOrder) {
+        Integer rt =shopOrderMapper.updateByPrimaryKeySelective(uptOrder);
+        return rt;
+    }
+
     //是否代理对象
     public boolean isAopProxy() {
         return AopUtils.isAopProxy(AopContext.currentProxy());

@@ -28,4 +28,8 @@ public interface OrderResCtrl {
     @ApiOperation(value = "获取订单信息2", notes = "获取订单信息2")
     @RequestMapping(value="/getOrderInfo2",method= RequestMethod.GET)
     public Rep<OrderInfo> getOrderInfo2(@RequestParam("orderId") Long orderId);
+
+    @ApiOperation(value = "取消订单", notes = "取消订单")
+    @RequestMapping(value = "/cancelOrder", method = RequestMethod.POST)
+    public Rep<Integer> cancelOrder(@RequestParam("orderId") Long orderId);
 }

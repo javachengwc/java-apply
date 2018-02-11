@@ -16,6 +16,10 @@ public interface OrderService {
 
     public Integer addOrderStatuChange(OrderStatuChange orderStatuChange);
 
+    public OrderStatuChange recordOrderStatuChange(OrderOperateRecord operateRecord);
+
+    public Integer uptOrder(ShopOrder uptOrder);
+
     public ShopOrder getById(Long orderId);
 
     public OrderInfo getOrderInfo(Long orderId);
