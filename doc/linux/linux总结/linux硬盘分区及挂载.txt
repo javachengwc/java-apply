@@ -2,7 +2,7 @@
 fdisk -l                      -----列出指定的外围设备的分区表状况,能查看到未挂载的磁盘
 
 1,创建分区
-fdisk /dev/xvdb               选择磁盘进行操作
+fdisk /dev/vdb               选择磁盘进行操作
      a,输入m列出可执行的命令
          command (m for help): m
          Command action
@@ -95,14 +95,14 @@ fdisk /dev/xvdb               选择磁盘进行操作
              Syncing disks.
      (根据磁盘大小来创建相应的分区，简单情况下创建一个主分区就可以了)。
 2,格式化分区
-    mkfs.ext3 /dev/xvdb1       ------在xvdb1上建立ext3分区
+    mkfs.ext3 /dev/vdb1       ------在vdb1上建立ext3分区
     (mkfs.ext2 /dev/sdb1        ------在sdb1上建立ext2分区)
 3,挂载分区
     mkdir /data                ------创建挂载目录
-    mount /dev/xvdb1 /data     ------挂载分区
+    mount /dev/vdb1 /data     ------挂载分区
 4,设置开机自动挂载
     vim /etc/fstab
-        /dev/xvdb1    /data    ext3    defaults     0 0
+        /dev/vdb1    /data    ext3    defaults     0 0
 5,检验分区及挂载
     reboot          ------长期
     df -h           ------查看分区挂载情况
