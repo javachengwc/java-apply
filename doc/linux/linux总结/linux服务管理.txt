@@ -31,7 +31,7 @@ chkconfig [--level levels] name     ---设置某一服务在指定的运行级�
 chkconfig --list                    ---列出所有的系统服务
 chkconfig --add httpd               ---增加httpd服务
 chkconfig --del httpd               ---删除httpd服务
-chkconfig --level httpd 2345 on     ---设置httpd在运行级别为2、3、4、5的情况下都是on（开启）的状态
+chkconfig --level 2345 httpd on     ---设置httpd在运行级别为2、3、4、5的情况下都是on（开启）的状态
 chkconfig --list mysqld             ---列出mysqld服务设置情况
 chkconfig mysqld on                 ---设定mysqld在各等级为on，“各等级”包括2、3、4、5等级
 
