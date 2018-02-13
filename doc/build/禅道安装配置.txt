@@ -12,10 +12,10 @@ tar -zxvf ZenTaoPMS.9.8.1.zbox_64.tar.gz -C /opt
 /opt/zbox/zbox stop       ###停止禅道(停止apache和mysql)
 /opt/zbox/zbox restart    ###重启禅道
 /opt/zbox/zbox -h         ###查看帮助
-/opt/zbox/auth/adduser.sh      ###创建数据库账号
-注：数据库的用户名：root，密码为空。数据库管理用的是adminer，
-访问adminer的时候需要身份验证，需要运行脚本添加账户
-/opt/zbox/bin/mysql -u root -P 3307 -p    ###命令行登录禅道自带mysql数据库
+/opt/zbox/auth/adduser.sh      ###创建访问数据库管理模块的账号
+/opt/zbox/bin/mysql -u root -P 3307 -p --socket=/opt/zbox/tmp/mysql/mysql.sock
+                          ###命令行登录禅道自带mysql数据库
+注：数据库的用户名：root，密码为空或123456
 如果启动了防火墙,如下配置iptables防火墙规则，允许端口访问
 iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
 iptables -A INPUT -p tcp --dport 3307 -j ACCEPT
