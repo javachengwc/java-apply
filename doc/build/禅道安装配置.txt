@@ -24,6 +24,10 @@ service iptables restart       ###重启防火墙
 http://ip:8080                 ###访问禅道
 默认账号密码：admin/123456
 
+/opt/zbox/etc/apache/httpd.conf      ###apache配置文件,配置禅道服务端口等
+/opt/zbox/etc/php/php.ini            ###php配置文件
+/opt/zbox/etc/mysql/my.cnf           ###mysql配置文件
+
 RPM包安装：可以通过rpm包管理器在Centos系统下安装
 http://dl.cnezsoft.com/zentao/9.8.1/zentaopms-9.8.1-1.noarch.rpm
 
