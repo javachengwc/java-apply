@@ -1,0 +1,39 @@
+----------------------------禅道安装配置-----------------------------
+禅道是国产的开源项目管理软件
+官网:http://www.zentao.net
+
+禅道Linux 64位一键安装包（适用于Linux 64位）
+wget http://dl.cnezsoft.com/zentao/9.8.1/ZenTaoPMS.9.8.1.zbox_64.tar.gz
+tar -zxvf ZenTaoPMS.9.0.1.zbox_64.tar.gz -C /opt
+注：Linux一键安装包必须直接解压到/opt目录下
+/opt/zbox/zbox -ap 8080   ###修改禅道自带apache端口
+/opt/zbox/zbox -mp 3307   ###修改禅道自带mysql端口
+/opt/zbox/zbox start      ###启动禅道(开启apache和mysql)
+/opt/zbox/zbox stop       ###停止禅道(停止apache和mysql)
+/opt/zbox/zbox restart    ###重启禅道
+/opt/zbox/zbox -h         ###查看帮助
+/opt/zbox/auth/adduser.sh      ###创建数据库账号
+注：数据库的用户名：root，密码为空。数据库管理用的是adminer，
+访问adminer的时候需要身份验证，需要运行脚本添加账户
+/opt/zbox/bin/mysql -u root -P 3307 -p    ###命令行登录禅道自带mysql数据库
+如果启动了防火墙,如下配置iptables防火墙规则，允许端口访问
+iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
+iptables -A INPUT -p tcp --dport 3307 -j ACCEPT
+service iptables save
+service iptables restart       ###重启防火墙
+http://ip:8080                 ###访问禅道
+默认账号密码：admin/123456
+
+RPM包安装：可以通过rpm包管理器在Centos系统下安装
+http://dl.cnezsoft.com/zentao/9.8.1/zentaopms-9.8.1-1.noarch.rpm
+
+DEB包安装：可以通过dpkg包管理器在Ubuntu和Debian系统下安装
+http://dl.cnezsoft.com/zentao/9.8.1/ZenTaoPMS_9.8.1_1_all.deb
+
+源码安装: 需要自行安装php(5.3以上),apache,mysql
+http://dl.cnezsoft.com/zentao/9.8.1/ZenTaoPMS.9.8.1.zip
+unzip ZenTaoPMS.9.8.1.zip
+cp -rf zentaopms ....../apache/www     ##拷贝解压后的zentaopms到web容器中
+http://ip:port/zentaopms/www/index.php，系统会自动转入安装程序。
+
+---------------------------------------------------------------------

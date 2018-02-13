@@ -1,0 +1,43 @@
+--------------------------------quickbuild安装配置--------------------------------
+quickbuild是一个持续集成工具。
+
+quickbuild安装
+需要预先安装java,mysql
+wget https://www.pmease.com/artifacts/4292/quickbuild-7.0.31.tar.gz
+tar -zxvf quickbuild-7.0.31.tar.gz
+cd quickbuild-7.0.31
+vim ./conf/wrapper.conf              ###配置jvm参数
+    在#wrapper.java.additional.3=-Dreset下面添加
+    wrapper.java.additional.4=-XX:MaxPermSize=256m
+    # Initial Java Heap Size (in MB)
+    wrapper.java.initmemory=256
+    # Maximum Java Heap Size (in MB)
+    wrapper.java.maxmemory=1024
+vim ./conf/hibernate.properties      ###配置数据库访问
+    hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect
+    hibernate.connection.driver_class=com.mysql.jdbc.Driver
+    hibernate.connection.url=jdbc:mysql://localhost:3306/quickbuild?useUnicode=true&amp;characterEncoding=UTF8
+    hibernate.connection.username=root
+    hibernate.connection.password=root
+cp mysql-connector-java-5.1.41.jar ./plugins/com.pmease.quickbuild.libs/
+###将数据库驱动包放入相应目录
+mysql -uroot -p                     ###创建对应的数据库
+    create database quickbuild default charset utf8;
+useradd -rm quickbuild              ###添加quickbuild这个系统用户
+chown -R quickbuild:quickbuild /opt/quickbuild-7.0.31
+vim ./bin/server.sh
+    #RUN_AS_USER=
+    RUN_AS_USER=quickbuild
+/opt/quickbuild-7.0.31/bin/server.sh install	     ###安装成系统服务
+service quickbuild start            ###启动服务
+service quickbuild stop             ###停止服务
+sh ./bin/server.sh start            ###启动quickbuild
+http://ip:8810                      ###http访问quickbuild
+(vim  ./conf/node.properties  (里面有默认端口配置：8810,可另设))
+然后在web中配置管理员账号,以及URL to Access QuickBuild,Global Storage Directory等初始设置
+
+su quickbuild                       ###切换到quickbuild
+ssh-keygen -t rsa                   ###生成quickbuild用户ssh免密码登录用密钥
+                                       默认值(什么都不填，一路回车)
+
+----------------------------------------------------------------------------------
