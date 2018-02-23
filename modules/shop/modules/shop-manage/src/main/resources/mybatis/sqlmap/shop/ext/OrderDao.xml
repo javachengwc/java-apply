@@ -82,7 +82,7 @@
             </if>
 
             <if test="orderId!=null  and orderId!='' ">
-                AND orderId = '${orderId}'
+                AND order_id = '${orderId}'
             </if>
             <if test="fromSource!=null  and fromSource!=-1 ">
                 AND from_source = ${fromSource}
@@ -138,7 +138,7 @@
             </if>
 
             <if test="orderId!=null  and orderId!='' ">
-                AND orderId = '${orderId}'
+                AND order_id = '${orderId}'
             </if>
             <if test="fromSource!=null  and fromSource!=-1 ">
                 AND from_source = ${fromSource}

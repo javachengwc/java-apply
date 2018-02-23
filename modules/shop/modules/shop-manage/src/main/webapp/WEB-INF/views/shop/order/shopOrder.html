@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>订单列表</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <link rel="stylesheet" type="text/css" href="/shop/thirdpart/jquery-easyui/themes/default/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="/shop/thirdpart/jquery-easyui/themes/icon.css" />
+    <link rel="stylesheet" type="text/css" href="/shop/css/style.css" />
+    <style>
+        #query_div{text-align: left;padding:5px 0px 5px 5px;}
+        #tbShopOrder{width:100%;}
+    </style>
+
+    <script type="text/javascript" src="/shop/js/jquery-1.8.0.js"></script>
+    <script type="text/javascript" src="/shop/js/jquery.form.js"></script>
+    <script type="text/javascript" src="/shop/js/base/date-util.js"></script>
+    <script type="text/javascript" src="/shop/js/base/string-util.js"></script>
+    <script type="text/javascript" src="/shop/js/base/popups-util.js"></script>
+
+    <script type="text/javascript" src="/shop/thirdpart/jquery-easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/shop/thirdpart/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="/shop/thirdpart/jquery-easyui/extension/datagrid-detailview.js"></script>
+
+    <script type="text/javascript" src="/shop/js/app/shopOrder.js"></script>
+
+</head>
+<body>
+<div id="toolbar">
+    <div id="query_div">
+        <span>支付时间:
+            <input id="payTimeBegin" name="payTimeBegin" class="easyui-datebox" />至
+            <input id="payTimeEnd" name="payTimeEnd" class="easyui-datebox" />
+        </span>
+        <span style="margin-left:5px;">创建时间:
+            <input id="createTimeBegin" name="createTimeBegin"class="easyui-datebox" />至
+            <input id="createTimeEnd" name="createTimeEnd"class="easyui-datebox" />
+        </span>
+        <div style="margin-bottom: 5px;"></div>
+        <span>订单编号:
+            <input id="orderId" name="orderId" type="text"/>
+        </span>
+        <span style="margin-left:5px;">来源:
+            <select name="fromSource" id="fromSource" style="width:100px">
+                <option selected="" value="-1">全部</option>
+                <option value="1">PC</option>
+                <option value="2">无线</option>
+            </select>
+        </span>
+        <span style="margin-left:5px;">订单状态:
+            <select name="orderState" id="orderState" style="width:100px">
+                <option selected="" value="-1">全部</option>
+                <option value="0">初始</option>
+                <option value="1">待支付</option>
+                <option value="2">待发货</option>
+                <option value="3">已发货</option>
+                <option value="5">交易成功</option>
+                <option value="7">交易关闭</option>
+            </select>
+        </span>
+        <span style="margin-left:5px;">是否超卖:
+            <select name="isOverbuy" id="isOverbuy" style="width:100px">
+                <option selected="" value="-1">全部</option>
+                <option value="0">否</option>
+                <option value="1">是</option>
+            </select>
+        </span>
+        <span style="margin-left:5px;">是否删除:
+            <select name="isCancel" id="isCancel" style="width:100px">
+                <option selected="" value="-1">全部</option>
+                <option value="0">否</option>
+                <option value="1">是</option>
+            </select>
+        </span>
+        <div style="margin-bottom: 5px;"></div>
+        <span>买家Id:
+            <input id="userId" name="userId" type="text" />
+        </span>
+        <span style="margin-left:5px;">买家昵称:
+            <input id="userName" name="userName" type="text" />
+        </span>
+        <span style="margin-left:5px;">商店Id:
+            <input id="shopId" name="shopId" type="text" />
+        </span>
+        <span style="margin-left:5px;">商店姓名:
+            <input id="shopName" name="shopName" type="text" />
+        </span>
+        <div style="margin-bottom: 5px;"></div>
+        <span>发货时间:
+            <input id="deliverTimeBegin" name="deliverTimeBegin" class="easyui-datebox" />至
+            <input id="deliverTimeEnd" name="deliverTimeEnd" class="easyui-datebox" />
+        </span>
+        <input id="searchBtn" type="button" value="查询" onClick="search()" />
+    </div>
+</div>
+<table id="tbShopOrder">
+    <thead>
+    <tr>
+        <th data-options="field:'id',align:'left'">ID</th>
+        <th data-options="field:'orderNo',align:'left'" >订单编号</th>
+        <th data-options="field:'tradeCode',align:'left'" >渠道</th>
+        <th data-options="field:'fromSource',align:'left'">来源</th>
+        <th data-options="field:'statu',align:'left'">订单状态</th>
+        <th data-options="field:'createTime',align:'left'">创建时间</th>
+        <th data-options="field:'payState',align:'left'">支付状态</th>
+        <th data-options="field:'payTime',align:'left'">支付时间</th>
+        <th data-options="field:'isOverbuy',align:'left'">是否超卖</th>
+        <th data-options="field:'isCancel',align:'left'">是否取消</th>
+        <th data-options="field:'priceAmount',align:'left'">订单价格</th>
+        <th data-options="field:'postage',align:'left'">邮费</th>
+        <th data-options="field:'exchangeScore',align:'left'">兑换积分数</th>
+        <th data-options="field:'exchangeCash',align:'left'">兑换金额</th>
+        <th data-options="field:'couponNo',align:'left'">优惠券编码</th>
+        <th data-options="field:'couponPrice',align:'left'">优惠券金额</th>
+        <th data-options="field:'discountId',align:'left'">活动id</th>
+        <th data-options="field:'discountType',align:'left'">活动类型</th>
+        <th data-options="field:'discountPrice',align:'left'">活动优惠价格</th>
+        <th data-options="field:'userId',align:'left'">买家Id</th>
+        <th data-options="field:'userName',align:'left'">买家昵称</th>
+        <th data-options="field:'shopId',align:'left'">商店Id</th>
+        <th data-options="field:'shopName',align:'left'">商店名称</th>
+    </tr>
+    </thead>
+</table>
+
+</body>
+</html>
