@@ -26,6 +26,7 @@
 		<module>modules/shop-static</module>
 		<module>modules/shop-user</module>
 		<module>modules/shop-order</module>
+		<module>modules/shop-zipkin-server</module>
 	</modules>
 
 </project>
