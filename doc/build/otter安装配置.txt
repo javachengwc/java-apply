@@ -1,0 +1,103 @@
+----------------------------otter安装配置--------------------------
+otter是一个分布式数据库同步系统,基于数据库增量日志解析,准实时同步到本机房或异地机房的mysql/oracle数据库。
+otter的环境需要：mysql,jdk,zookeeper,otter-node,otter-manager,aria2
+otter安装需要三台机器，在master机器上安装manager，在slave1和slave2上面安装node
+------------------------------------------------------------------------------------------------------
+|软件              |版本          |服务器            |端口       |目录                               |
+------------------------------------------------------------------------------------------------------
+|zookeeper         |3.4.6         |master            |2181       |/usr/local/zookeeper/zokeeper-3.4.6|
+|otter-manager     |4.2.15        |master            |8080       |/usr/local/otter/manager           |
+|otter-node        |4.2.15        |slave1,slave2     |           |/usr/local/otter/node              |
+------------------------------------------------------------------------------------------------------
+1,zookeeper安装(略)
+2,在master机器上安装otter-manager
+    manager依赖于mysql进行配置信息的存储，所以需安装mysql(略)
+    初始化otter manager系统表
+    wget https://raw.github.com/alibaba/otter/master/manager/deployer/src/main/resources/sql/otter-manager-schema.sql
+    mysql -uroot -proot
+    mysql> source /data/setup/otter-manager-schema.sql
+    tar -zxvf manager.deployer-4.2.15.tar.gz -C manager
+    cd ./manager
+    vim ./conf/otter.properties
+        otter.domainName = 192.168.21.21     ###master机器ip
+        otter.port = 8080
+        otter.database.driver.class.name = com.mysql.jdbc.Driver
+        otter.database.driver.url = jdbc:mysql://127.0.0.1:3306/otter
+        otter.database.driver.username = root
+        otter.database.driver.password = root
+        otter.communication.manager.port = 1099  ###manager和node通讯端口，保留默认1099
+        otter.communication.pool.size = 10
+        otter.zookeeper.cluster.default = 127.0.0.1:2181
+        otter.zookeeper.sessionTimeout = 90000
+    ./bin/startup.sh &                        ###启动manager
+    vim ./logs/manager.log                    ###查看日志
+        the manager server is running now ... ###表示启动成功
+    http://192.168.21.21:8080                 ###出现otter的页面，表示启动成功
+    初始密码为：admin/admin，即可完成登录。
+3,在slave1和slave2上安装otter-node
+安装jdk(略)
+otter-node会被otter manager进行管理，需要在manager页面为node节点定义配置信息，并生成一个唯一node id ,简称nid。
+a,访问manager页面的机器管理，添加zookeeper管理。
+b,访问manager页面的机器管理，点击node管理,添加node节点
+几点说明：
+    机器名称：可以随意定义，方便区分
+    机器ip：对应node节点将要部署的机器ip
+    机器端口：对应node节点将要部署时启动的数据通讯端口，建议值：2088
+    下载端口：对应node节点将要部署时启动的数据下载端口，建议值：9090
+    外部ip ：对应node节点将要部署的机器ip，存在的一个外部ip，允许通讯的时候走公网处理。
+    zookeeper集群：为提升通讯效率，不同机房的机器可选择就近的zookeeper集群.
+机器添加完成后，跳转到机器列表页面，获取对应的机器序号nid
+c,安装aria2
+node 需要aria2支持，在slave1和slave2机器上分别安装了一套。
+    tar -zxvf aria2-1.17.1.tar.gz
+    cd aria2-1.17.1
+    ./configure
+    make
+    make install
+注:安装aria2需要gcc编译
+d,安装otter-node
+    tar -zxvf node.deployer-4.2.15.tar.gz -C /usr/local/otter/node
+    cd /usr/local/otter/node
+    echo 1 > ./conf/nid          ###nid配置 (将在manager中配置的nid，保存到node服务的conf目录下的nid文件)
+    vim ./conf/otter.properties
+        otter.manager.address = 192.168.21.21:1099      ###manager与node的通信地址
+    sh ./bin/startup.sh &        ###启动node
+    more ./logs/node/node.log
+        ## the otter server is running now              ###看到如上日志，代表node启动完成.
+    在manager页面查看节点状态，如果变为了已启动，表示已正常启动
+
+另canal的安装配置
+1,安装mysql数据库
+    yum install -y mysql-server mysql mysql-devel  ###安装mysql
+    service mysqld start
+    mysqladmin -u root password 'root'
+    vim /etc/my.cnf
+        [mysqld]
+        log-bin=mysql-bin
+        binlog-format=ROW       ###修改成ROW
+        server-id = 1           ###多个数据库各个serverid设置为不一样的值
+    然后重启数据库，创建canal的数据库账号和密码
+    create user canal identified by 'canal';
+    grant SELECT, REPLICATION SLAVE, REPLICATION CLIENT on *.*  to 'canal'@'%';
+    flush privileges;
+    show grants for canal;      ###查看权限
+2,安装canal
+    tar -zxvf canal.deployer-1.0.22.tar.gz  -C canal
+    cd ./canal
+    vim conf/canal.properties
+        canal.id= 1
+        canal.ip=
+        canal.port= 11111
+        canal.zkServers=192.168.21.21:2181
+    vim conf/example/instance.properties
+        canal.instance.mysql.slaveId = 1234
+        canal.instance.master.address = 127.0.0.1:3306
+        canal.instance.dbUsername = canal
+        canal.instance.dbPassword = canal
+    sh bin/startup.sh &          ###启动canal
+    vim logs/canal/canal.log
+        ## the canal server is running now ...  ###表示启动成功
+    vim logs/example/example.log                ###查看具体instance的日志
+        prepare to find start position just show master status  ###表示启动成功
+
+-------------------------------------------------------------------
