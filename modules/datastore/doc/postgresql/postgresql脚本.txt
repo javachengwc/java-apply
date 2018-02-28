@@ -2,6 +2,7 @@
 postgresql基本sql与mysql基本sql比较相似
 
 ----------------------------------------
+select version() ;                                ------查询postgresql版本
 psql中的交互命令
     \?                                            ------查看psql命令列表。
     \l                                            ------列出所有数据库。

@@ -1,0 +1,178 @@
+----------------------------------postgresql处理json和jsonb-------------------------------
+postgresql支持两种json数据类型：json和jsonb，而两者唯一的区别在于效率,
+json是对输入的完整拷贝，使用时再去解析，所以它会保留输入的空格，重复键以及顺序等。
+jsonb是解析输入后保存的二进制，它在解析时会删除不必要的空格和重复的键，顺序和输入可能也不相同。使用时不用再次解析。
+两者对重复键的处理都是保留最后一个键值对。效率的差别：json类型存储快，使用慢，jsonb类型存储稍慢，使用较快。
+
+###建表
+create table std_score(id serial ,info jsonb);
+###录入记录
+insert into std_score(info) values ('[{"num":"1","name":"阿1","score":"80"}]'::jsonb);
+###在原基础上增加一个元素(9.5版本以上支持)
+update std_score set info = info || '[{"num":"2","name":"阿2","score":"77"}]'::jsonb;
+###遍历
+select info.* from std_score, jsonb_to_record(info) as info(num text, name text, score text) where std_score.id=1;
+###查询
+select * from std_score where info @> '[{"num":"1"}]'::jsonb;
+-------------------------------------------------------------
+常用的操作符:
+-> 	int 	Get JSON array element (indexed from zero, negative integers count from the end) 	         '[{"a":"foo"},{"b":"bar"},{"c":"baz"}]'::json->2 	{"c":"baz"}
+-> 	text 	Get JSON object field by key 	                                                             '{"a": {"b":"foo"}}'::json->'a' 	{"b":"foo"}
+->> 	int 	Get JSON array element as text 	                                                         '[1,2,3]'::json->>2 	3
+->> 	text 	Get JSON object field as text 	                                                         '{"a":1,"b":2}'::json->>'b' 	2
+#> 	text[] 	Get JSON object at specified path 	                                                         '{"a": {"b":{"c": "foo"}}}'::json#>'{a,b}' 	{"c": "foo"}
+#>> 	text[] 	Get JSON object at specified path as text 	                                             '{"a":[1,2,3],"b":[4,5,6]}'::json#>>'{a,2}' 	3
+@> 	jsonb 	Does the left JSON value contain the right JSON path/value entries at the top level? 	     '{"a":1, "b":2}'::jsonb @> '{"b":2}'::jsonb
+<@ 	jsonb 	Are the left JSON path/value entries contained at the top level within the right JSON value? 	'{"b":2}'::jsonb <@ '{"a":1, "b":2}'::jsonb
+? 	text 	Does the string exist as a top-level key within the JSON value? 	                         '{"a":1, "b":2}'::jsonb ? 'b'
+?| 	text[] 	Do any of these array strings exist as top-level keys? 	                                     '{"a":1, "b":2, "c":3}'::jsonb ?| array['b', 'c']
+?& 	text[] 	Do all of these array strings exist as top-level keys? 	                                     '["a", "b"]'::jsonb ?& array['a', 'b']
+|| 	jsonb 	Concatenate two jsonb values into a new jsonb value 	                                     '["a", "b"]'::jsonb || '["c", "d"]'::jsonb
+- 	text 	Delete key/value pair or string element from left operand. Key/value pairs are matched based on their key value. 	'{"a": "b"}'::jsonb - 'a'
+- 	integer 	Delete the array element with specified index (Negative integers count from the end). Throws an error if top level container is not an array. 	'["a", "b"]'::jsonb - 1
+#- 	text[] 	Delete the field or element with specified path (for JSON arrays, negative integers count from the end) 	        '["a", {"b":1}]'::jsonb #- '{1,b}'
+
+-> // 右边传入整数（针对纯数组），获取数组的第n个元素，n从0开始算，返回值为json
+  示例： select '[{"a":"foo"},{"b":"bar"},{"c":"baz"}]'::json->2 // 输出 {"c":"baz"}
+-> // 右边传入键值（针对关联数组），返回值为json
+  示例： select '{"a": {"b":"foo"}, "c":{"a": "aaa"}}'::json->'a' // 输出 {"b":"foo"}
+->> // 右边传入整数（针对纯数组），获取数组的第n个元素，n从0开始算，返回值为文本
+  示例： select '[{"a":"foo"},{"b":"bar"},{"c":"baz"}]'::json->>2 // 输出 {"c":"baz"}
+->> // 右边传入键值（针对关联数组），返回值为文本
+  示例： select '{"a": {"b":"foo"}, "c":{"a": "aaa"}}'::json->>'a' // 输出 {"b":"foo"}
+#> // 获取json子对象，传入数组，返回json
+  示例： select '{"a": {"b":{"c": "foo"}}}'::json#> '{a,b}' // 输出 {"c": "foo"}
+#>> // 获取json子对象并转换为文本，传入数组，返回文本
+  示例： select '{"a": {"b":{"c": "foo"}}}'::json#>> '{a,b}' // 输出 {"c": "foo"}
+--------------------------------------------------------------
+postgresql对json,josnb操作函数;
+postgresql提供了两套函数分别处理，可以通用，名称也差不多，
+比如 json_each 和 jsonb_each ，json_array_elements 和 jsonb_array_elements 。
+注意:创建字段用的是json就用json相关函数，创建字段用的是jsonb就用jsonb相关函数。
+
+to_json(anyelement)
+to_jsonb(anyelement)    Returns the value as json or jsonb.                               	to_json('Fred said "Hi."'::text) 	"Fred said \"Hi.\""
+array_to_json(anyarray [, pretty_bool]) 	Returns the array as a JSON array.              array_to_json('{{1,5},{99,100}}'::int[]) 	[[1,5],[99,100]]
+row_to_json(record [, pretty_bool]) 	Returns the row as a JSON object.                   row_to_json(row(1,'foo')) 	{"f1":1,"f2":"foo"}
+json_build_array(VARIADIC "any")
+jsonb_build_array(VARIADIC "any")
+	Builds a possibly-heterogeneously-typed JSON array out of a variadic argument list. 	json_build_array(1,2,'3',4,5) 	[1, 2, "3", 4, 5]
+json_build_object(VARIADIC "any")
+jsonb_build_object(VARIADIC "any")
+	Builds a JSON object out of a variadic argument list.                                 	json_build_object('foo',1,'bar',2) 	{"foo": 1, "bar": 2}
+json_object(text[])
+jsonb_object(text[])
+	Builds a JSON object out of a text array.                                               json_object('{a, 1, b, "def", c, 3.5}')
+                                                                                            json_object('{{a, 1},{b, "def"},{c, 3.5}}')  {"a": "1", "b": "def", "c": "3.5"}
+json_object(keys text[], values text[])
+jsonb_object(keys text[], values text[])
+	This form of json_object takes keys and values pairwise from two separate arrays.       json_object('{a, b}', '{1,2}') 	{"a": "1", "b": "2"}
+json_array_length(json)
+jsonb_array_length(jsonb)  int 	Returns the number of elements in the outermost JSON array. json_array_length('[1,2,3,{"f1":1,"f2":[5,6]},4]') 	5
+json_each(json)
+jsonb_each(jsonb)	            Expands the outermost JSON object into a set of key/value pairs. 	select * from json_each('{"a":"foo", "b":"bar"}')
+json_each_text(json)
+jsonb_each_text(jsonb)          Expands the outermost JSON object into a set of key/value pairs.    select * from json_each_text('{"a":"foo", "b":"bar"}')
+json_extract_path(from_json json, VARIADIC path_elems text[])
+jsonb_extract_path(from_json jsonb, VARIADIC path_elems text[])
+                       Returns JSON value pointed to by path_elems (equivalent to #> operator). 	        json_extract_path('{"f2":{"f3":1},"f4":{"f5":99,"f6":"foo"}}','f4') 	{"f5":99,"f6":"foo"}
+json_extract_path_text(from_json json, VARIADIC path_elems text[])
+jsonb_extract_path_text(from_json jsonb, VARIADIC path_elems text[])
+                       Returns JSON value pointed to by path_elems as text (equivalent to #>> operator). 	json_extract_path_text('{"f2":{"f3":1},"f4":{"f5":99,"f6":"foo"}}','f4', 'f6') 	foo
+json_object_keys(json)
+jsonb_object_keys(jsonb)   Returns set of keys in the outermost JSON object. 	                            json_object_keys('{"f1":"abc","f2":{"f3":"a", "f4":"b"}}')
+json_populate_record(base anyelement, from_json json)
+jsonb_populate_record(base anyelement, from_json jsonb)
+	Expands the object in from_json to a row whose columns match the record type defined by base. 	        select * from json_populate_record(null::myrowtype, '{"a":1,"b":2}')
+json_populate_recordset(base anyelement, from_json json)
+jsonb_populate_recordset(base anyelement, from_json jsonb)
+	Expands the outermost array of objects in from_json to a set of rows whose columns match the record type defined by base. 	select * from json_populate_recordset(null::myrowtype, '[{"a":1,"b":2},{"a":3,"b":4}]')
+json_array_elements(json)
+jsonb_array_elements(jsonb)        Expands a JSON array to a set of JSON values. 	                        select * from json_array_elements('[1,true, [2,false]]')
+json_array_elements_text(json)
+jsonb_array_elements_text(jsonb)   Expands a JSON array to a set of text values. 	                        select * from json_array_elements_text('["foo", "bar"]')
+json_typeof(json)
+jsonb_typeof(jsonb)      Returns the type of the outermost JSON value as a text string.                     json_typeof('-123.4') 	number
+json_to_record(json)
+jsonb_to_record(jsonb)   Builds an arbitrary record from a JSON object (see note below).                    select * from json_to_record('{"a":1,"b":[1,2,3],"c":"bar"}') as x(a int, b text, d text)
+json_to_recordset(json)
+jsonb_to_recordset(jsonb) Builds an arbitrary set of records from a JSON array of objects (see note below). select * from json_to_recordset('[{"a":1,"b":"foo"},{"a":"2","c":"bar"}]') as x(a int, b text);
+json_strip_nulls(from_json json)
+jsonb_strip_nulls(from_json jsonb) 	Returns from_json with all object fields that have null values omitted. json_strip_nulls('[{"f1":1,"f2":null},2,null,3]') 	[{"f1":1},2,null,3]
+jsonb_set(target jsonb, path text[], new_value jsonb[, create_missing boolean])
+    Returns target with the section designated by path replaced by new_value, jsonb_set('[{"f1":1,"f2":null},2,null,3]', '{0,f1}','[2,3,4]', false)    [{"f1":[2,3,4],"f2":null},2,null,3]
+jsonb_insert(target jsonb, path text[], new_value jsonb, [insert_after boolean])
+    Returns target with new_value inserted.                                   jsonb_insert('{"a": [0,1,2]}', '{a, 1}', '"new_value"')     {"a": [0, "new_value", 1, 2]}
+jsonb_pretty(from_json jsonb)    text    Returns from_json as indented JSON text. 	jsonb_pretty('[{"f1":1,"f2":null},2,null,3]')
+
+json相关的处理函数常用的有如下三个
+json_object_keys        // 返回json的键（多层只返回第一层），该函数不能用于纯数组.
+json_array_elements     // 提取转换纯数组元素
+json_extract_path       // 返回JSON值所指向的某个键元素（相当于 #> 操作符），该函数不能直接操作纯数组。
+
+select json_object_keys ('{"goods":[
+{"id": "1", "weight": "1", "quantity": "11"},
+{"id": "2", "weight": "2", "quantity": "22"}],
+"quantity": "10"}')
+输出: goods,quantity
+
+select json_array_elements ('[
+{"id": "1", "weight": "1", "quantity": "11"},
+{"id": "2", "weight": "2", "quantity": "22"},
+{"id": "3", "weight": "3", "quantity": "33"}]')
+输出：
+{"id": "1", "weight": "1", "quantity": "11"}
+{"id": "2", "weight": "2", "quantity": "22"}
+{"id": "3", "weight": "3", "quantity": "33"}
+
+select * from json_array_elements ('
+[
+{"id": "1", "weight": "1", "quantity": "11"},
+{"id": "2", "weight": "2", "quantity": "22"},
+{"id": "3", "weight": "3", "quantity": "33"}]') as pp
+where pp::jsonb->>'weight' = '3'
+输出：
+{"id": "3", "weight": "3", "quantity": "33"}
+
+select json_extract_path   ('{"goods":
+[
+{"id": "1", "weight": "1", "quantity": "11"},
+{"id": "2", "weight": "2", "quantity": "22"}
+],
+"quantity": {"max": "10", "min": "1"}
+}' , 'quantity' );// 第二个参数表示获取键为quantity的值
+输出：
+{"max": "10", "min": "1"}
+json_extract_path   函数和  pgsql  提供的操作符  #>  是一样的。
+
+select json_extract_path   ('{"goods":
+[
+{"id": "1", "weight": "1", "quantity": "11"},
+{"id": "2", "weight": "2", "quantity": "22"}
+],
+"quantity": {"max": "10", "min": "1"}
+}' , 'quantity','max');
+输出："10"
+select ('{"goods":
+[
+{"id": "1", "weight": "1", "quantity": "11"},
+{"id": "2", "weight": "2", "quantity": "22"}
+],
+"quantity": {"max": "10", "min": "1"}
+}') ::json #> '{quantity, max}'
+两者输出是一样的。
+
+联合使用
+select pp::json->>'id' as id,
+       pp::json->>'quantity' as quantity
+from json_array_elements (
+json_extract_path ('{"goods":
+[
+{"id": "1", "weight": "1", "quantity": "11"},
+{"id": "2", "weight": "2", "quantity": "22"}
+],
+"quantity": {"max": "10", "min": "1"}
+}' , 'goods' ) ) as pp
+where pp::json->> 'weight' = '2'
+输出:2	22
+------------------------------------------------------------------------------------------
