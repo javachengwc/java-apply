@@ -148,6 +148,7 @@ ps -aux    --查看进程
 ps -mp pid -o THREAD,tid,time|sort -rn ---查看进程pid最耗cpu的线程   
 ---------------------------
 jstat -gcutil pid  ---查看java进程垃圾回收状况
+jstat -gc pid      ---查看java进程内存占用情况
 -------------------
 jstack pid ---dump java进程的线程状态
 -----------------
