@@ -1,0 +1,40 @@
+-----------------------------------solr7安装配置--------------------------------
+安装前提:已安装jdk8,apache-tomcat-8
+cd /data/setup
+wget https://mirrors.tuna.tsinghua.edu.cn/apache/lucene/solr/7.1.0/solr-7.1.0.tgz
+tar -zxvf solr-7.1.0.tgz
+cd solr-7.1.0
+./bin/solr start -force                                                  ###启动自带solr
+./bin/solr create -c test -force                                         ###创建一个名为test的collect
+cp -rf  ./server/solr-webapp/webapp /opt/apache-tomcat-8.5.28/webapps    ###复制到tomcat相应目录
+cd /opt/apache-tomcat-8.5.28/webapps
+mv webapp solr                                                           ###把webapp改名成solr
+cd solr/WEB-INF
+mkdir classes                                                            ###建立classes目录
+cp /data/setup/solr-7.1.0/server/resources/log4j.properties .            ###拷贝日志文件
+cd ../lib
+cp /data/setup/solr-7.1.0/server/lib/ext/*.jar .                         ###拷贝jar包到lib目录
+cp /data/setup/solr-7.1.0/dist/solr-dataimporthandler*.jar .             ###拷贝dataimport包到lib目录
+cp /data/setup/solr-7.1.0/server/lib/metrics*.jar .                      ###拷贝metrics包到lib目录
+mkdir -p /data/solrhome                                                  ###创建solrhome目录作为solr实例目录
+cp -rf /data/setup/solr-7.1.0/server/solr/. /data/solrhome               ###拷贝自带例子实例到实例目录
+vim ../web.xml
+    <!--                                                                 ###去掉权限,注释掉security-constraint片段
+    <security-constraint>
+    ...
+    </security-constraint>
+    -->
+    <env-entry>                                                          ###配置solr-home
+       <env-entry-name>solr/home</env-entry-name>
+       <env-entry-value>/data/solrhome</env-entry-value>
+       <env-entry-type>java.lang.String</env-entry-type>
+    </env-entry>
+将数据库驱动包mysql-connector-java-5.1.22.jar复制到/opt/apache-tomcat-8.5.28/webapps/solr/WEB-INF/lib中
+将ik包ik-analyzer-solr5-5.x.jar复制到/opt/apache-tomcat-8.5.28/webapps/solr/WEB-INF/lib中
+将IKAnalyzer.cfg.xml 复制到/opt/apache-tomcat-8.5.28/webapps/solr/WEB-INF/classes中
+进入/data/solrhome/{collect}/conf文件夹中修改managed-schema的内容在其中加上
+<fieldType name="text_ik" class="solr.TextField">
+  <analyzer class="org.wltea.analyzer.lucene.IKAnalyzer"/>
+</fieldType>                                      这样就支持IK解析了。
+启动tomcat 访问http://localhost:8080/solr/index.html 可访问solr。
+--------------------------------------------------------------------------------

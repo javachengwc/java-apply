@@ -1,0 +1,19 @@
+------------------------------solr数据导入------------------------------------
+在/data/solrhome/{collect}/conf/solrconfig.xml中增加handle配置
+  <requestHandler name="/dataimport" class="org.apache.solr.handler.dataimport.DataImportHandler">
+    <lst name="defaults">
+      <str name="config">db-data-config.xml</str>
+    </lst>
+  </requestHandler>
+在/data/solrhome/{collect}/conf下增加导入配置文件db-data-config.xml
+vim db-data-config.xml
+    <dataConfig>
+        <dataSource driver="" url="jdbc:mysql://localhost/db" user="root" password="root" />
+        <document>
+            <entity name="tt" query="select * from table">
+                <field column="aid" name="aid" />
+            </entity>
+        </document>
+    </dataConfig>
+/data/solrhome/{collect}/conf/managed-schema文件是solr {collect}的field schema配置文件
+------------------------------------------------------------------------------

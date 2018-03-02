@@ -7,4 +7,12 @@ vim tomcat\conf\server.xml
         URIEncoding="utf-8"
         redirectPort="8443" />
        #增加URIEncoding="utf-8" 中文支持
+
+tomcat8有可能出现此情况,tomcat启动很慢，查看日志发现
+WARNING [localhost-startStop-1] org.apache.catalina.util.SessionIdGeneratorBase.createSecureRandom
+Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [471,689] milliseconds.
+在启动8005端口之前，花了7,8分钟时间产生随机数，导致tomcat启动时间非常长,
+处理方法：配置jdk securerandom.source为urandom解决
+vim $JAVA_HOME/jre/lib/security/java.security
+    securerandom.source=file:/dev/./urandom
 -----------------------------------------------------------------------
