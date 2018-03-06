@@ -1,0 +1,21 @@
+-------------------------------postgresql函数-----------------------------
+字符串函数
+char_length(str)                        ###返回字串个数
+select char_length('字串');  2
+concat(str1,str2,....)                  ###连接字符串
+
+---------------------------
+时期时间函数
+---------------------------
+to_char(timestamp, text)                 ###把时间转换成字符串
+select  to_char('2017-01-01 13:02:03'::timestamp,'YYYY-mm-dd');
+select  to_char('2017-01-01 13:02:03'::timestamp,'YYYY-mm-dd');
+select  to_char('2017-01-01 13:02:03'::timestamp,'YYYY-mm-dd hh24:mi:ss')
+to_date(text, text)                      ###把字串转换成日期
+select to_date('2017-01-01', 'YYYY-mm-dd')
+to_timestamp(text, text)                 ###把字串转换成时间戳
+select to_timestamp('2017-01-01 13:02:03', 'YYYY-mm-dd hh24:mi:ss')
+to_timestamp(double)                     ###把UNIX纪元转换成时间戳
+select to_timestamp(1520320976)
+
+--------------------------------------------------------------------------
