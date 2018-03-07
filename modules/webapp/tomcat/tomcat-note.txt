@@ -15,4 +15,5 @@ Creation of SecureRandom instance for session ID generation using [SHA1PRNG] too
 处理方法：配置jdk securerandom.source为urandom解决
 vim $JAVA_HOME/jre/lib/security/java.security
     securerandom.source=file:/dev/./urandom
+或则 在catalina.sh中加入这么一行：-Djava.security.egd=file:/dev/./urandom 即可
 -----------------------------------------------------------------------

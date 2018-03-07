@@ -32,6 +32,20 @@ vim ../web.xml
 将数据库驱动包mysql-connector-java-5.1.22.jar复制到/opt/apache-tomcat-8.5.28/webapps/solr/WEB-INF/lib中
 将ik包ik-analyzer-solr5-5.x.jar复制到/opt/apache-tomcat-8.5.28/webapps/solr/WEB-INF/lib中
 将IKAnalyzer.cfg.xml 复制到/opt/apache-tomcat-8.5.28/webapps/solr/WEB-INF/classes中
+vim IKAnalyzer.cfg.xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+    <properties>
+        <comment>IK Analyzer 扩展配置</comment>
+        <!--扩展字典-->
+        <entry key="ext_dict">ext.dic;</entry>
+        <!--停止词字典-->
+        <entry key="ext_stopwords">stopword.dic;</entry>
+    </properties>
+将stopword.dic,ext.dic复制或创建到到/opt/apache-tomcat-8.5.28/webapps/solr/WEB-INF/classes中
+注:stopword.dic,ext.dic的编码方式为无BOM的UTF-8编码方式
+Ik的扩展字典表示在解析字符串的时候，遇到跟字典中词语匹配的字串的时候，会把它作为一个词元，而不会在去分词它。
+Ik的停用词字典表示这些词语不会当做词元来处理，也就是如果分词器解析出的词元是停用词的话，此词元就被忽略不要。
 进入/data/solrhome/{collect}/conf文件夹中修改managed-schema的内容在其中加上
 <fieldType name="text_ik" class="solr.TextField">
   <analyzer class="org.wltea.analyzer.lucene.IKAnalyzer"/>
