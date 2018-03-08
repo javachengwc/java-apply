@@ -1,10 +1,12 @@
-package com.solr7.search.solr;
+package com.solr7.index.solr;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrInputDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,5 +114,26 @@ public class SolrOperate {
         }
         matcher.appendTail(sb);
         return sb.toString();
+    }
+
+    //增改索引
+    public int addDocument(Map<String,Object> fields) throws Exception{
+        SolrInputDocument document = new SolrInputDocument();
+        for(Map.Entry<String,Object> entry: fields.entrySet())
+        {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            document.addField(key, value);
+        }
+        UpdateResponse updateResponse = solrClient.add(document);
+        solrClient.commit();
+        return updateResponse.getStatus();
+    }
+
+    //删除索引
+    public int deleteDocument(String id) throws Exception{
+        UpdateResponse updateResponse = solrClient.deleteById(id);
+        solrClient.commit();
+        return updateResponse.getStatus();
     }
 }
