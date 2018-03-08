@@ -19,5 +19,7 @@
 	<modules>
         <module>modules/solr-index</module>
         <module>modules/solr-search</module>
+		<module>modules/solr7-index</module>
+		<module>modules/solr7-search</module>
 	</modules>	
 </project>
