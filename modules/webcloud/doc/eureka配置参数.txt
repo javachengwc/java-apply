@@ -1,0 +1,36 @@
+----------------------------------eureka参数配置-----------------------------------
+eureka.client.registry-fetch-interval-seconds
+    表示eureka client间隔多久去拉取服务注册信息，默认为30秒，如果要快速获取服务注册状态，可以缩小该值。
+eureka.instance.lease-expiration-duration-in-seconds
+    leaseExpirationDurationInSeconds，表示eureka server至上一次收到client的心跳之后，等待下一次心跳的超时时间，
+    在这个时间内若没收到下一次心跳，则将移除该instance。默认为90秒
+    如果该值太大，则很可能将流量转发过去的时候，该instance已经不存活了。
+    如果该值设置太小了，则instance则很可能因为临时的网络抖动而被摘除掉。
+    该值至少应该大于leaseRenewalIntervalInSeconds
+eureka.instance.lease-renewal-interval-in-seconds
+    leaseRenewalIntervalInSeconds，表示eureka client发送心跳给server端的频率。默认30秒。
+    如果在leaseExpirationDurationInSeconds后，server端没有收到client的心跳，则将摘除该instance。
+    除此之外，如果该instance实现了HealthCheckCallback，并决定让自己unavailable的话，则该instance也不会接收到流量。
+eureka.server.eviction-interval-timer-in-ms
+    eureka server清理无效节点的时间间隔，默认60000毫秒，即60秒
+eureka.server.enable-self-preservation
+    是否开启自我保护模式，默认为true。
+    当Eureka Server节点在短时间内丢失过多客户端时（可能发生了网络分区故障），那么这个节点就会进入自我保护模式。
+    一旦进入该模式，Eureka Server就会保护服务注册表中的信息，不再删除服务注册表中的数据（也就是不会注销任何微服务）。
+    当网络故障恢复后，该Eureka Server节点会自动退出自我保护模式。
+
+测试环境参考配置
+eureka服务端:
+    eureka:
+      server:
+        enable-self-preservation: false           # 关闭自我保护模式（缺省为打开）
+        eviction-interval-timer-in-ms: 5000       # 续期时间，即扫描失效服务的间隔时间（缺省为60*1000ms）
+eureka客户端:
+    eureka:
+      client:
+        registry-fetch-interval-seconds: 5        # 默认为30秒
+      instance:
+        lease-renewal-interval-in-seconds: 5      # 心跳时间，即服务续约间隔时间（缺省为30s）
+        lease-expiration-duration-in-seconds: 10  # 发呆时间，即服务续约到期时间（缺省为90s）
+
+--------------------------------------------------------------------------------------
