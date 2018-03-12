@@ -24,5 +24,6 @@ psql中的交互命令
     alter table t_a add constraint ct_len check (char_length(zipcode) = 5);
                                                          ------增加表约束
     alter table t_a drop constraint ct_len;              ------去掉表约束
+    create index idx_aa on aa(id);                       ------创建索引
 
 ----------------------------------------------------------------------------------------
