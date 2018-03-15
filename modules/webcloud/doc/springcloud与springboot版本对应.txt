@@ -1,0 +1,16 @@
+-------------------------------------------------
+spring cloud版本演进
+Angel SR6     稳定版本
+Brixton SR7   稳定版本
+Camden SR7    稳定版本
+Dalston SR1   当前最新稳定版本
+Edgware       snapshot版
+Finchley      snapshot版
+-------------------------------------------------
+spring cloud               spring boot
+Angel                    	兼容Spring Boot 1.2.x
+Brixton 	                兼容Spring Boot 1.3.x，也兼容Spring Boot 1.4.x
+Camden 	                    兼容Spring Boot 1.4.x，也兼容Spring Boot 1.5.x
+Dalston和Edgware 	        兼容Spring Boot 1.5.x，不兼容Spring Boot 2.0.x
+Finchley 	                兼容Spring Boot 2.0.x，不兼容Spring Boot 1.5.x
+-------------------------------------------------
