@@ -1,0 +1,12 @@
+js是一种动态类型、弱类型、基于原型的客户端脚本语言。
+js由3部分组成，ECMAScript（核心）,DOM（文档对象模型）,BOM （浏览器对象模型）
+es就是ECMAScript（核心）,es5就是ECMAScript第五个版本,es6是ECMAScript第六个版本。
+
+浏览器与es的兼容性
+ie5.5-ie7                       es3
+ie8                             es5
+ie9+                            es5
+firefox 1,2,3.0.x               es3
+firefox 3.5-3.6                 es5
+firefox 4+                      es5
+chrome 1+                       es3

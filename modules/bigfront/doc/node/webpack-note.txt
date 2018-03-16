@@ -1,0 +1,5 @@
+webpack是前端的打包工具。它是模块化构建机制，分析项目结构，找到JavaScript模块以及其它的一些浏览器不能直接运行的拓展语言（Scss，TypeScript等），
+并将其打包为合适的格式以供浏览器使用，类似于 Grunt and Gulp，但是有区别。Gulp/Grunt是一种能够优化前端的开发流程的工具，
+而WebPack是一种模块化的解决方案，不过Webpack的优点使得Webpack可以替代Gulp/Grunt类的工具。
+webpack中文网站地址:https://www.webpackjs.com/
+
