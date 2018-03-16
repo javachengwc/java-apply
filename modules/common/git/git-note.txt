@@ -215,5 +215,9 @@ git reset --hard origin/master
 
 某个提交从A分支复制到B分支
 在B分支下执行git cherry-pick commitid(A分支的提交id)
+-----------------------------------------------------
+在idea中使用git需要
+1,配置git  file-->settings-->git
+2,将ssh公私钥放到C:\Users\***\.ssh下，且名称必须是id_rsa,id-rsa.pub,不然ssh password login弹框始终会anth fail。
 
 -------------------------------------------------------------

@@ -3,7 +3,7 @@ spring cloud版本演进
 Angel SR6     稳定版本
 Brixton SR7   稳定版本
 Camden SR7    稳定版本
-Dalston SR1   当前最新稳定版本
+Dalston SR1   当前稳定版本
 Edgware       snapshot版
 Finchley      snapshot版
 -------------------------------------------------
