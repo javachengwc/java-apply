@@ -1,0 +1,1 @@
+angular是google公司推出的MVVM前端框架。它的风格属于 HTML 语言的增强，核心概念是双向绑定。

@@ -1,0 +1,5 @@
+node是服务器上的 JavaScript 运行环境,2009年诞生。
+node的意义:
+JavaScript 成为服务器脚本语言，与 Python 和 Ruby 一样
+JavaScript 成为唯一的浏览器和服务器都支持的语言
+前端工程师可以编写后端程序了
