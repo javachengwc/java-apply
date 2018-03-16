@@ -9,3 +9,15 @@ dva的特性：
     插件机制：比如 dva-loading 可以自动处理 loading 状态，不用一遍遍地写 showLoading 和 hideLoading
     完善的语法分析库 dva-ast：dva-cli 基于此实现了智能创建 model, router 等
     支持 TypeScript：通过 d.ts
+ant design是蚂蚁金服的react实现。
+npm install dva-cli -g                 ###安装dva-cli
+dva new btest                          ###创建新应用btest
+npm install antd                       ###安装ant design
+npm install babel-plugin-import --save ###安装babel-plugin-import
+                                       babel-plugin-import 是用来按需加载 antd 的脚本和样式的
+vim .roadhogrc，使 babel-plugin-import 插件生效。
+"extraBabelPlugins": [
+    "transform-runtime",
+    ["import", { "libraryName": "antd", "style": "css" }]
+],
+
