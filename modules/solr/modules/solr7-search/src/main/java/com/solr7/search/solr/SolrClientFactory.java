@@ -12,7 +12,11 @@ public class SolrClientFactory {
     public static SolrClient getSolrClient(String url) {
         SolrClient solrClient = solrClientMap.get(url);
         if (solrClient == null) {
-            solrClient= new HttpSolrClient.Builder(url).build();
+            //solrClient= new HttpSolrClient.Builder(url).build();
+            HttpSolrClient httpSolrClient = new HttpSolrClient.Builder(url).
+                    withConnectionTimeout(5000).
+                    withSocketTimeout(5000).build();
+            solrClient=httpSolrClient;
             solrClientMap.putIfAbsent(url, solrClient);
         }
         return solrClient;
