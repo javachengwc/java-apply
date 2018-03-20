@@ -53,6 +53,26 @@ mysql>set profiling=1; #打开profiling
 mysql>select ......   #具体查询
 mysql> show profiles\G; #显示被执行的sql语句的时间和ID
 mysql>show profile for query 1;  #显示对应sql语句执行的详细信息
+    status                  duration
+    starting                0.000427
+    checking permissions    5E-6                  =5*10^-6次方
+    Opening tables          8.9E-5
+    init                    0.000138
+    System lock             3.7E-5
+    optimizing              4.9E-5
+    statistics              0.000731
+    preparing               0.000106
+    executing               1.4E-5
+    Sending data            9.600897              ##收集 + 发送数据,此状态耗时很长一般是查询没命中索引
+                                                  ##此状态是慢查询重点关注状态
+    end                     4.7E-5
+    query end               4.7E-5                ##语句执行完毕了，但是还有一些后续工作没做完时的状态
+    closing tables          2.8E-5
+    freeing items           0.000125              ##释放查询缓存里面的空间
+    logging slow query      7.6E-5
+    cleaning up             3.1E-5
+
+
 show profile命令格式：
 SHOW PROFILE [type [, type] … ]
     [FOR QUERY n]
@@ -114,5 +134,6 @@ type:
       2，每次事务提交引起写入日志文件的动作，但每秒钟完成一次flush磁盘操作。
       实际使用发现，此值对插入数据的速度影响非常大，设置为2时插入10000条记录只需要2秒，设置为0时只需要1秒，而设置为1时则需要229秒。
       因此，建议尽量将插入操作合并成一个事务，这样可以大幅提高速度。在允许丢失最近部分事务的危险的前提下，可以把该值设为0或2。
+      如果SQL慢可能是IO压力太大的缘故,就可以调整此参数
 
 ----------------------------------------------------------------------------------------------
