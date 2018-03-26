@@ -104,7 +104,8 @@ from t_old  b left join t_new a on b.stat_date=a.stat_date and b.from_source=a.f
 where a.stat_date is null
 
 -----mysql死锁
-show processlist 或 show full processlist
+show processlist 或 show full processlist 或
+select * from information_schema.innodb_trx;
 kill id  #杀死sql线程
 
 -----mysql锁
