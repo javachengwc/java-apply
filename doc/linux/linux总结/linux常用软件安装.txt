@@ -1,4 +1,4 @@
---------------------------linux常用软件下载安装------------------------
+--------------------------linux常用软件安装------------------------
 ---------------gcc automake autoconf libtool make gcc-c++
 yum -y install gcc automake autoconf libtool make     ---安装gcc automake autoconf libtool make
 yum -y install gcc-c++                                ---安装gcc-c++

@@ -10,7 +10,10 @@ gradle是一个基于jvm的富有突破性的构建工具。
 gradle的核心在于基于 Groovy 的丰富而可扩展的域描述语言(DSL),gradle 的构建脚本是采用 Groovy 写的。
 gradle 完全支持用于发布或检索依赖的 Maven 或 Ivy 仓库。
 gradle提供了一个转换器，用于将一个 Maven pom.xml 文件转换为一个 gradle 脚本。
-gradle Wrapper 允许在没有安装 Gradle 的机器上执行 Gradle 构建。
+gradle Wrapper 允许在没有安装 Gradle 的机器上执行 Gradle 构建。它管理不同版本的gradle,做到向后兼容。
+gradle wrapper           ###安装gradle wrapper
+gradle wrapper -gradle-version 3.13
+gradlew -v               ###查看gradlew是否可用
 
 gradle 构建由一个或多个 projects 组成。project 或许是一个 jar 包或者一个 web 应用，
 它也可以是一个由许多其他项目中产生的 jar 构成的 zip 压缩包。
@@ -26,4 +29,7 @@ build                                 ###编译并打包 jar 文件，并执行�
 定义一个多项目构建工程需要在项目根目录创建一个settings.gradle配置文件来指明构建包含哪些项目。
 样例配置如下:
     include "order_api", "order_service"
+
+
+gradle的安装见"linux常用软件安装--gradle"。
 -----------------------------------------------------------------------

@@ -1,0 +1,14 @@
+---------------------------------gradle插件----------------------------------
+gradle War 插件                        ###组装应用程序 WAR 文件。
+    apply plugin: 'war'
+gradle Jetty 插件                      ###部署web 应用程序到Jetty嵌入式容器中。
+    apply plugin: 'jetty'
+gradle FindBugs 插件                   ###使用 FindBugs 对项目的 Java 源文件进行bug检测。
+    apply plugin: 'findbugs'
+gradle Sonar 插件                      ###基于 web 的代码质量监测平台的集成。
+    apply plugin: "sonar"
+gradle Groovy 插件                     ###支持联合编译，可以任意地混合及匹配 Groovy 和 Java 代码各自的依赖
+    apply plugin: 'groovy'
+gradle Java 插件                       ###向项目添加Java 编译、 测试和 bundling 的能力
+    apply plugin: 'java'
+-----------------------------------------------------------------------------
