@@ -1,6 +1,8 @@
 -------------------------------android sdk----------------------------------
 wget https://dl.google.com/android/android-sdk_r24.4.1-linux.tgz
 tar zxvf android-sdk_r24.4.1-linux.tgz
+vim /etc/profile
+    export ANDROID_HOME=/opt/android-sdk-linux
 cd android-sdk-linux/tools
 ./android --help                      ###查看命令帮助
 ./android list sdk -a                 ###查看当前可安装的SDK版本
