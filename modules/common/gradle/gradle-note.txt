@@ -1,0 +1,29 @@
+--------------------------------gradle笔记-----------------------------
+gradle是一个基于jvm的富有突破性的构建工具。
+它提供了:
+    一个像 ant 一样，通用的灵活的构建工具
+    一种可切换的，像 maven 一样的基于约定约定优于配置的构建框架
+    对已有的 maven 和 ivy 仓库的全面支持
+    支持传递性依赖管理，而不需要远程仓库或者 pom.xml 或者 ivy 配置文件
+    ant 式的任务和构建是 gradle 的第一公民
+    基于 groovy，其 build 脚本使用 groovy dsl 编写
+gradle的核心在于基于 Groovy 的丰富而可扩展的域描述语言(DSL),gradle 的构建脚本是采用 Groovy 写的。
+gradle 完全支持用于发布或检索依赖的 Maven 或 Ivy 仓库。
+gradle提供了一个转换器，用于将一个 Maven pom.xml 文件转换为一个 gradle 脚本。
+gradle Wrapper 允许在没有安装 Gradle 的机器上执行 Gradle 构建。
+
+gradle 构建由一个或多个 projects 组成。project 或许是一个 jar 包或者一个 web 应用，
+它也可以是一个由许多其他项目中产生的 jar 构成的 zip 压缩包。
+每个 project 都由多个 tasks 组成。每个 task 都代表了构建执行过程中的一个原子性操作。
+如编译，打包，生成 javadoc，发布到某个仓库等操作。
+一些较常用的任务有如下几个:
+clean                                 ###删除 build 目录以及所有构建完成的文件。
+assemble                              ###编译并打包 jar 文件，但不会执行单元测试。
+check                                 ###编译并测试代码。
+build                                 ###编译并打包 jar 文件，并执行单元测试。
+
+通常，一个 Java 项目拥有许多外部依赖。你需要告诉 Gradle 如何找到并引用这些外部文件。在 Gradle 中通常 Jar 包都存在于仓库中。仓库可以用来搜寻依赖或发布项目产物。下面是一个采用 Maven 仓库的例子。
+定义一个多项目构建工程需要在项目根目录创建一个settings.gradle配置文件来指明构建包含哪些项目。
+样例配置如下:
+    include "order_api", "order_service"
+-----------------------------------------------------------------------

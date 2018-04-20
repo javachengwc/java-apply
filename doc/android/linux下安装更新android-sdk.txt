@@ -1,0 +1,14 @@
+-------------------------------android sdk----------------------------------
+wget https://dl.google.com/android/android-sdk_r24.4.1-linux.tgz
+tar zxvf android-sdk_r24.4.1-linux.tgz
+cd android-sdk-linux/tools
+./android --help                      ###查看命令帮助
+./android list sdk -a                 ###查看当前可安装的SDK版本
+./android update sdk --help
+    -u --no-ui  在命令行环境下使用
+    -t --filter 过滤，只安装指定版本的sdk
+./android update sdk -u  -a             ###下载更新全部可安装的SDK版本
+./android  update sdk -u -a -t 序号     ###安装指定序号的组件
+./android  update sdk -u -a -t 12,20,30 ###安装12,20,30序号组件
+
+----------------------------------------------------------------------------
