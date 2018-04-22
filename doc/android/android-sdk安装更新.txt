@@ -1,4 +1,6 @@
 -------------------------------android sdk----------------------------------
+android资源网站:http://www.androiddevtools.cn
+
 linux系统中android-sdk的安装与更新
 wget https://dl.google.com/android/android-sdk_r24.4.1-linux.tgz
 tar zxvf android-sdk_r24.4.1-linux.tgz
@@ -13,5 +15,16 @@ cd android-sdk-linux/tools
 ./android update sdk -u  -a             ###下载更新全部可安装的SDK版本
 ./android  update sdk -u -a -t 序号     ###安装指定序号的组件
 ./android  update sdk -u -a -t 12,20,30 ###安装12,20,30序号组件
+
+windows系统中android-sdk的安装与更新
+访问http://www.androiddevtools.cn,下载SDK tools,android-sdk_r24.4.1-windows.zip
+解压到相应目录，比如解压后的目录为D:\soft\android-sdk-windows
+设置环境变量 ANDROID_HOME=D:\soft\android-sdk-windows
+cd D:\soft\android-sdk-windows\tools
+android.bat list sdk -a               ###查看当前可安装的SDK版本
+这里可能报错:Unrecognized Windows Sockets error: 10106
+需要以管理员身份打开命令行，执行netsh winsock reset，并重启系统
+直接双击D:\soft\android-sdk-windows\SDK Manager.exe打开android sdk的管理图形界面，
+可以在这上面下载更新制定版本的各组件。
 
 ----------------------------------------------------------------------------
