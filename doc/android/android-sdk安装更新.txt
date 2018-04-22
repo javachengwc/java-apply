@@ -1,4 +1,5 @@
 -------------------------------android sdk----------------------------------
+linux系统中android-sdk的安装与更新
 wget https://dl.google.com/android/android-sdk_r24.4.1-linux.tgz
 tar zxvf android-sdk_r24.4.1-linux.tgz
 vim /etc/profile

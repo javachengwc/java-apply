@@ -30,6 +30,7 @@ ssh选项
 ssh-keygen命令用于为ssh生成、管理和转换认证密钥，它支持RSA和DSA两种认证密钥。
 ssh-keygen -t rsa 直接回车将会生成密钥文件和私钥文件id_rsa,id_rsa.pub,
     将*.pub文件复制到B机器某账户的.ssh 目录, 并cat id_rsa.pub >> ~/.ssh/authorized_keys,从本机ssh到B机器的目标账户，不再需要密码。
+windows下运行此命令可能会报错Could not create directory '//.ssh'，需要设置环境变量HOME--->你的home目录。
 
 ssh-keygen选项
 -b：指定密钥长度。
