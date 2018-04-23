@@ -20,6 +20,8 @@ windows系统中android-sdk的安装与更新
 访问http://www.androiddevtools.cn,下载SDK tools,android-sdk_r24.4.1-windows.zip
 解压到相应目录，比如解压后的目录为D:\soft\android-sdk-windows
 设置环境变量 ANDROID_HOME=D:\soft\android-sdk-windows
+             ANDROID_SDK_HOME=D:\soft\android-sdk-windows
+             path=%path%;%ANDROID_SDK_HOME%\platform-tools;%ANDROID_SDK_HOME%\tools
 cd D:\soft\android-sdk-windows\tools
 android.bat list sdk -a               ###查看当前可安装的SDK版本
 这里可能报错:Unrecognized Windows Sockets error: 10106
