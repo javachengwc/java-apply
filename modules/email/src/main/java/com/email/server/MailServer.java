@@ -2,7 +2,7 @@ package com.email.server;
 
 import com.caucho.hessian.server.HessianServlet;
 import com.email.service.EmailService;
-import com.email.util.SpringContextUtils;
+import com.spring.util.SpringContextUtils;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
