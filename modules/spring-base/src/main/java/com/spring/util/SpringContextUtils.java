@@ -3,12 +3,14 @@ package com.spring.util;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+@Component
 public class SpringContextUtils implements ApplicationContextAware {
 
     private static ApplicationContext applicationContext; // Spring应用上下文环境
@@ -36,6 +38,13 @@ public class SpringContextUtils implements ApplicationContextAware {
             return null;
         }
         return (T) applicationContext.getBean(name, requiredType);
+    }
+
+    public static <T> T getBean( final Class<T> requiredType) {
+        if (applicationContext == null) {
+            return null;
+        }
+        return (T) applicationContext.getBean(requiredType);
     }
 
 
