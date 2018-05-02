@@ -33,6 +33,7 @@ public class LockMain {
 
     public static void testLock() {
         String key = "concurrent_lock_001";
+         logger.info("RedisLockUtil testLock start ,thread={}",Thread.currentThread().getName());
         boolean lock = RedisLockUtil.lock(key);
         if(lock) {
             try {

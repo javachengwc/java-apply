@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.util.concurrent.TimeUnit;
 
@@ -15,11 +16,13 @@ public class RedisLockUtil {
 
     private static Integer defaultExpire = 10*1000; //10秒
 
-    private static volatile RedisTemplate redisTemplate= null;
+    private static volatile RedisTemplate<String,Object> redisTemplate = null;
 
     public static RedisTemplate gainRedisTemplate() {
         if(redisTemplate==null) {
-            redisTemplate = SpringContextUtils.getBean(RedisTemplate.class);
+            redisTemplate = (RedisTemplate<String,Object> )SpringContextUtils.getBean(RedisTemplate.class);
+            redisTemplate.setKeySerializer(new StringRedisSerializer());
+            redisTemplate.setValueSerializer(new StringRedisSerializer());
         }
         return redisTemplate;
     }
