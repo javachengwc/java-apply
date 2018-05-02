@@ -46,6 +46,7 @@ git push origin --delete aa             --->删除远程分支aa
 git config --list                       --->查看git配置， 配置文件一般是~/.gitconfig
 git config --global user.name  [username]  --->配置git账号
 git config --global user.email [email]
+git config --global core.longpaths true --->解决git clone时候部分文件报错Filename too long
 #在项目工作区的目录 git config -e 可修改工作区的.git/config文件
 
 -----------------------------------------------------------------------
