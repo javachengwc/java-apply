@@ -75,6 +75,7 @@ https协议原理
     注:关于sha256，默认使用的是sha1，在新版本的chrome中会被认为是不安全的，因为使用了过时的加密算法。
 4,打包服务端的资料为pkcs12格式(非必要，只是换一种格式存储上一步生成的证书)
     openssl pkcs12 -export -in server.crt -inkey server.key -out server.pkcs12
+    生成过程中，需创建访问密码，需记录下来。
 5,生成服务端的keystore（.jks文件, 非必要，Java程序通常使用该格式的证书）
     keytool -importkeystore -srckeystore server.pkcs12 -destkeystore server.jks -srcstoretype pkcs12
 6,把ca证书放到keystore中（非必要）
@@ -85,8 +86,8 @@ https协议原理
 server {
     listen      127.0.0.1:443 ssl;
     ssl on;
-    ssl_certificate Server.crt;
-    ssl_certificate_key Server.key;
+    ssl_certificate server.crt;
+    ssl_certificate_key server.key;
     ...
 }
 注:crt、jks、pkcs12都是用来保存证书的不同格式，不同的服务器软件可能会使用不同格式的证书文件。
