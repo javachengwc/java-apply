@@ -59,7 +59,7 @@ https协议原理
             4,验证握手消息是否被第三方团体修改;
     应用数据协议携带着应用消息，只以TLS的角度考虑的话，这些就是数据缓冲区。记录层使用当前连接安全参数对这些消息进行打包、碎片整理和加密。
 --------------------------------------------------
-自制https证书
+自制https证书方式1
 ###证书颁发机构
 1,生成CA机构私钥
     openssl genrsa -out ca.key 2048
@@ -93,4 +93,39 @@ server {
 注:crt、jks、pkcs12都是用来保存证书的不同格式，不同的服务器软件可能会使用不同格式的证书文件。
 OpenSSl、Keytool都是可以用来生成Https证书的工具软件，其中OpenSSl功能更多更复杂，Keytool随JDK安装而安装。
 证书的格式是多样的，生成证书的软件工具有很多，不同服务器程序的配置方法不尽相同，要达成目的有很多种方法。
+----------------------------------------------------------------------------------
+自制https证书方式2(此方式经测试可行):
+
+openssl genrsa -des3 -out yaya.key 1024
+openssl req -new -key yaya.key -out yaya.csr
+    Country Name (2 letter code) [XX]:cn                                                         #国家
+    State or Province Name (full name) []:sichuan                                                #省份
+    Locality Name (eg, city) [Default City]:chengdu                                              #地区名字
+    Organization Name (eg, company) [Default Company Ltd]:ccc                                    #公司名
+    Organizational Unit Name (eg, section) []:it                                                 #部门
+    Common Name (eg, your name or your server's hostname) []:cheng                               #CA主机名
+    Email Address []:cheng@ccc.cn                                                                #邮箱
+
+cp yaya.key yaya.key.bak
+openssl rsa -in yaya.key.bak -out abab.key
+openssl x509 -req -days 365 -in yaya.csr -signkey abab.key -out yaya.crt
+
+vim nginx.conf
+     server {
+       listen       80;
+       server_name  localhost;
+       rewrite ^(.*)$  https://$host$1 permanent;
+       #http访问自动跳转到https
+     }
+     server {
+       listen 443;
+       server_name localhost;
+       ssl on;
+
+       ### SSL cert files ###
+       ssl_certificate     yaya.crt;
+       #由于此证书是自己手动颁发的，是不受信任的，访问时会有个“大叉”提示，但不影响访问
+       ssl_certificate_key abab.key;
+       ssl_session_timeout 5m;
+     }
 ----------------------------------------------------------------------------------
