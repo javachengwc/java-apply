@@ -19,6 +19,9 @@ nginx的前置依赖
     需在此目录执行autoreconf -ivf，再./configure ...
     pcre-config --version                               ---查看pcre版本
 
+    或者直接执行
+    yum install -y pcre pcre-devel
+
     3,zlib:gzip模块，需要zlib库支持
     wget http://zlib.net/zlib-1.2.11.tar.gz
     tar -zxvf zlib-1.2.11.tar.gz
@@ -40,6 +43,9 @@ nginx的前置依赖
     解决方式:在编译安装openssl还有nginx的时候先移除mv /usr/bin/pod2man /tmp/
     编译安装完后再复制回来。
 
+    或者直接执行
+    yum -y install openssl openssl-devel
+
 建立启用nginx对应的用户组
     groupadd -r nginx
     useradd -s /sbin/nologin -g nginx -r nginx
@@ -54,6 +60,7 @@ nginx的前置依赖
     --user=nginx
     --group=nginx
     --with-http_ssl_module
+    ##下面三选项可不要
     --with-pcre=/usr/local/src/pcre-8.38
     --with-zlib=/usr/local/src/zlib-1.2.11
     --with-openssl=/usr/local/src/openssl-1.0.1c
@@ -72,7 +79,7 @@ nginx编译选项
     make install是用来安装的，它也从Makefile中读取指令，安装到指定的位置。
 
     nginx的configure命令支持以下参数：
-     --help 运行所提供的配置脚本来查看所有支持的编译选项列表（包含可选模块)。
+    --help 运行所提供的配置脚本来查看所有支持的编译选项列表（包含可选模块)。
     --prefix=path    定义一个目录，存放服务器上的文件 ，也就是nginx的安装目录。默认使用 /usr/local/nginx。
     --sbin-path=path 设置nginx的可执行文件的路径，默认为  prefix/sbin/nginx。
     --conf-path=path  设置在nginx.conf配置文件的路径。nginx允许使用不同的配置文件启动，通过命令行中的-c选项。默认为prefix/conf/nginx.conf。
