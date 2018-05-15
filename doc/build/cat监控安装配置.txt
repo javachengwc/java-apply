@@ -1,0 +1,14 @@
+---------------------------------------cat监控------------------------------------
+cat是基于Java开发的实时应用监控平台。
+cat安装配置过程如下:
+1,从github上将cat下载至本地,https://github.com/dianping/cat
+2,upzip cat-master.zip
+3,拷贝相应配置文件到对应目录下
+  cp cat-master/script/client.xml /data/appdatas/cat
+  cp cat-master/script/client.xml /data/appdatas/cat
+  cp cat-master/script/client.xml /data/appdatas/cat
+3,将cat-master\script\下的client.xml、datasources.xml、server.xml配置文件复制到/data/appdatas/cat/下
+4,修改数据库链接
+  vim /data/appdatas/cat/datasources.xml
+5,创建cat数据库,将cat-master/script/
+----------------------------------------------------------------------------------
