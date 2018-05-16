@@ -1,14 +1,26 @@
 ---------------------------------------cat监控------------------------------------
 cat是基于Java开发的实时应用监控平台。
 cat安装配置过程如下:
-1,从github上将cat下载至本地,https://github.com/dianping/cat
-2,upzip cat-master.zip
-3,拷贝相应配置文件到对应目录下
+1,从github上将cat下载至本地并解压,https://github.com/dianping/cat
+2,拷贝相应配置文件到对应目录下
   cp cat-master/script/client.xml /data/appdatas/cat
-  cp cat-master/script/client.xml /data/appdatas/cat
-  cp cat-master/script/client.xml /data/appdatas/cat
-3,将cat-master\script\下的client.xml、datasources.xml、server.xml配置文件复制到/data/appdatas/cat/下
-4,修改数据库链接
+  cp cat-master/script/datasources.xml /data/appdatas/cat
+  cp cat-master/script/server.xml /data/appdatas/cat
+3,修改数据库链接
   vim /data/appdatas/cat/datasources.xml
-5,创建cat数据库,将cat-master/script/
+4,创建cat数据库,将cat-master/script/Cat.sql的脚本在创建的cat数据库执行
+5,修改/data/appdatas/cat/server.xml配置
+  local-mode-->本地模式配置，设置为false，否则将不会使用数据库和hdfs存储
+  hdfs-machine-->是否启用hdfs存储，设为false。
+  job-machine-->是否为报告工作机，当有多台服务器时，开启一台即可。
+  alert-machine-->是否为报警机，开启一台即可，如没有一台开启，告警功能将不能够正常使用。
+  storage-->定义数据存储相关信息，默认定义本地目录/data/appdatas/cat/buket/为存储目录，本地报告及本地日志保存时间均为7天。
+  console-->控制台信息，定义默认的domain为Cat（每个cat应用要求都需要有一个domain，Cat本身的domain为Cat）。
+  remote-servers-->定义http服务列表。
+6,对cat-master进行编译打包 mvn clean install -DskipTests
+7,将cat-master/cat-home/target/cat-alpha-2.0.0.war拷贝到tomcat的webapps下,并重命名为cat.war
+8,启动tomcat,访问http://127.0.0.1:8080/cat,能看到web页面表示安装成功
+注:tomcat启动参数参考 -Xms16g -Xmx16g -XX:PermSize=256m -XX:MaxPermSize=256m -XX:NewSize=8m -XX:MaxNewSize=8m -XX:SurvivorRatio=10
+   tomcat必须设置encoding格式：URIEncoding="UTF-8"
+   
 ----------------------------------------------------------------------------------
