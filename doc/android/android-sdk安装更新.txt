@@ -29,4 +29,6 @@ android.bat list sdk -a               ###查看当前可安装的SDK版本
 直接双击D:\soft\android-sdk-windows\SDK Manager.exe打开android sdk的管理图形界面，
 可以在这上面下载更新制定版本的各组件。
 
+
+
 ----------------------------------------------------------------------------
