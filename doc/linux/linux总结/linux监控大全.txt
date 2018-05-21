@@ -108,7 +108,7 @@ apt-get install libncurses5-dev libpcap-dev        ---前置依赖安装
 wget -c https://github.com/raboof/nethogs/archive/v0.8.1.tar.gz
 tar -zxvf v0.8.1.tar.gz
 cd ./nethogs-0.8.1
-make && sud make install
+make && sudo make install
 ln -s /usr/local/sbin/nethogs /usr/sbin/nethogs
 
 netHogs的一些交互命令（键盘快捷键）
