@@ -16,11 +16,45 @@ cat安装配置过程如下:
   alert-machine-->是否为报警机，开启一台即可，如没有一台开启，告警功能将不能够正常使用。
   storage-->定义数据存储相关信息，默认定义本地目录/data/appdatas/cat/buket/为存储目录，本地报告及本地日志保存时间均为7天。
   console-->控制台信息，定义默认的domain为Cat（每个cat应用要求都需要有一个domain，Cat本身的domain为Cat）。
-  remote-servers-->定义http服务列表。
+  remote-servers-->定义http服务列表。exp:<remote-servers>118.190.211.217:8080</remote-servers>
+  注:这里如果有多个服务,依英文逗号分隔，相应的端口是各服务对应的http端口
+
 6,对cat-master进行编译打包 mvn clean install -DskipTests
 7,将cat-master/cat-home/target/cat-alpha-2.0.0.war拷贝到tomcat的webapps下,并重命名为cat.war
-8,启动tomcat,访问http://127.0.0.1:8080/cat,能看到web页面表示安装成功
+8,启动tomcat,访问http://127.0.0.1:8080/cat,能看到web页面表示安装成功,默认账号 catadmin catadmin
 注:tomcat启动参数参考 -Xms16g -Xmx16g -XX:PermSize=256m -XX:MaxPermSize=256m -XX:NewSize=8m -XX:MaxNewSize=8m -XX:SurvivorRatio=10
    tomcat必须设置encoding格式：URIEncoding="UTF-8"
-   
+
+cat服务说明:
+data/appdatas/cat 目录存放cat-home 配置文件的相对地址
+data/applogs/cat 目录存放cat-home 的log日志
+cat体系有个domain的概念，一个domain可以对应成一个project，比如cat-home打包成war
+也是一个domain, cat-home默认是服务端也是客户端,也就是说cat-home自身也会被监控，
+这就是为什么cat-home/META-INF/cat目录里面会有clinet.xml
+
+cat-home也就是cat服务器端是支持集群的，如果有多个服务端那么在client.xml就得配置多个服务端的信息
+<config mode="client">
+    <servers>
+       <server ip="127.0.0.1" port="2280" http-port="8080"/>
+       <server ip="127.0.0.2" port="2280" http-port="8080"/>
+       <server ip="127.0.0.3" port="2280" http-port="8080"/>
+    </servers>
+</config>
+
+cat服务端的server.xml,如果是集群remote-servers 就配置多个，需要注意的就是local-mode=”false”，如果配置成true 就不会使用数据库了。
+<config local-mode="false" hdfs-machine="false" job-machine="true" alert-machine="false">
+    <storage  local-base-dir="/data/appdatas/cat/bucket/" max-hdfs-storage-time="15" local-report-storage-time="7" local-logivew-storage-time="7">
+        <hdfs id="logview" max-size="128M" server-uri="hdfs://127.0.0.6/user/cat" base-dir="logview"/>
+        <hdfs id="dump" max-size="128M" server-uri="hdfs://127.0.0.6/user/cat" base-dir="dump"/>
+        <hdfs id="remote" max-size="128M" server-uri="hdfs://127.0.0.6/user/cat" base-dir="remote"/>
+    </storage>
+    <console default-domain="Cat" show-cat-domain="true">
+        <remote-servers>127.0.0.1:8080,127.0.0.2:8080,127.0.0.3:8080</remote-servers>
+    </console>
+</config>
+客户端路由需要修改，集群和单个都需要修改成对于的ip
+客户端路由在管理后台-->配置-->客户端路由菜单下进行修改。
+
+
+
 ----------------------------------------------------------------------------------

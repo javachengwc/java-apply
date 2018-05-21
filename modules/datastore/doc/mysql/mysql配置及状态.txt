@@ -8,6 +8,7 @@ show variables;
      show variables like 'character_set_%';           -----查看字符集设置
      show variables like 'collation_%';
      show variables like '%storage_engine%';          -----查看当前db的存储引擎
+     show variables like '%max_allowed_packet%';      -----查看mysql数据包大小
 
 -----查看MySQL服务器运行的各种状态值
 show global status;
@@ -78,6 +79,12 @@ show status like 'slow_launch_threads';
 
 --查看查询时间超过long_query_time秒的查询的个数。
 show status like 'slow_queries';
+
+-------------设置mysql配置参数---------------------
+--设置mysql数据包大小
+set global max_allowed_packet = 10*1024*1024
+##设置数据包大小为10M，max_allowed_packet的值最大为1G，设置的值必须为1024的倍数
+##设置完后，需要退出mysql，重新进入才能看到设置后的值
 
 -----------------------------------------------------
 
