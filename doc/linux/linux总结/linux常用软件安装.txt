@@ -344,6 +344,44 @@ vim /usr/local/apache2/htdocs/test.php
 /usr/local/apache2/bin/apachectl restart   #重启apache
 http://localhost/test.php    能访问php页面表示在apache中配置php成功
 
+---------------python
+yum install python 或 apt-get install python
+yum install python-setuptools                            ---装python
+或编译安装
+yum groupinstall "Development tools"                     ---安装devtoolset
+yum install zlib-devel
+yum install bzip2-devel
+yum install openssl-devel
+yum install ncurses-devel
+yum install sqlite-devel                                 ---安装依赖包
+
+wget --no-check-certificate https://www.python.org/ftp/python/2.7.9/Python-2.7.9.tar.xz
+tar xf Python-2.7.9.tar.xz
+cd Python-2.7.9
+
+./configure --enable-shared --enable-loadable-sqlite-extensions --prefix=/usr/local
+其中--enable-loadable-sqlite-extensions是sqlite的扩展，如果需要使用的话则带上这个选项。
+make && make install 或 make && make altinstall         ---编译安装
+
+##配置软连接，让系统pyhon默认指向python2.7.9
+mv /usr/bin/python /usr/bin/python2.6_temp
+ln -s /usr/local/bin/python2.7 /usr/bin/python
+
+yum与python2.7不兼容的处理，修改yum文件
+vim /usr/bin/yum
+将"!/usr/bin/python"改为"!/usr/bin/python2.6"
+
+vi /etc/profile                                         ---配置环境变量
+    PY_HOME=/usr/local/bin/python2.7
+    export PATH=$PY_HOME/bin:$PATH
+source /etc/profile                                     ---当前终端生效，reboot后才会完全生效
+
+python -V查看版本信息，如果出现错误
+error while loading shared libraries: libpython2.7.so.1.0: cannot open shared object file: No such file or directory
+vi /etc/ld.so.conf
+添加新的一行内容/usr/local/lib
+/sbin/ldconfig
+/sbin/ldconfig -v
 ---------------------------------------
 #安装过程中找不到相应库解决
 vi /etc/ld.so.conf  #添加相应的库路径在里面

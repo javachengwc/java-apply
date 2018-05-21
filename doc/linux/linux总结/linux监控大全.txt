@@ -100,6 +100,16 @@ nethogs                  ---启用nethogs
 nethogs -d 5             ---启用nethogs刷新频率为5
 nethogs eth0             ---只监控网络设备eth0的网络带宽
 nethogs eth0 eth1        ---同时监控eth0,eth1的网络带宽
+如果在ubuntu系统下执行如上命令报错creating socket failed while establishing local IP - are you root
+这是nethogs version 0.8.0 的一个 bug，只要更新到0.8.1 即可。可是 Ubuntu 软件源里并没有更新到 0.8.1，
+那么只能手动下载源码包编译安装了。
+apt-get install build-essential
+apt-get install libncurses5-dev libpcap-dev        ---前置依赖安装
+wget -c https://github.com/raboof/nethogs/archive/v0.8.1.tar.gz
+tar -zxvf v0.8.1.tar.gz
+cd ./nethogs-0.8.1
+make && sud make install
+ln -s /usr/local/sbin/nethogs /usr/sbin/nethogs
 
 netHogs的一些交互命令（键盘快捷键）
 m-->修改单位
