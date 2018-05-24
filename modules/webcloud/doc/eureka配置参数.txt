@@ -1,9 +1,14 @@
 ----------------------------------eureka参数配置-----------------------------------
+eureka.client.register-with-eureka
+    是否将自身的实例信息注册到Eureka服务端，默认为true,若设置为false将不会启动注册操作。
+eureka.client.fetch-registry
+    是否从服务中心获取注册的实例，默认true。
 eureka.client.registry-fetch-interval-seconds
     表示eureka client间隔多久去拉取服务注册信息，默认为30秒，如果要快速获取服务注册状态，可以缩小该值。
 eureka.instance.lease-expiration-duration-in-seconds
     leaseExpirationDurationInSeconds，表示eureka server至上一次收到client的心跳之后，等待下一次心跳的超时时间，
-    在这个时间内若没收到下一次心跳，则将移除该instance。默认为90秒
+    也就是服务失效时间,默认为90秒，在这个时间内若没收到下一次心跳，Eureka Server会对它做标记，在清除超时实例的任务
+    (eureka.server.eviction-interval-timer-in-ms对应的任务)执行的时候会将此实例移除。
     如果该值太大，则很可能将流量转发过去的时候，该instance已经不存活了。
     如果该值设置太小了，则instance则很可能因为临时的网络抖动而被摘除掉。
     该值至少应该大于leaseRenewalIntervalInSeconds
@@ -16,8 +21,12 @@ eureka.server.eviction-interval-timer-in-ms
 eureka.server.enable-self-preservation
     是否开启自我保护模式，默认为true。
     当Eureka Server节点在短时间内丢失过多客户端时（可能发生了网络分区故障），那么这个节点就会进入自我保护模式。
+    Eureka Server在运行期间，会统计心跳失败比例在15分钟内是否低于85%，如果出现低于的情况（一般在单机调试或测试环境很容易满足），
+    Eureka Server会将当前的实例注册信息保护起来，让这些实例不会过期。
     一旦进入该模式，Eureka Server就会保护服务注册表中的信息，不再删除服务注册表中的数据（也就是不会注销任何微服务）。
     当网络故障恢复后，该Eureka Server节点会自动退出自我保护模式。
+eureka.instance.prefer-ip-address
+    是否用ip地址来定义服务地址，默认为false,也就是默认是用主机名来定义服务地址。
 
 测试环境参考配置
 eureka服务端:
@@ -32,5 +41,36 @@ eureka客户端:
       instance:
         lease-renewal-interval-in-seconds: 5      # 心跳时间，即服务续约间隔时间（缺省为30s）
         lease-expiration-duration-in-seconds: 10  # 发呆时间，即服务续约到期时间（缺省为90s）
+-------------------------------------------------------------------------------------
+EurekaClient端的配置
+在org.springframework.cloud.netflix.eureka.EurekaClientConfigBean中定义的常用配置参数
+eureka.client.enabled=true                        #是否启用Eureka客户端，默认true
+eureka.client.registryFetchIntervalSeconds=30     #从Eureka服务端获取注册信息的间隔时间，默认30秒
+eureka.client.instanceInfoReplicationIntervalSeconds=30
+                                                  #更新实例信息的变化到Eureka服务端的间隔时间
+eureka.client.initialInstanceInfoReplicationIntervalSeconds=40
+                                                  #初始化实例信息到Eureka服务端的间隔时间
+eureka.client.eurekaServiceUrlPollIntervalSeconds=300
+                                                  #轮询Eureka服务端地址变更的间隔时间
+eureka.client.eurekaServerReadTimeoutSeconds=8    #读取Eureka Server信息的超时时间
+eureka.client.eurekaServerConnectTimeoutSeconds=5 #连接Eureka Server的超时时间
+eureka.client.preferSameZoneEureka=true           #是否偏好使用处于相同Zone的Eureka服务端
+eureka.client.registerWithEureka=true             #是否将自身的实例信息注册到Eureka服务端
+eureka.client.fetchRegistry=true                  #是否从Eureka服务端获取注册信息
+
+服务实例的配置信息
+在org.springframework.cloud.netflix.eureka.EurekaInstanceConfigBean中定义的常用配置
+eureka.instance.<properties>=<value>              #对实例的标准化元数据进行配置
+eureka.instance.metadataMap.<key>=<value>         #对实例的自定义元数据进行配置
+eureka.instance.appname                           #服务名,默认为spring.application.name的值
+eureka.instance.hostname                          #主机名，默认为操作系统主机名
+eureka.instance.preferIpAddress=false             #是否优先使用ip地址作为主机名的标识,默认false
+eureka.instance.leaseRenewalIntervalInSeconds=30  #Eureka客户端向服务端发送心跳的时间时间，默认30秒
+eureka.instance.leaseExpirationDurationInSeconds=90 #Eureka server至上一次收到client的心跳之后，等待下一次心跳的超时时间，
+                                                    也就是服务失效时间,默认为90秒
+management.context-path=/hello
+eureka.instance.statusPageUrlPage=${managment.context-path}/info
+eureka.instatnce.healthCheckUrlPath=${managment.context-path}/health
+eureka.instance.homePageUrl=http://${eureka.instance.hostname}/
 
 --------------------------------------------------------------------------------------

@@ -28,7 +28,11 @@ springboot启动后此模块提供的接口默认情况下是不允许访问的�
 
 spring-boot-starter-actuator默认端点Endpoint也就是接口如下:
 应用配置类
-  /autoconfig                    获取应用的自动化配置
+  /autoconfig                    获取应用的自动化配置报告，该接口数据可以帮助找到一些自动化配置为什么
+                                 没有生效的具体原因。
+                                 positiveMatches中返回的是条件匹配成功的自动化配置。
+                                 negativeMatches中返回的事条件匹配不成功的自动化配置。
+
   /beans                         获取应用上下文中创建的所有Bean
   /configprops                   获取应用中配置的属性信息
   /env                           获取应用所有可用的环境属性(可看到配置文件中的配置信息)
