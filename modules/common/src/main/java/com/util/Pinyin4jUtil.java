@@ -163,30 +163,26 @@ public final class Pinyin4jUtil {
 		                                        break; 
 		                                    } 
 		                                } 
-		                            } 
-		                               
-		                            if (!flag) {    //都没有找到，匹配默认的 读音  大  
-		                                   
-		                                s = String.valueOf(ch); 
-		                                   
-		                                for (int x = 0; x < len; x++) { 
-		                                       
-		                                    String py = results[x]; 
-		                                       
-		                                   
-		                                    keyList = pinyinMap.get(py); 
-		                                       
-		                                    if (keyList != null && (keyList.contains(s))) { 
-		                                        
-		                                      pinyin.append(results[x]); 
-		                                        
+		                            }
+		                            if (!flag) {    //都没有找到，匹配默认的读音
+		                                s = String.valueOf(ch);
+										boolean tag=false;
+		                                for (int x = 0; x < len; x++) {
+		                                    String py = results[x];
+		                                    keyList = pinyinMap.get(py);
+		                                    if (keyList != null && (keyList.contains(s))) {
+		                                        pinyin.append(results[x]);
+												tag=true;
 		                                        break; 
 		                                    } 
-		                                } 
+		                                }
+										if(!tag) {
+											String rt =hanyu2Pinyin(s);
+											pinyin.append(rt);
+										}
 		                            } 
 		                        } 
-		                    } 
-		   
+		                    }
 		                } catch (BadHanyuPinyinOutputFormatCombination e) { 
 		                    e.printStackTrace(); 
 		                } 
@@ -202,8 +198,6 @@ public final class Pinyin4jUtil {
 	
 	/**
      * 初始化 所有的多音字词组
-     * 
-     * @param fileName
      */ 
     public static void initPinyin(String fileName) { 
         // 读取多音字的全部拼音表; 
