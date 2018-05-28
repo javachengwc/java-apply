@@ -20,3 +20,6 @@ ep:
 此例中，不要用<where>标签自动根据条件去判断条件前是否加连接符and ,因为对于预编译sql,mybatis中的<where>标签处理是无效的
 如果此例中 条件为and name like '%${name}%'，很可能在sql执行的时候赋给此变量的值是不确定的值，比如项目名称等，此中情况只
 有在mybatis like操作切变量是name的时候出现，不知道是为什么，应该是mybatis中的一个bug。
+
+最保险的使用like条件的查询为:
+select * from table_what where column_key like concat('%','${queryValue}','%' )
