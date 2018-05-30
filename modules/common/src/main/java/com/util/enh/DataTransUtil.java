@@ -196,4 +196,52 @@ public class DataTransUtil {
         return targetList;
     }
 
+    public static <T,P> List<T> transList(List<P> list,Class<T> clazz ) {
+        if(list==null) {
+            return Collections.emptyList();
+        }
+        List<T> rtList = new ArrayList<T>();
+        for(P per:list) {
+            T entity= transEntity(per,clazz);
+            rtList.add(entity);
+        }
+        return rtList;
+    }
+
+    public  static <T,P>  T transEntity(P data,Class<T> clazz ) {
+        try {
+            T rt = clazz.newInstance();
+            BeanUtils.copyProperties(data, rt);
+            return rt;
+        }catch(Exception e) {
+            return null;
+        }
+    }
+
+    public static <T,P> List<T> transList(List<P> list,ITrans<T,P> trans) {
+        if(list==null) {
+            return Collections.emptyList();
+        }
+        List<T> rtList = new ArrayList<T>();
+        for(P per:list) {
+            T entity= transEntity(per,trans);
+            rtList.add(entity);
+        }
+        return rtList;
+    }
+
+    public  static <T,P>  T transEntity(P data,ITrans<T,P> trans ) {
+        try {
+            T rt = trans.doTrans(data);
+            return rt;
+        }catch(Exception e) {
+            return null;
+        }
+    }
+
+    public interface ITrans<T,P> {
+
+        public T  doTrans(P data);
+    }
+
 }
