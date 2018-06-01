@@ -206,6 +206,8 @@ rm -fr xx  ---移除某个目录
 cp -r xx . ---复制某个目录
 unzip xx.zip -d /home  ---解压xx.zip到/home目录下
 tar -zxvf  /aa.tar.gz  ---解压tar.gz文件
+tar xzf xs.tar.gz --strip-components=1 -C /opt/aa
+                       ---解压tar.gz到/opt/aa,加压后的文件内容会跳过压缩中的一层目录
 ln -s /home/.../  aa   ---建软连接aa 连向/home/..
 unrar x xx.rar         ---解压rar文件
 ----------------------------

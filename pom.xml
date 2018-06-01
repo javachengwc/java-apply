@@ -36,6 +36,7 @@
 		<module>modules/im</module>
 		<module>modules/es</module>
 		<module>modules/component</module>
+		<module>modules/commonservice</module>
 		<module>modules/consistency</module>
         <module>modules/thrift</module>
 		<module>modules/dubbo</module>

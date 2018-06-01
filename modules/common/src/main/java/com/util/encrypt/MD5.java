@@ -62,5 +62,6 @@ public class MD5
         //直接使用new String(encodedByte,"UTF-8")不行
         return new String(DigestUtils.md5Hex(data.getBytes(CharsetUtil.UTF8)));
     }
+
 }
 

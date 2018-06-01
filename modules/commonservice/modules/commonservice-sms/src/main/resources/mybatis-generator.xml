@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+
+    <classPathEntry location="D:\repo\mysql\mysql-connector-java\5.1.22\mysql-connector-java-5.1.22.jar"/>
+
+    <context id="shop-server" targetRuntime="MyBatis3" introspectedColumnImpl="org.mybatis.generator.api.IntrospectedColumn">
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/common_sms?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=utf8"
+                        userId="root"
+                        password="root">
+        </jdbcConnection>
+
+        <javaModelGenerator targetPackage="com.commonservice.sms.model.pojo" targetProject="src\main\java">
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+
+        <!-- mybatis xml file path -->
+        <sqlMapGenerator targetPackage="sqlmap" targetProject="src\main\resources">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+
+        <javaClientGenerator type="MIXEDMAPPER" targetPackage="com.commonservice.sms.dao.mapper"
+                             targetProject="src\main\java">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+
+
+        <!--保持原表字段来定义model的例子
+        <table tableName="entity" domainObjectName="Entity">
+            <property name="useActualColumnNames" value="true" />
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        -->
+
+        <!-- 添加需要生成的表，以及生成方式 -->
+        <table tableName="sms" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+    </context>
+
+</generatorConfiguration>
