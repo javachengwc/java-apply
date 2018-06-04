@@ -129,13 +129,10 @@
                 </configuration>
             </plugin>
             <!-- 如果pom直接继承spring-boot-starter-parent,此插件就直接能打包出可运行的jar包，
-                 但此pom没继承那父pom,这里必须指定入口类和执行goal才能打出可直接运行的jar包  -->
+                 但此pom没继承那父pom,这里必须指定执行goal才能打出可直接运行的jar包  -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <mainClass>com.commonservice.push.PushApplication</mainClass>
-                </configuration>
                 <executions>
                     <execution>
                         <goals>

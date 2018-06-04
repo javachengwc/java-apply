@@ -146,10 +146,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <!--入口类,这样能打出可直接运行的jar包-->
-                    <mainClass>com.commonservice.sms.SmsApplication</mainClass>
-                </configuration>
                 <executions>
                     <execution>
                         <goals>
