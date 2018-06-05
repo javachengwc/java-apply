@@ -3,30 +3,30 @@ Redis是个高性能的key-value数据库，它的key具有丰富的数据结构
 redis高性能很大程度上源于它是个内存型数据库，它的高性能表现在：set操作11w/s，get操作8.1w/s
 
 1,下载安装
-
-[root@xsf003 tool]# wget http://download.redis.io/releases/redis-3.0.6.tar.gz    #下载
-[root@xsf003 tool]# tar -zxvf redis-2.4.17.tar.gz   #解压
-[root@xsf003 tool]# cd redis-2.4.17
-[root@xsf003 redis-2.4.17]# make  #编译 编译完成后二进制文件是在./src目录下
-[root@xsf003 redis-2.4.17]# make install #安装
+wget http://download.redis.io/releases/redis-3.0.6.tar.gz
+tar -zxvf redis-3.0.6.tar.gz        #解压
+cd redis-3.0.6
+make                                #编译 编译完成后二进制文件是在./src目录下
+make install                        #安装
+cp redis.conf /etc/redis/           #将配置文件redis.conf复制到/etc/redis下
 
 #把redis设置成开机自启动
 
 注:执行install_server.sh，需要先进入utils目录，不然脚本会报错，提示找不到相应文件
-[root@xsf003 redis-2.4.17]# cd utils/
-[root@xsf003 utils]# ./install_server.sh
+cd utils/
+./install_server.sh
 
 2、手动启动关闭服务
 
-[root@xsf003 utils]# /etc/init.d/redis_6379 stop   #关闭
-[root@xsf003 utils]# /etc/init.d/redis_6379 start  #启动
+/etc/init.d/redis_6379 stop   #关闭
+/etc/init.d/redis_6379 start  #启动
 或命令关闭服务
 /usr/local/bin/redis-server /etc/redis/redis.conf   #指定配置文件 启动
 /usr/local/bin/redis-cli -p 6379 shutdown   # 关闭，如果默认端口6379 可以直接 /usr/local/bin/redis-cli shutdown
 
 3、通过客户端命令行工具连接redis服务查看redis相关信息
 
-[root@xsf003 utils]# redis-cli
+redis-cli
 redis 127.0.0.1:6379>
 
 redis 127.0.0.1:6379> info  #查看server版本内存使用连接等信息

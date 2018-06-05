@@ -92,7 +92,9 @@ netstat -u            -----显示UDP传输协议的连接状态
 netstat -lx           -----只列出所有监听 UNIX 端口
 netstat -s            -----显示所有端口的统计信息
 netstat -anp          -----查看端口
-netstat -n | awk '/^tcp/ {++S[$NF]} END {for(a in S) print a, S[a]}'   
+netstat -anp | grep LISTEN | grep -E '(21|22|111)'
+                      -----grep 正则查找开启的端口
+netstat -n | awk '/^tcp/ {++S[$NF]} END {for(a in S) print a, S[a]}'
                       -----查看tcp连接
 netstat -nat | grep "192.168.1.15:22" |awk '{print $5}'|awk -F: '{print $1}'|sort|uniq -c|sort -nr|head -20
                       -----查看连接某服务端口最多的的IP地址
