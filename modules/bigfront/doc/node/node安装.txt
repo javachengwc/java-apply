@@ -1,6 +1,7 @@
 --------------------------------node安装---------------------------------
 访问http://nodejs.cn/download/下载相应的node包并减压到相应目录
-设置环境变量path=%path;D:\soft\node-v8.11.1-win-x64
+设置环境变量path=%path;D:\soft\node-v10.3.0-win-x64
+    NODE_PATH=D:\soft\node-v10.3.0-win-x64\node_modules
 命令行或shell中执行:
     node  -v                          ###检查node版本
     npm   -v                          ###检查npm版本号
