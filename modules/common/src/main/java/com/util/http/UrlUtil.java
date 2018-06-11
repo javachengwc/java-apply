@@ -113,7 +113,11 @@ public static String paramPatternString ="[\\?|&]param=([^\\?&]*)";
 			}
 			String as [] = p.split("=");
 			int len = as.length;
-			map.put(as[0], ((len>1)?as[1]:""));
+            String val=(len>1)?as[1]:"";
+            if (StringUtils.isNotBlank(val)) {
+                val = val.replaceAll("#.*", "");
+            }
+			map.put(as[0], val);
 			
 		}
 		return map;
@@ -137,7 +141,11 @@ public static String paramPatternString ="[\\?|&]param=([^\\?&]*)";
 		if(ma.find())
 		{
 			//System.out.println(ma.group());
-		    return ma.group(1);
+		    String val= ma.group(1);
+            if (StringUtils.isNotBlank(val)) {
+                val = val.replaceAll("#.*", "");
+            }
+            return val;
 		}
 		return "";
 	}
@@ -145,7 +153,7 @@ public static String paramPatternString ="[\\?|&]param=([^\\?&]*)";
 	public static void main(String args [] )
 	{
 	
-		String url ="https://www.cc.com/haha?aa=bb&cc=dd&ee=&password=aa&ak=ak";
+		String url ="https://www.cc.com/haha?aa=bb&cc=dd&ee=&password=aa&ak=ak#aabbcc";
 		System.out.println(getPort(url));
 		System.out.println(getDomain(url));
         System.out.println(getPath(url));
@@ -154,6 +162,8 @@ public static String paramPatternString ="[\\?|&]param=([^\\?&]*)";
 		System.out.println(getParamByPattern(url,"cc"));
 		System.out.println(getParamByPattern(url,"ee"));
 		System.out.println(getParamByPattern(url,"password"));
+        System.out.println(getParamByPattern(url,"ak"));
+        System.out.println(getParam(url,"ak"));
 	}
 
 }
