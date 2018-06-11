@@ -31,7 +31,7 @@ create temporary table tmp_table
 );
 
 -- 清除数据
-truncate tmp_table;
+truncate table tmp_table;
 
 delete from tablea & truncate table tablea的区别
 　　truncate 语句执行速度快,占资源少,并且只记录页删除的日志,不能通过二进制日志恢复
