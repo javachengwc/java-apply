@@ -19,4 +19,10 @@ public class StartupRunner2 implements CommandLineRunner {
     }
 }
 
+springboot配置类中引入springContext.xml这样的xml配置文件
+@Configuration
+@ImportResource(locations = {"classpath:ApplicationContext.xml"})
+public class XxConfig {
+}
+
 ---------------------------------------------------------------------------------------------------------
