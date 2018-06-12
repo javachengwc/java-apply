@@ -48,28 +48,25 @@ public class RequestUtil {
     }
 
     public static String getIpFromRequest(HttpServletRequest request) {
-        String ipStr = request.getHeader("HTTP_X_FORWARDED_FOR");
-
+        String ipStr = request.getHeader("X-Real-IP");
         if (StringUtils.isBlank(ipStr)) {
-            ipStr = request.getHeader("X-Real-IP");
 
+            ipStr =request.getHeader("X-Forwarded-For");
         }
-
         if (StringUtils.isBlank(ipStr)) {
+
             ipStr = request.getRemoteAddr();
         }
-
-        if (StringUtils.isNotEmpty(ipStr)) {
-            if (ipStr.split(",").length > 0) {
-                ipStr = ipStr.split("\\,")[0];
-            }
+        if(ipStr!=null && ipStr.contains(","))
+        {
+            ipStr= ipStr.split(",")[0];
         }
         return ipStr;
     }
 
     public static String getIpAddr(HttpServletRequest request)
     {
-        String ip = request.getHeader("x-forwarded-for");
+        String ip = request.getHeader("X-Forwarded-For");
 
         if(ip!=null && ip.contains(","))
         {
