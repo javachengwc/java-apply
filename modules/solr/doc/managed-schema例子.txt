@@ -319,7 +319,8 @@
     </analyzer>
   </fieldType>
   <fieldType name="text_ik" class="solr.TextField">
-    <analyzer class="org.wltea.analyzer.lucene.IKAnalyzer"/>
+      <analyzer type="index" class="org.wltea.analyzer.lucene.IKpinyinAnalyzer"/>
+      <analyzer type="query" class="org.wltea.analyzer.lucene.IKAnalyzer"/>
   </fieldType>
   <fieldType name="text_it" class="solr.TextField" positionIncrementGap="100">
     <analyzer>
