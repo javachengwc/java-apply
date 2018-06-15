@@ -28,8 +28,9 @@ linux下安装es6
       * soft nofile 65536
 5,开启es
   bin/elasticsearch -d    ##后台运行es
-  
+
 -----------------es必备插件---------------
+es版本1.*
 head--查看索引情况，搜索索引，查看集群状态和分片分布等
       安装:es根目录下执行 bin/plugin --install mobz/elasticsearch-head
       访问:http://127.0.0.1:9200/_plugin/head/
@@ -37,5 +38,8 @@ head--查看索引情况，搜索索引，查看集群状态和分片分布等
 bigdesk--查看集群的jvm信息，磁盘IO，索引创建删除信息等，适合查找系统瓶颈，监控集群状态等
       安装:es根目录下执行 bin/plugin --install lukas-vlcek/bigdesk
       访问:http://127.0.0.1:9200/_plugin/bigdesk/
+
+es版本6.*
+bin/elasticsearch-plugin install -b com.floragunn:search-guard-6:6.2.2-21.0
 
 -------------------------------------------
