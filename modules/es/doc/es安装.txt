@@ -1,4 +1,5 @@
 ----------------es安装与启动-------------
+windows下安装es
 1,下载es压缩包并解压
 2,cd到es根目录 bin/elasticsearch 启动es服务 (windows下是执行bin/elasticsearch.bat)
   es服务默认端口:
@@ -7,6 +8,27 @@
 
 访问es: http://127.0.0.1:9200/
 
+linux下安装es6
+1,wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.3.0.tar.gz     ###下载es
+  tar -zxvf elasticsearch-6.3.0.tar.gz
+  mv elasticsearch-6.3.0 /data/deploy       ###将es移到相应部署目录
+2,增加启动es的账户
+  useradd es
+  chown -R es:es /data/deploy/elasticsearch-6.3.0
+3,修改es配置
+  cd /data/deploy/elasticsearch-6.3.0
+  vim config/elasticsearch.yml
+      http.port: 9200
+4,修改系统配置
+  vim /etc/sysctl.conf
+      vm.max_map_count=262144
+  sysctl -p            ###配置生效
+  vim /etc/security/limits.conf
+      * hard nofile 65536
+      * soft nofile 65536
+5,开启es
+  bin/elasticsearch -d    ##后台运行es
+  
 -----------------es必备插件---------------
 head--查看索引情况，搜索索引，查看集群状态和分片分布等
       安装:es根目录下执行 bin/plugin --install mobz/elasticsearch-head
