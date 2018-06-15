@@ -14,29 +14,10 @@
     <groupId>com.app</groupId>
     <artifactId>es</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
-
-    <name>es</name>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>com.app</groupId>
-            <artifactId>common</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.elasticsearch</groupId>
-            <artifactId>elasticsearch</artifactId>
-            <version>1.4.2</version>
-        </dependency>
-    </dependencies>
+    <packaging>pom</packaging>
+    
+	<modules>
+        <module>modules/es-example</module>
+        <module>modules/esearch6</module>
+	</modules>
 </project>
