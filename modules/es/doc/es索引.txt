@@ -1,4 +1,6 @@
 ---------------------------------------es索引http操作---------------------------------------
+es索引http操作
+
 创建索引
 curl -XPUT localhost:9200/test  {"acknowledged":true,"shards_acknowledged":true,"index":"test"}
 
