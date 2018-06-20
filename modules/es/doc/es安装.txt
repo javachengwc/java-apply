@@ -18,6 +18,7 @@ linux下安装es6
 3,修改es配置
   cd /data/deploy/es
   vim config/elasticsearch.yml
+      network.host: 0.0.0.0
       http.port: 9200
 4,修改系统配置
   vim /etc/sysctl.conf
@@ -36,4 +37,9 @@ linux下安装es6
   bin/elasticsearch -d    ##后台运行es
 
 访问http://localhost:9200/  返回正常表示安装成功。
+
+es配置信息
+/data/deploy/es/config/elasticsearch.yml     ---es主配置文件,ip,端口这些信息配置
+/data/deploy/es/config/jvm.options           ---配置jvm的配置文件，默认heap是1g
+
 ---------------------------------------------------------------

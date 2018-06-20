@@ -3,9 +3,10 @@
 
 elasticSearch-head插件:
 elasticSearch-head是一个H5编写的ElasticSearch集群操作和管理工具，可以对集群进行傻瓜式操作。
+yum install bzip2                            ###安装依赖的bzip2
 yum install -y nodejs                        ###安装node
 npm install -g cnpm --registry=https://registry.npm.taobao.org        ###安装npm
-npm install -g grunt                         ###安装grunt
+npm install -g grunt --registry=https://registry.npm.taobao.org --no-proxy  ###安装grunt
 npm install -g grunt-cli --registry=https://registry.npm.taobao.org --no-proxy
 node -v
 npm -v
@@ -18,22 +19,11 @@ vim $ES_HOME/config/elasticssearch.yml       ###修改es配置
     # 让head插件可以访问es
     http.cors.enabled: true
     http.cors.allow-origin: "*"
-vim ..../elasticsearch-head-master/Gruntfile.js    ###修改head配置
-    connect: {
-        server: {
-            options: {
-                    hostname: 'node1',
-                    port: 9100,
-                    base: '.',
-                    keepalive: true
-            }
-        }
-   }
 $ES_HOME/bin/elasticsearch -d               ###启动es
 cd  ..../elasticsearch-head-master
 grunt server 或  npm run start              ###启动head
 
-http://node1:9100/                          ###访问head
+http://127.0.0.1:9100/                          ###访问head
 
 kibana插件:
 kibana是一个开源的分析与可视化平台，设计出来用于和Elasticsearch一起使用的。
