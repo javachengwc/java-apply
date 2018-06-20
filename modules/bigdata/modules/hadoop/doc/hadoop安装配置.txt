@@ -78,6 +78,11 @@ ssh root@192.168.1.111、ssh root@192.168.1.112就不需要输入密码了
 可能在此过程中ssh未必在linux系统中安装全导致部分命令不能用，可如下安装完全ssh相关程序
 yum  -y install openssh openssh-clients openssh-server
 
+如果免密登录依然需要输入密码,可能失败的原因有两个：目录文件的权限和目录的属主
+目录文件的权限,.ssh父目录的权限是755（这里是/root），.ssh目录权限是700，authorized_keys文件 600
+目录的属主,可能是.ssh父目录的属主存在问题,
+查看ls -al .ssh ,这里如果..,也就是父目录的owner非root, 改成root,chown root:root /root
+
 5,安装Hadoop
 只在Master服务器解压，再复制到Slave服务器
 (1)下载“hadoop-2.7.2.tar.gz”，放到/data/hadoop目录下

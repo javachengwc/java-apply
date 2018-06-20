@@ -207,5 +207,11 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora file:///etc/pki/rpm-gpg/RPM-GP
 rpm --import http://ftp.sjtu.edu.cn/packages/RPM-GPG-KEY.txt   //只是个例子
 
 3，从新仓库下载索引文件，对比更新
-yum makecache 
+yum makecache
+
+更换yum源
+wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo   ###下载aliyun的repo
+yum clean all              ###更新yum缓存
+yum makecache              ###生成源数据缓存
+
 -----------------------------------------------------------------------

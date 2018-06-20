@@ -4,6 +4,9 @@ $ uname -r
   3.10.0-229.el7.x86_64
 
 $ sudo yum update
+  yum search docker                      #搜索docker
+  如果有直接安装
+  yum install -y docker
 
 $ vim /etc/yum.repos.d/docker.repo        #增加yum仓库
     [dockerrepo]
@@ -20,7 +23,11 @@ $ sudo docker run hello-world             #运行hello-world这个自带的image
 yum -y install docker                     #安装docker
 docker images                             #检测docker是否安装成功
 service docker start 或
-systemctl start  docker.service           #启动docker
+systemctl start docker
+systemctl start docker.service            #启动docker
+systemctl status docker                   #查看状态
+docker version                            #查看docker版本
+docker info                               #查看docker信息
 docker images                             #查看镜像列表
 docker ps                                 #查看运行的镜像列表
 docker search centos                      #搜索镜像文件

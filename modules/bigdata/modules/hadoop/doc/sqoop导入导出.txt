@@ -124,4 +124,6 @@ sqoop导入导出参数选项
 --mysql-delimiters 	                   mysql默认的分隔符设置，字段之间以,隔开，行之间以换行\n隔开，默认转义符号是\，字段值以单引号'包含起来。
 
 --optionally-enclosed-by <char> 	   enclosed-by是强制给每个字段值前后都加上指定的符号，而--optionally-enclosed-by只是给带有双引号或单引号的字段值加上指定的符号，故叫可选的
+
+ --driver                              指定数据库驱动类,比如:com.mysql.jdbc.Driver
 -----------------------------------------------------------------------------------
