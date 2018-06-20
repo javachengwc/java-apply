@@ -11,22 +11,28 @@ windows下安装es
 linux下安装es6
 1,wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.3.0.tar.gz     ###下载es
   tar -zxvf elasticsearch-6.3.0.tar.gz
-  mv elasticsearch-6.3.0 /data/deploy       ###将es移到相应部署目录
+  cp -rf  elasticsearch-6.3.0 /data/deploy/es       ###将es移到相应部署目录
 2,增加启动es的账户
   useradd es
-  chown -R es:es /data/deploy/elasticsearch-6.3.0
+  chown -R es:es /data/deploy/es
 3,修改es配置
-  cd /data/deploy/elasticsearch-6.3.0
+  cd /data/deploy/es
   vim config/elasticsearch.yml
       http.port: 9200
 4,修改系统配置
   vim /etc/sysctl.conf
       vm.max_map_count=262144
-  sysctl -p            ###配置生效
-  vim /etc/security/limits.conf
+  sysctl -p                       ###配置生效
+  vim /etc/security/limits.conf   ###这里配置用户打开文件数,需>=65536,否则会报
+                                     max file descriptors [xxxx] for elasticsearch process is too low错误
       * hard nofile 65536
       * soft nofile 65536
 5,开启es
+  su es                   ##切换到es用户下启动es,
+                          ##如果root启动会报错can not run elasticsearch as root,通过启动加参
+                          ##./elasticsearch -Des.insecure.allow.root=true 或则修改启动执行文件elasticsearch
+                          ##添加ES_JAVA_OPTS="-Des.insecure.allow.root=true"后也能以root身份执行。
   bin/elasticsearch -d    ##后台运行es
 
+访问http://localhost:9200/  返回正常表示安装成功。
 ---------------------------------------------------------------
