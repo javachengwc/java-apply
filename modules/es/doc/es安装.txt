@@ -29,9 +29,10 @@ linux下安装es6
       * soft nofile 65536
 5,开启es
   su es                   ##切换到es用户下启动es,
-                          ##如果root启动会报错can not run elasticsearch as root,通过启动加参
-                          ##./elasticsearch -Des.insecure.allow.root=true 或则修改启动执行文件elasticsearch
-                          ##添加ES_JAVA_OPTS="-Des.insecure.allow.root=true"后也能以root身份执行。
+                          ##如果root启动会报错can not run elasticsearch as root,
+                            通过启动加参./elasticsearch -Des.insecure.allow.root=true
+                            或则修改启动执行文件elasticsearch添加ES_JAVA_OPTS="-Des.insecure.allow.root=true"
+                            也能以root身份执行。
   bin/elasticsearch -d    ##后台运行es
 
 访问http://localhost:9200/  返回正常表示安装成功。
