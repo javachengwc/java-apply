@@ -1,4 +1,5 @@
 --------------------mysql账号-----------------------
+注:mysql5.7及以上版本mysql数据库的user表中的password字段已经变成了authentication_string字段
 
 -----创建用户
 CREATE USER 'username'@'host' IDENTIFIED BY 'password';
@@ -18,6 +19,9 @@ select user,host,password from user where user='%s';
 
 -----显示当前用户
 SELECT USER();
+
+-----修改账号密码
+alter user rootroot@'%' IDENTIFIED BY 'rootroot';
 
 -----忘记root密码的措施(重置root密码)
 
