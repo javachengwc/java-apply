@@ -17,6 +17,7 @@ tar -zxvf ZenTaoPMS.9.8.1.zbox_64.tar.gz -C /opt
                           ###命令行登录禅道自带mysql数据库
 注：数据库的用户名：root，密码为空或123456
 opt/zbox/app/zentao/config/my.php  ###数据库初始密码在此文件有配置
+
 如果启动了防火墙,如下配置iptables防火墙规则，允许端口访问
 iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
 iptables -A INPUT -p tcp --dport 3307 -j ACCEPT
@@ -28,6 +29,7 @@ http://ip:8080                 ###访问禅道
 /opt/zbox/etc/apache/httpd.conf      ###apache配置文件,配置禅道服务端口等
 /opt/zbox/etc/php/php.ini            ###php配置文件
 /opt/zbox/etc/mysql/my.cnf           ###mysql配置文件
+opt/zbox/app/zentao/config/my.php    ###数据库初始密码在此文件有配置
 /opt/zbox/app/zentao/tmp/backup      ###备份文件路径
 
 RPM包安装：可以通过rpm包管理器在Centos系统下安装
