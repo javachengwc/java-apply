@@ -1,21 +1,80 @@
 ---------------------------------------es索引---------------------------------------
 在kibana中的DevTools菜单模块中键入:
-PUT test                                                      -----创建索引,索引名不能包含大写字母
-PUT test2                                                     -----指定参数创建索引
+PUT test                                                      ------创建索引,索引名不能包含大写字母
+PUT test2                                                     ------指定参数创建索引
 {
   "settings": {
     "number_of_shards": 3,
     "number_of_replicas": 1
   }
 }
-GET test/_settings                                            -----查看指定索引的配置信息
-GET test,test2/_settings                                      -----查看多个索引的配置信息
-DELETE test                                                   -----删除索引
-POST test2/_close                                             -----关闭索引
-POST test2/_open                                              -----打开索引
+GET test/_settings                                            ------查看指定索引的配置信息
+GET test,test2/_settings                                      ------查看多个索引的配置信息
+DELETE test                                                   ------删除索引
+POST test2/_close                                             ------关闭索引
+POST test2/_open                                              ------打开索引
+
+PUT book/book/1                                               ------向索引book中的类型book添加一个文档，文档的_id=1
+{
+  "id":1,
+  "title":"锋利的jquery",
+  "author":"wuming",
+  "content":"jquery是javascript的一个框架"
+}
+POST book/book                                                ------向索引book中的类型book添加一个文档，文档的_id未知
+{
+  "id":2,
+  "title":"solr搜索引擎",
+  "author":"wuming",
+  "content":"solr是基于lucene开发的一款搜索引擎项目"
+}
+
+GET book/book/1                                               ------根据文档_id获取文档
+GET book/book/_mget                                           ------根据文档_id数组获取文档
+{
+   "ids":["1","2","3"]
+}
+GET book/book/_search                                         ------检索book类型下的文档
+GET book/book/_search                                         ------根据分词词元查询,中文分词默认是单个汉字独立的分词
+{
+  "query": {
+    "term": {
+      "title": "锋"
+    }
+  }
+}
+GET book/book/_search                                         ------match检索，只要存在任何一个词项被匹配，就会搜索出来。
+                                                                    这里根据"锋搜"来搜索会将"锋利的jquery","solr搜索引擎"这两个文档都搜索出来
+{
+  "query": {
+    "match": {
+      "title": {
+        "query": "锋搜"
+      }
+    }
+  }
+}
+POST book/book/1                                              ------更新文档,如果之前存在文档_id=1的文档，这里将替换旧文档
+{
+  "id":1,
+  "title":"锋利的jquery修正版",
+  "author":"wuming",
+  "content":"jquery是javascript的一个框架"
+}
+POST book/book/1/_update                                      ------更新文档的content字段
+{
+  "script": {
+    "source": "ctx._source.content=\"jquery是一个框架\""
+  }
+}
+POST book/book/1/_update                                      ------添加文档的createtime字段，如果已有此字段，其实就是更新
+{
+  "script": "ctx._source.createtime=\"2018-06-06\""
+}
+DELETE book/book/1                                            ------删除文档_id=1的文档
 
 es索引http操作
-curl -XPUT localhost:9200/test                                -----创建索引
+curl -XPUT localhost:9200/test                                ------创建索引
 返回结果:{"acknowledged":true,"shards_acknowledged":true,"index":"test"}
 
 
