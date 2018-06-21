@@ -1,7 +1,22 @@
----------------------------------------es索引http操作---------------------------------------
-es索引http操作
+---------------------------------------es索引---------------------------------------
+在kibana中的DevTools菜单模块中键入:
+PUT test                                                      -----创建索引,索引名不能包含大写字母
+PUT test2                                                     -----指定参数创建索引
+{
+  "settings": {
+    "number_of_shards": 3,
+    "number_of_replicas": 1
+  }
+}
+GET test/_settings                                            -----查看指定索引的配置信息
+GET test,test2/_settings                                      -----查看多个索引的配置信息
+DELETE test                                                   -----删除索引
+POST test2/_close                                             -----关闭索引
+POST test2/_open                                              -----打开索引
 
-创建索引
-curl -XPUT localhost:9200/test  {"acknowledged":true,"shards_acknowledged":true,"index":"test"}
+es索引http操作
+curl -XPUT localhost:9200/test                                -----创建索引
+返回结果:{"acknowledged":true,"shards_acknowledged":true,"index":"test"}
+
 
 ---------------------------------------------------------------------------------------------
