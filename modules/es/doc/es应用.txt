@@ -1,0 +1,90 @@
+-----------------------------es应用-----------------------------------
+es索引的版本控制
+es索引文档的版本控制是通过文档中的_version字段来控制的，类似乐观锁那样的版本控制
+GET book/book/1
+返回:
+{
+  "_index": "book",                              ------索引名
+  "_type": "book",                               ------类型名
+  "_id": "1",                                    ------文档id
+  "_version": 1,                                 ------版本
+  "found": true,
+  "_source": {
+    "id":1,
+    "title": "solr搜索引擎",                     ------文档内容
+    "content":"solr是基于lucene开发的一款搜索引擎项目"
+  }
+}
+PUT /book/book/1?version=1                       ------指定version更新文档,如果当前文档版本不等于1，更新会失败，
+                                                       当前版本等于1，更新会成功，同时版本号会递增1。
+{
+  "id":1,
+  "title": "solr搜索引擎v2",
+  "content":"solr是基于lucene开发的一款搜索引擎项目"
+}
+返回:
+{
+  "_index": "book",
+  "_type": "book",
+  "_id": "1",
+  "_version": 2,                                 ---版本号已修改
+  "result": "updated",
+  "_shards": {
+    "total": 2,
+    "successful": 2,
+    "failed": 0
+  }
+}
+也可以通过外部系统使用版本控制,一个常见情况是使用数据库作为主要的数据存储，使用es做数据检索，
+这意味着数据库的所有更改发生时都需要同步到es,es中通过增加 version_type=external 方式指定外部版本号，
+如果外部版本号大于当前文档版本，则可以执行更新操作。
+例如：更新一个新的具有外部版本号 5的书
+PUT /book/book/3?version=5&version_type=external
+{
+  "id":5,
+  "title":"solr搜索引擎",
+  "content":"solr是基于lucene开发的一款搜索引擎项目"
+}
+返回
+{
+  "_index": "book",
+  "_type": "book",
+  "_id": "3",
+  "_version": 5,
+  "result": "created",
+  ...
+}
+重复执行上面的PUT更新文档，就会报错,因为外部版本号不大于当前版本号5。
+{
+  "error": {
+    "type": "version_conflict_engine_exception",
+    "reason": "[blog][2]: version conflict, current version [5] is higher or equal to the one provided [5]",
+    "index": "book"
+  },
+  "status": 409
+}
+--------------------------------
+es索引的批量操作
+es针对海量数据的批量操作,提供了Bulk API，可以执行批量索引、批量删除、批量更新等操作，
+也就是说Bulk API允许使用在单个步骤中进行多次 create 、 index 、 update 或 delete 请求。
+bulk请求体格式如下所示：
+{ action: { metadata }}\n
+{ request body        }\n
+{ action: { metadata }}\n
+{ request body        }\n
+...
+此格式类似一个有效的单行 JSON 文档，它通过换行符(\n)连接到一起。
+每行一定要以换行符(\n)结尾， 包括最后一行。这些换行符被用作一个标记，可以有效分隔行。
+action/metadata 行指定某个文档做什么操作。metadata指定被索引、创建、更新或者删除的文档的_index、_type和 _id 。
+request body 行由文档的_source本身组成–文档包含的字段和值。它是index和create操作所必需的。
+例如:
+POST /_bulk
+{ "delete": { "_index": "book", "_type": "book", "_id": "10" }}
+{ "create": { "_index": "book", "_type": "book", "_id": "11" }}
+{ "title":    "book11" }
+{ "index":  { "_index": "book", "_type": "book" }}
+{ "title":    "book_random" }
+{ "update": { "_index": "book", "_type": "book", "_id": "11", "_retry_on_conflict" : 2} }
+{ "doc" : {"title" : "book11v2"} }
+响应中包含items 数组，数组的内容是以请求的顺序列出来的每个请求的结果。
+----------------------------------------------------------------------------
