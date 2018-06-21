@@ -28,6 +28,8 @@ linux下安装es6
                                      max file descriptors [xxxx] for elasticsearch process is too low错误
       * hard nofile 65536
       * soft nofile 65536
+      * soft nproc 4096
+      * hard nproc 4096
 5,开启es
   su es                   ##切换到es用户下启动es,
                           ##如果root启动会报错can not run elasticsearch as root,

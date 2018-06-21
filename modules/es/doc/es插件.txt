@@ -28,4 +28,15 @@ http://127.0.0.1:9100/                          ###访问head
 kibana插件:
 kibana是一个开源的分析与可视化平台，设计出来用于和Elasticsearch一起使用的。
 可以用kibana搜索、查看、交互存放在Elasticsearch索引里的数据，使用各种不同的图表、表格、地图等kibana能够很轻易地展示高级数据分析与可视化。
+wget https://artifacts.elastic.co/downloads/kibana/kibana-6.3.0-linux-x86_64.tar.gz  ###下载kibana,版本必须与es对应
+tar -zxvf kibana-6.3.0-linux-x86_64.tar.gz
+cd kibana-6.3.0-linux-x86_64
+vim config/kibana.yml                             ###修改配置
+    server.port: 5601
+    server.host: "0.0.0.0"
+    elasticsearch.url: "http://localhost:9200"
+bin/kibana &                                      ###启动kibana,
+                                                  启动后退出当前登录shell窗口用exit命令，不要直接点击窗口上的叉来关闭,这样关闭shell不会导致kibana也被关闭
+http://127.0.0.1:5601                             ###访问kibana
+
 ---------------------------------------------------------------------
