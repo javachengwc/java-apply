@@ -1,0 +1,65 @@
+-------------------------------es插件------------------------------------
+IK分词器插件
+源码:https://github.com/medcl/elasticsearch-analysis-ik
+     https://github.com/medcl/elasticsearch-analysis-ik/releases
+通过plugin安装ik
+cd /data/deploy/es
+bin/elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v6.3.0/elasticsearch-analysis-ik-6.3.0.zip
+ll plugins/                    ###就能看到analysis-ik这个插件了
+下载手动安装ik
+wget https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v6.3.0/elasticsearch-analysis-ik-6.3.0.zip
+mkdir analysis-ik
+cp elasticsearch-analysis-ik-6.3.0.zip analysis-ik
+cd analysis-ik
+unzip elasticsearch-analysis-ik-6.3.0.zip
+rm elasticsearch-analysis-ik-6.3.0.zip
+cd ..
+cp -rf analysis-ik/ /data/deploy/es/plugins/analysis-ik
+chown -R es:es /data/deploy/es/plugins/analysis-ik
+$ES_HOME/bin/elasticsearch -d        ###重启es
+........
+[INFO ][o.e.p.PluginsService     ] [kKliVUr] loaded plugin [analysis-ik]
+........
+[INFO ][o.w.a.d.Monitor          ] try load config from /data/deploy/es/config/analysis-ik/IKAnalyzer.cfg.xml
+[INFO ][o.w.a.d.Monitor          ] try load config from /data/deploy/es/plugins/analysis-ik/config/IKAnalyzer.cfg.xml
+在启动日志中能看到ik插件启动,对ik的配置,先读取$ES_HOME/config/analysis-ik下的配置文件,
+如果没有，才再读取$ES_HOME/plugins/analysis-ik/config下配置。
+
+验证ik是否生效
+在kibana中的DevTools菜单模块中
+键入:
+GET _analyze?pretty
+{
+  "analyzer": "ik_smart",
+  "text":"春天来了"
+}
+执行后就能看到ik分词器分词后的词元信息
+或用ik_max_word分词
+GET _analyze?pretty
+{
+  "analyzer": "ik_max_word",
+  "text":"好好学习"
+}
+执行后也能能看到分词后的词元信息
+
+扩展ik配置以及自定义字典或停顿词
+mv /data/deploy/es/plugins/analysis-ik/config /data/deploy/es/config/analysis-ik/  ###将ik自带的配置移位到es的配置目录下
+cd /data/deploy/es/config/analysis-ik
+mkdir custom
+vim custom/ext.dic
+    洪荒之力
+vim IKAnalyzer.cfg.xml
+    <!--用户在这里配置自己的扩展字典 -->
+    <entry key="ext_dict">custom/ext.dic;</entry>
+chown -R es:es /data/deploy/es/config/analysis-ik
+$ES_HOME/bin/elasticsearch -d           ###重启es
+在kibana中的DevTools菜单模块中
+键入:
+GET _analyze?pretty
+{
+  "analyzer": "ik_smart",
+  "text":"洪荒之力"
+}
+执行后就能看到ik分词器分词后的词元信息,应该就只有一个词元:洪荒之力
+
+-------------------------------------------------------------------------
