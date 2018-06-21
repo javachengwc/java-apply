@@ -23,6 +23,8 @@ import java.nio.file.Path;
 import java.security.KeyStore;
 
 /**
+ * Elasticsearch java client有TransportClient，JestClient，RestClient，2.3版本中还有NodeClient
+ * springboot中集成es的是spring-data-elasticsearch
  * RestClient对象是线程安全的，理论上跟使用它的应用程序有相同的生命周期
  */
 public class EsClientDemo {
