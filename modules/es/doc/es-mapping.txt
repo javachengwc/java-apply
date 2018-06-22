@@ -21,10 +21,22 @@ PUT tushu                                 ------创建索引mapping,es6.x中每�
   "mappings":{
     "history": {
        "properties": {
-          "bookId": {"type": "long"},
-          "bookName": {"type": "text"},
+          "bookId": {"type": "long",
+                     "enabled": false,                    ------es默认会索引索引字段，enabled设为false，就不会索引此字段,只保存此字段。
+                     "ignore_malformed": true             ------ignore_malformed可以忽略不规则数据，默认ignore_malformed属性为false,
+                                                                当给一个字段索引不合适的数据类型发生异常，会导致整个文档索引失败。
+                                                                如果ignore_malformed参数设为true，异常就会被忽略，出异常的字段不会被索引，其它字段正常索引。
+              },
+          "bookName": {"type": "text",
+                       "ignore_above": 20                 ------ignore_above用于指定字段索引和存储的长度最大值，超过最大值的会被忽略。
+              },
           "createDate": {"type": "date",
                    "format": "yyyy-MM-dd HH:mm:ss"
+              }
+          "info": {
+                    "type": "text",
+                    "analyzer": "ik_max_word",             ------指定分词器
+                    "search_analyzer": "ik_max_word"
               }
        }
     }
@@ -32,7 +44,31 @@ PUT tushu                                 ------创建索引mapping,es6.x中每�
 }
 GET tushu/_mapping 或                    ------查看tushu索引的映射
 GET tushu/history/_mapping
-对于定义了静态映射的索引，可直接基于它添加数据进行动态映射
+对于定义了静态映射的索引，可直接基于它添加数据进行动态映射,
+对于新发现的字段的处理，是dynamic属性决定的，默认新发现的字段添加到映射中。
+dynamic属性用于检测新发现的字段，有三个取值：
+    true:新发现的字段添加到映射中。此值是默认值。
+    flase:新检测的字段被忽略。必须显式添加新字段。
+    strict:如果检测到新字段，就会引发异常并拒绝文档
+DELETE aa_index
+PUT aa_index
+{
+  "mappings": {
+    "data": {
+      "dynamic": "strict",
+      "properties": {
+        "title": { "type": "text"}
+      }
+    }
+  }
+}
+PUT aa_index/data/1               ------插入新文档，这里会抛异常，因为aa_index的dynamic=strict
+                                        当有新字段加入的时候，会引发异常。
+{
+  "title": "test",
+  "content": "test dynamic"
+}
+
 --------------------------------------------------------------------
 字段类型
 分类 	                子类 	                  具体类型                        说明
@@ -44,6 +80,8 @@ GET tushu/history/_mapping
                                                                                   scaled_float是缩放类型的浮点数
                         逻辑类型 	              boolean
                         日期类型 	              date                            es内部会将日期数据转换为UTC，并存储为milliseconds-since-the-epoch的long型整数。
+                                                                                  对应的format有yyyy-MM-dd HH:mm:ss或yyyy-MM-dd或epoch_millis或epoch_second。
+                                                                                  epoch_millis表示毫秒数，epoch_second表示秒数。
                         范围类型 	              range
                         二进制类型                binary                          用base64来表示索引中存储的二进制数据，可用来存储二进制形式的数据。
 复合类型 	            数组类型 	              array
@@ -65,7 +103,8 @@ mapping元字段是mapping映射中描述文档本身的字段，大致可以分
                              _uid 	                      由_type和_id字段组成，在6.0.0中弃用，_uid字段仅作为查看_id字段以保持向后兼容
 文档元数据                   _source 	                  文档的原生json字符串
                              _size 	                      _source字段的字节数大小,需安装mapper-size插件才能看到
-索引元数据 	                 _all 	                      自动组合所有的字段值，默认禁用，在6.0.0中不能用
+索引元数据 	                 _all 	                      自动组合所有的字段值，默认禁用，在6.0.0中不能用，用copy_to属性代替
+                                                          copy_to属性用于配置自定义的_all字段。换言之，就是多个字段可以合并成一个超级字段。
                              _field_names 	              索引了每个字段的名称
 路由元数据 	                 _parent 	                  指定文档之间父子关系
                              _routing 	                  将一个文档根据路由存储到指定分片上，_routing的默认值是文档的_id
@@ -122,4 +161,170 @@ GET aaa/bbb/_search
     }
   }
 }
+normalizer用于解析前的标准化配置，比如把所有的字符转化为小写等。
+DELECT aa_index
+PUT aa_index                  ------这里就是对kk字段配置一个前置解析my_normalizer,对字符进行小写转换
+{
+  "settings": {
+    "analysis": {
+      "normalizer": {
+        "my_normalizer": {
+          "type": "custom",
+          "char_filter": [],
+          "filter": ["lowercase", "asciifolding"]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "type": {
+      "properties": {
+        "kk": {
+          "type": "keyword",
+          "normalizer": "my_normalizer"
+        }
+      }
+    }
+  }
+}
+copy_to属性用于配置自定义的_all字段。换言之，就是多个字段可以合并成一个超级字段。
+比如，first_name和last_name可以合并为full_name字段。
+DELETE aa_index
+PUT aa_index
+{
+  "mappings": {
+    "data": {
+      "properties": {
+        "first_name": {
+          "type": "text",
+          "copy_to": "full_name"
+        },
+        "last_name": {
+          "type": "text",
+          "copy_to": "full_name"
+        },
+        "full_name": {
+          "type": "text"
+        }
+      }
+    }
+  }
+}
+PUT aa_index/data/1
+{
+  "first_name": "cheng",
+  "last_name": "ccc"
+}
+GET aa_index/data/_search
+{
+  "query": {
+    "match": {
+      "full_name": {
+        "query": "cheng ccc",
+        "operator": "and"
+      }
+    }
+  }
+}
+doc_values是为了加快排序、聚合操作，在建立倒排索引的时候，额外增加一个列式存储映射，是一个空间换时间的做法。
+默认是开启的，对于确定不需要聚合或者排序的字段可以关闭。
+PUT aa_index
+{
+  "mappings": {
+    "data": {
+      "properties": {
+        "status": {
+          "type": "keyword"
+        },
+        "creater_name": {
+          "type":       "keyword",
+          "doc_values": false
+        }
+      }
+    }
+  }
+}
+fields可以让同一文本有多种不同的索引方式，比如一个string类型的字段，可以使用text类型做全文检索，使用keyword类型做聚合和排序。
+DELETE aa_index
+PUT aa_index
+{
+  "mappings": {
+    "data": {
+      "properties": {
+        "city": {
+          "type": "text",                    ------city字段可用于全文搜索
+          "fields": {
+            "key": {
+              "type":  "keyword"             ------city.key字段可用于排序和聚合
+            }
+          }
+        }
+      }
+    }
+  }
+}
+PUT aa_index/data/1
+{
+  "city": "cheng du"
+}
+
+PUT aa_index/data/2
+{
+  "city": "cheng"
+}
+
+GET aa_index/_search
+{
+  "query": {
+    "match": {
+      "city": "cheng"                  ------根据city字段来全文搜索
+    }
+  },
+  "sort": {
+    "city.key": "asc"                  ------根据city.key字段来排序
+  },
+  "aggs": {                            ------根据city.key字段来分组聚合
+    "city_list": {
+      "terms": {
+        "field": "city.key"
+      }
+    }
+  }
+}
+mapping贴近实际的应用
+PUT chtest
+POST chtest/data/_mapping                    ------设置mapping
+{
+  "properties": {
+      "content": {
+          "type": "text",
+          "analyzer": "ik_max_word",         ------指定分词器
+          "search_analyzer": "ik_max_word"
+      }
+  }
+}
+POST chtest/data/1                           ------录入数据
+{"content":"锋利的jquery修正版"}
+POST chtest/data/2
+{"content":"solr搜索引擎"}
+POST chtest/data/_search                     -----查询数据
+{
+    "query" : { "match" : { "content" : "锋利" }}
+}
+--------------------------------------
+es打分boost，官方推荐在查询时指定boost。
+通过指定一个boost值来控制每个查询子句的相对权重，该值默认为1。一个大于1的boost会增加该查询子句的相对权重。
+POST chtest/data/_search
+{
+    "query": {
+        "match" : {
+            "content": {
+                "query": "搜索",
+                "boost": 2
+            }
+        }
+    }
+}
+boost参数被用来增加一个子句的相对权重(当boost大于1时)，或者减小相对权重(当boost介于0到1时)。
+
 --------------------------------------------------------------------------
