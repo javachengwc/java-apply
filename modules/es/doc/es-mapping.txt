@@ -2,4 +2,124 @@
 es中的映射（Mapping）用来定义一个文档，可以定义所包含的字段以及字段的类型、分词器及属性等等。映射(Mapping)相当于数据表的表结构。
 映射分为动态映射和静态映射。
 动态映射---不需要事先定义映射（Mapping）,文档写入es时，会根据文档字段自动识别类型。
+动态映射在创建索引后直接将文档数据写入es，在实际项目中，如果在导入数据前不能确定包含哪些字段或者不方便确定字段类型，可以使用动态映射。
 静态映射---先定义映射，包含文档的各个字段及其类型等，此方式称为静态映射。
+es动态映射规则：
+JSON数据 	                 自动推测的类型
+null 	                     没有字段被添加
+true或false 	             boolean型
+小数 	                     float型
+数字 	                     long型
+日期 	                     date或text
+字符串 	                     text
+数组 	                     由数组第一个非空值决定
+JSON对象 	                 object类型
+静态映射创建
+PUT tushu                                 ------创建索引mapping,es6.x中每个索引只允许有单个类型
+                                                类型是es的一个设计失误，6.0开始后面的版本将不再支持
+{
+  "mappings":{
+    "history": {
+       "properties": {
+          "bookId": {"type": "long"},
+          "bookName": {"type": "text"},
+          "createDate": {"type": "date",
+                   "format": "yyyy-MM-dd HH:mm:ss"
+              }
+       }
+    }
+  }
+}
+GET tushu/_mapping 或                    ------查看tushu索引的映射
+GET tushu/history/_mapping
+对于定义了静态映射的索引，可直接基于它添加数据进行动态映射
+--------------------------------------------------------------------
+字段类型
+分类 	                子类 	                  具体类型                        说明
+主类型 	                字符串类型 	              string,text,keyword             从es5.x开始不再支持string，由text和keyword类型替代
+                                                                                  text类型字段是要被全文检索的
+                                                                                  keyword类型适用于索引结构化的字段，比如状态码和标签
+                        整数类型 	              byte,short,integer,long
+                        浮点类型 	              float,half_float,scaled_float,double    对于float、half_float和scaled_float,-0.0和+0.0是不同的值
+                                                                                  scaled_float是缩放类型的浮点数
+                        逻辑类型 	              boolean
+                        日期类型 	              date                            es内部会将日期数据转换为UTC，并存储为milliseconds-since-the-epoch的long型整数。
+                        范围类型 	              range
+                        二进制类型                binary                          用base64来表示索引中存储的二进制数据，可用来存储二进制形式的数据。
+复合类型 	            数组类型 	              array
+                        对象类型 	              object
+                        嵌套类型 	              nested
+地理类型 	            地理坐标类型 	          geo_point
+                        地理地图 	              geo_shape
+特殊类型 	            IP类型 	                  ip
+                        令牌计数类型 	          token_count
+                        附件类型 	              attachment
+                        抽取类型 	              percolator
+--------------------------------------------------------------
+mapping元字段
+mapping元字段是mapping映射中描述文档本身的字段，大致可以分为文档属性元数据、文档元数据、索引元数据、路由元数据和自定义元数据。
+分类 	                     元数据 	                  说明
+文档属性元数据 	             _index 	                  文档所属的索引
+                             _id     	                  文档的id
+                             _type 	                      文档所属类型，在6.0.0中弃用。 保留它只是保持向后兼容
+                             _uid 	                      由_type和_id字段组成，在6.0.0中弃用，_uid字段仅作为查看_id字段以保持向后兼容
+文档元数据                   _source 	                  文档的原生json字符串
+                             _size 	                      _source字段的字节数大小,需安装mapper-size插件才能看到
+索引元数据 	                 _all 	                      自动组合所有的字段值，默认禁用，在6.0.0中不能用
+                             _field_names 	              索引了每个字段的名称
+路由元数据 	                 _parent 	                  指定文档之间父子关系
+                             _routing 	                  将一个文档根据路由存储到指定分片上，_routing的默认值是文档的_id
+                                                          使用以下公式将文档路由到索引中的特定分片
+                                                          shard_num = hash(_routing) % num_primary_shards
+自定义元数据 	             _meta 	                      用于自定义元数据
+
+如果某个字段内容非常多，或者查询业务只需要对该字段进行搜索，返回文档id，然后通过其他途径查看文档原文，则不需要保留_source元字段。
+可以通过禁用_source元字段，在es中只存储倒排索引，不保留字段原始值。
+PUT aaa                                                   ------禁用_source
+{
+  "mappings": {
+    "bbb": {
+      "_source": {
+        "enabled": false
+      }
+    }
+  }
+}
+DELETE aaa
+PUT aaa                                                   -----_source中包含或排除部分字段
+{
+  "mappings": {
+    "bbb":{
+      "_source":{
+        "includes":["id","title"],
+        "excludes":["content"]
+      },
+      "properties": {
+        "id":{
+          "type":"long"
+        },
+        "title":{
+          "type":"text"
+        },
+        "content":{
+          "type":"text"
+        }
+      }
+    }
+  }
+}
+自定义路由模式可以通过指定每个文档的自定义路由值来实现。
+PUT aaa/bbb/1?routing=aa&refresh=true
+{
+  "title": "This is a document"
+}
+GET aaa/bbb/1?routing=aa    或
+GET aaa/bbb/_search
+{
+  "query": {
+    "terms": {
+      "_routing": [ "aa" ]
+    }
+  }
+}
+--------------------------------------------------------------------------

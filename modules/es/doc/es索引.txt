@@ -10,6 +10,7 @@ PUT test2                                                     ------指定参数
 }
 GET test/_settings                                            ------查看指定索引的配置信息
 GET test,test2/_settings                                      ------查看多个索引的配置信息
+GET book/book/_mapping                                        ------查看索引的mapping信息
 DELETE test                                                   ------删除索引
 POST test2/_close                                             ------关闭索引
 POST test2/_open                                              ------打开索引

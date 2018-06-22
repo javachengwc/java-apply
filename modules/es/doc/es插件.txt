@@ -61,5 +61,7 @@ GET _analyze?pretty
   "text":"洪荒之力"
 }
 执行后就能看到ik分词器分词后的词元信息,应该就只有一个词元:洪荒之力
-
+-----------------------------
+bin/elasticsearch-plugin install mapper-size                ------安装mapper-size插件
+bin/elasticsearch-plugin remove mapper-size                 ------删除mapper-size插件
 -------------------------------------------------------------------------
