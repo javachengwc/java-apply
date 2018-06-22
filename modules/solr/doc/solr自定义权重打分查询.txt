@@ -1,0 +1,63 @@
+---------------------------------------solr自定义权重打分查询-----------------------------------
+solr查询解析器
+solr 支持多种查询解析，提供灵活的查询解析。主要包含这几个查询解析器：
+标准查询解析器、dismax 查询解析器，扩展dismax 查询解析器（edismax）
+dismax handler比standard handler多如下功能：
+    以不同的权值来搜索多个field。
+    限制查询语法为一个小的集合并且用无语法错误。该特性是强制的并是不可配置的
+    整个搜索查询的自动的短语boosting
+    便利的查询boosting参数，通常同函数查询一块使用
+    能指定单词匹配的最少个数，这取决于查询串中的单词数.
+edismax是dismax的增强版，是打算在未来的发布版本中替代dismax的。
+
+-------------------------------------
+solr自定义权重打分查询的实现有:
+dismax      ---------dismax代表的是Maximum Disjunction,最大可能的析取。
+                     dismax可以查询多个field，并且每个field使用不同的boost。是由lucene的DisjunctionMaxQuery查询类型来支持
+edismax     ---------edismax是dismax的升级版，edismax主要就是用来改变score的作用,进而来进行自己想要的score默认排序
+                     edismax支持得分以相乘的方式作用于score，而dismax只能使用bf,作用效果是相加
+dismax参数
+参数                      描述
+q 	                      查询参数q
+q.alt 	                  q.alt为主查询未设置时使用的查询条件(主查询设置后不起用)
+qf 	                      Query Fields：在哪些字段上去检索数据。如果不指定的话，使用df
+                          搜索关键字匹配某些字段的打分比其他的字段要高(qf^)
+mm 	                      Minimum Match：指定最小匹配因子
+pf 	                      Phrase Fields：增加文档的得分如果q参数值离的很近
+                          对于某些字段，搜索字符串的密集度(phrase)的打分中占的比重(pf^)
+ps 	                      Phrase Slop：指定q参数中两个词可以距离多远
+qs 	                      Query Phrase Slop：指定q参数中两个词可以距离多远，与qf搭配使用
+tie 	                  Tie Breaker：使用一个0到1之间的浮点数
+bq 	                      Boost Query：指定一个额外因素来增加匹配到的文档的得分
+                          额外加分,不会影响搜索结果数，只会影响排序
+bf 	                      Boost Functions:指定boosts打分使用的函数
+ep:http://localhost:8081/solr/car/select?defType=dismax&q=大众&q.op=OR&fl=*,score&qf=brandName^2.0 modelName^3.0
+&bf=sum(recip(ms(NOW,createTime),3.16e-11,1,1),div(1000,price))^100
+在brandName,modelName中搜索关键字大众，brandName和modelName在字段查询中的比重分别是2.0，3.0
+其他还参考价格和创建时间(bf=sum(recip(ms(NOW,createTime),3.16e-11,1,1),div(1000,price))^100)
+
+edismax参数
+参数                      描述
+q.alt                     当q字段为空时，用于设置缺省的query，通常设置q.alt为*:*
+qf                        Query Fields：在哪些字段上去检索数据。如果不指定的话，使用df
+mm                        Minimum ‘Should’ Match。
+                          Solr支持三种查询，即“必须出现”，“不能出现”和“可以出现”，分别对应于AND, -, OR
+pf                        boosting phrases over words。用于指定一组field，当query完全匹配pf指定的某一个field时，来进行boost，
+                          给搜索匹配到的字段打分  如pf =字段1^0.5 字段2^0.2
+ps                        Phrase Slop. 短语坡度。短语查询的坡度量用在pf字段，影响boost。
+qs                        Query Phrase Slop。查询短语坡度。
+                          查询短语坡度是指短语查询明确包含用户查询的字符串(在qf字段，影响匹配)。
+tie                       tie breaker。float值作为决胜局中DisjunctionMaxQueries使用（应该是远小于1）。
+bq                        Boost Query。对某个field的value进行boost，例如brand:xq^5.0。
+bf                        Boost Functions。用函数的方式计算boost。
+uf                        User Fields。用户字段。制定模式的字段可以被用户显示的查询。此参数支持通配符。
+pf2                       Phrase bigram fields。短语两字母字段。 ep: “the brown fox jumped” is queried as “the brown” “brown fox” “fox jumped”。
+pf3                       Phrase trigram fields。短语三字母字段。ep: “the brown fox jumped” is queried as “the brown fox” “brown fox jumped”。
+ps2                       短语两字母坡度。如果未指定，将使用”ps”
+ps3                       短语三字母坡度。如果未指定，将使用”ps”
+boost                     Boost Function, multiplicative。作为bf，score=bf*score
+stopwords                 单词停用，true 或false。
+lowercaseOperators        此参数用于控制小写单词作为布尔运算符，如”and” and “or”。
+                          设置与lowercaseOperators= true来允许此。默认为true。
+
+------------------------------------------------------------------------------------------------
