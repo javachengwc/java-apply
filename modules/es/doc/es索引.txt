@@ -44,6 +44,26 @@ GET book/book/_search                                         ------根据分词
     }
   }
 }
+GET book/book/_search                                        ------分页查询
+{
+  "from":0,
+  "size":2,
+  "query": {
+    "match_all": {}
+  }
+}
+GET book/book/_search                                       ------按条件分页查询出指定的列
+{
+  "from":0,
+  "size":2,
+  "version": true,
+  "_source": ["title","author"],
+  "query": {
+    "term": {
+        "title": "solr"
+    }
+  }
+}
 GET book/book/_search                                         ------match检索，只要存在任何一个词项被匹配，就会搜索出来。
                                                                     这里根据"锋搜"来搜索会将"锋利的jquery","solr搜索引擎"这两个文档都搜索出来
 {

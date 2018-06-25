@@ -1,4 +1,209 @@
 ------------------------es查询----------------------
+词项查询(term查询)
+词项查询将按照存储在倒排索引中的词项进行精确查询。这些查询通常用于数字，日期和枚举等结构化数据，而不是全文本字段。
+GET book/book/_search                                       ------按词项条件分页查询出指定的列
+{
+  "from":0,
+  "size":2,
+  "version": true,
+  "_source": ["title","author"],
+  "query": {
+    "term": {
+        "title": "solr"
+    }
+  }
+}
+GET book/book/_search                                        ------按照评分来查询
+{
+  "min_score":"0.5",
+  "query": {
+    "term": {
+        "title": "solr"
+    }
+  }
+}
+GET book/book/_search                                       ------查询显示高亮,当结果中的title有solr关键字时，此关键字高亮显示
+{
+  "query": {
+    "term": {
+        "title": "solr"
+    }
+  },
+  "highlight": {
+    "fields": {
+      "title": {}
+    }
+  }
+}
+根据文档的_id的数组ids查询
+GET book/book/_search
+{
+    "query": {
+        "ids" : {
+            "values" : ["1", "2"]
+        }
+    }
+}
+根据索引type来查询
+GET /_search
+{
+    "query": {
+        "type" : {
+            "value" : "book"
+        }
+    }
+}
+range查询,range查询用于匹配数值型、日期型或字符串型字段在某一范围内的文档
+GET book/book/_search
+{
+    "query": {
+        "range" : {
+            "age" : {
+                "gte" : 10,
+                "lte" : 20,
+            }
+        }
+    }
+}
+GET book/book/_search                                     ------日期范围查询
+{
+    "query": {
+        "range" : {
+            "createTime" : {
+                "gte" : "2012-02-02",
+                "lte" :  "2012-12-12",
+                "format": "yyyy-MM-dd"
+            }
+        }
+    }
+}
+exists查询,返回原始字段中至少包含一个非空值的文档
+GET book/book/_search
+{
+    "query": {
+        "exists" : { "field" : "author" }
+    }
+}
+prefix查询
+GET book/book/_search
+{ "query": {
+    "prefix" : { "author" : "wu" }
+  }
+}
+wildcard查询（通配符查询）
+GET book/book/_search
+{
+    "query": {
+        "wildcard" : { "content" : "*是*" }
+    }
+}
+regexp查询（正则表达式查询）
+GET book/book/_search
+{
+    "query": {
+        "regexp":{
+            "title": "利.*"
+        }
+    }
+}
+fuzzy查询（模糊查询）
+GET book/book/_search
+{
+    "query": {
+        "fuzzy":{
+            "title": "的"
+        }
+    }
+}
+
+
+全文检索查询
+GET book/book/_search                                     ------全文检索 and查询
+{
+  "query": {
+    "match": {
+        "title":{
+          "query":"solr搜索",
+          "operator":"and"
+        }
+    }
+  }
+}
+GET book/book/_search                                    ------全文检索 or查询，默认就是or查询
+{
+  "query": {
+    "match": {
+        "title":{
+          "query":"solr锋利",
+          "operator":"or"
+        }
+    }
+  }
+}
+GET book/book/_search                                     ------分页查询
+{
+  "from":0,
+  "size":2,
+  "query": {
+    "match_all": {}
+  }
+}
+match_phrase查询（短语查询）
+match_phrase查询会将查询内容分词，分词器可以自定义，文档中同时满足以下两个条件才会被检索
+1,分词后所有词项都要出现在该字段中
+2,字段中的词项顺序要一致
+GET book/book/_search                                   ------短语查询
+{
+  "query": {
+    "match_phrase": {
+      "title": "搜索引擎"
+    }
+  }
+}
+match_phrase_prefix 查询（前缀查询）
+GET book/book/_search                                   ------前缀查询
+{
+  "query": {
+    "match_phrase_prefix": {
+      "title": "sol"
+    }
+  }
+}
+multi_match 查询,是match查询的升级版，用于多字段全文检索
+GET book/book/_search
+{
+  "query": {
+    "multi_match": {
+      "query": "lucene",
+      "fields": ["titie","content"]
+    }
+  }
+}                                                      ------多字段全文检索,根据title,content字段全文检索lucene,只要有任意一个字段匹配就返回
+common_terms 查询（常用词查询）
+common_terms查询把查询分词后的词项分为重要词项和不重要词，在搜索时，首先搜索与重要词匹配的文档，然后执行第二次搜索
+GET book/book/_search
+{
+    "query": {
+        "common": {
+            "title": {
+                "query": "的jquery",
+                "low_freq_operator": "and"
+            }
+        }
+    }
+}
+query_string查询，许在一个查询语句中使用多个特殊条件关键字
+simple_query_string查询,解析出错时不抛异常，丢弃查询无效的部分
+GET book/book/_search
+ {
+   "query": {
+     "simple_query_string" : {
+         "query": "(jquery | solr) -项目",
+         "fields": ["title^5", "content"],
+         "default_operator": "and"
+     }
+   }
+ }
 http方式查询
 http://127.0.0.1:9200/search/{"query":{"term":{"user.name":"cheng"}}}  --post方式查询(get方式拿不到结果)
 
