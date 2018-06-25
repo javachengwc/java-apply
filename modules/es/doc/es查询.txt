@@ -22,6 +22,13 @@ GET book/book/_search                                        ------按照评分�
     }
   }
 }
+高亮查询
+es支持三个高亮器：unified，plain和fvh（快速向量高亮器）
+Unified高亮器---使用lucene统一高亮器。 它将文本分解为句子，并使用BM25算法对单个句子进行评分，就好像它们是文集中的文档一样。
+它还支持准确的短语和多项（模糊，前缀，正则表达式）突出显示。 这是默认的高亮器。
+plain高亮器---使用标准的lucene高亮器。 它试图在短语查询中理解单词重要性和任何单词定位标准来反映查询匹配逻辑。
+fvh高亮器---使用Lucene Fast Vector高亮器。它可用于在映射中将term_vector设置为with_positions_offsets的字段。
+
 GET book/book/_search                                       ------查询显示高亮,当结果中的title有solr关键字时，此关键字高亮显示
 {
   "query": {
@@ -34,6 +41,22 @@ GET book/book/_search                                       ------查询显示�
       "title": {}
     }
   }
+}
+GET book/book/_search                                       ------查询显示多字段高亮,自定义高亮标签
+{
+    "query" : {
+        "match": { "title": "solr" }
+    },
+    "highlight" : {
+        "fields" : {
+            "title" : {
+              "pre_tags":["<mark>"],
+              "post_tags":["</mark>"],
+              "type" : "plain"                              ------type字段允许强制设定的高亮器类型。可以的值是：unified, plain和fvh
+            },
+            "content" : {}
+        }
+    }
 }
 根据文档的_id的数组ids查询
 GET book/book/_search
