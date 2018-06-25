@@ -1,7 +1,7 @@
 ------------------------es查询----------------------
 词项查询(term查询)
 词项查询将按照存储在倒排索引中的词项进行精确查询。这些查询通常用于数字，日期和枚举等结构化数据，而不是全文本字段。
-GET book/book/_search                                       ------按词项条件分页查询出指定的列
+GET book/book/_search                                       ------按词项条件分页排序查询出指定的列
 {
   "from":0,
   "size":2,
@@ -11,7 +11,10 @@ GET book/book/_search                                       ------按词项条�
     "term": {
         "title": "solr"
     }
-  }
+  },
+  "sort": [
+   {"id":{"order":"desc"}}
+  ]
 }
 GET book/book/_search                                        ------按照评分来查询
 {
@@ -100,12 +103,22 @@ GET book/book/_search                                     ------日期范围查�
         }
     }
 }
-exists查询,返回原始字段中至少包含一个非空值的文档
+exists查询,返回原始字段中至少包含一个非空值的文档(此字段存在且不为null)
 GET book/book/_search
 {
     "query": {
         "exists" : { "field" : "author" }
     }
+}
+missing聚合查询
+GET book/book/_search                     ------查询缺失saleCnt字段的文档或saleCnt为null的文档数
+{
+  "size": 0,
+  "aggs": {
+    "no_count": {
+      "missing": {"field": "saleCnt"}
+    }
+  }
 }
 prefix查询
 GET book/book/_search
@@ -138,8 +151,6 @@ GET book/book/_search
         }
     }
 }
-
-
 全文检索查询
 GET book/book/_search                                     ------全文检索 and查询
 {
@@ -163,13 +174,17 @@ GET book/book/_search                                    ------全文检索 or�
     }
   }
 }
-GET book/book/_search                                     ------分页查询
+GET book/book/_search                                     ------分页排序查询
 {
   "from":0,
   "size":2,
   "query": {
     "match_all": {}
-  }
+  },
+  "sort": [
+      {"createTime":{"order":"desc"}},
+      {"id":{"order":"desc"}}
+    ]
 }
 match_phrase查询（短语查询）
 match_phrase查询会将查询内容分词，分词器可以自定义，文档中同时满足以下两个条件才会被检索
@@ -227,6 +242,155 @@ GET book/book/_search
      }
    }
  }
+聚合查询
+聚合查询的key有value_count,max,min,avg,sum,stats,extended_stats,cardinality,percentiles。
+value_count---表示包含某一字段（比如saleCnt）的文档数。
+cardinality---依照那个field的值的基数，也就是类似sql中的count(distinct fieldValue)
+percentiles---表示百分位统计
+GET book/book/_search                   ------查询最大,最小,平均销售数量(max,min,avg不会考虑不包含此field的文档)
+{
+  "size": 0,
+  "aggs": {
+    "maxCnt": {
+      "max": {"field": "saleCnt"}
+    },
+    "minCnt": {
+      "min": {"field": "saleCnt"}
+    },
+    "avgCnt": {
+      "avg": {"field": "saleCnt"}
+    }
+  }
+}
+GET book/book/_search                  ------查询统计stats信息，结果包含命中的数量，最大,最小,平均,总和值
+                                             extended_stats的统计信息中，还包含其他信息
+{
+  "size": 0,
+  "aggs": {
+    "stats_sale": {
+      "stats": {"field": "saleCnt"}
+    },
+    "ext_stats_sale": {
+       "extended_stats": {"field": "saleCnt"}
+    }
+  }
+}
+桶聚合查询(bucket aggregations查询)(分组聚合查询)
+terms聚合用于分组聚合
+GET book/book/_search                       ------根据title分组，查询出各分组记录个数,并获取各分组平均销售数
+{
+   "size": 0,
+   "aggs": {
+     "group_count": {
+       "terms": {"field": "title"},
+       "aggs":{
+           "avg_sale":{
+              "avg":{"field": "saleCnt"}
+            }
+        }
+     }
+   }
+}
+GET book/book/_search                      ------根据author=wuming条件进行刷选，刷选后求saleCnt的平均值
+{
+  "size": 0,
+  "aggs": {
+    "group_count": {
+      "filter": {
+        "term":{"author": "wuming"}
+      },
+      "aggs":{
+        "avg_sale":{
+          "avg":{"field": "saleCnt"}
+        }
+      }
+    }
+  }
+}
+GET book/book/_search                     ------统计content字段包含”jquery”和包含”solr”的文档数
+{
+  "size": 0,
+  "aggs" : {
+    "rt" : {
+      "filters" : {
+        "filters" : {
+          "jquery" :   { "match" : { "content" : "jquery"   }},
+          "solr" : { "match" : { "content" : "solr" }}
+        }
+      }
+    }
+  }
+}
+GET book/book/_search                   ------统计按照content字段包含”jquery”和包含”solr”的分组，各分组的平均saleCnt。
+{
+  "size": 0,
+  "aggs": {
+    "group_count": {
+      "filters":{
+        "filters": [
+          {"match":{"content": "jquery"}},
+          {"match":{"content": "solr"}}
+        ]
+      },
+      "aggs":{
+        "avg_sale":{
+            "avg":{"field": "saleCnt"}
+        }
+      }
+    }
+  }
+}
+GET book/book/_search                  ------根据saleCnt范围分组，获取各分组文档数,这里的返回是[0,100),[100,300),[300,+无穷大)，
+                                             注意右边界是小于，而不是小于等于。
+{
+  "size": 0,
+  "aggs": {
+    "group_count": {
+      "range": {
+        "field": "saleCnt",
+        "ranges": [
+            {"to": 100},
+            {"from": 100,"to":300},
+            {"from": 300}
+        ]
+      }
+    }
+  }
+}
+GET book/book/_search
+{
+  "size": 0,
+  "aggs": {
+    "group_count": {
+      "range": {
+        "field": "createtime",
+        "format":"yyyy-MM-dd",
+        "ranges": [
+            {"to": "2017-06-01"},
+            {"from": "2017-06-01","to":"2018-01-01"},
+            {"from": "2018-01-01"}
+        ]
+      }
+    }
+  }
+}
+GET book/book/_search                   ------查询一年前之前录入的文档数和从一年前以来到现在录入的文档数
+{
+  "size": 0,
+  "aggs": {
+    "group_count": {
+      "range": {
+        "field": "createtime",
+        "format":"yyyy-MM-dd",
+        "ranges": [
+            {"to": "now-12M/M"},
+            {"from": "now-12M/M"}
+        ]
+      }
+    }
+  }
+}
+------------------------------------------------
 http方式查询
 http://127.0.0.1:9200/search/{"query":{"term":{"user.name":"cheng"}}}  --post方式查询(get方式拿不到结果)
 
