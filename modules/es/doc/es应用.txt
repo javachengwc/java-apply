@@ -87,4 +87,77 @@ POST /_bulk
 { "update": { "_index": "book", "_type": "book", "_id": "11", "_retry_on_conflict" : 2} }
 { "doc" : {"title" : "book11v2"} }
 响应中包含items 数组，数组的内容是以请求的顺序列出来的每个请求的结果。
+-----------------------------------------------
+es不停服务修改mapping
+es索引是不可改变的segments，每一个segmeng都是一个小的倒排索引。segment是永远不会更新的。
+更新一个document只是创建了一个新的document，并且在原来的document上加了删除标记。当添加新的document或者更新document的时候，
+新的segment就会创建。后台运行merge进程，会不停的把一些小的segment合并成一个大的segment，同时会把打有删除标记的document彻底清理。
+通常情况下，一个index拥有很多type，每一个type都有不同的shema和mapping。一个segment可能包括多个type的document。
+所以，如果想修改一个type的一个field的定义，都需要重建所有索引。
+
+segment中只是包含了这个segment中存在的document中的包含的field的数据信息。
+因此增加一个新的field是不需重建索引的，只需要put_mapping即可，无需重建索引。
+
+
+es不停服务重建索引是利用alias机制来实现的，alias机制使得重建索引完全在后台执行，而且使得索引切换对应用程序来说是透明的。
+一个alias相当于一个软链接，可以指向一个或者多个索引。
+创建索引
+curl -XPUT localhost:9200/my_index_v1 -d '
+{... mappings ...}
+创建alias指向这个索引
+curl -XPOST localhost:9200/_aliases -d '
+{
+    "actions": [
+        { "add": {
+            "alias": "my_index",
+            "index": "my_index_v1"
+        }}
+    ]
+}
+现在应用程序对my_index进行操作，就相当于对my_index_v1进行操作。
+需要重建索引时，可以新建一个索引
+curl -XPUT localhost:9200/my_index_v2 -d '
+{ ... mappings ... }
+然后利用v1的数据来填充v2，将alias指向v2即可。
+curl -XPOST localhost:9200/_aliases -d '
+{
+    "actions": [
+        { "remove": {
+            "alias": "my_index",
+            "index": "my_index_v1"
+        }},
+        { "add": {
+            "alias": "my_index",
+            "index": "my_index_v2"
+        }}
+    ]
+}
+最后，删除v1
+curl -XDELETE localhost:9200/my_index_v1
+现在在后台完成了重建索引的操作，而无需停止服务，对应用程序来说这个过程是完全透明的。
+
+MultiField允许同一个字段用在不同的场景下。一点典型应用就是对同一个字段title以两种不同的方式索引：
+一个analyzed的string作为查询时使用，一个not_analyzed字段作为排序使用。任何一个纯字段（object和nested不属于这一类）可以升级为一个multi-field，而无需重建索引。
+比如，现在有一个string类型的字段：
+{
+    "created": { "type": "string"}
+}
+可以升级为一个multifield，添加一个sub-field是date类型
+curl -XPUT localhost:9200/my_index/my_type/_mapping -d '
+{
+    "my_type": {
+        "properties": {
+            "created": {
+                "type":   "multi_field",
+                "fields": {
+                    "created": { "type": "string" },
+                    "date":    { "type": "date"   }
+                }
+            }
+        }
+    }
+}
+前边的created的字段仍然存在，作为multi-field的主字段，可以用created或者created.created访问，
+而新的date类型的字段，可以用created.date来访问，注意，这个字段只对新添加的document有效。
+
 ----------------------------------------------------------------------------
