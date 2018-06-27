@@ -105,8 +105,10 @@ where a.stat_date is null
 
 -----mysql死锁
 show processlist 或 show full processlist 或
-select * from information_schema.innodb_trx;
+select * from information_schema.innodb_trx;    ---查看当前的事务
 kill id  #杀死sql线程
+select * from information_schema.INNODB_LOCKS;  ---查看当前锁定的事务
+select * from information_schema.INNODB_LOCK_WAITS;  ---查看当前等锁的事务
 
 -----mysql锁
 
