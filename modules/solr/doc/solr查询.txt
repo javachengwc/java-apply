@@ -10,6 +10,7 @@ start                          ------ 返回第一条记录在完整找到结果
 rows                           ------ 指定返回结果最多有多少条记录，配合start来实现分页。
 sort                           ------ 排序，格式：sort=<field name>+<desc|asc>[,<field name>+<desc|asc>]… 。
                                       示例(a desc, price asc）表示先 “a” 降序, 再 “price” 升序，默认是相关性降序。
+                                      这里也可以根据函数排序，比如sum(price,minPrice) asc 或则 abs(sum(price,-10000)) asc 。
 wt                             ------ (writer type)指定输出格式，可以有 xml, json, php, phps
 qt                             ------ (query type)指定那个类型来处理查询请求，一般不用指定，默认是standard。
 indent                         ------ 返回的结果是否缩进，默认关闭，用 indent=true|on 开启。
