@@ -6,6 +6,7 @@ tar -zxvf solr-7.1.0.tgz
 cd solr-7.1.0
 ./bin/solr start -force                                                  ###启动自带solr
 ./bin/solr create -c test -force                                         ###创建一个名为test的collect
+./bin/solr status                                                        ###查看solr运行状态
 cp -rf  ./server/solr-webapp/webapp /opt/apache-tomcat-8.5.28/webapps    ###复制到tomcat相应目录
 cd /opt/apache-tomcat-8.5.28/webapps
 mv webapp solr                                                           ###把webapp改名成solr
