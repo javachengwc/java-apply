@@ -21,7 +21,7 @@ dismax参数
 q 	                      查询参数q
 q.alt 	                  q.alt为主查询未设置时使用的查询条件(主查询设置后不起用)
 qf 	                      Query Fields：在哪些字段上去检索数据。如果不指定的话，使用df
-                          搜索关键字匹配某些字段的打分比其他的字段要高(qf^)
+                          搜索关键字匹配某些字段的打分比其他的字段要高用(qf^n)
 mm 	                      Minimum Match：指定最小匹配因子
 pf 	                      Phrase Fields：增加文档的得分如果q参数值离的很近
                           对于某些字段，搜索字符串的密集度(phrase)的打分中占的比重(pf^)
@@ -31,6 +31,7 @@ tie 	                  Tie Breaker：使用一个0到1之间的浮点数
 bq 	                      Boost Query：指定一个额外因素来增加匹配到的文档的得分
                           额外加分,不会影响搜索结果数，只会影响排序
 bf 	                      Boost Functions:指定boosts打分使用的函数
+defType                   指定QueryParser,常用defType=lucene或defType=dismax或defType=edismax
 ep:http://localhost:8081/solr/car/select?defType=dismax&q=大众&q.op=OR&fl=*,score&qf=brandName^2.0 modelName^3.0
 &bf=sum(recip(ms(NOW,createTime),3.16e-11,1,1),div(1000,price))^100
 在brandName,modelName中搜索关键字大众，brandName和modelName在字段查询中的比重分别是2.0，3.0
@@ -59,5 +60,6 @@ boost                     Boost Function, multiplicative。作为bf，score=bf*s
 stopwords                 单词停用，true 或false。
 lowercaseOperators        此参数用于控制小写单词作为布尔运算符，如”and” and “or”。
                           设置与lowercaseOperators= true来允许此。默认为true。
+defType                   指定QueryParser,常用defType=lucene或defType=dismax或defType=edismax
 
 ------------------------------------------------------------------------------------------------

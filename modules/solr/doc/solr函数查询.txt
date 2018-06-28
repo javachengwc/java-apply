@@ -1,0 +1,49 @@
+-----------------------------------------solr函数查询-------------------------------------
+函数查询允许使用一个或多个数字字段的真实值生成一个相关性分数，函数查询在standard，DisMax，eDisMax下都能使用。
+Solr中的可用函数
+函数 	                         说明 	                                                  举例
+sum(x,y) 	                     和 	                                                  sum(x,y,…)
+sub(x,y) 	                     差                                                       sub(100000,10000)
+product(x,y) 	                 乘法                                                     product(5,2)
+div(x,y) 	                     除法，x除以y 	                                          div(1,5)
+pow(x,y) 	                     x的y次方 	                                              pow(x,y)
+log(x) 	                         以10为底，x的对数 	                                      log(sum(x,100))
+sqrt() 	                         平方根sqrt(x)                                            sqrt(100)
+abs(x) 	                         绝对值 	                                              abs(-5)
+max(x,y,…) 	                 返回最大值 	                                          max(2,3,0)
+min(x,y,…) 	                 返回最小值 	                                          min(2,3,0)
+map(x,min,max,target) 	         如果x在min和max之间,x=target,否则x=x 	                  map(x,0,0,1)
+def("field",value) 	             默认值，当指定字段不存在时，返回默认值 	              def(rationg,5)
+not() 	                         排除操作 	                                              not(exists(title))
+if()                             if(test,value1,value2)
+docfreq(field,val) 	             返回某值在某字段出现的次数 	                          docfreq(title,"solr")
+idf() 	                         倒排文档频率 	                                          idf(field,"solr")
+constant                         支持有小数点的常量，                                     比如1.5，查询表达式就是：_val_:1.5
+fieldvalue()                     返回numeric field的值，这个域必须是indexd的。            fieldvalue(title)
+ord()                            对于一个域，它所有的值都将会按照字典顺序排列，此函数返回查询的那个特定的值在这个顺序中的排名。
+                                 当没有值存在的时候，将返回0。                            ord(title)
+例如：某个特定的域只能去三个值，“apple”、“banana”、“pear”，那么ord（“apple”）=1，ord（“banana”）=2，ord（“pear”）=3.
+
+需要注意的是，ord（）这个函数，依赖于值在索引中的位置，所以当有文档被删除、或者添加的时候，ord（）的值就会发生变化。当你使用MultiSearcher的时候，这个值也就是不定的了。
+
+4、rord，这个函数将会返回与ord相对应的倒排序的排名。
+maxdoc() 	                     返回索引的个数，包括被标记为删除状态的文档 	          maxdoc()
+numdocs() 	                     返回索引的个数，不包括被标记为删除状态的文档 	          numdocs()
+ms() 	                         返回两个参数间毫秒级的差别 	                          ms(datefield1,2000-01-01T00:00:00Z)
+norm(field) 	                 返回该字段索引值的范数 	                              norm(title)
+query() 	                     返回给定的子查询的得分，或者文档不匹配的默认值值 	      query(subquery,default)
+scale() 	                     返回一个在最大值和最小值之间的值 	                      scale(x,1,3)
+termfreq() 	                     返回词出现的次数                                         termfreq(title,"solr")
+ttf() 	                         返回这个词在该字段出现的次数 	                          ttf(title,"solr")
+and() 	                         返回true值当且仅当它的所有操作为true 	                  and(exists(a),exists(price))
+or() 	                         返回true值当有一个操作为true 	                          or(value1,value2)
+xor() 	                         返回false值如果所有操作都为真 	                          xor(field1,field2)
+exists() 	                     如果字段存在返回true 	                                  exists(title)
+gt(),gte(),lt(),lte(),eq() 	     比较函数 	                                              gt(2,1)
+在排序时使用函数
+sort=sum(feePrice,price) desc
+在查询结果中预处理一些输出字段
+fl=id,sum(feePrice,price)
+在dDisMax中指定boost参数，在DisMax中指定bf参数
+
+------------------------------------------------------------------------------------------
