@@ -67,6 +67,7 @@ Date Facet
 solr查询类比mysql查询
 solr查询                                mysql查询
 !name:("aa","bb")                       name not in ("aa","bb")
+!id:(1 2)                               id not in (1,2)
 id:[1 TO 100]                              id>=1 and id<=100
 id:[1 TO 100)                              id>=1 and id<100
 

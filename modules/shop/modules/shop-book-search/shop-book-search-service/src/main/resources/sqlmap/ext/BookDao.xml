@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.book.search.dao.BookDao">
+
+    <select id="queryBookIndexInfo" resultType="map">
+        select id as book_key,id,name,sub_title,info,statu,author,price,
+        orgl_price,top_type,top_type_name,second_type,second_type_name,store_id,store_name,
+        publish_time,UNIX_TIMESTAMP(publish_time) as publish_time_second,
+        publisher_id,publisher_name,label,sale_cnt,
+        create_time,UNIX_TIMESTAMP(create_time) as create_time_second,
+        shelf_time,UNIX_TIMESTAMP(shelf_time) as shelf_time_second
+        from shop_book
+        where id=#{bookId}
+    </select>
+
+</mapper>

@@ -17,6 +17,7 @@
     <packaging>pom</packaging>
     
 	<modules>
+	    <module>modules/shop-base</module>
 	    <module>modules/shop-activity</module>
 		<module>modules/shop-eureka-server</module>
         <module>modules/shop-manage</module>
@@ -27,6 +28,8 @@
 		<module>modules/shop-user</module>
 		<module>modules/shop-order</module>
 		<module>modules/shop-zipkin-server</module>
+		<module>modules/shop-book</module>
+		<module>modules/shop-book-search</module>
 	</modules>
 
 </project>

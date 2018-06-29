@@ -1,0 +1,42 @@
+create table shop_book (
+   id bigint auto_increment,
+   name varchar(64) default '' comment '书名',
+   sub_title varchar(128) default '副标题',
+   info varchar(256) default '' comment '简介',
+   statu int default 0 comment '状态 0--初始化 1--上架 2--下架',
+   author varchar(128) default '' comment '作者',
+   price int default 0 comment '价格,分',
+   orgl_price int default 0 comment '原始价格,分',
+   top_type int default 0 comment '一级分类',
+   top_type_name varchar(32) default '' comment '一级分类名称',
+   second_type int default 0 comment '二级分类',
+   second_type_name varchar(32) default '' comment '二级分类名称',
+   store_id bigint default 0 comment '书店id',
+   store_name varchar(64) default '书店名称',
+   publish_time date default "0000-00-00" comment '出版时间',
+   publisher_id bigint default 0 comment '出版社id',
+   publisher_name varchar(64) default '' comment '出版社名称',
+   label varchar(64) default '' comment '标签',
+   sale_cnt int default 0 comment '销量',
+   create_time datetime comment '创建时间',
+   shelf_time datetime comment '上架时间',
+   down_time datetime comment '下架时间',
+   modified_time datetime comment '修改时间',
+   primary key (id),
+   key idx_type(top_type,second_type),
+   key idx_create(create_time),
+   key idx_downtime(down_time),
+   key idx_name(name)
+) engine INNODB DEFAULT CHARSET=utf8 comment '书籍表';
+
+create table qa (
+   id bigint auto_increment,
+   question varchar(255) default '' comment '问题',
+   type int comment '问题分类',
+   answer varchar(2000) default '' comment '答案',
+   create_time datetime comment '创建时间',
+   is_show int default 0 comment '是否展示 0--否 1--是',
+   sort int default 0 comment '顺序值',
+   modified_time datetime comment '修改时间',
+   primary key (id)
+) engine INNODB DEFAULT CHARSET=utf8 comment 'qa表';
