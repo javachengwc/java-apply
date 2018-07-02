@@ -5,7 +5,7 @@ import com.shop.base.model.Req;
 import com.shop.base.model.Resp;
 import com.shop.order.service.remote.UserService;
 import com.shop.user.api.model.UserInfo;
-import com.shop.user.api.rest.UserResCtrl;
+import com.shop.user.api.rest.test.UserResCtrl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

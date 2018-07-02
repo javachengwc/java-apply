@@ -1,4 +1,4 @@
-package com.shop.user.api.rest;
+package com.shop.user.api.rest.test;
 
 
 import com.shop.base.model.Req;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Api(value = "用户接口")
-@RequestMapping(value="/user2")
+@RequestMapping(value="/test/user2")
 public interface User2Resource {
 
     @ApiOperation(value = "获取用户信息", notes = "获取用户信息")

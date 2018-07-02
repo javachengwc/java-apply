@@ -1,4 +1,4 @@
-package com.shop.user.api.rest;
+package com.shop.user.api.rest.test;
 
 
 import com.shop.base.model.Req;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Api(value = "用户接口")
-@RequestMapping(value="/user")
+@RequestMapping(value="/test/user")
 public interface UserResCtrl {
 
     @ApiOperation(value = "获取用户信息", notes = "获取用户信息")

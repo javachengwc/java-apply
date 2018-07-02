@@ -1,29 +1,45 @@
-package com.shop.base.model;
+package com.shop.user.model;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import org.apache.commons.lang.builder.ToStringBuilder;
+public class LoginInfo {
 
-@ApiModel(value = "reqHeader", description = "请求头信息")
-public class ReqHeader {
+    private String mobile;
 
-    @ApiModelProperty(name = "app", value = "app应用名称")
+    private String captcha;
+
     private String app;
 
-    @ApiModelProperty(name = "appVersion", value = "app应用版本")
     private String appVersion;
 
-    @ApiModelProperty(name = "token", value = "登录会话token")
-    private String token;
-
-    @ApiModelProperty(name = "deviceOs", value = "手机设备系统")
     private String deviceOs;
 
-    @ApiModelProperty(name = "deviceOsVersion", value = "手机设备系统版本")
     private String deviceOsVersion;
 
-    @ApiModelProperty(name = "deviceToken", value = "手机设备的唯一标识")
     private String deviceToken;
+
+    public LoginInfo() {
+
+    }
+
+    public LoginInfo(String mobile,String captcha) {
+        this.mobile=mobile;
+        this.captcha=captcha;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getCaptcha() {
+        return captcha;
+    }
+
+    public void setCaptcha(String captcha) {
+        this.captcha = captcha;
+    }
 
     public String getApp() {
         return app;
@@ -39,14 +55,6 @@ public class ReqHeader {
 
     public void setAppVersion(String appVersion) {
         this.appVersion = appVersion;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     public String getDeviceOs() {
@@ -71,9 +79,5 @@ public class ReqHeader {
 
     public void setDeviceToken(String deviceToken) {
         this.deviceToken = deviceToken;
-    }
-
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
     }
 }

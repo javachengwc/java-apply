@@ -9,6 +9,7 @@ public class Req<T> implements Serializable {
     private ReqHeader header;
 
     private T data;
+
     public ReqHeader getHeader() {
         return header;
     }

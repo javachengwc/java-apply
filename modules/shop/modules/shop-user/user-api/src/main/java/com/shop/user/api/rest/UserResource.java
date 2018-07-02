@@ -1,26 +1,27 @@
 package com.shop.user.api.rest;
 
+import com.shop.base.model.Req;
 import com.shop.base.model.Resp;
 import com.shop.user.api.model.UserInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-
-@Api(value = "用户接口")
-@Path("/user")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
+@Api("用户接口")
+@RequestMapping("/user")
 public interface UserResource {
 
-    @ApiOperation(value = "获取用户信息", notes = "获取用户信息")
-    @POST
-    @Path("/getUserInfo")
-    public UserInfo getUserInfo(@QueryParam("userId") Long userId);
+    @ApiOperation(value = "查询用户信息", notes = "查询用户信息")
+    @RequestMapping(value = "/queryUserInfo", method = RequestMethod.POST)
+    public Resp<UserInfo> queryUserInfo(@RequestBody Req<Void> reqst);
 
-    @ApiOperation(value = "获取用户信息", notes = "获取用户信息")
-    @GET
-    @Path("/getUserInfo2")
-    public Resp<UserInfo> getUserInfo2(@QueryParam("userId") Long userId);
+    @ApiOperation(value = "根据手机号查询用户", notes = "根据手机号查询用户")
+    @RequestMapping(value = "/queryUserByMobile", method = RequestMethod.POST)
+    public Resp<UserInfo> queryUserByMobile(@RequestBody Req<String> reqst);
+
+    @ApiOperation(value = "根据id查询用户", notes = "根据id查询用户")
+    @RequestMapping(value = "/queryUserById", method = RequestMethod.POST)
+    public Resp<UserInfo> queryUserById(@RequestBody Req<Long> reqst);
 }

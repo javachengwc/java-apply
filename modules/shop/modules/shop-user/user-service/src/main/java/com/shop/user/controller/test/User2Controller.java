@@ -1,10 +1,10 @@
-package com.shop.user.controller;
+package com.shop.user.controller.test;
 
 import com.shop.base.model.Req;
 import com.shop.base.model.Resp;
 import com.shop.base.model.RespHeader;
 import com.shop.user.api.model.UserInfo;
-import com.shop.user.api.rest.User2Resource;
+import com.shop.user.api.rest.test.User2Resource;
 import com.shop.user.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

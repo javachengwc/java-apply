@@ -1,8 +1,7 @@
 package com.shop.order.config;
 
 import com.component.rest.springmvc.ResourceFactory;
-import com.shop.user.api.rest.UserResCtrl;
-import com.shop.user.api.rest.UserResource;
+import com.shop.user.api.rest.test.UserResCtrl;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +11,6 @@ import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
