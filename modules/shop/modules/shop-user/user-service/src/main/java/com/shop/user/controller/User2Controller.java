@@ -1,9 +1,9 @@
 package com.shop.user.controller;
 
+import com.shop.base.model.Req;
+import com.shop.base.model.Resp;
+import com.shop.base.model.RespHeader;
 import com.shop.user.api.model.UserInfo;
-import com.shop.user.api.model.base.Rep;
-import com.shop.user.api.model.base.RepHeader;
-import com.shop.user.api.model.base.Req;
 import com.shop.user.api.rest.User2Resource;
 import com.shop.user.service.UserService;
 import org.slf4j.Logger;
@@ -29,35 +29,35 @@ public class User2Controller implements User2Resource {
         return userService.getUserInfo(userId);
     }
 
-    public Rep<UserInfo> getUserInfo2(Long userId) {
+    public Resp<UserInfo> getUserInfo2(Long userId) {
         logger.info("User2Controller getUserInfo2 start,userId={}",userId);
 
-        Rep<UserInfo> rep= new Rep<UserInfo>();
+        Resp<UserInfo> rep= new Resp<UserInfo>();
         if(userId==null) {
-            rep.getHeader().setRt(RepHeader.FAIL);
+            rep.getHeader().setCode(RespHeader.FAIL);
             return rep;
         }
         UserInfo userInfo = userService.getUserInfo(userId);
         rep.setData(userInfo);
-        rep.getHeader().setRt(RepHeader.SUCCESS);
+        rep.getHeader().setCode(RespHeader.SUCCESS);
         return rep;
     }
 
-    public Rep<UserInfo> queryByCdn(@RequestBody Req<UserInfo> req, Errors errors){
+    public Resp<UserInfo> queryByCdn(@RequestBody Req<UserInfo> req, Errors errors){
         logger.info("User2Controller queryByCdn start,req={}",req);
-        Rep<UserInfo> rep = new Rep<UserInfo>();
+        Resp<UserInfo> rep = new Resp<UserInfo>();
         if(req==null || req.getData()==null) {
-            rep.getHeader().setRt(RepHeader.FAIL);
+            rep.getHeader().setCode(RespHeader.FAIL);
             return rep;
         }
         Long userId = req.getData().getId();
         if(userId==null) {
-            rep.getHeader().setRt(RepHeader.FAIL);
+            rep.getHeader().setCode(RespHeader.FAIL);
             return rep;
         }
         UserInfo userInfo = userService.getUserInfo(userId);
         rep.setData(userInfo);
-        rep.getHeader().setRt(RepHeader.SUCCESS);
+        rep.getHeader().setCode(RespHeader.SUCCESS);
         return rep;
     }
 }

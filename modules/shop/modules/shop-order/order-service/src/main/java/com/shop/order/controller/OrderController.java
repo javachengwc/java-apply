@@ -1,11 +1,10 @@
 package com.shop.order.controller;
 
+import com.shop.base.model.Req;
+import com.shop.base.model.Resp;
+import com.shop.base.model.RespHeader;
 import com.shop.order.api.model.OrderInfo;
 import com.shop.order.api.model.OrderVo;
-import com.shop.order.api.model.base.Rep;
-import com.shop.order.api.model.base.RepHeader;
-import com.shop.order.api.model.base.Req;
-import com.shop.order.api.model.base.ReqHeader;
 import com.shop.order.api.rest.OrderResCtrl;
 import com.shop.order.api.rest.OrderResource;
 import com.shop.order.service.OrderExtendService;
@@ -33,28 +32,28 @@ public class OrderController implements OrderResource,OrderResCtrl {
 
     @ApiOperation(value = "创建订单", notes = "创建订单")
     @RequestMapping(value = "/createOrder", method = RequestMethod.POST)
-    public Rep<OrderInfo> createOrder(@RequestBody Req<OrderVo> req, Errors errors) {
+    public Resp<OrderInfo> createOrder(@RequestBody Req<OrderVo> req, Errors errors) {
         OrderVo orderVo = req.getData();
         Long userId=orderVo==null?null:orderVo.getUserId();
         logger.info("OrderController createOrder start,orderVo={}",orderVo);
 
-        Rep<OrderInfo> rep = new Rep<OrderInfo>();
+        Resp<OrderInfo> resp = new Resp<OrderInfo>();
         boolean checkPass=checkOrder(orderVo);
         if(!checkPass) {
-            rep.getHeader().setRt(RepHeader.FAIL);
-            rep.getHeader().setMsg("参数校验失败");
-            return rep;
+            resp.getHeader().setCode(RespHeader.FAIL);
+            resp.getHeader().setMsg("参数校验失败");
+            return resp;
         }
         try{
             OrderInfo orderInfo = orderService.createOrder(orderVo);
-            rep.getHeader().setRt(RepHeader.SUCCESS);
-            rep.setData(orderInfo);
-            return  rep;
+            resp.getHeader().setCode(RespHeader.SUCCESS);
+            resp.setData(orderInfo);
+            return  resp;
         } catch (Exception e) {
             logger.error("OrderController createOrder error,userId={}",userId,e);
-            rep.getHeader().setRt(RepHeader.FAIL);
-            rep.getHeader().setMsg("服务处理失败");
-            return rep;
+            resp.getHeader().setCode(RespHeader.FAIL);
+            resp.getHeader().setMsg("服务处理失败");
+            return resp;
         }
     }
 
@@ -80,39 +79,39 @@ public class OrderController implements OrderResource,OrderResCtrl {
 
     @ApiOperation(value = "获取订单信息", notes = "获取订单信息")
     @RequestMapping(value="/getOrderInfo2",method= RequestMethod.GET)
-    public Rep<OrderInfo> getOrderInfo2(@RequestParam("orderId") Long orderId) {
+    public Resp<OrderInfo> getOrderInfo2(@RequestParam("orderId") Long orderId) {
 //        boolean aa=true;
 //        if(aa) {
 //            return null;
 //        }
-        Rep<OrderInfo> rep= new Rep<OrderInfo>();
+        Resp<OrderInfo> resp= new Resp<OrderInfo>();
         if(orderId==null) {
-            rep.getHeader().setRt(RepHeader.FAIL);
-            return rep;
+            resp.getHeader().setCode(RespHeader.FAIL);
+            return resp;
         }
         OrderInfo orderInfo = orderService.getOrderInfo2(orderId);
-        rep.setData(orderInfo);
-        rep.getHeader().setRt(RepHeader.SUCCESS);
-        return rep;
+        resp.setData(orderInfo);
+        resp.getHeader().setCode(RespHeader.SUCCESS);
+        return resp;
     }
 
     @ApiOperation(value = "取消订单", notes = "取消订单")
     @RequestMapping(value = "/cancelOrder", method = RequestMethod.POST)
-    public Rep<Integer> cancelOrder(@RequestParam("orderId") Long orderId) {
+    public Resp<Integer> cancelOrder(@RequestParam("orderId") Long orderId) {
         logger.info("OrderController cancelOrder start,orderId={}",orderId);
-        Rep<Integer> rep= new Rep<Integer>();
+        Resp<Integer> resp= new Resp<Integer>();
         if(orderId==null) {
-            rep.getHeader().setRt(RepHeader.FAIL);
-            return rep;
+            resp.getHeader().setCode(RespHeader.FAIL);
+            return resp;
         }
         try{
-            rep= orderExtendService.cancelOrder(orderId);
-            return  rep;
+            resp= orderExtendService.cancelOrder(orderId);
+            return  resp;
         } catch (Exception e) {
             logger.error("OrderController cancelOrder error,orderId={}",orderId,e);
-            rep.getHeader().setRt(RepHeader.FAIL);
-            rep.getHeader().setMsg("服务处理失败");
-            return rep;
+            resp.getHeader().setCode(RespHeader.FAIL);
+            resp.getHeader().setMsg("服务处理失败");
+            return resp;
         }
     }
 }

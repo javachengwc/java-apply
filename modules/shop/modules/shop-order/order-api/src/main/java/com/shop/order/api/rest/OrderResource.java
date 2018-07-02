@@ -1,7 +1,7 @@
 package com.shop.order.api.rest;
 
+import com.shop.base.model.Resp;
 import com.shop.order.api.model.OrderInfo;
-import com.shop.order.api.model.base.Rep;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -22,6 +22,6 @@ public interface OrderResource {
     @ApiOperation(value = "获取订单信息2", notes = "获取订单信息2")
     @GET
     @Path("/getOrderInfo2")
-    public Rep<OrderInfo> getOrderInfo2(@QueryParam("orderId") Long orderId);
+    public Resp<OrderInfo> getOrderInfo2(@QueryParam("orderId") Long orderId);
 
 }

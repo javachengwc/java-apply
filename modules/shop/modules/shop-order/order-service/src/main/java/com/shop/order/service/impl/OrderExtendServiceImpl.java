@@ -1,9 +1,9 @@
 package com.shop.order.service.impl;
 
+import com.shop.base.model.Resp;
+import com.shop.base.model.RespHeader;
 import com.shop.order.api.enums.OrderActionEnum;
 import com.shop.order.api.enums.OrderStatuEnum;
-import com.shop.order.api.model.base.Rep;
-import com.shop.order.api.model.base.RepHeader;
 import com.shop.order.dao.mapper.ShopOrderMapper;
 import com.shop.order.model.pojo.OrderOperateRecord;
 import com.shop.order.model.pojo.ShopOrder;
@@ -40,27 +40,27 @@ public class OrderExtendServiceImpl implements OrderExtendService {
     }
 
     //取消订单
-    public Rep<Integer> cancelOrder(Long orderId) {
+    public Resp<Integer> cancelOrder(Long orderId) {
         logger.info("OrderExtendServiceImpl cancelOrder start,orderId={}",orderId);
-        Rep<Integer> rep =new Rep<Integer>();
+        Resp<Integer> rep =new Resp<Integer>();
         ShopOrder shopOrder =orderService.getById(orderId);
         if(shopOrder==null) {
-            rep.getHeader().setRt(RepHeader.FAIL);
+            rep.getHeader().setCode(RespHeader.FAIL);
             return rep;
         }
         int statu = shopOrder.getStatu();
         if(statu != OrderStatuEnum.INIT.getValue() &&
                 statu !=OrderStatuEnum.PENDING_PAY.getValue() &&
                 statu !=OrderStatuEnum.PENDING_DELIVER.getValue()) {
-            rep.getHeader().setRt(RepHeader.FAIL);
+            rep.getHeader().setCode(RespHeader.FAIL);
             return rep;
         }
         boolean rt =gainTxOrderExtendService().innerCancelOrder(shopOrder);
         if(rt) {
-            rep.getHeader().setRt(RepHeader.SUCCESS);
+            rep.getHeader().setCode(RespHeader.SUCCESS);
         } else {
             //处理失败
-            rep.getHeader().setRt(RepHeader.FAIL);
+            rep.getHeader().setCode(RespHeader.FAIL);
         }
         return rep;
     }

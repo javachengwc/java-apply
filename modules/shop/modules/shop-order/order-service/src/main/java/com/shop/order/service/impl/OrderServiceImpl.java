@@ -1,5 +1,6 @@
 package com.shop.order.service.impl;
 
+import com.shop.base.model.Resp;
 import com.shop.order.api.enums.*;
 import com.shop.order.api.model.OrderInfo;
 import com.shop.order.api.model.OrderVo;
@@ -13,7 +14,6 @@ import com.shop.order.service.OrderService;
 import com.shop.order.service.remote.UserService;
 import com.shop.order.util.SpringContextUtils;
 import com.shop.user.api.model.UserInfo;
-import com.shop.user.api.model.base.Rep;
 import com.util.date.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -204,7 +204,7 @@ public class OrderServiceImpl implements OrderService {
         Long userId=orderInfo.getUserId();
         try{
             logger.info("OrderServiceImpl getOrderInfo invoke getUserInfo2 begin,userId ={}",userId);
-            Rep<UserInfo> rep= userService.getUserInfo2(userId);
+            Resp<UserInfo> rep= userService.getUserInfo2(userId);
             logger.info("OrderServiceImpl rep={}",rep);
             if(rep!=null && rep.getData()!=null) {
                 orderInfo.setUserMobile(rep.getData().getMobile());
@@ -262,7 +262,7 @@ public class OrderServiceImpl implements OrderService {
         Long userId=orderInfo.getUserId();
         try{
             logger.info("OrderServiceImpl getOrderInfo2 invoke queryUserInfo3 begin,userId ={}",userId);
-            Rep<UserInfo> rep= userService.queryUserInfo3(userId);
+            Resp<UserInfo> rep= userService.queryUserInfo3(userId);
             UserInfo userInfo =rep==null?null:rep.getData();
             logger.info("OrderServiceImpl userInfo={}",userInfo);
             if(userInfo!=null ) {
