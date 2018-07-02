@@ -22,11 +22,9 @@ constant                         支持有小数点的常量，                 
 fieldvalue()                     返回numeric field的值，这个域必须是indexd的。            fieldvalue(title)
 ord()                            对于一个域，它所有的值都将会按照字典顺序排列，此函数返回查询的那个特定的值在这个顺序中的排名。
                                  当没有值存在的时候，将返回0。                            ord(title)
-例如：某个特定的域只能去三个值，“apple”、“banana”、“pear”，那么ord（“apple”）=1，ord（“banana”）=2，ord（“pear”）=3.
-
-需要注意的是，ord（）这个函数，依赖于值在索引中的位置，所以当有文档被删除、或者添加的时候，ord（）的值就会发生变化。当你使用MultiSearcher的时候，这个值也就是不定的了。
-
-4、rord，这个函数将会返回与ord相对应的倒排序的排名。
+                                 例如：某个特定的域只能去三个值，“aa”、“bb”、“cc”，那么ord（“aa”）=1，ord（“bb”）=2
+                                 ord()这个函数，依赖于值在索引中的位置，所以当有文档被删除、或者添加的时候，ord（）的值就会发生变化。
+rord()                           返回与ord相对应的倒排序的排名。
 maxdoc() 	                     返回索引的个数，包括被标记为删除状态的文档 	          maxdoc()
 numdocs() 	                     返回索引的个数，不包括被标记为删除状态的文档 	          numdocs()
 ms() 	                         返回两个参数间毫秒级的差别 	                          ms(datefield1,2000-01-01T00:00:00Z)
