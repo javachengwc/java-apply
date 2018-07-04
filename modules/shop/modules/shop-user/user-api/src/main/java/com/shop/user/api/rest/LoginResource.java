@@ -25,5 +25,5 @@ public interface LoginResource {
 
     @ApiOperation(value = "检测用户登录有效性", notes = "检测用户登录有效性")
     @RequestMapping(value = "/checkLogin", method = RequestMethod.POST)
-    public Resp<Integer> checkLogin(@RequestBody Req<Void> req);
+    public Resp<Void> checkLogin(@RequestBody Req<Void> req);
 }

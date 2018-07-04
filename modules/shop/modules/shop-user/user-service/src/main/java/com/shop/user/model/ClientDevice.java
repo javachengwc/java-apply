@@ -1,10 +1,10 @@
 package com.shop.user.model;
 
-public class LoginInfo {
+import org.apache.commons.lang.builder.ToStringBuilder;
 
-    private String mobile;
+public class ClientDevice {
 
-    private String captcha;
+    private String ip;
 
     private String app;
 
@@ -16,29 +16,12 @@ public class LoginInfo {
 
     private String deviceToken;
 
-    public LoginInfo() {
-
+    public String getIp() {
+        return ip;
     }
 
-    public LoginInfo(String mobile,String captcha) {
-        this.mobile=mobile;
-        this.captcha=captcha;
-    }
-
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
-
-    public String getCaptcha() {
-        return captcha;
-    }
-
-    public void setCaptcha(String captcha) {
-        this.captcha = captcha;
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 
     public String getApp() {
@@ -79,5 +62,9 @@ public class LoginInfo {
 
     public void setDeviceToken(String deviceToken) {
         this.deviceToken = deviceToken;
+    }
+
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

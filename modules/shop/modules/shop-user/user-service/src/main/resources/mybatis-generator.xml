@@ -5,7 +5,7 @@
 
 <generatorConfiguration>
 
-    <classPathEntry location="F:\Maven\repository\mysql\mysql-connector-java\5.1.22\mysql-connector-java-5.1.22.jar"/>
+    <classPathEntry location="D:\repo\mysql\mysql-connector-java\5.1.22\mysql-connector-java-5.1.22.jar"/>
 
     <context id="shop-server" targetRuntime="MyBatis3" introspectedColumnImpl="org.mybatis.generator.api.IntrospectedColumn">
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
@@ -31,6 +31,9 @@
 
         <!-- 添加需要生成的表，以及生成方式 -->
         <table tableName="shop_user" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="user_login" >
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
     </context>

@@ -511,6 +511,21 @@ convert：
 浮点数 : DECIMAL
 整数 : SIGNED
 无符号整数 : UNSIGNED
+-------------------------------------
+加解密函数
+md5(str)    md5加密
+    select md5("hello")
+sha(str)    sha加密
+    select sha("hello")
+sha1(str)   sha1加密
+    select sha("hello")
+encode(str,key)    使用key作为密钥加密字符串str
+decode(str,key)    使用key作为密钥解密字符串str
+    select decode(encode("hello","password"),"password")
+aes_encrypt(str,key)  返回用密钥key对字符串str利用高级加密标准算法加密后的结果，结果是一个二进制字符串，以BLOB类型存储
+aes_decrypt(str,key)  返回用密钥key对字符串str利用高级加密标准算法解密后的结果
+encrypt(str,salt)     使用UNIXcrypt()函数，用关键词salt加密字符串str
+password(str)         返回字符串str的加密版本，这个加密过程是不可逆转的
 ---------------------mysql自定义函数---------------------------------
 CREATE FUNCTION hello (s CHAR(20)) RETURNS CHAR(50)
 RETURN CONCAT('Hello, ',s,'!');

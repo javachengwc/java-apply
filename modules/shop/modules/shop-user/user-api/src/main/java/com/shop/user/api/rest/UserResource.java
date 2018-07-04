@@ -18,8 +18,8 @@ public interface UserResource {
     public Resp<UserInfo> queryUserInfo(@RequestBody Req<Void> reqst);
 
     @ApiOperation(value = "根据手机号查询用户", notes = "根据手机号查询用户")
-    @RequestMapping(value = "/queryUserByMobile", method = RequestMethod.POST)
-    public Resp<UserInfo> queryUserByMobile(@RequestBody Req<String> reqst);
+    @RequestMapping(value = "/queryByMobile", method = RequestMethod.POST)
+    public Resp<UserInfo> queryByMobile(@RequestBody Req<String> reqst);
 
     @ApiOperation(value = "根据id查询用户", notes = "根据id查询用户")
     @RequestMapping(value = "/queryUserById", method = RequestMethod.POST)
