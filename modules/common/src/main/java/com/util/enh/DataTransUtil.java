@@ -1,5 +1,6 @@
 package com.util.enh;
 
+import com.util.lang.ReflectionUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +38,7 @@ public class DataTransUtil {
                 for(Field field :fields)
                 {
                     String key = field.getName();
-                    Object value = BeanUtils.getProperty(obj, key);
-
+                    Object value =ReflectionUtil.getFieldValue(obj,key);
                     map.put(key,value);
                 }
                 clazz = clazz.getSuperclass();
@@ -195,53 +195,4 @@ public class DataTransUtil {
         }
         return targetList;
     }
-
-    public static <T,P> List<T> transList(List<P> list,Class<T> clazz ) {
-        if(list==null) {
-            return Collections.emptyList();
-        }
-        List<T> rtList = new ArrayList<T>();
-        for(P per:list) {
-            T entity= transEntity(per,clazz);
-            rtList.add(entity);
-        }
-        return rtList;
-    }
-
-    public  static <T,P>  T transEntity(P data,Class<T> clazz ) {
-        try {
-            T rt = clazz.newInstance();
-            BeanUtils.copyProperties(data, rt);
-            return rt;
-        }catch(Exception e) {
-            return null;
-        }
-    }
-
-    public static <T,P> List<T> transList(List<P> list,ITrans<T,P> trans) {
-        if(list==null) {
-            return Collections.emptyList();
-        }
-        List<T> rtList = new ArrayList<T>();
-        for(P per:list) {
-            T entity= transEntity(per,trans);
-            rtList.add(entity);
-        }
-        return rtList;
-    }
-
-    public  static <T,P>  T transEntity(P data,ITrans<T,P> trans ) {
-        try {
-            T rt = trans.doTrans(data);
-            return rt;
-        }catch(Exception e) {
-            return null;
-        }
-    }
-
-    public interface ITrans<T,P> {
-
-        public T  doTrans(P data);
-    }
-
 }
