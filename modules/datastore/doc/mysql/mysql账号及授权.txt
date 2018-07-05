@@ -84,7 +84,7 @@ grant execute on testdb.* to developer@'192.168.0.%';
 
 三、grant 普通 DBA 管理某个 MySQL 数据库的权限。
 
-grant all privileges on testdb to dba@'localhost'
+grant all privileges on testdb.* to dba@'localhost'
 其中，关键字 “privileges” 可以省略。
 
 四、grant 高级 DBA 管理 MySQL 中所有数据库的权限。
