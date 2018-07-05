@@ -27,7 +27,7 @@ create table shop_book (
    key idx_create(create_time),
    key idx_downtime(down_time),
    key idx_name(name)
-) engine INNODB DEFAULT CHARSET=utf8 comment '书籍表';
+) engine INNODB default charset utf8 comment '书籍表';
 
 create table qa (
    id bigint auto_increment,
@@ -39,4 +39,24 @@ create table qa (
    sort int default 0 comment '顺序值',
    modified_time datetime comment '修改时间',
    primary key (id)
-) engine INNODB DEFAULT CHARSET=utf8 comment 'qa表';
+) engine INNODB default charset utf8 comment 'qa表';
+
+create table advert (
+    id bigint auto_increment,
+    title varchar(64) default '' comment '标题',
+    content varchar(256) default '' comment '广告内容',
+    statu int default 0 comment '状态 0--初始 1--启用 2--停用',
+    position_code varchar(64) default '' comment '广告位置code',
+    position_name varchar(64) default '' comment '广告位置名称',
+    img_url varchar(128) default '' comment '广告图片url',
+    start_time datetime comment '开始时间',
+    end_time datetime comment '结束时间',
+    sort int default 0 comment '排序值',
+    go_type int default 0 comment '跳转类型 0--url 1--搜索页',
+    go_value varchar(1024) default '' comment '跳转传参,跳转搜索页用到,json格式',
+    create_time datetime comment '创建时间',
+    modified_time datetime comment '修改时间',
+    primary key(id),
+    key idx_title(title),
+    key idx_start_end(start_time,end_time)
+) engine INNODB default charset utf8 comment '广告表';
