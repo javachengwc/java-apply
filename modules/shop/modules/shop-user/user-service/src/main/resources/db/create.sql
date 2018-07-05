@@ -11,7 +11,7 @@ create table shop_user
    reg_time datetime comment '注册时间',
    last_login_id bigint default 0 comment '最后登录的登录记录id' ,
    last_login_time  datetime comment '最后登陆时间',
-   token varchar(32) comment '登陆token',
+   token varchar(64) comment '登陆token',
    token_expire_time datetime comment 'token过期时间',
    app varchar(32) default '' comment '使用的app',
    app_version varchar(32) default '' comment '使用的app版本',

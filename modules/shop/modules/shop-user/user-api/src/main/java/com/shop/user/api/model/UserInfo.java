@@ -39,6 +39,9 @@ public class UserInfo {
     @ApiModelProperty(name = "lastLoginTimeStr", value = "最后登陆时间 yyyy-MM-dd HH:mm:ss")
     private String lastLoginTimeStr;
 
+    @ApiModelProperty(name = "token", value = "登录token,只有登录接口才会返回值")
+    private String token;
+
     public Long getId() {
         return id;
     }
@@ -117,6 +120,14 @@ public class UserInfo {
 
     public void setLastLoginTimeStr(String lastLoginTimeStr) {
         this.lastLoginTimeStr = lastLoginTimeStr;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public String toString() {

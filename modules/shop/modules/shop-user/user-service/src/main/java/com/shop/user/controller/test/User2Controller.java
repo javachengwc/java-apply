@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class User2Controller implements User2Resource {
 
-    private static Logger logger= LoggerFactory.getLogger(UserController.class);
+    private static Logger logger= LoggerFactory.getLogger(UsersController.class);
 
     @Autowired
     private UserService userService;

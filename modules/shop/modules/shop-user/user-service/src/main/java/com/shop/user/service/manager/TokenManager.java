@@ -82,7 +82,7 @@ public class TokenManager {
         String tokenKey =CACHE_TOKEN_PREFIX+token;
         HashOperations hashOperations = redisTemplate.opsForHash();
         Map<String,Object> tokenMap =hashOperations.entries(tokenKey);
-        if(tokenMap==null) {
+        if(tokenMap==null || tokenMap.size()<=0) {
             return null;
         }
         Token tokenObj =MapUtil.map2Bean(tokenMap,Token.class);
@@ -98,8 +98,9 @@ public class TokenManager {
             if (!StringUtils.isBlank(tokenStr) && token.equals(tokenStr)) {
                 return true;
             }
+            return false;
         }
-        return false;
+        return true;
     }
 
     //删除token

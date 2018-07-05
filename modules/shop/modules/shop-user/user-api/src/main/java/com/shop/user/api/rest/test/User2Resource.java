@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@Api(value = "用户接口")
+@Api(value = "测试用户接口")
 @RequestMapping(value="/test/user2")
 public interface User2Resource {
 

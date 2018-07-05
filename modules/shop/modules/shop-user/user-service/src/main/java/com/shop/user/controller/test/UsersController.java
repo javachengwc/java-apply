@@ -5,7 +5,7 @@ import com.shop.base.model.Resp;
 import com.shop.base.model.RespHeader;
 import com.shop.user.api.model.UserInfo;
 import com.shop.user.api.rest.test.UserResCtrl;
-import com.shop.user.api.rest.test.UserResource;
+import com.shop.user.api.rest.test.UsersResource;
 import com.shop.user.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -16,12 +16,12 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-@Api(value = "用户接口")
+@Api(value = "测试用户接口")
 @RestController
 @RequestMapping(value="/test/user")
-public class UserController implements UserResource,UserResCtrl{
+public class UsersController implements UsersResource,UserResCtrl{
 
-    private static Logger logger= LoggerFactory.getLogger(UserController.class);
+    private static Logger logger= LoggerFactory.getLogger(UsersController.class);
 
     @Autowired
     private UserService userService;

@@ -26,7 +26,8 @@ cd utils/
 
 3、通过客户端命令行工具连接redis服务查看redis相关信息
 
-redis-cli
+redis-cli 或
+redis-cli -p 6379 -a 111111         #-a是指定redis密码
 redis 127.0.0.1:6379>
 
 redis 127.0.0.1:6379> info  #查看server版本内存使用连接等信息

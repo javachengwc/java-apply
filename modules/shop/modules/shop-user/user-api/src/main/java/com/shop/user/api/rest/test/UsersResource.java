@@ -8,11 +8,11 @@ import io.swagger.annotations.ApiOperation;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-@Api(value = "用户接口")
+@Api(value = "测试用户接口")
 @Path("/test/user")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public interface UserResource {
+public interface UsersResource {
 
     @ApiOperation(value = "获取用户信息", notes = "获取用户信息")
     @POST
