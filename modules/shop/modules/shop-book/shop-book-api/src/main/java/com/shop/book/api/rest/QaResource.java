@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
 
-@Api(value = "问答")
+@Api(value = "问答接口")
 @RequestMapping(value="/qa")
 public interface QaResource {
 

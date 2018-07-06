@@ -5,12 +5,14 @@ import org.apache.log4j.Logger;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * 启动入口
  */
 @SpringBootApplication
 @EnableDiscoveryClient
+@EnableScheduling
 public class BookApplication {
 
     private static Logger logger = Logger.getLogger(BookApplication.class);
