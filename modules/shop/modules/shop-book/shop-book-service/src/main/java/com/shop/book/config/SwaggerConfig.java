@@ -1,4 +1,4 @@
-package com.shop.user.config;
+package com.shop.book.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,15 +17,15 @@ public class SwaggerConfig {
 
 	@Bean
 	public Docket createRestApi() {
-		ApiInfo apiInfo = new ApiInfoBuilder().title("shop-user")
-				.description("shop-user swagger接口")
+		ApiInfo apiInfo = new ApiInfoBuilder().title("shop-book")
+				.description("shop-book swagger接口")
                 .termsOfServiceUrl("http://localhost")
                 .contact("ccc")
 				.version("1.0").build();
 		return new Docket(DocumentationType.SWAGGER_2)
 				.apiInfo(apiInfo)
                 .select()
-				.apis(RequestHandlerSelectors.basePackage("com.shop.user.controller"))
+				.apis(RequestHandlerSelectors.basePackage("com.shop.book.controller"))
 				.paths(PathSelectors.any()).build();
 	}
 

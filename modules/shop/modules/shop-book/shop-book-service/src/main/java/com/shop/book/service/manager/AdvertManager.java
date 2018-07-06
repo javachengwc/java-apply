@@ -29,12 +29,15 @@ public class AdvertManager {
         logger.info("AdvertManager init start................");
         AdvertService advertService = SpringContextUtils.getBean(AdvertService.class);
         List<Advert> list = advertService.queryUpAdertList();
+        int cnt = list==null?0:list.size();
+        logger.info("AdvertManager init up advert list count={}................",cnt);
         Map<String,List<Advert>> dataMap = new HashMap<String,List<Advert>>();
         for(Advert advert:list) {
             String positionCode = advert.getPositionCode();
             List<Advert> posAdvertList = dataMap.get(positionCode);
             if(posAdvertList==null) {
                 posAdvertList= new ArrayList<Advert>();
+                dataMap.put(positionCode,posAdvertList);
             }
             posAdvertList.add(advert);
         }
