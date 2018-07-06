@@ -11,7 +11,7 @@ public class AdvertScheduled {
 
     private static Logger logger = LoggerFactory.getLogger(AdvertScheduled.class);
 
-    @Scheduled(fixedDelay = 10 * 60 * 1000)
+    @Scheduled(initialDelay=10 * 60 * 1000,fixedDelay = 10 * 60 * 1000)
     public void reloadAdvert() {
         logger.info("AdvertScheduled reloadAdvert start,now={}",System.currentTimeMillis());
         try {
