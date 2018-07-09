@@ -50,7 +50,18 @@ git config --global core.longpaths true --->解决git clone时候部分文件报
 #在项目工作区的目录 git config -e 可修改工作区的.git/config文件
 
 -----------------------------------------------------------------------
-
+本地创建项目推到gitlab上
+mkdir project_a                 ###创建项目文件夹project_a
+cd project_a
+git init
+touch README.md
+git add README.md               ###添加
+git commit -m "init project"    ###提交
+git remote add origin git@127.0.0.1:group/project_a.git    ###本地项目与远程仓库关联起来
+这里特别注意，这里只是把本地项目关联远程项目，而不是创建远程项目，远程项目的创建都必须通过
+gitlab管理后台来创建。也就是说要先在gitlab上创建远程项目，这里才能够与它关联。
+git push origin master          ###推送到远程
+------------------------------------------------------------------------
 git status   查看当前项目下所有文的状态
 
 git branch 不带参数：列出本地已经存在的分支，并且在当前分支的前面加“*”号标记
@@ -159,8 +170,13 @@ git tag -a "v2" -m "cc"
     你可以计划改动（把它们添加到缓存区），使用如下命令：
     git add <filename>
     git add *
-    git add .   //（.）点表示当前目录下的所有内容
+    git add .   //（.）点表示当前目录下的所有内容,它会监控工作区的状态树，使用它会把工作时的所有变化提交到暂存区，
+                //包括文件内容修改(modified)以及新文件(new)，但不包括被删除的文件。
+    git add -u  //它仅监控已经被add的文件（即tracked file），它会将被修改的文件提交到暂存区。（git add --update的缩写）
+    git add -A  //是上面两个功能的合集（git add --all的缩写）
     git rm 删除内容
+    git rm work -r -f    //删除目录work
+    git rm删除后，需要使用git commit -am "abc" 提交才会将删除文件的操作提交上去。
     这是 git 基本工作流程的第一步；
     使用如下命令以实际提交改动：
     git commit -m "代码提交信息"

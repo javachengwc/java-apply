@@ -1,0 +1,76 @@
+-------------------------------nginx反向代理------------------------------
+nginx是一个很好的反向代理服务器，反向代理的性能堪比haproxy，在很多应用场景中，nginx常作为反向代理server配合keepalived构建高性能，高可用集群。
+nginx反向代理常用配置参数:
+
+1,proxy_pass
+语法：proxy_pass URL;
+配置块：location、if
+此配置项将当前请求反向代理到URL参数指定的服务器上，URL可以是主机名或IP地址加端口的形式，
+默认情况下反向代理是不会转发请求中的Host头部的。如果需要转发，那么必须加上配置：proxy_set_header Host $host;
+例如：proxy_pass http://localhost:8000/uri/;
+
+2,proxy_method
+语法：proxy_method method;
+配置块：http、server、location
+此配置项表示转发时的协议方法名。
+例如：proxy_method POST;         ###那么客户端发来的GET请求在转发时方法名也会改为POST。
+
+3,proxy_hide_header
+语法：proxy_hide_header the_header;
+配置块：http、server、location
+nginx会将上游服务器的响应转发给客户端，但默认不会转发以下HTTP头部字段：Date、Server、X-Pad和X-Accel-*。
+使用proxy_hide_header后可以任意地指定哪些HTTP头部字段不能被转发。
+例如：proxy_hide_header Cache-Control;
+
+4,proxy_pass_header
+语法：proxy_pass_header the_header;
+配置块：http、server、location
+proxy_pass_header会将原来禁止转发的header设置为允许转发。如果是在用户请求时自定义的header，
+例如curl –head -H "X_CUSTOM_HEADER: aaa" http://127.0.0.1/api/test，则需要通过proxy_pass_header X_CUSTOM_HEADER来传递。
+例如：proxy_pass_header X-Accel-Redirect;
+      proxy_pass_header X_CUSTOM_HEADER;
+
+5,proxy_pass_request_body
+语法：proxy_pass_request_body on | off;
+默认：proxy_pass_request_body on;
+配置块：http、server、location
+proxy_pass_request_body确定是否向上游服务器发送HTTP包体部分。
+
+6,proxy_pass_request_headers
+语法：proxy_pass_request_headers on | off;
+默认：proxy_pass_request_headers on;
+配置块：http、server、location
+proxy_pass_request_body确定是否转发HTTP头部。
+
+7,proxy_redirect
+语法：proxy_redirect [ default|off|redirect replacement ];
+默认：proxy_redirect default;
+配置块：http、server、location
+当上游服务器返回的响应是重定向或刷新请求（如HTTP响应码是301或者302）时，proxy_redirect可以重设HTTP头部的location或refresh字段。
+例如:
+proxy_redirect http://aa.com/two/ http://aa.com/one/;
+   ### 如果上游服务器发出的响应是302重定向请求,location字段的URL是：http://aa.com/two/,实际转发给客户端的location是http://aa.com/one/。
+proxy_redirect off;               ###使用off参数时，将使location或者refresh字段维持不变。
+proxy_redirect default;           ###使用默认的default参数时，会按照proxy_pass配置项和所属的location配置项重组发往客户端的location头部。
+
+8,proxy_next_upstream
+语法：proxy_next_upstream [error | timeout | invalid_header | http_500 | http_502 | http_503 | http_504 | http_404 | off ];
+默认：proxy_next_upstream error timeout;
+配置块：http、server、location
+此配置项表示当向一台上游服务器转发请求出现错误时，继续换一台上游服务器处理这个请求。上游服务器一旦开始发送应答，Nginx反向代理服务器会立刻把应答包转发给客户端。
+因此，一旦Nginx开始向客户端发送响应包，之后的过程中若出现错误也是不允许换下一台上游服务器继续处理的。这样才可以更好地保证客户端只收到来自一个上游服务器的应答。
+proxy_next_upstream的参数用来说明在哪些情况下会继续选择下一台上游服务器转发请求。
+error：当向上游服务器发起连接、发送请求、读取响应时出错。
+timeout：发送请求或读取响应时发生超时。
+invalid_header：上游服务器发送的响应是不合法的。
+http_500：上游服务器返回的HTTP响应码是500。
+http_502：上游服务器返回的HTTP响应码是502。
+http_503：上游服务器返回的HTTP响应码是503。
+http_504：上游服务器返回的HTTP响应码是504。
+http_404：上游服务器返回的HTTP响应码是404。
+off：关闭proxy_next_upstream功能—出错就选择另一台上游服务器再次转发。
+
+nginx的反向代理模块还有很多其他配置，如设置连接的超时时间、临时文件存储，以及缓存上游服务器响应等功能。
+这些都是ngx_http_proxy_module模块的功能，关于nginx的反向代理相关设置请访问http://nginx.org/en/docs/http/ngx_http_proxy_module.html
+
+--------------------------------------------------------------------------

@@ -1,0 +1,7 @@
+------------------------------------nginx应用----------------------------------
+1,nginx获取自定义头部header的值
+nginx是支持读取非nginx标准的用户自定义header的，但是需要在http或者server下开启header的下划线支持
+underscores_in_headers on;
+比如自定义header为Come_From,通过nginx获取header时是这样的 http_come_from; (一律采用小写，而且前面多了个http_)
+
+-------------------------------------------------------------------------------
