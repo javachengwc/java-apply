@@ -8,7 +8,7 @@ npm install --global vue-cli              ###使用npm全局安装vue-cli
 vue init webpack testweb                  ###用vue创建testweb项目
 cd testweb
 npm install  或 cnpm install              ###下载安装项目依赖
-npm run dev                               ###启动项目
+npm run dev  或 npm start                 ###启动项目
 npm run build                             ###项目打包，项目根目录下生成的dist文件夹就是打包好的成品页面
 注:在进行页面调试时，用Chrome浏览器，可使用vue-tool扩展程序。
 
