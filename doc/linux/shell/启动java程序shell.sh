@@ -35,7 +35,7 @@ done
 PID=($(jps -ml | grep 'AppMain' | awk '{print $1}'))
 cnt=${#PID[@]}
 echo "AppMain has $cnt program is running........"
-for pg in ${PID[@]};
+for pg in ${PID[@]} 
 do
         echo "program PID is:$pg"
         kill -9 $pg
