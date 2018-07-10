@@ -1,5 +1,35 @@
 ---------------------------springboot日志----------------------
 spring boot默认采用的日志系统是Logback。
+Logback是log4j框架的作者开发的新一代日志框架，它效率更高、能够适应诸多的运行环境，同时天然支持SLF4J。
+默认情况下，spring boot会用Logback来记录日志，并用INFO级别输出到控制台。
+spring boot启动的时候，由org.springframework.boot.logging.Logging-Application-Listener根据情况初始化并使用。
+日志级别从低到高分为TRACE < DEBUG < INFO < WARN < ERROR < FATAL，如果设置为WARN，则低于WARN的信息都不会输出。
+spring boot中默认配置ERROR、WARN和INFO级别的日志输出到控制台。可以通过启动应用程序--debug标志来启用“调试”模式
+在运行命令后加入--debug标志，如：$ java -jar springTest.jar --debug
+或在application.properties中配置debug=true，该属性置为true的时候，核心Logger（包含嵌入式容器、hibernate、spring）会输出更多内容，但是自己应用的日志并不会输出为DEBUG级别。
+默认情况下，spring boot将日志输出到控制台，不会写到日志文件。
+
+如果要编写除控制台输出之外的日志文件，则需在application.properties中设置logging.file或logging.path属性。
+logging.file，设置文件，可以是绝对路径，也可以是相对路径。如：logging.file=my.log
+logging.path，设置目录，会在该目录下创建spring.log文件，并写入日志内容，如：logging.path=/var/log
+如果只配置 logging.file，会在项目的当前路径下生成一个 xxx.log 日志文件。
+如果只配置 logging.path，在 /var/log文件夹生成一个日志文件为 spring.log
+注：二者不能同时使用，如若同时使用，则只有logging.file生效
+默认情况下，日志文件的大小达到10MB时会切分一次，产生新的日志文件，默认级别为：ERROR、WARN、INFO
+
+日志配置
+根据不同的日志系统，可以按如下规则组织配置文件名，就能被正确加载：
+    Logback：logback-spring.xml, logback-spring.groovy, logback.xml, logback.groovy
+    Log4j：log4j-spring.properties, log4j-spring.xml, log4j.properties, log4j.xml
+    Log4j2：log4j2-spring.xml, log4j2.xml
+    JDK (Java Util Logging)：logging.properties
+spring boot官方推荐优先使用带有-spring的文件名作为日志配置（如使用logback-spring.xml，而不是logback.xml），
+命名为logback-spring.xml的日志配置文件，spring boot可以为它添加一些spring boot特有的配置项。
+上面是默认的命名规则，并且放在src/main/resources下面即可。
+
+如果想完全掌控日志配置，但又不想用logback.xml作为Logback配置的名字，可以通过logging.config属性指定自定义的名字：
+logging.config=classpath:logging-config.xml
+虽然一般并不需要改变配置文件的名字，但是如果想针对不同运行时Profile使用不同的日志配置，这个功能会很有用。
 
 spring boot集成log4j
 修改pom.xml如下:
