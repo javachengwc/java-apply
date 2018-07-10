@@ -47,3 +47,24 @@ echo "execute AppMain start..................."
 echo "execute AppMain finish..................."
 
 ------------------------------------------------------
+#!/bin/sh
+export LANG="en_US.UTF-8"
+source /etc/profile
+cd $1
+v=$2
+port=$3
+echo "---------------git v is:$v-----port:$port----------------"
+PID=`jps -ml| grep AppMain | grep $v | awk '{print $1}'`
+cnt=${#PID[@]}
+echo "AppMain has $cnt program is running........"
+for pg in ${PID[@]}
+do
+    echo "program PID is:$pg"
+    kill -9 $pg
+done
+
+echo "execute AppMain start..................."
+    nohup java -Xms256m -Xmx512m -jar AppMain.jar --server.port=$port  -Dv=$v 1>/dev/null 2>&1  &
+echo "execute AppMain finish..................."
+
+------------------------------------------------------
