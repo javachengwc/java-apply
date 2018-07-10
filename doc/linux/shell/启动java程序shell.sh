@@ -65,6 +65,7 @@ done
 
 echo "execute AppMain start..................."
     nohup java -Xms256m -Xmx512m -jar AppMain.jar --server.port=$port  -Dv=$v 1>/dev/null 2>&1  &
+    ##加上1>/dev/null 2>&1后,从集成工具执行此脚本就不会卡在这里去输出java这行命令产生的控制台日志了
 echo "execute AppMain finish..................."
 
 ------------------------------------------------------
