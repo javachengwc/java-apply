@@ -42,7 +42,7 @@ do
 done
 
 echo "execute AppMain start..................."
-  cmd="java -Xms256m -Xmx1024m -XX:PermSize=128m -XX:MaxPermSize=256m -classpath "${clazzpath}" com.app.AppMain $1 $2 $3"
+  cmd="java -Xms256m -Xmx1024m -XX:PermSize=128m -XX:MaxPermSize=256m -classpath "${clazzpath}" com.app.AppMain $1 $2 $3 1>/dev/null 2>&1"
   exec ${cmd}
 echo "execute AppMain finish..................."
 
