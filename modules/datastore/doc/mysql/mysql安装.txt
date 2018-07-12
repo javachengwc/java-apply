@@ -58,4 +58,8 @@ source /etc/profile
 chkconfig --add mysql
 chkconfig --level 345 mysql on   #mysql加入启动项
 
+默认情况下，windows系统下mysql不区分表名大小写，linux系统下表名大小写是敏感的，区分大小写
+在my.cnf配置文件中设置
+[mysqld]
+lower_case_table_names=1            ###表名不区分大小写， 0--区分大小写，1--不区分大小写
 -------------------------------------------------------------
