@@ -277,7 +277,9 @@ public class BaseAction {
 
 
 	private Map<String, Method> methodMap;
+
 	public boolean methodMapReady;
+
 	public synchronized void initMethodMap(){
 		methodMap = new HashMap<String, Method>();
 		for (Class<?> clazz = this.getClass(); clazz != BaseAction.class; clazz = clazz.getSuperclass()) {

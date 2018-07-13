@@ -2,7 +2,7 @@ package com.ground.exception;
 
 public class GroundException extends Exception
 {
-	public String sql;;
+	public String sql;
 	
 	public String desc;
 	
