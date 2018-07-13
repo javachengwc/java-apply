@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sharding.bootdemo.dao.OrderDao">
+
+    <resultMap id="OrderMap" type="com.sharding.bootdemo.model.Order">
+        <result column="order_item_id" property="orderItemId" jdbcType="INTEGER"/>
+        <result column="pending_count" property="pendingCount" jdbcType="INTEGER"/>
+        <result column="audit_count" property="auditCount" jdbcType="INTEGER"/>
+        <result column="done_count" property="doneCount" jdbcType="INTEGER"/>
+        <result column="complete_count" property="completeCount" jdbcType="INTEGER"/>
+        <result column="fail_count" property="failCount" jdbcType="INTEGER"/>
+        <result column="credit_audit_count" property="creditAuditCount" jdbcType="INTEGER"/>
+        <result column="loan_audit_count" property="loanAuditCount" jdbcType="INTEGER"/>
+        <result column="archive_count" property="archiveCount" jdbcType="INTEGER"/>
+        <result column="archive_audit_count" property="archiveAuditCount" jdbcType="INTEGER"/>
+        <result column="archive_fail_count" property="archiveFailCount" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="OrderItemMap" type="com.sharding.bootdemo.model.OrderItem">
+        <result column="order_item_id" property="orderItemId" jdbcType="INTEGER"/>
+        <result column="pending_count" property="pendingCount" jdbcType="INTEGER"/>
+        <result column="audit_count" property="auditCount" jdbcType="INTEGER"/>
+        <result column="done_count" property="doneCount" jdbcType="INTEGER"/>
+        <result column="complete_count" property="completeCount" jdbcType="INTEGER"/>
+        <result column="fail_count" property="failCount" jdbcType="INTEGER"/>
+        <result column="credit_audit_count" property="creditAuditCount" jdbcType="INTEGER"/>
+        <result column="loan_audit_count" property="loanAuditCount" jdbcType="INTEGER"/>
+        <result column="archive_count" property="archiveCount" jdbcType="INTEGER"/>
+        <result column="archive_audit_count" property="archiveAuditCount" jdbcType="INTEGER"/>
+        <result column="archive_fail_count" property="archiveFailCount" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <insert id="insertOrder" useGeneratedKeys="true" keyProperty="orderId">
+        insert into t_order (user_id, statu)
+        values (
+        #{userId,jdbcType=BIGINT},
+        #{statu,jdbcType=INTEGER}
+        )
+    </insert>
+
+    <insert id="insertOrderItem" useGeneratedKeys="true" keyProperty="orderItemId">
+        insert into t_order_item (user_id, statu)
+        values (
+        #{userId,jdbcType=BIGINT},
+        #{statu,jdbcType=INTEGER}
+        )
+    </insert>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(1) as cnt
+        from t_order
+        <where>
+            seller_id=#{sellerId}
+            <if test="sellerOrderType!=null and sellerOrderType==1 ">
+                and (statu in (1,3,5,9) or (statu=7 and  is_advance=0) )
+            </if>
+            <if test="sellerOrderType!=null and sellerOrderType==2 ">
+                and (statu in (11,12,13) or (statu=7 and  is_advance=1) )
+            </if>
+            <if test="sellerOrderType!=null and sellerOrderType==3 ">
+                and statu in (2,6,10,4,8,100)
+            </if>
+        </where>
+    </select>
+
+    <select id="queryList" resultMap="OrderMap">
+        select *
+        from t_order
+        <where>
+            seller_id=#{sellerId}
+            <if test="sellerOrderType!=null and sellerOrderType==1 ">
+                and (statu in (1,3,5,9) or (statu=7 and  is_advance=0) )
+            </if>
+            <if test="sellerOrderType!=null and sellerOrderType==2 ">
+                and (statu in (11,12,13) or (statu=7 and  is_advance=1) )
+            </if>
+            <if test="sellerOrderType!=null and sellerOrderType==3 ">
+                and statu in (2,6,10,4,8,100)
+            </if>
+        </where>
+        order by id desc
+        <if test="start != null and rows != null">
+            LIMIT ${start},${rows}
+        </if>
+    </select>
+
+    <select id="queryOrderItem" resultMap="OrderItemMap">
+        select id,order_no,statu,pay_type,car_comefrom,car_id,car_name,
+        loaner_name,idcard,loaner_mobile,loaner_sex,actual_price,is_advance,advance_amount,
+        loan_payment,loan_finance_payment,downpayment,seller_id,down_pay,
+        loan_statu,loan_record_time,loan_recordor_id,loan_note,
+        buyer_mobile,buyer_name,staff_mobile,create_time
+        from order_record
+        where id=#{orderId}
+    </select>
+
+</mapper>

@@ -1,15 +1,14 @@
 package com.sharding.bootdemo.config;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.web.client.RestTemplate;
-
 @Configuration
+@MapperScan("com.sharding.bootdemo.dao")
 public class Config {
 	
 	private static Logger logger = LoggerFactory.getLogger(Config.class);
