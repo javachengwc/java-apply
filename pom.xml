@@ -19,7 +19,6 @@
         <module>modules/xml</module>
         <module>modules/captcha</module>
         <module>modules/email</module>
-		<module>modules/spring-base</module>
 		<module>modules/spring-study</module>
         <module>modules/solr</module>
 		<module>modules/zookeeper</module>
@@ -53,6 +52,7 @@
 		<module>modules/webrest</module>
 		<module>modules/webcloud</module>
         <module>modules/bigdata</module>
+		<module>modules/sharding-dbtable</module>
     </modules>
 
 </project>
