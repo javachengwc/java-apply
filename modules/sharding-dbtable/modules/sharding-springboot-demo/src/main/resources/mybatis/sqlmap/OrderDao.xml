@@ -3,46 +3,65 @@
 <mapper namespace="com.sharding.bootdemo.dao.OrderDao">
 
     <resultMap id="OrderMap" type="com.sharding.bootdemo.model.Order">
-        <result column="order_item_id" property="orderItemId" jdbcType="INTEGER"/>
-        <result column="pending_count" property="pendingCount" jdbcType="INTEGER"/>
-        <result column="audit_count" property="auditCount" jdbcType="INTEGER"/>
-        <result column="done_count" property="doneCount" jdbcType="INTEGER"/>
-        <result column="complete_count" property="completeCount" jdbcType="INTEGER"/>
-        <result column="fail_count" property="failCount" jdbcType="INTEGER"/>
-        <result column="credit_audit_count" property="creditAuditCount" jdbcType="INTEGER"/>
-        <result column="loan_audit_count" property="loanAuditCount" jdbcType="INTEGER"/>
-        <result column="archive_count" property="archiveCount" jdbcType="INTEGER"/>
-        <result column="archive_audit_count" property="archiveAuditCount" jdbcType="INTEGER"/>
-        <result column="archive_fail_count" property="archiveFailCount" jdbcType="INTEGER"/>
+        <result column="order_id" property="orderId" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="statu" property="statu" jdbcType="INTEGER"/>
+        <result column="price" property="price" jdbcType="BIGINT"/>
+        <result column="shop_id" property="shopId" jdbcType="BIGINT"/>
+        <result column="shop_name" property="shopName" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="modified_time" property="modifiedTime" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <resultMap id="OrderItemMap" type="com.sharding.bootdemo.model.OrderItem">
-        <result column="order_item_id" property="orderItemId" jdbcType="INTEGER"/>
-        <result column="pending_count" property="pendingCount" jdbcType="INTEGER"/>
-        <result column="audit_count" property="auditCount" jdbcType="INTEGER"/>
-        <result column="done_count" property="doneCount" jdbcType="INTEGER"/>
-        <result column="complete_count" property="completeCount" jdbcType="INTEGER"/>
-        <result column="fail_count" property="failCount" jdbcType="INTEGER"/>
-        <result column="credit_audit_count" property="creditAuditCount" jdbcType="INTEGER"/>
-        <result column="loan_audit_count" property="loanAuditCount" jdbcType="INTEGER"/>
-        <result column="archive_count" property="archiveCount" jdbcType="INTEGER"/>
-        <result column="archive_audit_count" property="archiveAuditCount" jdbcType="INTEGER"/>
-        <result column="archive_fail_count" property="archiveFailCount" jdbcType="INTEGER"/>
+        <result column="order_item_id" property="orderItemId" jdbcType="BIGINT"/>
+        <result column="order_id" property="orderId" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="item_price" property="itemPrice" jdbcType="BIGINT"/>
+        <result column="shop_id" property="shopId" jdbcType="BIGINT"/>
+        <result column="shop_name" property="shopName" jdbcType="VARCHAR"/>
+        <result column="product_id" property="productId" jdbcType="BIGINT"/>
+        <result column="product_name" property="productName" jdbcType="VARCHAR"/>
+        <result column="sku_num" property="skuNum" jdbcType="VARCHAR"/>
+        <result column="sku_name" property="skuName" jdbcType="VARCHAR"/>
+        <result column="count" property="count" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="modified_time" property="modifiedTime" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <insert id="insertOrder" useGeneratedKeys="true" keyProperty="orderId">
-        insert into t_order (user_id, statu)
+        insert into t_order (user_id, user_name,statu,price,shop_id,shop_name,create_time,modified_time)
         values (
-        #{userId,jdbcType=BIGINT},
-        #{statu,jdbcType=INTEGER}
+        #{userId},
+        #{userName},
+        #{statu},
+        #{price},
+        #{shopId},
+        #{shopName},
+        #{createTime},
+        #{modifiedTime}
         )
     </insert>
 
     <insert id="insertOrderItem" useGeneratedKeys="true" keyProperty="orderItemId">
-        insert into t_order_item (user_id, statu)
+        insert into t_order_item (order_id,user_id,user_name, item_price,shop_id,shop_name,product_id,product_name,
+        sku_num,sku_name,count,create_time,modified_time)
         values (
-        #{userId,jdbcType=BIGINT},
-        #{statu,jdbcType=INTEGER}
+        #{orderId},
+        #{userId},
+        #{userName},
+        #{itemPrice},
+        #{shopId},
+        #{shopName},
+        #{productId},
+        #{productName},
+        #{skuNum},
+        #{skuName},
+        #{count},
+        #{createTime},
+        #{modifiedTime}
         )
     </insert>
 
@@ -50,48 +69,61 @@
         select count(1) as cnt
         from t_order
         <where>
-            seller_id=#{sellerId}
-            <if test="sellerOrderType!=null and sellerOrderType==1 ">
-                and (statu in (1,3,5,9) or (statu=7 and  is_advance=0) )
+            <if test="orderId!=null ">
+                order_id=#{orderId}
             </if>
-            <if test="sellerOrderType!=null and sellerOrderType==2 ">
-                and (statu in (11,12,13) or (statu=7 and  is_advance=1) )
+            <if test="statu!=null">
+                and statu=#{statu}
             </if>
-            <if test="sellerOrderType!=null and sellerOrderType==3 ">
-                and statu in (2,6,10,4,8,100)
+            <if test="userId!=null">
+                and user_id=#{userId}
+            </if>
+            <if test="shopId!=null">
+                and shop_id=#{shopId}
+            </if>
+            <if test="beginTime!=null and beginTime!=''">
+                <![CDATA[ and create_time >= '${beginTime}' ]]>
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                <![CDATA[ and create_time < '${endTime}' ]]>
             </if>
         </where>
     </select>
 
     <select id="queryList" resultMap="OrderMap">
-        select *
+        select order_id,user_id, user_name,statu,price,shop_id,shop_name,create_time,modified_time
         from t_order
         <where>
-            seller_id=#{sellerId}
-            <if test="sellerOrderType!=null and sellerOrderType==1 ">
-                and (statu in (1,3,5,9) or (statu=7 and  is_advance=0) )
+            <if test="orderId!=null ">
+                order_id=#{orderId}
             </if>
-            <if test="sellerOrderType!=null and sellerOrderType==2 ">
-                and (statu in (11,12,13) or (statu=7 and  is_advance=1) )
+            <if test="statu!=null">
+                and statu=#{statu}
             </if>
-            <if test="sellerOrderType!=null and sellerOrderType==3 ">
-                and statu in (2,6,10,4,8,100)
+            <if test="userId!=null">
+                and user_id=#{userId}
+            </if>
+            <if test="shopId!=null">
+                and shop_id=#{shopId}
+            </if>
+            <if test="beginTime!=null and beginTime!=''">
+                <![CDATA[ and create_time >= '${beginTime}' ]]>
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                <![CDATA[ and create_time < '${endTime}' ]]>
             </if>
         </where>
-        order by id desc
-        <if test="start != null and rows != null">
-            LIMIT ${start},${rows}
+        order by order_id desc
+        <if test="start != null and pageSize != null">
+            limit ${start},${pageSize}
         </if>
     </select>
 
     <select id="queryOrderItem" resultMap="OrderItemMap">
-        select id,order_no,statu,pay_type,car_comefrom,car_id,car_name,
-        loaner_name,idcard,loaner_mobile,loaner_sex,actual_price,is_advance,advance_amount,
-        loan_payment,loan_finance_payment,downpayment,seller_id,down_pay,
-        loan_statu,loan_record_time,loan_recordor_id,loan_note,
-        buyer_mobile,buyer_name,staff_mobile,create_time
-        from order_record
-        where id=#{orderId}
+        select order_item_id,order_id,user_id,user_name, item_price,shop_id,shop_name,product_id,product_name,
+        sku_num,sku_name,count,create_time,modified_time
+        from t_order_item
+        where order_id=#{orderId}
     </select>
 
 </mapper>

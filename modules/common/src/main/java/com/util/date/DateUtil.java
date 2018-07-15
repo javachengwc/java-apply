@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -96,6 +97,14 @@ public class DateUtil {
             buf.append(sed).append("秒");
         }
         return buf.toString();
+    }
+
+    public static Date addDates(Date date, int days)
+    {
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.DATE, days);
+        return c.getTime();
     }
 
     public static int getNowInt()

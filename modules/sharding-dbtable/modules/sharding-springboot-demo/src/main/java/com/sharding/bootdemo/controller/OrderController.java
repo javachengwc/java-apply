@@ -6,6 +6,8 @@ import com.sharding.bootdemo.model.vo.OrderVo;
 import com.sharding.bootdemo.service.OrderService;
 import com.util.page.Page;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,11 +42,15 @@ public class OrderController {
     @RequestMapping(value = "/queryOrderPage", method = RequestMethod.POST)
     public Page<OrderVo> queryOrderPage(@RequestBody OrderQueryVo queryVo) {
         logger.info("OrderController queryOrderPage start,.................");
+        queryVo.ready();
         Page<OrderVo> page =orderService.queryPage(queryVo);
         return  page;
     }
 
     @ApiOperation(value = "订单详单查询", notes = "订单详单查询")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "orderId", value = "订单id", required = true, dataType = "Long", paramType = "query")
+    })
     @RequestMapping(value = "/queryOrderItem", method = RequestMethod.GET)
     public List<OrderItemVo> queryOrderItem(Long orderId) {
         logger.info("OrderController queryOrderItem start,orderId={}",orderId);
