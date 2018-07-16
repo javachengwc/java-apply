@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sharding.springdemo.dao.OrderDao">
+
+    <resultMap id="OrderMap" type="com.sharding.springdemo.model.Order">
+        <result column="order_id" property="orderId" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="statu" property="statu" jdbcType="INTEGER"/>
+        <result column="price" property="price" jdbcType="BIGINT"/>
+        <result column="shop_id" property="shopId" jdbcType="BIGINT"/>
+        <result column="shop_name" property="shopName" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="modified_time" property="modifiedTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <resultMap id="OrderItemMap" type="com.sharding.springdemo.model.OrderItem">
+        <result column="order_item_id" property="orderItemId" jdbcType="BIGINT"/>
+        <result column="order_id" property="orderId" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="item_price" property="itemPrice" jdbcType="BIGINT"/>
+        <result column="shop_id" property="shopId" jdbcType="BIGINT"/>
+        <result column="shop_name" property="shopName" jdbcType="VARCHAR"/>
+        <result column="product_id" property="productId" jdbcType="BIGINT"/>
+        <result column="product_name" property="productName" jdbcType="VARCHAR"/>
+        <result column="sku_num" property="skuNum" jdbcType="VARCHAR"/>
+        <result column="sku_name" property="skuName" jdbcType="VARCHAR"/>
+        <result column="count" property="count" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="modified_time" property="modifiedTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <insert id="insertOrder" useGeneratedKeys="true" keyProperty="orderId">
+        insert into t_order (user_id, user_name,statu,price,shop_id,shop_name,create_time,modified_time)
+        values (
+        #{userId},
+        #{userName},
+        #{statu},
+        #{price},
+        #{shopId},
+        #{shopName},
+        #{createTime},
+        #{modifiedTime}
+        )
+    </insert>
+
+    <insert id="insertOrderItem" useGeneratedKeys="true" keyProperty="orderItemId">
+        insert into t_order_item (order_id,user_id,user_name, item_price,shop_id,shop_name,product_id,product_name,
+        sku_num,sku_name,count,create_time,modified_time)
+        values (
+        #{orderId},
+        #{userId},
+        #{userName},
+        #{itemPrice},
+        #{shopId},
+        #{shopName},
+        #{productId},
+        #{productName},
+        #{skuNum},
+        #{skuName},
+        #{count},
+        #{createTime},
+        #{modifiedTime}
+        )
+    </insert>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(1) as cnt
+        from t_order
+        <where>
+            <if test="orderId!=null ">
+                order_id=#{orderId}
+            </if>
+            <if test="statu!=null">
+                and statu=#{statu}
+            </if>
+            <if test="userId!=null">
+                and user_id=#{userId}
+            </if>
+            <if test="shopId!=null">
+                and shop_id=#{shopId}
+            </if>
+            <if test="beginTime!=null and beginTime!=''">
+                <![CDATA[ and create_time >= '${beginTime}' ]]>
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                <![CDATA[ and create_time < '${endTime}' ]]>
+            </if>
+        </where>
+    </select>
+
+    <select id="queryList" resultMap="OrderMap">
+        select order_id,user_id, user_name,statu,price,shop_id,shop_name,create_time,modified_time
+        from t_order
+        <where>
+            <if test="orderId!=null ">
+                order_id=#{orderId}
+            </if>
+            <if test="statu!=null">
+                and statu=#{statu}
+            </if>
+            <if test="userId!=null">
+                and user_id=#{userId}
+            </if>
+            <if test="shopId!=null">
+                and shop_id=#{shopId}
+            </if>
+            <if test="beginTime!=null and beginTime!=''">
+                <![CDATA[ and create_time >= '${beginTime}' ]]>
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                <![CDATA[ and create_time < '${endTime}' ]]>
+            </if>
+        </where>
+        order by order_id desc
+        <if test="start != null and pageSize != null">
+            limit ${start},${pageSize}
+        </if>
+    </select>
+
+    <select id="queryOrderItem" resultMap="OrderItemMap">
+        select order_item_id,order_id,user_id,user_name, item_price,shop_id,shop_name,product_id,product_name,
+        sku_num,sku_name,count,create_time,modified_time
+        from t_order_item
+        where order_id=#{orderId}
+    </select>
+
+</mapper>

@@ -1,4 +1,100 @@
 package com.sharding.springdemo.model.vo;
 
-public class OrderQueryVo {
+
+import com.shop.base.model.PageParam;
+import com.util.date.CalendarUtil;
+import com.util.date.DateUtil;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import org.apache.commons.lang.builder.ToStringBuilder;
+
+import java.util.Date;
+
+@ApiModel(description = "订单查询条件", value = "orderQueryVo")
+public class OrderQueryVo extends PageParam {
+
+    @ApiModelProperty(name = "orderId", value = "订单id")
+    private Long orderId;
+
+    @ApiModelProperty(name = "statu", value = "订单状态")
+    private Integer statu;
+
+    @ApiModelProperty(name = "userId", value = "用户id")
+    private Long userId;
+
+    @ApiModelProperty(name = "shopId", value = "店铺id")
+    private Long shopId;
+
+    @ApiModelProperty(name = "beginTime", value = "开始日期  yyyy-MM-dd")
+    private String beginTime;
+
+    @ApiModelProperty(name = "endTime", value = "结束日期  yyyy-MM-dd")
+    private String endTime;
+
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
+    }
+
+    public Integer getStatu() {
+        return statu;
+    }
+
+    public void setStatu(Integer statu) {
+        this.statu = statu;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Long getShopId() {
+        return shopId;
+    }
+
+    public void setShopId(Long shopId) {
+        this.shopId = shopId;
+    }
+
+    public String getBeginTime() {
+        return beginTime;
+    }
+
+    public void setBeginTime(String beginTime) {
+        this.beginTime = beginTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
+
+    public void ready() {
+        this.genPage();
+        if(!DateUtil.checkDate(beginTime,DateUtil.FMT_YMD)) {
+            beginTime=null;
+        }
+        if(DateUtil.checkDate(endTime,DateUtil.FMT_YMD)) {
+            Date endDate= DateUtil.getDate(endTime,DateUtil.FMT_YMD);
+            Date cdnEndDate = CalendarUtil.addDates(endDate,1);
+            String cdnEndStr =DateUtil.formatDate(cdnEndDate,DateUtil.FMT_YMD);
+            this.endTime=cdnEndStr;
+        }else {
+            this.endTime=null;
+        }
+    }
+
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
 }
