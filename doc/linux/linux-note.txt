@@ -7,6 +7,7 @@ cat /proc/version                                ---查看系统版本信息
 uname -r                                         ---查看系统的发行版号
 getconf LONG_BIT                                 ---查看系统位数
 lsb_release -a                                   ---查看lsb和特定版本的相关信息
+   ###如果无此命令，通过yum install -y redhat-lsb 安装lsb_release
 
 --------date
 date -s 05/15/2016  ---修改日期

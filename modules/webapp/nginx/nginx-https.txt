@@ -1,0 +1,21 @@
+server {
+        listen 443;
+        server_name localhost xxx.com;
+        ssl on;
+        root  /data/deploy/project_xxx;
+        index  index.html index.htm index.php;
+        ssl_certificate   cert/xxx.pem;
+        ssl_certificate_key  cert/xxx.key;
+        ssl_session_timeout 5m;
+        ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;
+        ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+        ssl_prefer_server_ciphers on;
+        location / {
+            access_log  logs/nginx/https-access.log  main;
+            try_files $uri $uri/ /index.html;
+        }
+
+        location /api {
+            proxy_pass http://172.0.0.1:9999/;
+        }
+    }

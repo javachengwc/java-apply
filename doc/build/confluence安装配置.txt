@@ -1,0 +1,7 @@
+----------------------------confluence安装配置-----------------------------
+Confluence是一个专业的wiki程序。它是一个知识管理的工具，通过它可以实现团队成员之间的协作和知识共享。
+基础环境:centos7,jdk1.8,mysql5.7,confluence6.7.1
+1,下载confluence6.7.1
+ wget https://downloads.atlassian.com/software/confluence/downloads/atlassian-confluence-6.7.1-x64.bin -P /data/setup
+
+
