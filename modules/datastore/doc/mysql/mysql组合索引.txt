@@ -1,0 +1,42 @@
+---------------------------mysql组合索引----------------------------------
+组合索引就是多字段索引，可以为多条件查询更好的提供索引检索，快速准确找到结果。
+当查询结果字段也是组合索引字段的时候，数据查询就直接能从索引中获取到结果字段，而不需要根据索引
+回查磁盘上的表取到对应的结果字段，这样的组合索引查询速度会快很多。
+组合索引的最左原则：组合索引的第一个字段必须出现在查询组句中，这个索引才会被用到。
+比如组合索引(col_a,col_b,col_c)
+下面的情况都会用到这个索引：
+where col_a = "some value";
+where col_a = "some value" and col_b = "some value";
+where col_a = "some value" and col_b = "some value" and col_c = "some value";
+where col_b = "some value" and col_a = "some value" and col_c = "some value";
+对于最后一条语句，mysql会自动优化成第三条的样子~~。
+下面的情况就不会用到索引：
+col_b = "aaaaaa";
+col_b = "aaaa" and col_c = "cccccc";
+
+*最左前缀就是最左优先，上例中创建了col_a,col_b,col_c多列索引,相当于创建了(col_a)单列索引，(col_a,col_b)组合索引以及(col_a,col_b,col_c)组合索引。
+*最左前缀匹配原则, 当遇到范围查询时, 就停止索引的匹配。
+比如：
+where user_id < 3 and product_name = 'p1' and productor = 'aaa 中, 因为先进行 user_id 的范围查询,
+而根据最左前缀匹配原则, 当遇到范围查询时, 就停止索引的匹配, 因此实际上使用到的索引的字段只有 user_id,
+而没有用到联合索引(user_id,product_name, productor), 因此效率不算高。
+
+注：在创建多列索引时，要根据业务需求，where子句中使用最频繁的一列放在最左边。
+当一个查询有多个查询字段条件，也存在一个包含这些字段的联合索引，不管这些查询字段条件的顺序是怎样的，都能用上这个联合索引
+如果在查询语句中有多个排序字段，如下:
+ SELECT  * FROM db_test
+ WHERE create_date >= '2015-06-01'
+  AND create_date <= '2015-06-06'
+  AND type = 0
+ ORDER BY create_date DESC,amount DESC
+ LIMIT 5000,5000
+
+此查询存在2个查询条件字段create_date,type,并且有两个排序字段create_date,amount。
+此查询的优化可建立包含查询字段与排序字段的联合索引，如下:
+alter table db_test add index data_combin_idx(create_date,amount,type);
+这样查询的时候能应用上联合索引同时排序也兼顾应用到索引以优化查询。
+
+当查询数据量非常大的时候，mysql即便有可选择的索引使用，也会使用全表扫描，这个时候可以使用强制索引来查询，
+类似 select * from table force index(aa_idx) where ...
+
+-----------------------------------------------------------------------------------------
