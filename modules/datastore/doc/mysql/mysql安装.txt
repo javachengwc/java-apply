@@ -44,6 +44,7 @@ vim /etc/my.cnf
    long_query_time=2
    slow_query_log_file=/usr/local/mysql/slow.log
    server-id=1
+   transaction-isolation = READ-COMMITTED     ###设置隔离级别为不可重复读
    sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
 bin/mysqld_safe --user=mysql &  #启动mysql
 bin/mysql -uroot -pf4(t0cvr*Dtq  #密码是之前生成的临时密码

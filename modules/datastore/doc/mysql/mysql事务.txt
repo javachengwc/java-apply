@@ -1,0 +1,22 @@
+---------------------------------mysql事务----------------------------
+mysql默认是repeatable read 隔离级别。也就是可重复读（repeatable-read）。
+mysql事务隔离级别 	            脏读 	不可重复读 	幻读
+读未提交（read-uncommitted） 	是 	        是 	     是
+不可重复读（read-committed） 	否 	        是 	     是
+可重复读（repeatable-read） 	否 	        否 	     是
+串行化（serializable） 	        否 	        否 	     否
+--------------------------------------------------------
+select @@tx_isolation;                                    ###查看当前事务隔离级别
+set session transaction isolation level read committed;
+set session transaction isolation level repeatable read;  ###修改事务隔离级别
+
+innodb引擎默认autocommit为on，也就是自动提交打开。
+show variables like ‘%autocommit%; 或
+select @@autocommit;                                      ###查看当前autocommit
+##一个事务的sql语句
+set autocommit=0;
+begin;
+update aa set name='hh' where id=1;
+commit;
+set autocommit=1; //恢复默认的自动提交
+----------------------------------------------------------------------
