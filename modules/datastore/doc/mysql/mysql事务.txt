@@ -9,6 +9,10 @@ mysql事务隔离级别 	            脏读 	不可重复读 	幻读
 select @@tx_isolation;                                    ###查看当前事务隔离级别
 set session transaction isolation level read committed;
 set session transaction isolation level repeatable read;  ###修改事务隔离级别
+mysql数据库配置事物隔离级别
+vim /etc/my.cnf
+    [mysqld]
+    transaction-isolation = READ-COMMITTED     ###设置隔离级别为不可重复读
 
 innodb引擎默认autocommit为on，也就是自动提交打开。
 show variables like ‘%autocommit%; 或
