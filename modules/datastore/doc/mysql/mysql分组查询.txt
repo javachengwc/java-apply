@@ -1,0 +1,82 @@
+-------------------------------------------mysql分组查询--------------------------------------
+mysql中，分组查询group by的实现有多种（三种）方式，其中有两种方式利用现有的索引来完成group by，另外一种为无法使用索引的场景下使用。
+下面分别针对这三种实现方式做一个分析：
+例子表group_message，索引(group_id,user_id,gmt_create)
+1、使用松散（Loose）索引扫描实现 GROUP BY
+    当 MySQL 完全利用索引扫描来实现 GROUP BY 的时候，并不需要扫描所有满足条件的索引键即可完成操作得出结果。
+    EXPLAIN
+    SELECT user_id,max(gmt_create)
+    FROM group_message
+    WHERE group_id < 10
+    GROUP BY group_id,user_id\G
+
+     id: 1
+     select_type: SIMPLE
+     table: group_message
+     type: range
+     possible_keys: idx_gid_uid_gc
+     key: idx_gid_uid_gc
+     key_len: 8
+     ref: NULL
+     rows: 4
+     Extra: Using where; Using index for group-by
+     执行计划的 Extra 信息中有信息显示“Using index for group-by”，就是mysql通过使用松散索引扫描来实现了GROUP BY 操作。
+利用到松散索引扫描实现 GROUP BY，需要至少满足以下几个条件：
+1,GROUP BY 条件字段必须在同一个索引中最前面的连续位置;
+2,在使用GROUP BY 的同时，只能使用 MAX 和 MIN 这两个聚合函数;
+3,如果引用到了该索引中 GROUP BY 条件之外的字段条件的时候，必须以常量形式存在;
+为什么松散索引扫描的效率会很高?
+    因为在没有WHERE子句，也就是必须经过全索引扫描的时候， 松散索引扫描需要读取的键值数量与分组的组数量一样多，也就是说比实际存在的键值数目要少很多。
+    而在WHERE子句包含范围判断式或者等值表达式的时候， 松散索引扫描查找满足范围条件的每个组的第1个关键字，并且再次读取尽可能最少数量的关键字。
+
+2.使用紧凑(Tight)索引扫描实现 GROUP BY
+紧凑索引扫描实现 GROUP BY 和松散索引扫描的区别主要在于它需要在扫描索引的时候，读取所有满足条件的索引键，然后再根据读取的数据来完成 GROUP BY 操作得到相应结果。
+    EXPLAIN
+    SELECT max(gmt_create)
+    FROM group_message
+    WHERE group_id = 2
+    GROUP BY user_id\G
+
+    id: 1
+    select_type: SIMPLE
+    table: group_message
+    type: ref
+    possible_keys: idx_gid_uid_gc
+    key: idx_gid_uid_gc
+    key_len: 4
+    ref: const
+    rows: 4
+    Extra: Using where; Using index
+    执行计划的 Extra 信息中已经没有“Using index for group-by”了，但并不是说 MySQL 的 GROUP BY 操作并不是通过索引完成的，
+    只不过是需要访问 WHERE 条件所限定的所有索引键信息之后才能得出结果。这就是通过紧凑索引扫描来实现 GROUP BY 的执行计划输出信息。
+在 MySQL 中，MySQL Query Optimizer 首先会选择通过松散索引扫描来实现 GROUP BY 操作，当发现无法满足松散索引扫描后，才会尝试通过紧凑索引扫描来实现。
+当 GROUP BY 条件字段并不连续或者不是索引前缀部分的时候，MySQL Query Optimizer 无法使用松散索引扫描，因为缺失的索引键信息无法得到。
+但是，如果 Query 语句中存在一个常量值来引用缺失的索引键，则可以使用紧凑索引扫描完成 GROUP BY 操作，因为常量填充了搜索关键字中的“差距”，
+可以形成完整的索引前缀。这些索引前缀可以用于索引查找。而如果需要排序GROUP BY结果，并且能够形成索引前缀的搜索关键字，MySQL还可以避免额外的
+排序操作，因为使用有顺序的索引的前缀进行搜索已经按顺序检索到了所有关键字。
+
+3.使用临时表实现 GROUP BY
+MySQL 在进行 GROUP BY 操作的时候要想利用所有，必须满足 GROUP BY 的字段必须同时存放于同一个索引中，且该索引是一个有序索引(如 Hash 索引就不能满足要求)。
+而且，并不只是如此，是否能够利用索引来实现 GROUP BY 还与使用的聚合函数也有关系。当 MySQL Query Optimizer 无法找到合适的索引可以利用的时候，
+就不得不先读取需要的数据，然后通过临时表来完成 GROUP BY 操作。
+    EXPLAIN
+    SELECT max(gmt_create)
+    FROM group_message
+    WHERE group_id > 1 and group_id < 10
+    GROUP BY user_id\G
+
+    id: 1
+    select_type: SIMPLE
+    table: group_message
+    type: range
+    possible_keys: idx_gid_uid_gc
+    key: idx_gid_uid_gc
+    key_len: 4
+    ref: NULL
+    rows: 32
+    Extra: Using where; Using index; Using temporary; Using filesort
+    执行计划表明MySQL通过索引找到需要的数据，然后创建了临时表，又进行了排序操作，才得到GROUP BY 结果。
+    此示例中，group_id 并不是一个常量条件，而是一个范围，而且 GROUP BY 字段为 user_id。所以 MySQL 无法根据索引的顺序来帮助 GROUP BY 的实现，
+    只能先通过索引范围扫描得到需要的数据，然后将数据存入临时表，然后再进行排序和分组操作来完成 GROUP BY。
+当 MySQL Query Optimizer 发现仅仅通过索引扫描并不能直接得到 GROUP BY 的结果之后，就不得不选择通过使用临时表然后再排序的方式来实现 GROUP BY了。
+----------------------------------------------------------------------------------------------
