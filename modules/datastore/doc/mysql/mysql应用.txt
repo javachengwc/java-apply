@@ -103,6 +103,35 @@ select b.stat_date,b.from_source, ifnull(a.cnt, 0) as new, ifnull(b.cnt, 0) as o
 from t_old  b left join t_new a on b.stat_date=a.stat_date and b.from_source=a.from_source
 where a.stat_date is null
 
+------mysql分页查询优化
+分页查询的时候往往是采用select * from table1 limit 100,20 的方式来提取数据，在处理的过程中会读取120条数据，
+然后扔掉100条的offset记录,最后返回20条记录给客户端。如果offset的值非常大，效率上可能会有影响，可以通过如下方式优化:
+1.可以通过覆盖索引+inner join的方式来重写sql
+    select field1,field2,field3
+    from table1
+    join   (select id from table1 order by id asc limit 100, 20) as temp
+    on temp.id= table1.id
+2. 可以通过位置标签的方式，来减少需要检索的记录数
+    SELECT * FROM users WHERE uid >=  (SELECT uid FROM users ORDER BY uid limit 111110, 1) limit 0, 10;
+3,反向查找优化法 ,当偏移超过一半记录数的时候，先用到排序，这样偏移就反转了
+    limit偏移算法：
+    正向查找： (当前页 - 1) * 页长度
+    反向查找： 总记录 - 当前页 * 页长度
+    比如
+    总记录数：100000
+    每页记录数： 10
+    总页数：100000 / 10 = 10000
+    中间页数：10000 / 2 = 5000
+    第6001页
+    正向查找sql: select * from test where type = 1 limit 60000, 10
+    反向查找sql: select * from test where type = 1 order by id desc limit  39990, 10
+    第8001页
+    正向查找SQL: select * from test where type = 1 limit 80000, 10
+    反向查找sql: select * from test where type = 1 order by id desc limit 19990, 10
+    注意，反向查找的结果是是降序desc的。
+4.limit限制优化法
+    把limit偏移量限制低于某个数。超过这个数等于没数据。
+
 -----mysql死锁
 show processlist 或 show full processlist 或
 select * from information_schema.innodb_trx;    ---查看当前的事务
