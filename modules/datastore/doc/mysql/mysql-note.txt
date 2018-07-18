@@ -8,8 +8,9 @@ set names utf8;
 ---执行查询计划
 explain select ...
 ---强制使用索引
-select * from table force index(aa_index)
-
+select * from tablea force index(aa_index) 
+select * from tba force index(aa_index)
+join tbb force index(bb_index) on tba.id=tab.aid
 ----------------------------------------------
 window下用source还原数据库中文乱码问题无法回避,因为window下的cmd命令字符集固定的gbk,不能换成其他字符集,
 变通的做法直接把sql语句在sql客户端客户端执行,而不用cmd命令行去操作
