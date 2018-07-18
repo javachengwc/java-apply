@@ -8,7 +8,7 @@ set names utf8;
 ---执行查询计划
 explain select ...
 ---强制使用索引
-select * from tablea force index(aa_index) 
+select * from tablea force index(aa_index)
 select * from tba force index(aa_index)
 join tbb force index(bb_index) on tba.id=tab.aid
 ----------------------------------------------
