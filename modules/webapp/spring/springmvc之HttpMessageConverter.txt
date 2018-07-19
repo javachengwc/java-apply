@@ -1,3 +1,139 @@
 ------------------------------------springmvc-HttpMessageConverter-------------------------------
+在springmvc中，可以使用@RequestBody和@ResponseBody两个注解，分别完成请求报文到对象和对象到响应报文的转换，
+底层这种灵活的消息转换机制，就是Spring3.x中新引入的HttpMessageConverter即消息转换器机制。
 
+在springmvc的RequestMappingHandlerAdapter中，默认HandlerMethodArgumentResolver与HandlerMethodReturnValueHandler中
+都加入了RequestResponseBodyMethodProcessor，同时充当了方法参数解析和返回值处理两种角色。
+这个类同时实现了HandlerMethodArgumentResolver和HandlerMethodReturnValueHandler两个接口。
+
+//RequestResponseBodyMethodProcessor源码实现
+public class  RequestResponseBodyMethodProcessor implement HandlerMethodArgumentResolver,HandlerMethodReturnValueHandler {
+    //支持RequestBody注解的参数解析
+    public boolean supportsParameter(MethodParameter parameter) {
+        return parameter.hasParameterAnnotation(RequestBody.class);
+    }
+
+    //从body数据转成具体对象，其实现是通过HttpMessageConverter来转换的
+    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+            NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+        Object argument = readWithMessageConverters(webRequest, parameter, parameter.getGenericParameterType());
+        String name = Conventions.getVariableNameForParameter(parameter);
+        WebDataBinder binder = binderFactory.createBinder(webRequest, argument, name);
+        if (argument != null) {
+            validate(binder, parameter);
+        }
+        mavContainer.addAttribute(BindingResult.MODEL_KEY_PREFIX + name, binder.getBindingResult());
+        return argument;
+    }
+
+    //支持ResponseBody注解的返回处理
+    public boolean supportsReturnType(MethodParameter returnType) {
+        return returnType.getMethodAnnotation(ResponseBody.class) != null;
+    }
+
+   //通过HttpMessageConverter来把结果对象转换成输出
+    public void handleReturnValue(Object returnValue, MethodParameter returnType,
+        ModelAndViewContainer mavContainer, NativeWebRequest webRequest)
+        throws IOException, HttpMediaTypeNotAcceptableException {
+            mavContainer.setRequestHandled(true);
+            if (returnValue != null) {
+                writeWithMessageConverters(returnValue, returnType, webRequest);
+            }
+    }
+}
+
+//HttpMessageConverter源码定义
+public interface HttpMessageConverter<T> {
+
+    //判断是否能将请求内容转换成Java对象
+    boolean canRead(Class<?> clazz, MediaType mediaType);
+
+    //判断是否可以将Java对象转换成返回内容
+    boolean canWrite(Class<?> clazz, MediaType mediaType);
+
+    //获得该转换器支持的MediaType类型
+    List<MediaType> getSupportedMediaTypes();
+
+    //读取请求内容并转换成Java对象
+    T read(Class<? extends T> clazz, HttpInputMessage inputMessage)
+            throws IOException, HttpMessageNotReadableException;
+
+    //将Java对象转换后写入返回内容
+    void write(T t, MediaType contentType, HttpOutputMessage outputMessage)
+            throws IOException, HttpMessageNotWritableException;
+}
+
+springmvc自身注册的converter
+(其实定义在RequestMappingHandlerAdapter里,并且被MethodArgumentResolver和HandlerMethodReturnValueHandler解析数据的时候所用到。)
+public RequestMappingHandlerAdapter() {
+    StringHttpMessageConverter stringHttpMessageConverter = new StringHttpMessageConverter();
+    stringHttpMessageConverter.setWriteAcceptCharset(false);
+    this.messageConverters = new ArrayList<HttpMessageConverter<?>>(4);
+    this.messageConverters.add(new ByteArrayHttpMessageConverter());
+    this.messageConverters.add(stringHttpMessageConverter);
+    this.messageConverters.add(new SourceHttpMessageConverter<Source>());
+    this.messageConverters.add(new AllEncompassingFormHttpMessageConverter());
+}
+其中AllEncompassingFormHttpMessageConverter的源码实现是:
+public class AllEncompassingFormHttpMessageConverter extends FormHttpMessageConverter {
+    private static final boolean jaxb2Present =
+            ClassUtils.isPresent("javax.xml.bind.Binder", AllEncompassingFormHttpMessageConverter.class.getClassLoader());
+    private static final boolean jackson2Present =
+            ClassUtils.isPresent("com.fasterxml.jackson.databind.ObjectMapper", AllEncompassingFormHttpMessageConverter.class.getClassLoader()) &&
+                    ClassUtils.isPresent("com.fasterxml.jackson.core.JsonGenerator", AllEncompassingFormHttpMessageConverter.class.getClassLoader());
+    private static final boolean jackson2XmlPresent =
+            ClassUtils.isPresent("com.fasterxml.jackson.dataformat.xml.XmlMapper", AllEncompassingFormHttpMessageConverter.class.getClassLoader());
+    private static final boolean gsonPresent =
+            ClassUtils.isPresent("com.google.gson.Gson", AllEncompassingFormHttpMessageConverter.class.getClassLoader());
+    public AllEncompassingFormHttpMessageConverter() {
+        addPartConverter(new SourceHttpMessageConverter<Source>());
+        if (jaxb2Present && !jackson2XmlPresent) {
+            addPartConverter(new Jaxb2RootElementHttpMessageConverter());
+        }
+        if (jackson2Present) {
+            addPartConverter(new MappingJackson2HttpMessageConverter());
+        } else if (gsonPresent) {
+            addPartConverter(new GsonHttpMessageConverter());
+        }
+        if (jackson2XmlPresent) {
+            addPartConverter(new MappingJackson2XmlHttpMessageConverter());
+        }
+    }
+}
+它的主要作用是，从类加载器去查找相关的类，只有这些转换器需要的类（jar包被你引入了）存在，那么转换器才会被加载进去。
+比如项目中引入了
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+    <version>${jackson.version}</version>
+</dependency>
+表示MappingJackson2HttpMessageConverter被加入到了SpringMVC中，后面在使用@RequestBody和@ResponseBody，RequestResponseBodyMethodProcessor起作用的时候，
+它就会寻找能够匹配的Converter，进而找到MappingJackson2HttpMessageConverter用来转换对象。
+
+springmvc中默认提供的转换器
+名称	                               作用	                                               读支持MediaType	                 写支持MediaType
+ByteArrayHttpMessageConverter	       数据与字节数组的相互转换	                           */*	                             application/octet-stream
+StringHttpMessageConverter	           数据与String类型的相互转换	                       text/*	                         text/plain
+FormHttpMessageConverter	           表单与MultiValueMap的相互转换	                   application/x-www-form-urlencoded application/x-www-form-urlencoded
+SourceHttpMessageConverter	           数据与javax.xml.transform.Source的相互转换	       text/xml和application/xml	     text/xml和application/xml
+MarshallingHttpMessageConverter	       使用Spring的Marshaller/Unmarshaller转换XML数据	   text/xml和application/xml	     text/xml和application/xml
+MappingJackson2HttpMessageConverter	   使用Jackson的ObjectMapper转换Json数据	           application/json	                 application/json
+MappingJackson2XmlHttpMessageConverter 使用Jackson的XmlMapper转换XML数据	               application/xml	                 application/xml
+BufferedImageHttpMessageConverter	   数据与java.awt.image.BufferedImage的相互转换	       Java I/O API支持的所有类型	     Java I/O API支持的所有类型
+
+springmvc增强或覆盖或增加自定义的HttpMessageConverter
+<mvc:annotation-driven>
+    <mvc:message-converters>
+        <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+            <property name="supportedMediaTypes">
+                <list>
+                    <value>text/plain;charset=UTF-8</value>
+                    <value>text/html;charset=UTF-8</value>
+                </list>
+             </property>
+        </bean>
+    </mvc:message-converters>
+</mvc:annotation-driven>
+StringHttpMessageConverter默认支持的编码格式是ISO-8859-1。如果是用它来转换数据，那可能的到的结果出现中文乱码。
+上面的配置覆盖SpringMVC自己的转换器,可使它支持UTF-8。
 -------------------------------------------------------------------------------------------------
