@@ -1,0 +1,97 @@
+------------------------------springmvc-HandlerMethodArgumentResolver------------------------------
+springmvc框架中，Controller方法中的各种参数,比如HttpServletRequest或HttpServletResponse， 各种注解@RequestParam、@RequestHeader、@RequestBody、
+@PathVariable、@ModelAttribute等,是如何得到相应的对象值的呢?
+这就是org.springframework.web.method.support.HandlerMethodArgumentResolver来处理的。
+HandlerMethodArgumentResolver就是解析springmvc controller方法中的参数的。
+
+//HandlerMethodArgumentResolver源码定义
+public interface HandlerMethodArgumentResolver {
+
+    //如果需要对某个参数进行处理 只要此处返回true即可
+    //通过MethodParameter可以获取该方法参数上的一些信息， 如方法参数中的注解信息等
+    boolean supportsParameter(MethodParameter parameter);
+
+    //该方法是对参数的解析，返回的Object会自动赋值到参数对象中。
+    Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+            NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception;
+
+}
+springmvc本身的的 HandlerMethodArgumentResolver有:
+(其实定义在RequestMappingHandlerAdapter里,而RequestMappingHandlerAdapter被注册进去是使用<mvc:annotation-driven/>注解的时候。)
+private List<HandlerMethodArgumentResolver> getDefaultArgumentResolvers() {
+    List<HandlerMethodArgumentResolver> resolvers = new ArrayList<HandlerMethodArgumentResolver>();
+
+    // Annotation-based argument resolution
+    resolvers.add(new RequestParamMethodArgumentResolver(getBeanFactory(), false));
+    resolvers.add(new RequestParamMapMethodArgumentResolver());
+    resolvers.add(new PathVariableMethodArgumentResolver());
+    resolvers.add(new PathVariableMapMethodArgumentResolver());
+    resolvers.add(new MatrixVariableMethodArgumentResolver());
+    resolvers.add(new MatrixVariableMapMethodArgumentResolver());
+    resolvers.add(new ServletModelAttributeMethodProcessor(false));
+    resolvers.add(new RequestResponseBodyMethodProcessor(getMessageConverters(), this.requestResponseBodyAdvice));
+    resolvers.add(new RequestPartMethodArgumentResolver(getMessageConverters(), this.requestResponseBodyAdvice));
+    resolvers.add(new RequestHeaderMethodArgumentResolver(getBeanFactory()));
+    resolvers.add(new RequestHeaderMapMethodArgumentResolver());
+    resolvers.add(new ServletCookieValueMethodArgumentResolver(getBeanFactory()));
+    resolvers.add(new ExpressionValueMethodArgumentResolver(getBeanFactory()));
+    resolvers.add(new SessionAttributeMethodArgumentResolver());
+    resolvers.add(new RequestAttributeMethodArgumentResolver());
+
+    // Type-based argument resolution
+    resolvers.add(new ServletRequestMethodArgumentResolver());
+    resolvers.add(new ServletResponseMethodArgumentResolver());
+    resolvers.add(new HttpEntityMethodProcessor(getMessageConverters(), this.requestResponseBodyAdvice));
+    resolvers.add(new RedirectAttributesMethodArgumentResolver());
+    resolvers.add(new ModelMethodProcessor());
+    resolvers.add(new MapMethodProcessor());
+    resolvers.add(new ErrorsMethodArgumentResolver());
+    resolvers.add(new SessionStatusMethodArgumentResolver());
+    resolvers.add(new UriComponentsBuilderMethodArgumentResolver());
+
+    // Custom arguments
+    if (getCustomArgumentResolvers() != null) {
+        resolvers.addAll(getCustomArgumentResolvers());
+    }
+
+    // Catch-all
+    resolvers.add(new RequestParamMethodArgumentResolver(getBeanFactory(), true));
+    resolvers.add(new ServletModelAttributeMethodProcessor(true));
+
+    return resolvers;
+}
+
+HandlerMethodArgumentResolver子类	                                                            注解 or 类
+org.springframework.web.method.annotation.RequestParamMethodArgumentResolver	                @RequestParam
+org.springframework.web.method.annotation.RequestParamMapMethodArgumentResolver	                @RequestParam
+org.springframework.web.servlet.mvc.method.annotation.PathVariableMethodArgumentResolver	    @PathVariable
+org.springframework.web.servlet.mvc.method.annotation.PathVariableMapMethodArgumentResolver	    @PathVariable
+org.springframework.web.servlet.mvc.method.annotation.MatrixVariableMethodArgumentResolver	    @MatrixVariable
+org.springframework.web.servlet.mvc.method.annotation.MatrixVariableMapMethodArgumentResolver	@MatrixVariable
+org.springframework.web.servlet.mvc.method.annotation.ServletModelAttributeMethodProcessor	    @ModelAttribute
+org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor	    @RequestBody
+org.springframework.web.servlet.mvc.method.annotation.RequestPartMethodArgumentResolver	        @RequestPart
+org.springframework.web.method.annotation.RequestHeaderMethodArgumentResolver	                @RequestHeader
+org.springframework.web.method.annotation.RequestHeaderMapMethodArgumentResolver	            @RequestHeader
+org.springframework.web.servlet.mvc.method.annotation.ServletCookieValueMethodArgumentResolver	@CookieValue
+org.springframework.web.method.annotation.ExpressionValueMethodArgumentResolver	                @Value
+org.springframework.web.servlet.mvc.method.annotation.SessionAttributeMethodArgumentResolver	@SessionAttribute
+org.springframework.web.servlet.mvc.method.annotation.RequestAttributeMethodArgumentResolver	@RequestAttribute
+org.springframework.web.servlet.mvc.method.annotation.ServletRequestMethodArgumentResolver	    HttpServletRequest
+org.springframework.web.servlet.mvc.method.annotation.ServletResponseMethodArgumentResolver	    HttpServletResponse
+org.springframework.web.servlet.mvc.method.annotation.HttpEntityMethodProcessor	                HttpEntity
+org.springframework.web.servlet.mvc.method.annotation.RedirectAttributesMethodArgumentResolver	RedirectAttributes
+org.springframework.web.method.annotation.ModelMethodProcessor	                                Model
+org.springframework.web.method.annotation.MapMethodProcessor	                                Map
+org.springframework.web.method.annotation.ErrorsMethodArgumentResolver	                        Errors
+org.springframework.web.method.annotation.SessionStatusMethodArgumentResolver	                SessionStatus
+org.springframework.web.servlet.mvc.method.annotation.UriComponentsBuilderMethodArgumentResolver	UriComponentsBuilder
+
+springmvc引入自定义的Resolver
+比如引入org.springframework.data.web.PageableHandlerMethodArgumentResolver的配置如下:
+<mvc:annotation-driven>
+    <mvc:argument-resolvers>
+        <bean class="org.springframework.data.web.PageableHandlerMethodArgumentResolver"/>
+    </mvc:argument-resolvers>
+</mvc:annotation-driven>
+---------------------------------------------------------------------------------------------------

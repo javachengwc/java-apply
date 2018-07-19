@@ -1,0 +1,82 @@
+---------------------------springmvc-HandlerMethodReturnValueHandler------------------------
+springmvc框架中，Controller方法中的各种返回值,比如@ResponseBody注解等,是怎么解析的呢?
+这就是org.springframework.web.method.support.HandlerMethodReturnValueHandler来处理的。
+HandlerMethodReturnValueHandler就是解析springmvc controller方法中的返回结果的。
+
+//HandlerMethodReturnValueHandler源码定义
+public interface HandlerMethodReturnValueHandler {
+
+    //是否支持某个返回类型的处理
+    boolean supportsReturnType(MethodParameter returnType);
+
+    //对返回值的处理操作
+    void handleReturnValue(Object returnValue, MethodParameter returnType,
+         ModelAndViewContainer mavContainer, NativeWebRequest webRequest) throws Exception;
+
+}
+springmvc本身的的 HandlerMethodReturnValueHandler有:
+(其实定义在RequestMappingHandlerAdapter里,而RequestMappingHandlerAdapter被注册进去是使用<mvc:annotation-driven/>注解的时候。)
+private List<HandlerMethodReturnValueHandler> getDefaultReturnValueHandlers() {
+    List<HandlerMethodReturnValueHandler> handlers = new ArrayList<HandlerMethodReturnValueHandler>();
+
+    // Single-purpose return value types
+    handlers.add(new ModelAndViewMethodReturnValueHandler());
+    handlers.add(new ModelMethodProcessor());
+    handlers.add(new ViewMethodReturnValueHandler());
+    handlers.add(new ResponseBodyEmitterReturnValueHandler(getMessageConverters()));
+    handlers.add(new StreamingResponseBodyReturnValueHandler());
+    handlers.add(new HttpEntityMethodProcessor(getMessageConverters(),
+            this.contentNegotiationManager, this.requestResponseBodyAdvice));
+    handlers.add(new HttpHeadersReturnValueHandler());
+    handlers.add(new CallableMethodReturnValueHandler());
+    handlers.add(new DeferredResultMethodReturnValueHandler());
+    handlers.add(new AsyncTaskMethodReturnValueHandler(this.beanFactory));
+
+    // Annotation-based return value types
+    handlers.add(new ModelAttributeMethodProcessor(false));
+    handlers.add(new RequestResponseBodyMethodProcessor(getMessageConverters(),
+            this.contentNegotiationManager, this.requestResponseBodyAdvice));
+
+    // Multi-purpose return value types
+    handlers.add(new ViewNameMethodReturnValueHandler());
+    handlers.add(new MapMethodProcessor());
+
+    // Custom return value types
+    if (getCustomReturnValueHandlers() != null) {
+        handlers.addAll(getCustomReturnValueHandlers());
+    }
+
+    // Catch-all
+    if (!CollectionUtils.isEmpty(getModelAndViewResolvers())) {
+        handlers.add(new ModelAndViewResolverMethodReturnValueHandler(getModelAndViewResolvers()));
+    }
+    else {
+        handlers.add(new ModelAttributeMethodProcessor(true));
+    }
+
+    return handlers;
+}
+
+HandlerMethodReturnValueHandler子类	                                                             注解 or 类
+org.springframework.web.servlet.mvc.method.annotation.ModelAndViewMethodReturnValueHandler	     ModelAndView
+org.springframework.web.method.annotation.ModelMethodProcessor	                                 Model
+org.springframework.web.servlet.mvc.method.annotation.ViewMethodReturnValueHandler	             View
+org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitterReturnValueHandler	     ResponseEntity
+org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBodyReturnValueHandler	 StreamingResponseBody
+org.springframework.web.servlet.mvc.method.annotation.HttpEntityMethodProcessor	                 HttpEntity
+org.springframework.web.servlet.mvc.method.annotation.HttpHeadersReturnValueHandler	             HttpHeaders
+org.springframework.web.servlet.mvc.method.annotation.CallableMethodReturnValueHandler	         Callable
+org.springframework.web.servlet.mvc.method.annotation.DeferredResultMethodReturnValueHandler
+org.springframework.web.servlet.mvc.method.annotation.AsyncTaskMethodReturnValueHandler	         WebAsyncTask
+org.springframework.web.method.annotation.ModelAttributeMethodProcessor	                         @ModelAttribute
+org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor	     @ResponseBody
+org.springframework.web.servlet.mvc.method.annotation.ViewNameMethodReturnValueHandler	         CharSequence 、void
+org.springframework.web.method.annotation.MapMethodProcessor	                                 Map
+
+springmvc引入自定义的Handler
+<mvc:annotation-driven>
+    <mvc:return-value-handlers>
+        <bean class=""/>
+    </mvc:return-value-handlers>
+</mvc:annotation-driven>
+--------------------------------------------------------------------------------------------

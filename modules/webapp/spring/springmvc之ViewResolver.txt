@@ -1,0 +1,41 @@
+------------------------------------springmvc-ViewResolver-------------------------------
+springmvc处理视图最重要的两个接口是ViewResolver和View。
+ViewResolver的作用是把一个逻辑上的视图名称解析为一个真正的视图。View接口的主要作用是用于处理视图，然后返回给客户端。
+
+UrlVBasedViewResolver是ViewResolver的一种简单实现，主要就是提供的一种拼接URL的方式来解析视图。
+它通过prefix属性指定前缀，通过suffix属性指定后缀，然后把返回的逻辑视图名称加上指定的前缀和后缀就是指定的视图URL了。
+如prefix=/WEB-INF/view/，suffix=.jsp，返回的视图名称viewName=test/idx， 则UrlBasedViewResolver解析出来的视图URL就是/WEB-INF/view/test/idx.jsp。
+URLBasedViewResolver支持返回的视图名称中包含redirect:前缀，这样就支持URL在客户端的跳转。
+比如视图名称”redirect:test.do”，UrlVBasedViewResolver发现返回的视图名称包含”redirect:”前缀，于是把返回的视图名称前缀”redirect:”去掉，
+取后面的test.do组成一个RedirectView，RedirectView中将把请求返回的模型属性组合成查询参数的形式组合到redirect的URL后面，然后调用HttpServletResponse对象的sendRedirect方法进行重定向。
+URLBasedViewResolver还支持forword:前缀，对于视图名称中包含forword:前缀的视图将会被封装成一个InternalResourceView对象，然后在服务器端利用RequestDispatcher的forword方式跳转到指定的地址。
+使用UrlBasedViewResolver的时候必须指定属性viewClass，表示解析成哪种视图，一般使用较多的就是InternalResourceView，利用它来展现jsp，但是当使用JSTL的时候必须使用JstlView。
+比如:
+<bean class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+    <property name="prefix" value="/WEB-INF/" />
+    <property name="suffix" value=".jsp" />
+    <property name="viewClass" value="org.springframework.web.servlet.view.InternalResourceView"/>
+</bean>
+InternalResourceViewResolver视图解析器是UrlVBasedViewResolver的一个子类。
+InternalResourceViewResolver会把返回的视图名称都解析为InternalResourceView对象，InternalResourceView会把Controller处理器方法返回的模型属性都存放到对应的request属性中，
+然后通过RequestDispatcher在服务器端把请求forword重定向到目标URL。存放在/WEB-INF/下面的内容是不能直接通过request请求的方式请求到的，为了安全性考虑，
+通常会把jsp文件放在WEB-INF目录下，而InternalResourceView在服务器端跳转的方式可以很好的解决这个问题。
+<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+    <property name="contentType" value="text/html"/>
+    <property name="prefix" value="/WEB-INF/view/"/>
+    <property name="suffix" value=".jsp"/>
+</bean>
+
+在springmvc中可以同时定义多个ViewResolver视图解析器，然后它们会组成一个ViewResolver链。
+当Controller处理器方法返回一个逻辑视图名称后，ViewResolver链将根据其中ViewResolver的优先级来进行处理。
+所有的ViewResolver都实现了Ordered接口，在Spring中实现了这个接口的类都是可以排序的。
+在ViewResolver中是通过order属性来指定顺序的，默认都是最大值。所以我们可以通过指定ViewResolver的order属性来实现ViewResolver的优先级，
+order属性是Integer类型，order越小，对应的 ViewResolver将有越高的解析视图的权利，所以第一个进行解析的将是ViewResolver链中order值最小的那个。
+当一个ViewResolver在进行视图解析后返回的View对象是null的话就表示该ViewResolver不能解析该视图，这个时候如果还存在其他order值比它大的
+ViewResolver就会调用剩余的ViewResolver中的order值最小的那个来解析该视图，依此类推。
+当ViewResolver在进行视图解析后返回的是一个非空的View对象的时候，就表示该ViewResolver能够解析该视图，那么视图解析这一步就完成了，后续的ViewResolver将不会再用来解析该视图。
+当定义的所有ViewResolver都不能解析该视图的时候，Spring就会抛出一个异常。
+
+注意：像InternalResourceViewResolver这种能解析所有的视图，即永远能返回一个非空View对象的ViewResolver一定要把它放在ViewResolver链的最后面。
+-----------------------------------------------------------------------------------------

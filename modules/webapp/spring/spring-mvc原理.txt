@@ -7,7 +7,8 @@ DispatcherServlet:spring提供的前端控制器，所有的请求都有经过�
 处理器映射：选择使用哪个控制器来处理请求,一般都是注解驱动，比如在spring配置中对controller的映射配置片段  <mvc:annotation-driven/>。
 <mvc:annotation-driven /> 会自动注册DefaultAnnotationHandlerMapping与AnnotationMethodHandlerAdapter 两个bean,是spring mvc为@Controller分发请求所必须的。
 HandlerMapping接口的实现类有SimpleUrlHandlerMapping通过配置文件，把一个URL映射到Controller。DefaultAnnotationHandlerMapping通过注解，把一个URL映射到Controller类上。
-HandlerAdapter接口的实现类有AnnotationMethodHandlerAdapter类，通过注解，把一个URL映射到Controller类的方法上。
+HandlerAdapter接口的实现类有AnnotationMethodHandlerAdapter类，DispatcherServlet,接受请求调用doDispatch方法进行处理，
+然后通过handleMapping得到handlerAdapter,调用handlerAdapter的handle方法真正的处理请求。
 
 视图解析器：结果应该如何渲染，比如在spring配置中配置的<bean id="viewResolver"....  <bean id="multipartResolver"...就是视图解析器。
 
