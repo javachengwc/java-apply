@@ -1,0 +1,95 @@
+--------------------------------mysql排序查询-----------------------------
+如何高效的进行排序查询?
+为了高效的进行排序查询，最好的情况是避免排序，合理利用索引来进行排序查询。
+因为索引本身也是有序的，如果在需要排序的字段上面建立了合适的索引，那么就可以跳过排序的过程，提高SQL的查询速度。
+假设t1表存在索引key1(key_part1,key_part2),key2(key2)
+可以利用索引避免排序的sql:
+(排序命中索引也遵循聚合索引的最左原则)
+select * from t1 order by key_part1,key_part2;
+select * from t1 where key_part1 = constant order by key_part2;
+select * from t1 where key_part1 > constant order by key_part1 asc;
+select * from t1 where key_part1 = constant1 and key_part2 > constant2 order by key_part2;
+
+不能利用索引避免排序的sql:
+select * from t1 order by key_part1,key_part2, key2;             //排序字段在多个索引中，无法使用索引排序
+select * from t1 order by key_part2, key_part1;                  //排序键顺序与索引中列顺序不一致，无法使用索引排序
+select * from t1 order by key_part1 desc, key_part2 asc;         //升降序不一致，无法使用索引排序
+select * from t1 where key_part1> constant order by key_part2;   //key_part1是范围查询，key_part2无法使用索引排序
+
+对于不能利用索引避免排序的查询，数据库通过自身排序功能来实现，此时SQL的执行计划中会出现“Using filesort”，
+filesort并不意味着就是文件排序，其实也有可能是内存排序，这个主要由sort_buffer_size参数与结果集大小确定。
+MySQL内部实现排序主要有3种方式，常规排序，优化排序和优先队列排序，主要涉及3种排序算法：快速排序、归并排序和堆排序。
+
+假设表结构和SQL语句如下：
+create table t1(id int, col1 varchar(64), col2 varchar(64), col3 varchar(64), PRIMARY KEY(id),key(col1,col2));
+select col1,col2,col3 from t1 where col1>100 order by  col2;
+
+a.常规排序
+    (1).从表t1中获取满足where条件的记录
+    (2).对于每条记录，将记录的主键+排序键(id,col2)取出放入sort buffer
+    (3).如果sort buffer可以存放所有满足条件的(id,col2)对，则进行排序；否则sort buffer满后，进行排序并固化到临时文件中。(排序算法采用的是快速排序算法)
+    (4).若排序中产生了临时文件，需要利用归并排序算法，保证临时文件中记录是有序的
+    (5).循环执行上述过程，直到所有满足条件的记录全部参与排序
+    (6).扫描排好序的(id,col2)对，并利用id去捞取select需要返回的列(col1,col2,col3)
+    (7).将获取的结果集返回给用户。
+从上述流程来看，是否使用文件排序主要看sort buffer是否能容下需要排序的(id,col2)对，这个buffer的大小由sort_buffer_size参数控制。
+    此外一次排序需要两次IO，一次是捞(id,col2),第二次是捞(col1,col2,col3)，由于返回的结果集是按col2排序，因此id是乱序的，
+    通过乱序的id去捞(col1,col2,col3)时会产生大量的随机IO。对于第二次MySQL本身一个优化，即在捞之前首先将id排序，并放入缓冲区，这个缓存区大小由参数read_rnd_buffer_size控制，
+    然后有序去捞记录，将随机IO转为顺序IO。
+b.优化排序
+    常规排序方式除了排序本身，还需要额外两次IO。优化的排序方式相对于常规排序，减少了第二次IO。主要区别在于，放入sort buffer不是(id,col2),而是(col1,col2,col3)。
+    由于sort buffer中包含了查询需要的所有字段，因此排序完成后可以直接返回，无需二次捞数据。这种方式的代价在于，同样大小的sort buffer，能存放的(col1,col2,col3)数目要小于(id,col2)，
+    如果sort buffer不够大，可能导致需要写临时文件，造成额外的IO。MySQL提供了参数max_length_for_sort_data，
+    只有当排序元组小于max_length_for_sort_data时，才能利用优化排序方式，否则只能用常规排序方式。
+c.优先队列排序
+     为了得到最终的排序结果，无论怎样，都需要将所有满足条件的记录进行排序才能返回。那么相对于优化排序方式，是否还有优化空间呢？
+     5.6版本针对Order by limit M，N语句，在空间层面做了优化，加入了一种新的排序方式--优先队列，这种方式采用堆排序实现。堆排序算法特征正好可以解limit M，N 这类排序的问题，
+     虽然仍然需要所有元素参与排序，但是只需要M+N个元组的sort buffer空间即可，对于M，N很小的场景，基本不会因为sort buffer不够而导致需要临时文件进行归并排序的问题。
+     对于升序，采用大顶堆，最终堆中的元素组成了最小的N个元素，对于降序，采用小顶堆，最终堆中的元素组成了最大的N的元素。
+
+排序相关的mysql配置参数
+sort_buffer_size                    ------排序的buffer大小
+read_rnd_buffer_size                ------常规排序中在二次捞数据中对id排序保存id序列的缓存区大小
+max_length_for_sort_data            ------可在buffer中排序的数据的最大字节数
+
+排序查询分析案例
+两个类似的查询语句，除了返回列不同，其它都相同，但排序的结果不一致。为什么?
+测试表与数据：
+create table t2(id int primary key, status int, c1 varchar(255),c2 varchar(255),c3 varchar(255),key(c1));
+insert into t2 values(7,1,'a',repeat('a',255),repeat('a',255));
+insert into t2 values(6,2,'b',repeat('a',255),repeat('a',255));
+insert into t2 values(5,2,'c',repeat('a',255),repeat('a',255));
+insert into t2 values(4,2,'a',repeat('a',255),repeat('a',255));
+insert into t2 values(3,3,'b',repeat('a',255),repeat('a',255));
+insert into t2 values(2,4,'c',repeat('a',255),repeat('a',255));
+insert into t2 values(1,5,'a',repeat('a',255),repeat('a',255));
+
+分别执行sql语句：
+elect id,status,c1,c2 from t2 force index(c1) where c1>='b' order by status;
+select id,status from t2 force index(c1) where c1>='b' order by status;
+
+执行结果如下：
+id    |status  |c1     |c2
+5      2        c       aaaaaa......
+6      2        b       aaaaaa......
+3      3        b       aaaaaa......
+2      4        c       aaaaaa......
+-----------------------------------------------
+id    |status
+6      2
+5      2
+3      3
+2      4
+------------------------------------------------
+查看两者的执行计划，是相同的
+记录在c1索引中的相对位置如下：
+(c1,id)===(b,6),(b,3),(5,c),(c,2)，对应的status值分别为2 3 2 4。
+从表中捞取数据并按status排序，则相对位置变为(6,2,b),(5,2,c),(3,3,c),(2,4,c)，这就是第二条语句查询返回的结果，
+那么为什么第一条查询语句(6,2,b),(5,2,c)是调换顺序的呢？
+由于第一条查询返回的列的字节数超过了max_length_for_sort_data，导致排序采用的是常规排序，而在这种情况下MYSQL将rowid排序，将随机IO转为顺序IO，所以返回的是5在前，6在后；
+而第二条查询采用的是优化排序，没有第二次捞取数据的过程，保持了排序后记录的相对位置。
+对于第一条语句，若想采用优化排序，将max_length_for_sort_data设置调大即可，比如2048。
+show variables like '%max_length_for_sort_data%'        ------查看max_length_for_sort_data
+set max_length_for_sort_data-2048                       ------设置max_length_for_sort_data
+
+--------------------------------------------------------------------------
