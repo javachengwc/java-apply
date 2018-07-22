@@ -20,6 +20,18 @@ public class HandlerExecutionChain {
 
     private int interceptorIndex = -1;
 
+    public HandlerExecutionChain(Object handler)
+    {
+        this(handler, (HandlerInterceptor[])null);
+    }
+
+    public HandlerExecutionChain(Object handler, HandlerInterceptor[] interceptors)
+    {
+
+        //this.handler = handler;
+        this.interceptors = interceptors;
+    }
+
     public Object getHandler()
     {
         return this.handler;

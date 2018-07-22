@@ -5,7 +5,6 @@ import com.spring.pseudocode.web.context.WebApplicationContext;
 import com.spring.pseudocode.web.multipart.MultipartResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.core.io.ClassPathResource;

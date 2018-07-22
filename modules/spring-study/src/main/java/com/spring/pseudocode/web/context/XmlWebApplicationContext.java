@@ -55,4 +55,48 @@ public class XmlWebApplicationContext implements WebApplicationContext {
     public  AutowireCapableBeanFactory getAutowireCapableBeanFactory() throws IllegalStateException {
         return null;
     }
+
+    public Object getBean(String paramString) {
+        return null;
+    }
+
+    public <T> T getBean(String paramString, Class<T> paramClass) {
+        return null;
+    }
+
+    public <T> T getBean(Class<T> paramClass) {
+        return null;
+    }
+
+    public Object getBean(String paramString, Object[] paramArrayOfObject) {
+        return null;
+    }
+
+    public <T> T getBean(Class<T> paramClass, Object[] paramArrayOfObject) {
+        return null;
+    }
+
+    public boolean containsBean(String paramString) {
+        return false;
+    }
+
+    public boolean isSingleton(String paramString) {
+        return false;
+    }
+
+    public boolean isPrototype(String paramString) {
+        return false;
+    }
+
+    public boolean isTypeMatch(String paramString, Class<?> paramClass) {
+        return false;
+    }
+
+    public Class<?> getType(String paramString) {
+        return null;
+    }
+
+    public String[] getAliases(String paramString) {
+        return new String[0];
+    }
 }

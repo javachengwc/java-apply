@@ -1,4 +1,159 @@
 ------------------------------springmvc-HandlerMapping------------------------------
 HandlerMapping作用是根据当前请求的找到对应的 Handler，并将 Handler（执行程序）与一堆 HandlerInterceptor（拦截器）封装到 HandlerExecutionChain 对象中。
+HandlerMapping 是由 DispatcherServlet 调用，DispatcherServlet 会从容器中取出所有 HandlerMapping 实例并遍历，让 HandlerMapping 实例根据自己实现类的方式去尝试查找 Handler。
+HandlerMapping 实现类有两个分支，分别继承自 AbstractHandlerMethodMapping（得到 HandlerMethod）和
+AbstractUrlHandlerMapping（得到 HttpRequestHandler、Controller 或 Servlet），它们又统一继承于 AbstractHandlerMapping。
+
+//AbstractHandlerMapping源码片段
+@Override
+public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
+  implements HandlerMapping, Ordered
+{
+    public final HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
+        // 根据请求获取执行程序，具体的获取方式由子类决定，getHandlerInternal() 是抽象方法
+        Object handler = getHandlerInternal(request);
+        if (handler == null) {
+            handler = getDefaultHandler();
+        }
+        if (handler == null) {
+            return null;
+        }
+        // Bean name or resolved handler?
+        if (handler instanceof String) {
+            String handlerName = (String) handler;
+            handler = getApplicationContext().getBean(handlerName);
+        }
+        // 将 Handler 与一堆拦截器包装到 HandlerExecutionChain 对象中
+        return getHandlerExecutionChain(handler, request);
+    }
+}
+
+//AbstractUrlHandlerMapping源码片段
+public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping
+{
+
+  protected Object getHandlerInternal(HttpServletRequest request) throws Exception
+  {
+    // 根据当前请求获取“查找路径”
+    String lookupPath = getUrlPathHelper().getLookupPathForRequest(request);
+    // 根据路径获取 Handler（即Controller），先尝试直接匹配，再尝试模式匹配
+    Object handler = lookupHandler(lookupPath, request);
+    if (handler == null) {
+       // We need to care for the default handler directly, since we need to
+        // expose the PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE for it as well.
+        Object rawHandler = null;
+        if ("/".equals(lookupPath)) {
+            rawHandler = getRootHandler();
+        }
+        if (rawHandler == null) {
+            rawHandler = getDefaultHandler();
+        }
+        if (rawHandler != null) {
+            // Bean name or resolved handler?
+            if (rawHandler instanceof String) {
+                String handlerName = (String) rawHandler;
+                rawHandler = getApplicationContext().getBean(handlerName);
+            }
+            validateHandler(rawHandler, request);
+            handler = buildPathExposingHandler(rawHandler, lookupPath, lookupPath, null);
+        }
+    }
+    return handler;
+  }
+}
+SimpleUrlHandlerMapping是AbstractUrlHandlerMapping的一个具体实现子类，使用的具体配置大致如下:
+<!-- 注册 HandlerMapping -->
+<bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="mappings">
+        <props>
+            <prop key="/test.do">testController</prop>
+            <prop key="/hello.do">testController</prop>
+        </props>
+    </property>
+</bean>
+<!-- 注册 Handler -->
+<bean id="testController" class="com.controller.TestController" />
+
+AbstractHandlerMethodMapping这个分支获取的 Handler 的类型是 HandlerMethod，
+即这个 Handler 是一个方法，它保存了方法的信息（如Method），这样一个 Controller 就可以处理多个请求了.
+//AbstractHandlerMethodMapping源码片段
+public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMapping implements InitializingBean
+{
+    protected HandlerMethod getHandlerInternal(HttpServletRequest request) throws Exception {
+        // 根据当前请求获取“查找路径”
+        String lookupPath = getUrlPathHelper().getLookupPathForRequest(request);
+        // 获取当前请求最佳匹配的处理方法（即Controller类的方法中）
+        // 此方法主要是在 Map<T, HandlerMethod> handlerMethods 中找到 HandlerMethod，
+        // 这里的 T 是 HandlerMappingInfo，它封装了 @RequestMapping 注解中的信息
+        HandlerMethod handlerMethod = lookupHandlerMethod(lookupPath, request);
+        return (handlerMethod != null ? handlerMethod.createWithResolvedBean() : null);
+    }
+
+    //将@Controller 注解或 @RequestMapping 注解的类方法注册成HandlerMethod
+    protected void initHandlerMethods() {
+        // 从容器中获取所有 Bean 的名称，detectHandlerMethodsInAncestorContexts 默认false，不从父容器中查找
+        // 即默认只查找 SpringMVC 的 IOC 容器，不查找它的父容器 Spring 的 IOC 容器
+        String[] beanNames = (this.detectHandlerMethodsInAncestorContexts ?
+            BeanFactoryUtils.beanNamesForTypeIncludingAncestors(getApplicationContext(), Object.class) :
+            getApplicationContext().getBeanNamesForType(Object.class));
+        for (String beanName : beanNames) {
+            // 这里的 isHandler()方法由子类实现，判断是否拥有 @Controller 注解或 @RequestMapping 注解
+            if (!beanName.startsWith(SCOPED_TARGET_NAME_PREFIX) && isHandler(getApplicationContext().getType(beanName))){
+                // 利用反射得到 Bean 中的 Method 并包装成 HandlerMethod，然后放入 Map 中
+                detectHandlerMethods(beanName);
+            }
+        }
+        handlerMethodsInitialized(getHandlerMethods());
+    }
+
+    //detectHandlerMethods() 方法中将 Bean 的方法转换为 HandlerMethod 对象
+    protected void detectHandlerMethods(final Object handler) {
+        // 获取这个 Bean 的 Class 对象
+        Class<?> handlerType = (handler instanceof String ? getApplicationContext().getType((String) handler) : handler.getClass());
+
+        // 避免重复调用 getMappingForMethod()，getMappingForMethod() 将重新构建 RequestMappingInfo 实例
+        final Map<Method, T> mappings = new IdentityHashMap<Method, T>();
+        // 获取被代理前的原始类型
+        final Class<?> userType = ClassUtils.getUserClass(handlerType);
+        // 获取 Method
+        Set<Method> methods = HandlerMethodSelector.selectMethods(userType, new MethodFilter() {
+            @Override
+            public boolean matches(Method method) {
+                // 根据 Method 和它的 @RequestMapping 注解，创建 RequestMappingInfo 对象。
+                // 这里的 T 就是 RequestMappingInfo，它封装了 @RequestMapping 信息
+                T mapping = getMappingForMethod(method, userType);
+                if (mapping != null) {
+                    mappings.put(method, mapping);
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+        for (Method method : methods) {
+            // 注册 Method 和它的映射，RequestMappingInfo 储存着映射信息
+            registerHandlerMethod(handler, method, mappings.get(method));
+        }
+    }
+
+    //此方法将RequestMappingInfo作为key，把Method包装成HandlerMethod作为value添加到了 Map<T, HandlerMethod> handlerMethods 中
+    protected void registerHandlerMethod(Object handler, Method method, T mapping) {
+        HandlerMethod newHandlerMethod = createHandlerMethod(handler, method);
+        HandlerMethod oldHandlerMethod = this.handlerMethods.get(mapping);
+        if (oldHandlerMethod != null && !oldHandlerMethod.equals(newHandlerMethod)) {
+            throw new IllegalStateException("");
+        }
+        this.handlerMethods.put(mapping, newHandlerMethod);
+        Set<String> patterns = getMappingPathPatterns(mapping);
+        for (String pattern : patterns) {
+            if (!getPathMatcher().isPattern(pattern)) {
+                this.urlMap.add(pattern, mapping);
+            }
+        }
+    }
+}
+AbstractHandlerMethodMapping 只有一个实现类 RequestMappingHandlerMapping。
+RequestMappingHandlerMapping 比 DefaultAnnotationHandlerMapping（DispatcherServlet的默认策略，但Spring 3.2不再推荐使用）更强大。
+更强之处在于对RequestMappingInfo的维护，即对多方面筛选条件的支持，而后者只能通过其内部自定义拦截器的方式来补足这方面的功能。
 
 ------------------------------------------------------------------------------------

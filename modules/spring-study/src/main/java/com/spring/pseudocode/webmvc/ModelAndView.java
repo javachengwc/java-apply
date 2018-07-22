@@ -74,4 +74,13 @@ public class ModelAndView {
         return this.model;
     }
 
+
+    public ModelMap getModelMap()
+    {
+        if (this.model == null) {
+            this.model = new ModelMap();
+        }
+        return this.model;
+    }
+
 }

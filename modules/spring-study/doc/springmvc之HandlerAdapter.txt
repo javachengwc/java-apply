@@ -1,1 +1,8 @@
 ------------------------------springmvc-HandlerAdapter------------------------------
+HandlerAdapter根据 Handler 来找到支持它的 HandlerAdapter，通过 HandlerAdapter 执行这个 Handler 得到 ModelAndView 对象。
+HandlerAdapter 接口中的方法如下：
+boolean supports(Object handler); // 当前 HandlerAdapter 是否支持这个 Handler
+ModelAndView handle(HttpServletRequest req, HttpServletResponse res, Object handler); // 利用 Handler 处理请求
+long getLastModified(HttpServletRequest request, Object handler);
+
+------------------------------------------------------------------------------------
