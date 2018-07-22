@@ -132,6 +132,16 @@ package org.springframework.web.servlet;
 public class DispatcherServlet extends FrameworkServlet
 {
     ......
+    private MultipartResolver multipartResolver;
+    private LocaleResolver localeResolver;
+    private ThemeResolver themeResolver;
+    private List<HandlerMapping> handlerMappings;                       //HandlerMapping列表
+    private List<HandlerAdapter> handlerAdapters;                       //HandlerAdapter列表
+    private List<HandlerExceptionResolver> handlerExceptionResolvers;
+    private RequestToViewNameTranslator viewNameTranslator;
+    private FlashMapManager flashMapManager;
+    private List<ViewResolver> viewResolvers;                           //ViewResolver列表
+    ......
     //刷新上下文,执行容器的一些初始化
     protected void onRefresh(ApplicationContext context)
     {
@@ -226,9 +236,15 @@ public class DispatcherServlet extends FrameworkServlet
             //获取handlerAdapter
             HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
             ......
+            //调用拦截器链的preHandle方法
+            if (!mappedHandler.applyPreHandle(processedRequest, response))
+            .......
             //处理请求返回ModelAndView
             mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
             ......
+            applyDefaultViewName(processedRequest, mv);
+            //调用拦截器链的postHandle方法
+            mappedHandler.applyPostHandle(processedRequest, response, mv);
           }
           ......
           //对ModelAndView进行处理
