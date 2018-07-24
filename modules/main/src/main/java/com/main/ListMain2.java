@@ -6,6 +6,11 @@ public class ListMain2 {
 
 	public static void main(String args [])
 	{
+	    List<Object> a=null;
+	    List<Object> c = new ArrayList<Object>();
+	    c.addAll(a);
+	    System.out.println("////////////////////////"+c.size());
+
         checkListEleAbleNull();
 
         checkMixList();
