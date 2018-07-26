@@ -100,7 +100,6 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
         return null;
     }
 
-    @Override
     public int getOrder() {
         return 0;
     }

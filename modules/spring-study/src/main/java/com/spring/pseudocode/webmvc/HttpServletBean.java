@@ -32,7 +32,7 @@ public abstract class HttpServletBean extends HttpServlet {
         }
         catch (Exception ex) {
             this.logger.error("Failed to set bean properties on servlet '" + getServletName() + "'", ex);
-            throw ex;
+            //throw ex;
         }
 
         initServletBean();

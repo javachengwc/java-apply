@@ -205,7 +205,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
         {
             this.mapping = mapping;
             this.handlerMethod = handlerMethod;
-            this.directUrls = (directUrls != null ? directUrls : Collections.emptyList());
+            this.directUrls = (directUrls != null ? directUrls :Collections.EMPTY_LIST);
             this.mappingName = mappingName;
         }
 
