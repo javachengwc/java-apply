@@ -5,4 +5,7 @@ boolean supports(Object handler); // 当前 HandlerAdapter 是否支持这个 Ha
 ModelAndView handle(HttpServletRequest req, HttpServletResponse res, Object handler); // 利用 Handler 处理请求
 long getLastModified(HttpServletRequest request, Object handler);
 
+HandlerAdapter的几个具体子类:
+AnnotationMethodHandlerAdapter                  ######和DefaultAnnotationHandlerMapping配对使用，已过时
+RequestMappingHandlerAdapter                    ######和RequestMappingHandlerMapping配对使用，针对@RequestMapping
 ------------------------------------------------------------------------------------

@@ -12,7 +12,7 @@ public class HandlerExecutionChain {
 
     private static Logger logger= LoggerFactory.getLogger(HandlerExecutionChain.class);
 
-    private final Object handler=null;
+    private final Object handler;
 
     private HandlerInterceptor[] interceptors;
 
@@ -28,7 +28,7 @@ public class HandlerExecutionChain {
     public HandlerExecutionChain(Object handler, HandlerInterceptor[] interceptors)
     {
 
-        //this.handler = handler;
+        this.handler = handler;
         this.interceptors = interceptors;
     }
 

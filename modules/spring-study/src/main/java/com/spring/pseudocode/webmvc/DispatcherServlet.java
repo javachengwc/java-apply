@@ -134,6 +134,9 @@ public class DispatcherServlet extends FrameworkServlet
     private void initHandlerMappings(ApplicationContext context)
     {
         this.handlerMappings = null;
+
+        //detectAllHandlerMappings是DispatcherServlet的一个属性，是可以在web.xml中配置的，默认是true，
+        //如果为true,则会从spring容器中去探测所有实现了HandlerMapping的bean，如果有，则加入DispatcherServlet的handlerMappings中
         if (this.detectAllHandlerMappings)
         {
             // 从 SpringMVC 的 IOC 容器及 Spring 的 IOC 容器中查找 HandlerMapping 实例
