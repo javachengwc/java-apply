@@ -74,7 +74,6 @@ public class ModelAndView {
         return this.model;
     }
 
-
     public ModelMap getModelMap()
     {
         if (this.model == null) {
@@ -83,4 +82,11 @@ public class ModelAndView {
         return this.model;
     }
 
+    public ModelAndView(String viewName, Map<String, ?> model)
+    {
+        this.view = viewName;
+        if (model != null) {
+            getModelMap().addAllAttributes(model);
+        }
+    }
 }

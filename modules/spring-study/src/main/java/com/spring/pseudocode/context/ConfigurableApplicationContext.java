@@ -1,6 +1,6 @@
 package com.spring.pseudocode.context;
 
-import com.spring.pseudocode.web.context.Lifecycle;
+import com.spring.pseudocode.web.web.context.Lifecycle;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.env.ConfigurableEnvironment;
 

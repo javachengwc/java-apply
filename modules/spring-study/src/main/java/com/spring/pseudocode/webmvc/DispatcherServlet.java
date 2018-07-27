@@ -1,8 +1,8 @@
 package com.spring.pseudocode.webmvc;
 
 import com.spring.pseudocode.context.ApplicationContext;
-import com.spring.pseudocode.web.context.WebApplicationContext;
-import com.spring.pseudocode.web.multipart.MultipartResolver;
+import com.spring.pseudocode.web.web.context.WebApplicationContext;
+import com.spring.pseudocode.web.web.multipart.MultipartResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanInitializationException;

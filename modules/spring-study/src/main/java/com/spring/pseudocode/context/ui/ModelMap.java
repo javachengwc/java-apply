@@ -3,6 +3,7 @@ package com.spring.pseudocode.context.ui;
 import org.springframework.util.Assert;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class ModelMap extends LinkedHashMap<String, Object>
 {
@@ -33,4 +34,13 @@ public class ModelMap extends LinkedHashMap<String, Object>
         return null;
     }
 
+    public void addAllAttributes(Map<String, ?> model) {
+        //伪代码
+    }
+
+    public boolean containsAttribute(String name)
+    {
+        //伪代码
+        return true;
+    }
 }
