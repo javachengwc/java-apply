@@ -3,6 +3,7 @@ package com.spring.pseudocode.webmvc.mvc.method.annotation;
 import com.spring.pseudocode.core.core.MethodParameter;
 import com.spring.pseudocode.web.web.context.request.ServletWebRequest;
 import com.spring.pseudocode.web.web.method.HandlerMethod;
+import com.spring.pseudocode.web.web.method.support.HandlerMethodReturnValueHandlerComposite;
 import com.spring.pseudocode.web.web.method.support.InvocableHandlerMethod;
 import com.spring.pseudocode.web.web.method.support.ModelAndViewContainer;
 import org.springframework.core.ResolvableType;
@@ -10,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.method.support.HandlerMethodReturnValueHandlerComposite;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
@@ -25,8 +25,12 @@ public class ServletInvocableHandlerMethod extends InvocableHandlerMethod
 {
     private static final Method CALLABLE_METHOD = ClassUtils.getMethod(Callable.class, "call", new Class[0]);
     private HttpStatus responseStatus;
+
     private String responseReason;
+
     private HandlerMethodReturnValueHandlerComposite returnValueHandlers;
+
+    private MethodParameter returnType;
 
     public ServletInvocableHandlerMethod(Object handler, Method method)
     {
@@ -51,6 +55,11 @@ public class ServletInvocableHandlerMethod extends InvocableHandlerMethod
     public void setHandlerMethodReturnValueHandlers(HandlerMethodReturnValueHandlerComposite returnValueHandlers)
     {
         this.returnValueHandlers = returnValueHandlers;
+    }
+
+    public MethodParameter getReturnValueType(Object returnValue)
+    {
+        return this.returnType;
     }
 
     //调用handle入口
@@ -89,13 +98,13 @@ public class ServletInvocableHandlerMethod extends InvocableHandlerMethod
     private class ConcurrentResultMethodParameter extends HandlerMethod.HandlerMethodParameter
     {
         private final Object returnValue;
-        private final ResolvableType returnType;
+        private ResolvableType returnType;
 
         public ConcurrentResultMethodParameter(Object returnValue)
         {
             super(-1);
             this.returnValue = returnValue;
-            this.returnType = ResolvableType.forType(super.getGenericParameterType()).getGeneric(new int[] { 0 });
+            //this.returnType = ResolvableType.forType(super.getGenericParameterType()).getGeneric(new int[] { 0 });
         }
 
         public Class<?> getParameterType()
@@ -127,7 +136,8 @@ public class ServletInvocableHandlerMethod extends InvocableHandlerMethod
 
         public ConcurrentResultHandlerMethod(Object result, ServletInvocableHandlerMethod.ConcurrentResultMethodParameter returnType)
         {
-            super(ServletInvocableHandlerMethod.CALLABLE_METHOD);
+            //super(ServletInvocableHandlerMethod.CALLABLE_METHOD);
+            super(null);
             setHandlerMethodReturnValueHandlers(ServletInvocableHandlerMethod.this.returnValueHandlers);
             this.returnType = returnType;
         }

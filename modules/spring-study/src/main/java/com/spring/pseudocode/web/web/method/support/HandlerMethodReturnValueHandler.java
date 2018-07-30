@@ -7,6 +7,7 @@ public abstract interface HandlerMethodReturnValueHandler
 {
     public abstract boolean supportsReturnType(MethodParameter methodParameter);
 
+    //处理返回结果
     public abstract void handleReturnValue(Object paramObject, MethodParameter methodParameter,
                                            ModelAndViewContainer modelAndViewContainer, NativeWebRequest paramNativeWebRequest) throws Exception;
 }

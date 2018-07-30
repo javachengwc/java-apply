@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
-public class ServletWebRequest extends ServletRequestAttributes implements WebRequest
+public class ServletWebRequest extends ServletRequestAttributes implements NativeWebRequest
 {
     private static final String HEADER_ETAG = "ETag";
     private static final String HEADER_IF_MODIFIED_SINCE = "If-Modified-Since";
@@ -39,6 +39,14 @@ public class ServletWebRequest extends ServletRequestAttributes implements WebRe
     public Object getNativeResponse()
     {
         return getResponse();
+    }
+
+    public <T> T getNativeRequest(Class<T> paramClass) {
+        return null;
+    }
+
+    public <T> T getNativeResponse(Class<T> paramClass) {
+        return null;
     }
 
     public HttpMethod getHttpMethod()

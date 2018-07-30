@@ -47,6 +47,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter i
 
     private HandlerMethodReturnValueHandlerComposite returnValueHandlers;
 
+    //初始化，设置默认的messageConverter
     public RequestMappingHandlerAdapter()
     {
         StringHttpMessageConverter stringHttpMessageConverter = new StringHttpMessageConverter();
@@ -64,6 +65,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter i
             this.beanFactory = ((ConfigurableBeanFactory)beanFactory);
     }
 
+    //实现InitializingBean的afterPropertiesSet,初始化argumentResolvers,returnValueHandlers
     public void afterPropertiesSet()
     {
         if (this.argumentResolvers == null) {
@@ -197,6 +199,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter i
         return mav;
     }
 
+    //调用handlerMethod处理请求
     protected ModelAndView invokeHandlerMethod(HttpServletRequest request, HttpServletResponse response, HandlerMethod handlerMethod) throws Exception
     {
         ServletWebRequest webRequest = new ServletWebRequest(request, response);
@@ -241,7 +244,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter i
         return getModelAndView(mavContainer, modelFactory, webRequest);
     }
 
-
+    //包装结果为modelAndView
     private ModelAndView getModelAndView(ModelAndViewContainer mavContainer, ModelFactory modelFactory, NativeWebRequest webRequest) throws Exception
     {
         //modelFactory.updateModel(webRequest, mavContainer);
