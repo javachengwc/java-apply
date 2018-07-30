@@ -1,6 +1,7 @@
 package com.spring.pseudocode.webmvc.handle;
 
-import com.spring.pseudocode.web.method.HandlerMethod;
+
+import com.spring.pseudocode.web.web.method.HandlerMethod;
 
 public abstract interface HandlerMethodMappingNamingStrategy<T>
 {
