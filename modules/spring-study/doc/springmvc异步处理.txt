@@ -1,0 +1,97 @@
+---------------------------------springmvc异步处理----------------------------
+springmvc的异步功能，需要Servlet 3.0或以上的版本，springmvc版本3.2或以上。
+例如Maven中如此配置：
+<dependency>
+    <groupId>javax.servlet</groupId>
+    <artifactId>javax.servlet-api</artifactId>
+    <version>3.1.0</version>
+    <scope>provided</scope>
+</dependency>
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-webmvc</artifactId>
+    <version>4.2.6.RELEASE</version>
+</dependency>
+springmvc异步调用原理：
+spring返回的Callable被RequestMappingHandlerAdapter拦截，使用SimpleAsyncTaskExecutor线程池处理，
+每当任务被提交到此“线程池（这里就交线程池了）”时，线程池产生一个新的线程去执行Callable中的代码，
+每次都产生新的线程而且没有上上限(默认没有上限的，可以设置concurrencyLimit属性来设置线程数的大小)
+可使用自定义的线程池来代替impleAsyncTaskExecutor 线程池
+<bean id="myThreadPool"  class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+    <property name="corePoolSize" value="5" /><!--最小线程数 -->
+    <property name="maxPoolSize" value="10" /><!--最大线程数 -->
+    <property name="queueCapacity" value="50" /><!--缓冲队列大小 -->
+    <property name="threadNamePrefix" value="abc-" /><!--线程池中产生的线程名字前缀 -->
+    <property name="keepAliveSeconds" value="30" /><!--线程池中空闲线程的存活时间单位秒 -->
+</bean>
+<mvc:annotation-driven>
+    <mvc:async-support task-executor="myThreadPool" default-timeout="600">
+        <mvc:callable-interceptors>
+            <bean class="com.xxx.springmvc.async.MyCallableInterceptor" />
+        </mvc:callable-interceptors>
+    </mvc:async-support>
+</mvc:annotation-driven>
+Callable任务的超时处理   ------自定义拦截器实现
+//自定义Callable拦截器 ， 可在这里处理Callable任务的超时问题
+public MyCallableInterceptor implements CallableProcessingInterceptor {
+    public <T> Object handleTimeout(NativeWebRequest request, Callable<T> task) throws Exception {
+        HttpServletResponse servletResponse = request.getNativeResponse(HttpServletResponse.class);
+        if (!servletResponse.isCommitted()) {
+          servletResponse.setContentType("text/plain;charset=utf-8");
+          servletResponse.getWriter().write("超时了");
+          servletResponse.getWriter().close();
+        }
+        return null;
+    }
+}
+springmvc使用异步处理的三种方式
+Callable<T>           ------Spring MVC中线程池调用新线程完成处理，把最耗时的业务逻辑放到Callable,对于Callable来说会默认使用SimpleAsyncTaskExecutor类来执行
+WebAsyncTask
+DeferredResult<?>     ------DeferredResult<?>  允许程序从一个线程中返回，而何时返回则由线程决定
+
+@RequestMapping("/response-body")
+public @ResponseBody Callable<String> callable(final @RequestParam(required=false, defaultValue="true") boolean handled) {
+   //进行一些与处理之后，把最耗时的业务逻辑部分放到Callable中，注意，如果你需要在new Callable中用到从页面传入的参数，需要在参数前加入final
+  return new Callable<String>() {
+      @Override
+      public String call() throws Exception {
+          if(handled){
+              Thread.sleep(2000);
+          }else{
+              Thread.sleep(2000*2);
+          }
+          return "Callable result";
+      }
+  };
+}
+
+@RequestMapping(value="/asynctask", method = RequestMethod.GET)
+public DeferredResult<ModelAndView> asyncTask(){
+    DeferredResult<ModelAndView> deferredResult = new DeferredResult<ModelAndView>();
+    System.out.println("/asynctask 调用！thread id is : " + Thread.currentThread().getId());
+    longTimeAsyncCallService.makeRemoteCallAndUnknownWhenFinish(new LongTermTaskCallback() {
+        @Override
+        public void callback(Object result) {
+            System.out.println("异步调用执行完成, thread id is : " + Thread.currentThread().getId());
+            ModelAndView mav = new ModelAndView("remotecalltask");
+            mav.addObject("result", result);
+            deferredResult.setResult(mav);
+        }
+    });
+}
+
+@RequestMapping(value="/longtimetask", method = RequestMethod.GET)
+public WebAsyncTask longTimeTask(){
+    System.out.println("/longtimetask被调用 thread id is : " + Thread.currentThread().getId());
+    Callable<ModelAndView> callable = new Callable<ModelAndView>() {
+        public ModelAndView call() throws Exception {
+            Thread.sleep(3000); //假设是一些长时间任务
+            ModelAndView mav = new ModelAndView("longtimetask");
+            mav.addObject("result", "执行成功");
+            System.out.println("执行成功 thread id is : " + Thread.currentThread().getId());
+            return mav;
+        }
+    };
+    return new WebAsyncTask(callable);
+}
+---------------------------------------------------------------------------------
