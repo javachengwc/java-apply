@@ -1,6 +1,7 @@
-package com.spring.pseudocode.webmvc.mvc;
+package com.spring.pseudocode.webmvc.mvc.method;
 
 import com.spring.pseudocode.webmvc.handle.AbstractHandlerMethodMapping;
+import com.spring.pseudocode.webmvc.mvc.method.RequestMappingInfo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;

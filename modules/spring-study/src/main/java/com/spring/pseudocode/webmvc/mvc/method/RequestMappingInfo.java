@@ -1,4 +1,4 @@
-package com.spring.pseudocode.webmvc.mvc;
+package com.spring.pseudocode.webmvc.mvc.method;
 
 public final class RequestMappingInfo
 {

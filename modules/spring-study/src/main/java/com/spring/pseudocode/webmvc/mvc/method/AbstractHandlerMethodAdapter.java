@@ -1,4 +1,4 @@
-package com.spring.pseudocode.webmvc.mvc;
+package com.spring.pseudocode.webmvc.mvc.method;
 
 import com.spring.pseudocode.core.core.Ordered;
 import com.spring.pseudocode.web.web.method.HandlerMethod;
