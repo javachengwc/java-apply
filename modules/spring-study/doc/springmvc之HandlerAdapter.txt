@@ -8,4 +8,65 @@ long getLastModified(HttpServletRequest request, Object handler);
 HandlerAdapter的几个具体子类:
 AnnotationMethodHandlerAdapter                  ######和DefaultAnnotationHandlerMapping配对使用，已过时
 RequestMappingHandlerAdapter                    ######和RequestMappingHandlerMapping配对使用，针对@RequestMapping
+
+RequestMappingHandlerMapping 获取的 Handler 是 HadnlerMethod 类型，它代表 Controller 里要执行的方法，而 RequestMappingHandlerAdapter 可以执行 HadnlerMethod 对象。
+//RequestMappingHandlerAdapter源码片段
+protected ModelAndView handleInternal(HttpServletRequest request, HttpServletResponse response, HandlerMethod handlerMethod) throws Exception {
+    // 是否通过 @SessionAttributes 注释声明了 session 属性。
+    if (getSessionAttributesHandler(handlerMethod).hasSessionAttributes()) {
+        checkAndPrepare(request, response, this.cacheSecondsForSessionAttributeHandlers, true);
+    } else {
+        checkAndPrepare(request, response, true);
+    }
+    // 是否需要在 synchronize 块中执行
+    if (this.synchronizeOnSession) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            Object mutex = WebUtils.getSessionMutex(session);
+            synchronized (mutex) {
+                // 执行 HandlerMethod
+                return invokeHandlerMethod(request, response, handlerMethod);
+            }
+        }
+    }
+    // 执行 HandlerMethod，得到 ModelAndView
+    return invokeHandlerMethod(request, response, handlerMethod);
+}
+private ModelAndView invokeHandlerMethod(HttpServletRequest request,
+        HttpServletResponse response, HandlerMethod handlerMethod) throws Exception {
+    ServletWebRequest webRequest = new ServletWebRequest(request, response);
+    // 数据绑定
+    WebDataBinderFactory binderFactory = getDataBinderFactory(handlerMethod);
+    ModelFactory modelFactory = getModelFactory(handlerMethod, binderFactory);
+    ServletInvocableHandlerMethod requestMappingMethod = createRequestMappingMethod(handlerMethod, binderFactory);
+    // 创建模型和视图容器
+    ModelAndViewContainer mavContainer = new ModelAndViewContainer();
+    // 设置FlasgMap中的值
+    mavContainer.addAllAttributes(RequestContextUtils.getInputFlashMap(request));
+    // 初始化模型
+    modelFactory.initModel(webRequest, mavContainer, requestMappingMethod);
+        mavContainer.setIgnoreDefaultModelOnRedirect(this.ignoreDefaultModelOnRedirect);
+
+    //异步请求处理
+    AsyncWebRequest asyncWebRequest = WebAsyncUtils.createAsyncWebRequest(request, response);
+    asyncWebRequest.setTimeout(this.asyncRequestTimeout);
+
+    final WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
+    asyncManager.setTaskExecutor(this.taskExecutor);
+    asyncManager.setAsyncWebRequest(asyncWebRequest);
+    asyncManager.registerCallableInterceptors(this.callableInterceptors);
+    asyncManager.registerDeferredResultInterceptors(this.deferredResultInterceptors);
+    if (asyncManager.hasConcurrentResult()) {
+        Object result = asyncManager.getConcurrentResult();
+        mavContainer = (ModelAndViewContainer) asyncManager.getConcurrentResultContext()[0];
+        asyncManager.clearConcurrentResult();
+        requestMappingMethod = requestMappingMethod.wrapConcurrentResult(result);
+    }
+    //处理请求
+    requestMappingMethod.invokeAndHandle(webRequest, mavContainer);
+    if (asyncManager.isConcurrentHandlingStarted()) {
+        return null;
+    }
+    return getModelAndView(mavContainer, modelFactory, webRequest);
+}
 ------------------------------------------------------------------------------------
