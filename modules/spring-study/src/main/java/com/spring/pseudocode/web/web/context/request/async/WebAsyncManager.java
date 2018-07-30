@@ -131,4 +131,10 @@ public final class WebAsyncManager
         this.concurrentResultContext = processingContext;
         this.asyncWebRequest.startAsync();
     }
+
+    public void clearConcurrentResult()
+    {
+        this.concurrentResult = RESULT_NONE;
+        this.concurrentResultContext = null;
+    }
 }

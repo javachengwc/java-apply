@@ -6,6 +6,7 @@ import com.spring.pseudocode.beans.factory.BeanFactoryAware;
 import com.spring.pseudocode.beans.factory.InitializingBean;
 import com.spring.pseudocode.context.ui.ModelMap;
 import com.spring.pseudocode.core.core.task.AsyncTaskExecutor;
+import com.spring.pseudocode.core.core.task.SimpleAsyncTaskExecutor;
 import com.spring.pseudocode.web.http.converter.ByteArrayHttpMessageConverter;
 import com.spring.pseudocode.web.http.converter.HttpMessageConverter;
 import com.spring.pseudocode.web.http.converter.StringHttpMessageConverter;
@@ -26,7 +27,6 @@ import com.spring.pseudocode.webmvc.mvc.method.AbstractHandlerMethodAdapter;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -237,8 +237,8 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter i
         WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
         asyncManager.setTaskExecutor(this.taskExecutor);
         asyncManager.setAsyncWebRequest(asyncWebRequest);
-        asyncManager.registerCallableInterceptors(this.callableInterceptors);
-        asyncManager.registerDeferredResultInterceptors(this.deferredResultInterceptors);
+//        asyncManager.registerCallableInterceptors(this.callableInterceptors);
+//        asyncManager.registerDeferredResultInterceptors(this.deferredResultInterceptors);
 
         if (asyncManager.hasConcurrentResult()) {
             Object result = asyncManager.getConcurrentResult();
@@ -273,5 +273,13 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter i
         }
         //...................
         return mav;
+    }
+
+    public int getOrder() {
+        return 0;
+    }
+
+    public long getLastModified(HttpServletRequest request, Object paramObject) {
+        return 0;
     }
 }

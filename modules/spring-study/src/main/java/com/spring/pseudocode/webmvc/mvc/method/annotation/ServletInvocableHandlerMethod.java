@@ -95,6 +95,11 @@ public class ServletInvocableHandlerMethod extends InvocableHandlerMethod
         return this.responseStatus != null;
     }
 
+    public ServletInvocableHandlerMethod wrapConcurrentResult(Object result)
+    {
+        return new ConcurrentResultHandlerMethod(result, new ConcurrentResultMethodParameter(result));
+    }
+
     private class ConcurrentResultMethodParameter extends HandlerMethod.HandlerMethodParameter
     {
         private final Object returnValue;
