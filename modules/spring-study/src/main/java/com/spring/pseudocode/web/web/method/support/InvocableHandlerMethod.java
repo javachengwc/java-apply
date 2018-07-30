@@ -122,6 +122,7 @@ public class InvocableHandlerMethod extends HandlerMethod
         Throwable targetException;
         String msg;
         try {
+            //反射调用bean的method
             return getBridgedMethod().invoke(getBean(), args);
         } catch (IllegalArgumentException ex)
         {

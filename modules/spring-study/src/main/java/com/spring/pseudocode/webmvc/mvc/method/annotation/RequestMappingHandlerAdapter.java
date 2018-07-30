@@ -5,6 +5,7 @@ import com.spring.pseudocode.beans.factory.BeanFactory;
 import com.spring.pseudocode.beans.factory.BeanFactoryAware;
 import com.spring.pseudocode.beans.factory.InitializingBean;
 import com.spring.pseudocode.context.ui.ModelMap;
+import com.spring.pseudocode.core.core.task.AsyncTaskExecutor;
 import com.spring.pseudocode.web.http.converter.ByteArrayHttpMessageConverter;
 import com.spring.pseudocode.web.http.converter.HttpMessageConverter;
 import com.spring.pseudocode.web.http.converter.StringHttpMessageConverter;
@@ -13,18 +14,19 @@ import com.spring.pseudocode.web.http.converter.xml.SourceHttpMessageConverter;
 import com.spring.pseudocode.web.web.bind.support.WebDataBinderFactory;
 import com.spring.pseudocode.web.web.context.request.NativeWebRequest;
 import com.spring.pseudocode.web.web.context.request.ServletWebRequest;
+import com.spring.pseudocode.web.web.context.request.async.AsyncWebRequest;
+import com.spring.pseudocode.web.web.context.request.async.WebAsyncManager;
+import com.spring.pseudocode.web.web.context.request.async.WebAsyncUtils;
 import com.spring.pseudocode.web.web.method.HandlerMethod;
 import com.spring.pseudocode.web.web.method.annotation.ModelFactory;
-import com.spring.pseudocode.web.web.method.support.ModelAndViewContainer;
+import com.spring.pseudocode.web.web.method.support.*;
 import com.spring.pseudocode.webmvc.ModelAndView;
 import com.spring.pseudocode.webmvc.View;
 import com.spring.pseudocode.webmvc.mvc.method.AbstractHandlerMethodAdapter;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.method.support.HandlerMethodArgumentResolverComposite;
-import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
-import org.springframework.web.method.support.HandlerMethodReturnValueHandlerComposite;
-import org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod;
+import org.springframework.core.DefaultParameterNameDiscoverer;
+import org.springframework.core.ParameterNameDiscoverer;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -46,6 +48,12 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter i
     private List<HandlerMethodReturnValueHandler> customReturnValueHandlers;
 
     private HandlerMethodReturnValueHandlerComposite returnValueHandlers;
+
+    private ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
+
+    private Long asyncRequestTimeout;
+
+    private AsyncTaskExecutor taskExecutor = new SimpleAsyncTaskExecutor("MvcAsync");
 
     //初始化，设置默认的messageConverter
     public RequestMappingHandlerAdapter()
@@ -206,6 +214,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter i
 
         //WebDataBinderFactory binderFactory = getDataBinderFactory(handlerMethod);
         WebDataBinderFactory binderFactory=null;
+        //获取模型属性工厂
         //ModelFactory modelFactory = getModelFactory(handlerMethod, binderFactory);
         ModelFactory modelFactory =null;
 
@@ -215,11 +224,13 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter i
         invocableMethod.setDataBinderFactory(binderFactory);
         invocableMethod.setParameterNameDiscoverer(this.parameterNameDiscoverer);
 
+        //创建视图模型容器
         ModelAndViewContainer mavContainer = new ModelAndViewContainer();
         //mavContainer.addAllAttributes(RequestContextUtils.getInputFlashMap(request));
         //modelFactory.initModel(webRequest, mavContainer, invocableMethod);
         //mavContainer.setIgnoreDefaultModelOnRedirect(this.ignoreDefaultModelOnRedirect);
 
+        //异步请求处理
         AsyncWebRequest asyncWebRequest = WebAsyncUtils.createAsyncWebRequest(request, response);
         asyncWebRequest.setTimeout(this.asyncRequestTimeout);
 
@@ -235,13 +246,17 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter i
             asyncManager.clearConcurrentResult();
             invocableMethod = invocableMethod.wrapConcurrentResult(result);
         }
-
+        //处理请求
         invocableMethod.invokeAndHandle(webRequest, mavContainer, new Object[0]);
         if (asyncManager.isConcurrentHandlingStarted()) {
             return null;
         }
-
         return getModelAndView(mavContainer, modelFactory, webRequest);
+    }
+
+    protected ServletInvocableHandlerMethod createInvocableHandlerMethod(HandlerMethod handlerMethod)
+    {
+        return new ServletInvocableHandlerMethod(handlerMethod);
     }
 
     //包装结果为modelAndView
