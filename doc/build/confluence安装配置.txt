@@ -1,7 +1,39 @@
 ----------------------------confluence安装配置-----------------------------
-Confluence是一个专业的wiki程序。它是一个知识管理的工具，通过它可以实现团队成员之间的协作和知识共享。
-基础环境:centos7,jdk1.8,mysql5.7,confluence6.7.1
+confluence是一个专业的wiki程序。它是一个知识管理的工具，通过它可以实现团队成员之间的协作和知识共享。
+基础环境:centos7,jdk1.8,mysql5.7,confluence6.7.1,内存需要2G以上，不然跑不起来
 1,下载confluence6.7.1
- wget https://downloads.atlassian.com/software/confluence/downloads/atlassian-confluence-6.7.1-x64.bin -P /data/setup
+    wget https://downloads.atlassian.com/software/confluence/downloads/atlassian-confluence-6.7.1-x64.bin -P /data/setup
+2,下载confluence XX工具.zip,见网盘
+3,安装confluence
+    cd /data/setup
+    chmod +x atlassian-confluence-6.7.1-x64.bin
+    ./atlassian-confluence-6.7.1-x64.bin
+4,XX jar包
+    mv /opt/atlassian/confluence/confluence/WEB-INF/lib/atlassian-extras-decoder-v2-3.3.0.jar /data/back/atlassian-extras-decoder-v2-3.3.0.jar
+    将atlassian-extras-decoder-v2-3.3.0.jar通过ftp传到本地
+    运行XX工具 java -jar confluence_keygen.jar,点击界面中的.patch按钮,选择atlassian-extras-decoder-v2-3.3.0.jar,点击打开,jar文件XX成功
+    上传XX后的atlassian-extras-decoder-v2-3.3.0.jar文件到/opt/atlassian/confluence/confluence/WEB-INF/lib
+5,上传mysql驱动包mysql-connector-java-5.1.22.jar到/opt/atlassian/confluence/confluence/WEB-INF/lib下
+6,启动confluence
+    sh /opt/atlassian/confluence/bin/start-confluence.sh &          ------启动confluence
+    sh /opt/atlassian/confluence/bin/stop-confluence.sh             ------停止confluence
+7,设置confluence
+    访问confluence  http://localhost:8090
+    选择中文、点击产品安装
+    拷贝服务ID，运行XX工具，填写Name,Org,Server Id,点击界面中的.gen!按钮获取key。至此confluence XX完成
+    设置外部数据库
+    连接字符串:mysql://localhost:3306/confluence?sessionVariables=tx_isolation='READ-COMMITTED'&useUnicode=true&characterEncoding=utf8
+注意:这里对数据库的要求
+    1,数据库的事务隔离级别必须是READ-COMMITTED
+    2,数据库的字符集utf8,排序规则为utf8_bin
+    否则汇报错隔离级别不对 或排序规则不对。
+
+----------------------------------------------------------------
+confluence配置
+/var/atlassian/application-data/confluence/confluence.cfg.xml               ------可修改mysql配置
+/opt/atlassian/confluence/bin/setenv.sh                                     ------可修改confluence的jvm内存
+    CATALINA_OPTS="-Xms512m -Xmx1024m -XX:+UseG1GC ${CATALINA_OPTS}"
+
+----------------------------------------------------------------------------------------
 
 
