@@ -33,6 +33,7 @@ confluence配置
 /var/atlassian/application-data/confluence/confluence.cfg.xml               ------可修改mysql配置
 /opt/atlassian/confluence/bin/setenv.sh                                     ------可修改confluence的jvm内存
     CATALINA_OPTS="-Xms512m -Xmx1024m -XX:+UseG1GC ${CATALINA_OPTS}"
+/opt/atlassian/confluence/conf/server.xml                                   ------confluence内置tomcat配置文件
 /var/atlassian/application-data/confluence/backups/                         ------备份文件目录
 /var/atlassian/application-data/confluence/attachments                      ------附件存储目录
 

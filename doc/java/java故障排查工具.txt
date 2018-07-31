@@ -1,0 +1,161 @@
+1,java程序cpu占用过高
+通常的方案：
+    top  ,  P                                  ###先top然后P按进程负载排序
+    top -Hp pid                                ###找到相关负载 线程PID
+    printf "%x\n" 线程pid                      ###将线程pid转换为 16进制
+    jstack  进程PID | vim +/十六进制线程PID -  ###查看线程调用栈信息，比如jstack 111|vim +/0x431 -
+
+但对于线上问题定位来说，上面的操作比较耗时了,show-busy-java-threads.sh 可以很快很方便的定位线上的这类问题。
+show-busy-java-threads 用于快速排查Java的CPU性能问题(top us值过高)，自动查出运行的Java进程中消耗CPU多的线程，
+并打印出其线程栈，从而确定导致性能问题的方法调用。
+show-busy-java-threads用法
+show-busy-java-threads.sh     ###从所有的java进程中找出最消耗CPU的线程（缺省5个），打印出其线程栈。
+show-busy-java-threads.sh  -p <指定的Java进程Id>
+show-busy-java-threads.sh  -c <要显示的线程栈数>
+show-busy-java-threads.sh  -t <重复执行的间隔秒数> [<重复执行的次数>]
+show-busy-java-threads.sh  -a <输出记录到的文件>
+show-busy-java-threads.sh  -s <指定jstack命令的全路径>
+
+2,jar包冲突
+show-duplicate-java-classes可以找出Java Lib（Java库，即Jar文件）或Class目录（类目录）中的重复类。
+python show-duplicate-java-classes                                          ###查找当前目录下所有Jar中的重复类
+python show-duplicate-java-classes path/lib_dir1 path/lib_dir2              ###查找多个指定目录下所有Jar中的重复类
+python show-duplicate-java-classes -c path/class_dir1 -c path/class_dir2    ###查找多个指定Class目录下的重复类,Class目录 通过 -c 选项指定
+python show-duplicate-java-classes path/lib_dir1 path/lib_dir2 -c path/class_dir1 -c path/class_dir2
+                                                                     ###查找指定Class目录和指定目录下所有Jar中的重复类的Jar
+
+3,查找类或资源文件
+find-in-jars可在指定目录下所有jar文件里，查找类或资源文件。
+find-in-jars 'log4j\.properties'
+find-in-jars 'log4j\.xml$' -d /path/dir
+find-in-jars 'log4j\.properties|log4j\.xml'
+find-in-jars 'Service.class$'
+
+运行时诊断工具---HouseMD
+HouseMD是一款非常敏捷的Java进程运行时的诊断调式命令行工具, 它具备安全易用高效的特点, 让它非常适合在要求严格的线上(生产)环境中使用.
+HouseMD是基于字节码技术的诊断工具, 因此任何最终以字节码形式运行于JVM之上的语言如scala, Groovy, JRuby, Jython, kotlin等.HouseMD都支持对它们进行诊断。
+使用housemd对java程序进行运行时跟踪，支持的操作有：
+    查看加载类
+    支持跟踪文件来源路径
+    支持跟踪类加载器层次
+    跟踪方法
+    支持输出跟踪目标调用栈文件输出
+    查看环境变量
+    查看对象属性值
+jenv install housemd             ###安装housemd
+housemd pid [java_home]          ###使用housemd
+在显示若干行INFO信息后, 此时进入HouseMD的Shell提示符, 键入help指令, 可以查看其支持的内置指令:
+housemd> help
+    quit       terminate the process.
+    help       display this infomation.
+    trace      display or output infomation of method invocaton.
+    loaded     display loaded classes information.
+    env        display system env.
+    inspect    display fields of a class.
+在help后加上指令的名字, 如loaded, 便会显示具体指令的帮助信息:
+housemd> help loaded
+    Usage: loaded [OPTIONS] name
+        display loaded classes information.
+    Options:
+        -h, --classloader-hierarchies
+            display classloader hierarchies of loaded class.
+    Parameters:
+        name
+            class name without package name.
+
+housemd的退出键入quit指令或键入Ctrl + D
+交互命令中例子:
+housemd> loaded String                          ###查看类java.lang.String的加载路径
+housemd> loaded -h String                       ###查看类java.lang.String的加载路径和类加载器层次
+housemd> trace -t 2 HelloService.hello          ###跟踪接下来2秒内HelloService.hello方法的调用
+housemd> trace -l 3 IService$D+.doService       ###跟踪接下来3次抽象类IService$D的doService方法的调用
+housemd> trace -i 3 TraceTarget$D+              ###跟踪抽象类TraceTarget$D所有方法的调用, 设定每隔3秒进行一次实时摘要显示, 直至默认结束条件达成
+housemd> trace -d HelloService.hello TraceTarget$A   ###跟踪HelloService.hello方法和 TraceTarget$A的所有方法的调用, 并输出详细日志到文件
+housemd> trace -s HelloService.hello            ###跟踪HelloService.hello方法, 并输出其调用栈到文件
+housemd> env USER                               ###查看环境变量USER的值
+housemd> env -e T.*                             ###查看所有以T开头的环境变量的值
+housemd> inspect -l 1 TraceTarget$B.s           ###查看TraceTarget$B属性名为s的值
+
+运行时诊断工具---Greys
+Greys是一个JVM进程执行过程中的异常诊断工具，可以在不中断程序执行的情况下轻松完成问题排查工作。
+Greys采用纯Java编写并留有良好的扩展，如有需求，可以扩展编写想要的功能。
+此类工具能利用Java6的Instrumentation特性，动态增强所指定的类，获取想要的信息。
+目前Greys仅支持Linux/Unix/Mac上的Java6+，Windows暂时无法支持
+
+curl -sLk http://ompc.oss.aliyuncs.com/greys/install.sh|bash     ###在线安装,从阿里云上下载greys.zip，然后进行解压、安装
+                                                                    执行此操作的用户必须有对当前目录的写权限
+http://ompc.oss.aliyuncs.com/greys/release/greys-stable-bin.zip  ###下载greys-stable-bin.zip
+unzip greys-stable-bin.zip
+cd greys
+sh ./install-local.sh                                            ###离线安装
+
+git clone git@github.com:oldmanpushcart/greys-anatomy.git
+cd greys-anatomy/bin
+./greys-packages.sh                                              ###源码安装,在target/目录下生成对应版本的release文件
+
+sh greys.sh pid                                                  ###运行greys,会在目标进程启动端口3658
+sh greys.sh pid@127.0.0.1:6666                                   ###指定启动的端口运行greys
+sh greys.sh pid|tee -a ./greys.log                               ###greys将信息输出到文件中
+
+greys观察的维度
+变量名 	                变量解释
+loader 	                本次调用类所在的ClassLoader
+clazz 	                本次调用类的Class引用
+method 	                本次调用方法反射引用
+target 	                本次调用类的实例
+params 	                本次调用参数列表，这是一个数组，如果方法是无参方法则为空数组
+returnObj 	            本次调用返回的对象。当且仅当isReturn==true成立时候有效，表明方法调用是以正常返回的方式结束。如果当前方法无返回值void，则值为null
+throwExp 	            本次调用抛出的异常。当且仅当isThrow==true成立时有效，表明方法调用是以抛出异常的方式结束。
+isBefore 	            辅助判断标记，当前的通知节点有可能是在方法一开始就通知，此时isBefore==true成立，同时isThrow==false和isReturn==false，
+                        因为在方法刚开始时，还无法确定方法调用将会如何结束。
+isThrow 	            辅助判断标记，当前的方法调用以抛异常的形式结束。
+isReturn 	            辅助判断标记，当前的方法调用以正常返回的形式结束。
+
+greys交互命令行中的参数说明:
+-b 表示方法调用之前
+-e 表示方法抛出异常之后
+-s 表示方法返回之后
+-f 方法结束之后（正常返回和异常返回）
+params[0]表示第1个入参，params[x]表示第x+1个入参。
+-x 1表示展开第一个层级(和调用toString()打印对象类似)，比如展开对象的属性，如果属性里面还有对象，就需要展开2级层级(-x 2)
+
+greys使用例子
+ga?>help                                                        ###查看greys所有命令
+ga?>help watch                                                  ###查看watch命令的帮助信息
+ga?>quit                                                        ###退出greys客户端
+ga?version                                                      ###输出当前目标Java进程所加载的Greys版本号
+ga?>jvm                                                         ###查看当前JVM的信息
+
+tt------方法执行数据的时空隧道，记录下指定方法每次调用的入参和返回信息，并能对这些不同的时间下调用进行观测
+ga?>tt -t  -n 3 com.test.HelloService hello                     ###实时监控HelloService.hello方法的调用，此方法每执行一次,就会多一条监控记录,
+                                                                   这里用-n 3限定了需要记录的次数
+ga?>tt -i 1000                                                  ###根据监控的编号1000,查看这次方法执行的具体情况，
+                                                                   可以看到方法执行的时间，入参， 返回值（无异常的话）， 异常信息。
+ga?>jstack com.test.HelloService hello                          ###查看执行HelloService.hello方法的线程栈情况
+
+trace------渲染方法内部调用路径，并输出方法路径上的每个节点上耗时
+ga?>trace com.test.HelloService hello                           ###监控HelloService.hello方法执行时间，方法调用链路信息。常用来排查一些IO或线程阻塞问题
+
+ptrace------是trace命令的强化版，通过指定渲染路径来完成对方法执行路径的渲染过程，渲染和统计整个调用链路上的所有性能开销和追踪调用链路。
+ga?>ptrace -t *Business*Service hello --path=*alibaba*
+
+watch------方法执行数据观测,能观察到指定方法的调用情况。能观察到的范围为：返回值、抛出异常、入参
+-b   在**方法调用之前**观察
+-s   在**方法返回之后**观察
+-f   在**方法结束之后**(正常返回和异常返回)观察
+-e   在**方法异常之后**观察
+ga?>watch -f com.*.HelloService hello params[0] -x 1            ###获取方法的入参
+ga?>watch -b com.*.HelloService hello '"params[0]="+params[0]'  ###获取方法的入参
+ga?>watch -f com.*.HelloService hello returnObj -x 1            ###获取方法的返回值
+ga?>watch -s com.*.HelloService hello returnObj -x 1            ###获取方法的返回值
+
+monitor------对匹配class-pattern／method-pattern的类.方法的调用进行监控
+monitor命令一个非实时返回命令，它不断的等待目标Java进程返回信息，直到用户输入Ctrl+D为止。
+ga?>monitor -c 5 *elloService hello                             ###-c指定统计周期，这里指定的是5秒,默认120秒
+
+sm------搜索出所有已经加载了Class信息的方法信息
+ga?>sm -d *com.test.HelloController *
+
+sc------查看JVM已加载的类信息
+ga?>sc -d com.test.HelloController                              ###查询类加载信息
+----------------------------------------------------------------------------------------
