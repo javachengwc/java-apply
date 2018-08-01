@@ -1,0 +1,36 @@
+---------------------------------alternatives命令-------------------------------
+alternatives或update-alternatives常用于同一个系统中安装同一软件的多个版本。用于处理linux系统中软件版本的切换。
+比如系统安装JDK1.7，JDK1.8，系统全局默认使用哪个版本的jdk?这里就可用alternatives 来指定一个全局的设置。
+# alternatives
+    usage: alternatives --install <link> <name> <path> <priority>
+                        [--initscript <service>]
+                        [--family <family>]
+                        [--slave <link> <name> <path>]*
+           alternatives --remove <name> <path>
+           alternatives --auto <name>
+           alternatives --config <name>
+           alternatives --display <name>
+           alternatives --set <name> <path>
+           alternatives --list
+    common options: --verbose --test --help --usage --version --keep-missing
+                    --altdir <directory> --admindir <directory>
+说明：install表示安装,link是符号链接,name则是标识符,path是执行文件的路径,priority则表示优先级,数字越大优先级越高。
+
+
+alternatives --config java                                        ###查看系统中有哪些java版本驻车在alternatives中
+                                                                  同时也可选择系统使用哪个版本的java
+alternatives --install /usr/bin/java  java  /usr/java/jdk1.8.0_181/bin/java  2
+                                                                  ###使用alternatives选择此java 1.8.0
+alternatives --set java /usr/java/jdk1.8.0_181/bin/java           ###直接设置java路径，修改后立即生效,前提是此java已注册在alternatives中
+cd /usr/java/jdk1.8.0_181
+alternatives --set java $PWD/java                                 ###适合直接到路径下去设置
+alternatives --auto java                                          ###alternatives中注册的java按照优先级自动系统选择
+alternatives --remove java /usr/java/jdk1.8.0_181/bin/java        ###清理原来配置的对应的java命令
+ubuntu里可以直接使用下面的全部清除，centos没有
+update-alternatives --remove-all java
+alternatives的原理是软链管理，可以处理目录。那么就可以把整个软件包目录都纳入管理
+update-alternatives --install /usr/local/jdk jdk /opt/jdk1.8.0_111 300
+update-alternatives --install /usr/local/jdk jdk /opt/jdk1.8.0_91 200
+update-alternatives --display jdk
+
+--------------------------------------------------------------------------------

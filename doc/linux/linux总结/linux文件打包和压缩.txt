@@ -1,0 +1,23 @@
+------------------------------------linux文件打包和压缩---------------------------
+bunzip2 file1.bz2                         ###解压bz2文件
+bzip2 file1                               ###压缩成bz2文件
+gunzip file1.gz                           ###解压gz文件
+gzip file1                                ###压缩gz文件
+gzip -9 file1                             ###最大程度压缩
+rar a file1.rar test_file                 ###打包成file1.rar
+rar a file1.rar file1 file2 dir1          ###把文件file1,file2和目录dir1打包成rar文件
+rar x file1.rar                           ###解压rar包
+unrar x file1.rar                         ###解压rar包
+tar -cvf archive.tar file1                ###创建非压缩的tar包
+tar -cvf archive.tar file1 file2 dir1     ###创建包含了文件file1,file2和目录dir1的tar包
+tar -tf archive.tar                       ###显示包中的内容
+tar -xvf archive.tar                      ###释放包
+tar -xvf archive.tar -C /tmp              ###将包释放到/tmp目录下
+tar -jcvf archive.tar.bz2 dir1            ###创建bzip2格式的压缩包
+tar -jxvf archive.tar.bz2                 ###解压bzip2格式的压缩包
+tar -zcvf archive.tar.gz dir1             ###创建gzip格式的压缩包
+tar -zxvf archive.tar.gz                  ###解压gzip格式的压缩包
+zip file1.zip file1                       ###创建zip格式的压缩包
+zip -r file1.zip file1 file2 dir1         ###把文件file1,file2和目录dir1压缩成zip包
+unzip file1.zip                           ###解压zip格式压缩包
+----------------------------------------------------------------------------------

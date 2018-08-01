@@ -89,7 +89,7 @@ yum list extras                    ---列出所有已安装但不在 Yum Reposit
 yum groupinfo group1               ---显示程序组group1信息
        ep:yum groupinfo 'Development Tools'  //查看yum软件集合信息
 yum grouplist                      ---查看有哪些软件集合
-yum search  keyword                ---搜索关键字keyword相关的安装包
+yum search  keyword                ---搜索关键字keyword相关的安装包,在rpm仓库中搜寻软件包
 yum repolist                       ---显示软件仓库的配置
 yum resolvedep pkg                 ---决定哪个包提供了给定的依赖
 yum shell                          ---运行交互式的yum shell
