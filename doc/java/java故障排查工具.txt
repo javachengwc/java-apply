@@ -96,6 +96,8 @@ cd greys-anatomy/bin
 sh greys.sh pid                                                  ###运行greys,会在目标进程启动端口3658
 sh greys.sh pid@127.0.0.1:6666                                   ###指定启动的端口运行greys
 sh greys.sh pid|tee -a ./greys.log                               ###greys将信息输出到文件中
+如果执行报错start greys failed, because : Unable to open socket file: target process not responding or HotSpot VM not loaded
+那可能目标进程的jvm版本与运行greys.sh的jvm版本不一致，依情况升级某一jvm版本即可
 
 greys观察的维度
 变量名 	                变量解释
