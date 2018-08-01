@@ -32,7 +32,9 @@ confluence是一个专业的wiki程序。它是一个知识管理的工具，通
 confluence配置
 /var/atlassian/application-data/confluence/confluence.cfg.xml               ------可修改mysql配置
 /opt/atlassian/confluence/bin/setenv.sh                                     ------可修改confluence的jvm内存
-    CATALINA_OPTS="-Xms512m -Xmx1024m -XX:+UseG1GC ${CATALINA_OPTS}"
+    CATALINA_OPTS="-Xms256m -Xmx512m -XX:+UseG1GC ${CATALINA_OPTS}"
+/opt/atlassian/confluence/bin/synchrony/start-synchrony.sh
+    JAVA_OPTS="-Xss2048k -Xmx256m"                                          ------可修改confluence synchrony的jvm内存
 /opt/atlassian/confluence/conf/server.xml                                   ------confluence内置tomcat配置文件
 /var/atlassian/application-data/confluence/backups/                         ------备份文件目录
 /var/atlassian/application-data/confluence/attachments                      ------附件存储目录
