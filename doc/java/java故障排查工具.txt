@@ -107,9 +107,19 @@ cd greys-anatomy/bin
 sh greys.sh pid                                                  ###运行greys,会在目标进程启动端口3658
 sh greys.sh pid@127.0.0.1:6666                                   ###指定启动的端口运行greys
 sudo -H -u user1 sh greys.sh pid                                 ###如果程序是user1用户启动的，需切换到user1账号下执行此命令
+                                                                    或切换到user1账号下直接执行sh greys.sh也行,但必须切换到user1账号下执行
 sh greys.sh pid|tee -a ./greys.log                               ###greys将信息输出到文件中
 如果执行报错start greys failed, because : Unable to open socket file: target process not responding or HotSpot VM not loaded
-那可能目标进程的jvm版本与运行greys.sh的jvm版本不一致，依情况升级某一jvm版本即可
+可能的情况有:
+1,可能执行此命令的账号与被检查进程的启动账号不一致，切换到启动进程的账号下执行即可
+2,可能目标进程的jvm版本与运行greys.sh的jvm版本不一致，依情况升级某一jvm版本即可
+3,直接运行jstack pid,也报错Unable to open socket file: target process not responding or HotSpot VM not loaded
+原因分析:jvm运行时会生成一个目录hsperfdata_$USER($USER是启动java进程的用户),在linux中默认是/tmp,目录下会有些pid文件,存放jvm进程信息,
+而jmap,jstack等工具会读取/tmp/hsperfdata_$USER下的pid文件获取连接信息.
+检查了hsperfdata_$USERt目录,是否有pid对应的文件,如果没有，可能
+a,系统定时任务把tmp目录下过期文件删了，可查看/etc/cron.daily/tmpwatch确认
+b,java进程的临时目录不是/tmp,通过jinfo pid查看java进程配置信息，查看java.io.tmpdir项是否为/tmp,如果不是可在启动的时候-Djava.io.tmpdir=/tmp来指定,
+tomcat中可修改catalina.sh添加CATALINA_TMPDIR=/tmp即可。
 
 greys观察的维度
 变量名 	                变量解释
