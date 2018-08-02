@@ -21,7 +21,13 @@ sudo是允许普通用户执行一些或者全部的root账号才能执行的命
 ep:  # visudo
      aa   ALL=(ALL)       ALL               ---给aa用户赋予sudo上所有权限,第一次sudo以及隔一段时间失效后需要输入自己帐号密码。
      bb     ALL=(ALL)     NOPASSWD: ALL     ---给bb用户赋予sudo上所有权限,且不需要输入密码。
-
+sudo -l                                         ---查看sudo的配置
+这里有一种情况，当在root账号下执行某shell没问题，但切换到某账号下，执行sudo 此shell就有问题，
+此类问题都是用sudo命令无法读取环境变量的解决方法,这是因为sudo在切换成root用户的时候，env并不会去保留这些环境变量，需要特别的指明才可以。
+通过visudo命令来设置，需要保留的环境变量,比如访问http相关访问不了，就通过visudo追加
+Defaults env_keep +="http_proxy https_proxy ftp_proxy no_proxy DISPLAY XAUTHORITY"
+或者直接将
+Defaults    env_reset  修改成为: Defaults    !env_reset
 ---------cpu
 cat /proc/cpuinfo                               ---查看cpu相关信息
 cat /proc/cpuinfo |grep "processor"|wc -l       ---查看逻辑cpu个数(多少核)

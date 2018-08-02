@@ -1,3 +1,14 @@
+java自身提供的工具:
+jps -mlv                                      ---查看运行的java进程列表
+jinfo pid                                     ---查看java进程环境配置信息
+jstack pid                                    ---dump java进程的线程状态
+jmap -heap pid                                ---查看java 堆（heap）使用情况
+jmap -histo pid                               ---查看堆内存(histogram)中的对象数量，大小
+jmap -dump:format=b,file=m.dat pid            ---打印java进程内存快照
+jstat -gcutil pid                             ---查看java进程垃圾回收状况
+jstat -gc pid                                 ---查看java进程内存占用情况
+jhat -port 5000 m.dat                         ---在浏览器中访问：http://localhost:5000/  查看进程内存详细信息
+
 1,java程序cpu占用过高
 通常的方案：
     top  ,  P                                  ###先top然后P按进程负载排序
@@ -95,6 +106,7 @@ cd greys-anatomy/bin
 
 sh greys.sh pid                                                  ###运行greys,会在目标进程启动端口3658
 sh greys.sh pid@127.0.0.1:6666                                   ###指定启动的端口运行greys
+sudo -H -u user1 sh greys.sh pid                                 ###如果程序是user1用户启动的，需切换到user1账号下执行此命令
 sh greys.sh pid|tee -a ./greys.log                               ###greys将信息输出到文件中
 如果执行报错start greys failed, because : Unable to open socket file: target process not responding or HotSpot VM not loaded
 那可能目标进程的jvm版本与运行greys.sh的jvm版本不一致，依情况升级某一jvm版本即可
