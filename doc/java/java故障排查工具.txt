@@ -150,6 +150,10 @@ ga?>quit                                                        ###退出greys�
 ga?version                                                      ###输出当前目标Java进程所加载的Greys版本号
 ga?>jvm                                                         ###查看当前JVM的信息
 
+top------查看程序的线程消耗cpu性能相关信息
+ga>?top
+ga>?top top -dt 5                                               ###查看最耗性能的前5个线程
+
 tt------方法执行数据的时空隧道，记录下指定方法每次调用的入参和返回信息，并能对这些不同的时间下调用进行观测
 ga?>tt -t  -n 3 com.test.HelloService hello                     ###实时监控HelloService.hello方法的调用，此方法每执行一次,就会多一条监控记录,
                                                                    这里用-n 3限定了需要记录的次数
