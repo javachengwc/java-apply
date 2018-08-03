@@ -4,4 +4,103 @@ nginx是支持读取非nginx标准的用户自定义header的，但是需要在h
 underscores_in_headers on;
 比如自定义header为Come_From,通过nginx获取header时是这样的 http_come_from; (一律采用小写，而且前面多了个http_)
 
+2,nginx限制ip时间段内请求次数以及ip并发次数
+使用limit_req_zone和limit_req指令配合使用达到限制ip时间段内请求次数限制。一旦并发连接超过指定数量，就会返回503错误。
+使用limit_conn_zone和limit_conn指令来对同一时刻的连接数限制。limit_conn_zone只能定义在http作用域，limit_conn可以定义在http server location作用域。
+nginx配置片段:
+http{
+    ...
+    #定义一个名为allips的limit_req_zone用来存储session，大小是10M内存，以$binary_remote_addr 为key,限制平均每秒的请求为20个，
+    #1M能存储16000个状态，rete的值必须为整数，如果限制两秒钟一个请求，可以设置成30r/m
+    limit_req_zone $binary_remote_addr zone=allips:10m rate=20r/s;
+
+    #定义一个名为one的limit_zone,大小10M内存来存储session，以$binary_remote_addr 为key，limit_conn_zone只能放在http作用域
+    limit_conn_zone  one  $binary_remote_addr  10m;
+    ...
+    server{
+        ...
+        location {
+            ...
+            #限制每ip每秒不超过20个请求，漏桶数burst为5
+            #brust的意思就是，如果第1秒、2,3,4秒请求为19个，第5秒的请求为25个是被允许的。但是如果你第1秒就25个请求，第2秒超过20的请求返回503错误。
+            #nodelay，如果不设置该选项，严格使用平均速率限制请求数，第1秒25个请求时，5个请求放到第2秒执行，设置nodelay，25个请求将在第1秒执行。
+            limit_req zone=allips burst=5 nodelay;
+
+            limit_conn one 20;          #连接数限制
+            limit_rate 500k;            #带宽限制,对单个连接限数，如果一个ip两个连接，就是500x2k
+            ...
+        }
+        ...
+    }
+    ...
+}
+比如限制只允许一分钟内只允许一个ip访问60次配置，也就是平均每秒1次
+http{
+    ...
+    limit_req_zone $binary_remote_addr zone=allips:10m rate=60r/m;
+    ...
+    server{
+        ...
+        location {
+            ...
+            limit_req zone=allips;
+            ...
+        }
+        ...
+    }
+    ...
+}
+
+3,nginx白名单设置
+上面的请求限流会对所有的ip都进行限制，如果不希望对搜索引擎的蜘蛛或者自己测试ip进行限制，可设置特定的白名单ip,可以借助geo指令实现。
+http{
+     #geo指令定义了一个白名单$limited变量，默认值为1，如果客户端ip在上面的范围内，$limited的值为0
+     geo $limited{
+        default 1;
+        #google
+        64.233.160.0/19 0;
+        65.52.0.0/14 0;
+        66.102.0.0/20 0;
+        66.249.64.0/19 0;
+        72.14.192.0/18 0;
+        74.125.0.0/16 0;
+        209.85.128.0/17 0;
+        216.239.32.0/19 0;
+        #MS
+        64.4.0.0/18 0;
+        157.60.0.0/16 0;
+        157.54.0.0/15 0;
+        157.56.0.0/14 0;
+        207.46.0.0/16 0;
+        207.68.192.0/20 0;
+        207.68.128.0/18 0;
+        #yahoo
+        8.12.144.0/24 0;
+        66.196.64.0/18 0;
+        66.228.160.0/19 0;
+        67.195.0.0/16 0;
+        74.6.0.0/16 0;
+        68.142.192.0/18 0;
+        72.30.0.0/16 0;
+        209.191.64.0/18 0;
+        #My
+        127.0.0.1/32 0;
+        123.456.0.0/28 0; #example for your server CIDR
+    }
+    #使用map指令映射客户端的ip,如果是白名单ip映射为"",如果非白名单ip就显示本身真是的ip，这样白名单ip就不能存到limit_req_zone内存session中，所以不会限制白名单ip访问
+    map $limited $limit {
+        1 $binary_remote_addr;
+        0 "";
+    }
+    limit_req_zone $limit zone=foo:1m rate=60r/m;
+    server{
+        location {
+            ...
+            limit_req zone=foo;
+            ...
+        }
+        ...
+    }
+}
+
 -------------------------------------------------------------------------------
