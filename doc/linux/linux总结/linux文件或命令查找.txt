@@ -6,6 +6,8 @@ less file                             ---类似于 'more' 命令，但是它允�
 head -2 file                          ---查看一个文件的前两行
 tail -2 file                          ---查看一个文件的最后两行
 tail -f /var/log/messages             ---实时查看被添加到一个文件中的内容
+split -b 100m data.txt out.txt        ---按照大小切割文件
+
 -----------------which
 which命令用于查找并显示给定命令的绝对路径，环境变量PATH中保存了查找命令时需要遍历的目录。
 which指令会在环境变量$PATH设置的目录里查找符合条件的文件。
