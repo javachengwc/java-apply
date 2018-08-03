@@ -4,9 +4,12 @@ nginx是支持读取非nginx标准的用户自定义header的，但是需要在h
 underscores_in_headers on;
 比如自定义header为Come_From,通过nginx获取header时是这样的 http_come_from; (一律采用小写，而且前面多了个http_)
 
-2,nginx限制ip时间段内请求次数以及ip并发次数
-使用limit_req_zone和limit_req指令配合使用达到限制ip时间段内请求次数限制。一旦并发连接超过指定数量，就会返回503错误。
-使用limit_conn_zone和limit_conn指令来对同一时刻的连接数限制。limit_conn_zone只能定义在http作用域，limit_conn可以定义在http server location作用域。
+2,nginx限制ip时间段内访问次数
+nginx可以通过ngx_http_limit_conn_module和ngx_http_limit_req_module配置来限制ip在同一时间段的访问次数.
+ngx_http_limit_req_module模块用于限制每一个定义的密钥的请求的处理速率，特别是从一个单一的IP地址的请求的处理速率。使用“泄漏桶”方法进行限制。
+对应的指令：limit_req_zone和limit_req,一旦并发连接超过指定数量，就会返回503错误。
+ngx_http_limit_conn_module模块用于限制每个定义的密钥的连接数，特别是单个IP​​地址的连接数．使用limit_conn_zone和limit_conn指令
+limit_conn_zone只能定义在http作用域，limit_conn可以定义在http server location作用域。
 nginx配置片段:
 http{
     ...
@@ -14,20 +17,20 @@ http{
     #1M能存储16000个状态，rete的值必须为整数，如果限制两秒钟一个请求，可以设置成30r/m
     limit_req_zone $binary_remote_addr zone=allips:10m rate=20r/s;
 
-    #定义一个名为one的limit_zone,大小10M内存来存储session，以$binary_remote_addr 为key，limit_conn_zone只能放在http作用域
-    limit_conn_zone  one  $binary_remote_addr  10m;
+    #定义一个名为addr的limit_conn_zone用来存储session，大小是10M内存，以$binary_remote_addr 为key，limit_conn_zone只能放在http作用域
+    limit_conn_zone $binary_remote_addr zone=addr:10m;
     ...
     server{
         ...
         location {
             ...
-            #限制每ip每秒不超过20个请求，漏桶数burst为5
+            #限制每ip每秒不超过20个请求，漏桶数burst为5,也就是队列
             #brust的意思就是，如果第1秒、2,3,4秒请求为19个，第5秒的请求为25个是被允许的。但是如果你第1秒就25个请求，第2秒超过20的请求返回503错误。
             #nodelay，如果不设置该选项，严格使用平均速率限制请求数，第1秒25个请求时，5个请求放到第2秒执行，设置nodelay，25个请求将在第1秒执行。
             limit_req zone=allips burst=5 nodelay;
 
-            limit_conn one 20;          #连接数限制
-            limit_rate 500k;            #带宽限制,对单个连接限数，如果一个ip两个连接，就是500x2k
+            limit_conn addr 20;          #连接数限制,超出此限制时，服务器将返回503
+            limit_rate 500k;             #带宽限制,对单个连接限数，如果一个ip两个连接，就是500x2k
             ...
         }
         ...
@@ -103,4 +106,30 @@ http{
     }
 }
 
+4,nginx限制ip访问
+nginx的ngx_http_access_module模块可以封配置内的ip或者ip段，语法如下：
+deny IP;
+deny subnet;
+allow IP;
+allow subnet;
+# block all ips
+deny    all;
+# allow all ips
+allow    all;
+如果规则之间有冲突，会以最前面匹配的规则为准。
+比如站点禁止所有外网ip，仅允许内网ip,nginx片段
+location / {
+    # block one workstation
+    deny    192.168.1.1;
+    # allow anyone in 192.168.1.0/24
+    allow   192.168.1.0/24;
+    # drop rest of the world
+    deny    all;
+}
+注意:
+deny 一定要加一个ip，否则直接跳转到403,不往下执行了;如果403默认页是同一域名下，会造成死循环访问；
+allow的ip段从允许访问的段位从小到大排列,如127.0.0.0/24 下面才能是10.10.0.0/16
+24表示子网掩码:255.255.255.0
+16表示子网掩码:255.255.0.0
+8表示子网掩码:255.0.0.0
 -------------------------------------------------------------------------------
