@@ -8,7 +8,7 @@ tail -2 file                          ---查看一个文件的最后两行
 tail -f /var/log/messages             ---实时查看被添加到一个文件中的内容
 split -b 100m data.txt out.txt        ---按照大小切割文件
 split -b 100k data.txt ccc.txt -d -a 3  ---按照大小切割文件,用数字后缀用-d参数,同时用-a length来指定后缀的长度
-split -l 10000 date.txt               ---按照文件的行数来分割文件
+split -l 10000 data.txt               ---按照文件的行数来分割文件
 
 -----------------which
 which命令用于查找并显示给定命令的绝对路径，环境变量PATH中保存了查找命令时需要遍历的目录。
