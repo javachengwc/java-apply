@@ -13,8 +13,8 @@ limit_conn_zone只能定义在http作用域，limit_conn可以定义在http serv
 nginx配置片段:
 http{
     ...
-    #定义一个名为allips的limit_req_zone用来存储session，大小是10M内存，以$binary_remote_addr 为key,限制平均每秒的请求为20个，
-    #1M能存储16000个状态，rete的值必须为整数，如果限制两秒钟一个请求，可以设置成30r/m
+    #以用户二进制IP地址为key，定义一个名为allips的漏桶，滴落速率20req/sec，桶空间10m，1M能保持大约16000个(IP)状态,
+    #rate的值必须为整数，如果限制两秒钟一个请求，可以设置成30r/m
     limit_req_zone $binary_remote_addr zone=allips:10m rate=20r/s;
 
     #定义一个名为addr的limit_conn_zone用来存储session，大小是10M内存，以$binary_remote_addr 为key，limit_conn_zone只能放在http作用域
@@ -26,7 +26,8 @@ http{
             ...
             #限制每ip每秒不超过20个请求，漏桶数burst为5,也就是队列
             #brust的意思就是，如果第1秒、2,3,4秒请求为19个，第5秒的请求为25个是被允许的。但是如果你第1秒就25个请求，第2秒超过20的请求返回503错误。
-            #nodelay，如果不设置该选项，严格使用平均速率限制请求数，第1秒25个请求时，5个请求放到第2秒执行，设置nodelay，25个请求将在第1秒执行。
+            #nodelay，如果不设置该选项，严格使用平均速率限制请求数，第1秒25个请求时，5个请求放到第2秒执行，
+            #设置nodelay，25个请求将在第1秒执行。漏桶控制一段时长内的平均qps = 漏桶速率，允许瞬时的峰值qps > 漏桶qps,峰值时的最高qps=(brust+qps-1)
             limit_req zone=allips burst=5 nodelay;
 
             limit_conn addr 20;          #连接数限制,超出此限制时，服务器将返回503
