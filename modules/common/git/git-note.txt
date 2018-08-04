@@ -1,29 +1,4 @@
 ------------------git代码冲突-------------------------
-常用操作:
-本地创建项目推到gitlab上
-mkdir project_a                 ###创建项目文件夹project_a
-cd project_a
-git init
-touch README.md
-git add README.md               ###添加
-git commit -m "init project"    ###提交
-git remote add origin git@127.0.0.1:group/project_a.git    ###本地项目与远程仓库关联起来
-这里特别注意，这里只是把本地项目关联远程项目，而不是创建远程项目，远程项目的创建都必须通过gitlab管理后台来创建。
-也就是说要先在gitlab上创建远程项目，这里才能够与它关联。
-git push origin master          ###推送到远程
-
-git clone  git@git.xx.com:xx/xx.git     --->克隆某git工程资源
-git branch                              --->查看当前分支
-git branch aa                           --->创建本地分支aa(当用这种方式创建分支的时候,分支是基于你的上一次提交建立的)
-git checkout -b local_path origin/remote_path
-                                        --->创建并切换到本地分支local_path，并且该分支对应的远程分支是remote_path。
-                                            此种方式创建的分支是一个干净的分支，拉下代码后完全稳合对应的远程分支。
-git checkout aa                         --->将本地当前分支切换到aa
-git pull origin cheng                   --->拉去cheng的分支到当前分支aa
-git push origin aa:remoteaa             --->推送本地aa分支到远程remoteaa分支s
-git push origin --delete aa             --->删除远程分支aa
-
----------------------------------------------------------
 冲突异常:
 error: Your local changes to the following files would be overwritten by merge:
         protected/config/main.php
@@ -49,7 +24,6 @@ git push -f origin master       ---强制push到远程仓库
 
 方法2:一个版本一个版本的revert,比如代码版本一次是a1,a2,a3,现在要回到a1版本
 git revert a2                   ---每一次revert,代码回到对应的版本的内容，但每次revert都是一次提交，项目的版本号是要向上增加的
-                                ---这里如果回退的版本之前的提交存在并行合并提交，可能回退不成功，这里只能有其它方法回退
 git revert a1
 
 方法3:
@@ -59,11 +33,34 @@ git remote add origin master       --->创建远程分支master
 git push origin master:master      --->推送本地master分支到远程master分支
 
 --------------------------------------------------------
+git clone  git@git.xx.com:xx/xx.git     --->克隆某git工程资源
+git branch                              --->查看当前分支
+git branch aa                           --->创建本地分支aa(当用这种方式创建分支的时候,分支是基于你的上一次提交建立的)
+git checkout -b local_path origin/remote_path
+                                        --->创建并切换到本地分支local_path，并且该分支对应的远程分支是remote_path。
+                                            此种方式创建的分支是一个干净的分支，拉下代码后完全稳合对应的远程分支。
+git checkout aa                         --->将本地当前分支切换到aa
+git pull origin cheng                   --->拉去cheng的分支到当前分支aa
+git push origin aa:remoteaa             --->推送本地aa分支到远程remoteaa分支s
+git push origin --delete aa             --->删除远程分支aa
 git config --list                       --->查看git配置， 配置文件一般是~/.gitconfig
 git config --global user.name  [username]  --->配置git账号
 git config --global user.email [email]
 git config --global core.longpaths true --->解决git clone时候部分文件报错Filename too long
 #在项目工作区的目录 git config -e 可修改工作区的.git/config文件
+
+-----------------------------------------------------------------------
+本地创建项目推到gitlab上
+mkdir project_a                 ###创建项目文件夹project_a
+cd project_a
+git init
+touch README.md
+git add README.md               ###添加
+git commit -m "init project"    ###提交
+git remote add origin git@127.0.0.1:group/project_a.git    ###本地项目与远程仓库关联起来
+这里特别注意，这里只是把本地项目关联远程项目，而不是创建远程项目，远程项目的创建都必须通过
+gitlab管理后台来创建。也就是说要先在gitlab上创建远程项目，这里才能够与它关联。
+git push origin master          ###推送到远程
 ------------------------------------------------------------------------
 git标签
 标签可以针对某一时间点的版本做标记，常用于版本发布，将本地标签推送到Github上即发布了一个Release版本。
