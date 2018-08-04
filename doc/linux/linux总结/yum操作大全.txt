@@ -14,6 +14,15 @@ yum的命令形式一般是如下：yum [options] [command] [package ...]
 [options]是可选的，选项包括-h（帮助），-y（当安装过程提示选择全部为"yes"），-q（不显示安装的过程）
 [command]为所要进行的操作，
 [package ...]是操作的对象。
+----------常用操作----------
+yum install package                      ---安装
+yum list                                 ---显示所有已经安装和可以安装的程序包
+yum search  keyword                      ---搜索关键字keyword相关的安装包,在rpm仓库中搜寻软件包
+yum remove package                       ---删除程序包package
+yum list installed                       ---列出所有已安装的软件包
+yum info installed                       ---列出已经安装的所有的rpm包的信息
+yum clean all                            ---清理更新yum缓存
+yum makecache                            ---生成源数据缓存
 
 ----------yum自身的安装-----
 rpm -qa|grep yum                         ---查看yum包
@@ -52,7 +61,7 @@ yum-config-manager -enablerepo=[repo]          ---启用一个或多个软件源
 yum-config-manager -disablerepo=[repo]         ---禁用一个或多个软件源(支持通配符)
 ----------安装--------------
 #使用yum安装和卸载软件，有个前提是yum安装的软件包都是rpm格式的
-yum install                        ---全部安装
+yum install                        ---安装
 yum install file.rpm/pkg           ---安装指定的安装包file.rpm/pkg
          ep:yum --nogpgcheck install ccc.rpm  //安装一个没有签名的软件包
 yum reinstall file.rpm/pkg         ---重新安装软件包file.rpm/pkg
@@ -211,7 +220,7 @@ yum makecache
 
 更换yum源
 wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo   ###下载aliyun的repo
-yum clean all              ###更新yum缓存
+yum clean all              ###清理更新yum缓存
 yum makecache              ###生成源数据缓存
 
 -----------------------------------------------------------------------

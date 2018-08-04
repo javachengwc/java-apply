@@ -6,6 +6,12 @@
 rpm --initdb
 rpm --rebuilddb        注：这个要花好长时间
 注：这两个参数是极为有用，有时rpm 系统出了问题，不能安装和查询，大多是这里出了问题
+------常用操作-------
+rpm -ivh  file.rpm              --安装并显示安装进度
+rpm -q app                      --查询程序是否安装
+rpm -qa                         --查看系统中所有已经安装的包
+rpm -e app                      --卸载app
+
 ------安装--------
 rpm -ivh  file.rpm              --安装显示安装进度--install--verbose--hash
       ep:rpm -ivh  /media/cdrom/RedHat/RPMS/samba-3.0.10-1.4E.i386.rpm /按路径安装并显示进度
