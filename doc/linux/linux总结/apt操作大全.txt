@@ -6,7 +6,7 @@ apt-get命令一般需要root权限执行，所以一般跟着sudo命令
 ----------常用操作----------
 apt-get install package               ---安装包
 dpkg -i package_name.deb              ---普通安装
-apt-get update                        ---更新源,从默认服务器下载软件包数据库
+apt-get update                        ---更新源,从apt源中取回软件包的列表
 apt-get upgrade packege               ---升级指定的软件包，并升级其依赖的软件包
 apt-cache search string               ---在软件包列表中搜索字符串
 dpkg -l *package-name-pattern*        ---列出任何和模式相匹配的软件包,会显示每个包是安装了还是没安装
