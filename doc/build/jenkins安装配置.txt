@@ -5,7 +5,9 @@ rpm -ivh jenkins-2.7.4-1.1.noarch.rpm    #安装jenkins
 默认安装后各路径
     /var/lib/jenkins             #jenkins安装目录
     /var/lib/jenkins/workspace   #jenkins工作空间
-    /etc/sysconfig/jenkins       #jenkins配置文件
+    /etc/sysconfig/jenkins       #jenkins服务配置文件
+    /var/lib/jenkins/config.xml  #jenkins具体配置文件
+    /var/lib/jenkins/users       #jenkins的所有用户配置目录
 service jenkins start            #启动jenkins
 #启动中如果报错,根据提示查看报错信息，比如报错Jenkins bash: /usr/bin/java: No such file or directory
 表示在/usr/bin下没找到java命令，可能没装java或者java命令没在此目录下，安装java或建立对应的软连接即可
@@ -36,17 +38,25 @@ jenkins配置
 admin账号登录进入jenkins后
 系统管理--Global Tool Configuration中设置系统中maven,jdk相关路径
 
-Credentials--System中添加gitlab地址的domain设置，然后在此domain点击Add Credentials添加连接到此domain的一个认证设置，
-对于gitlab地址来说，此认证设置就是一个能访问此gitlab项目的ssh账号，配置上对应的私钥key内容即可
+凭证--系统--添加域中添加一个域名为gitlab地址的凭据域，然后在此凭据域中添加一个认证设置，
+对于gitlab地址来说，此认证设置就是一个能访问此gitlab项目的ssh账号，配置上对应的私钥key内容即可,也可以是一个gitlab的一个账号密码设置
 
 系统管理--管理用户中添加用户
 
 系统管理--Configure Global Security中设置各用户安全访问控制，勾选启动安全，访问控制中安全域选Jenkins专有用户数据库，
-授权策略选项目矩阵授权策略,然后在这里添加用户，对用户进行授权,这里如果设置误操作,导致管理员账号再次登录时没有Overall/Read权限，
+授权策略选项如果选择目矩阵授权策略,可在这里添加用户，对用户进行授权,这里如果设置误操作,导致管理员账号再次登录时没有Overall/Read权限，
 可按如下方法解决
     vim /var/lib/jenkins/config.xml找到<authorizationStrategy>节点在里面加上
     <permission>hudson.model.Hudson.Administer:admin</permission>,admin是具有管理权限的一个账号,
     然后重启jenkins即可。
+一般使用中授权策略选项会选择Role-Based Strategy,基于角色的项目权限管理，
+由于jenkins默认的权限管理体系不支持用户组或角色的配置，因此需要安装第三发插件Role-Based Strategy来支持角色的配置。
+系统管理--Manage and Assign Roles进入角色管理页面,
+Manage Roles中创建全局角色、项目角色，并可以为角色分配权限。项目角色与全局角色的区别就是，项目角色只能管理项目，没有管理jenkins的权限配置。
+添加项目角色时，需要制定匹配项目的模式，官方文档介绍该选项支持正则表达式，如“Pro-.”表示所有以Pro-开头的项目，
+“(?i)roger-.*”表示以roger-开头的项目并且不区分大小写，也可以使用“abc|bcd|efg”直接匹配多个项目。
+Assign Roles中为用户赋予角色
+
 至此jenkins的基本设置完成。
 ---------------------------------------
 jenkins创建配置并构建项目
