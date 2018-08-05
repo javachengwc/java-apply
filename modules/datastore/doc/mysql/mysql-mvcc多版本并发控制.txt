@@ -1,6 +1,7 @@
 ----------------------------------mysql多版本并发控制-------------------------------
 mysql多版本并发控制就是在表数据每一行记录的后面增加两个隐藏列，记录创建版本号和删除版本号，而每一个事务在启动的时候，都有一个唯一的递增的版本号。
 mvcc使得数据库读不会对数据加锁，select不会加锁，提高了数据库的并发处理能力；
+借助MVCC，数据库可以实现RC，RR等隔离级别，用户可以查看当前数据的前一个或者前几个历史版本，保证了ACID中的I-隔离性。
 mysql的innodb采用的是行锁，而且采用了多版本并发控制来提高读操作的性能。
 只有read-committed和repeatable-read两种事务隔离级别才能使用mVcc,read-uncommited由于是读到未提交的，不存在版本的问题,serializable则会对所有读取的行加锁。
 
@@ -17,7 +18,7 @@ update aa set name= 'bbbb' where id=1;
 .......................................................
 |id 	|name 	   |create version 	   |delete version|
 .......................................................
-|1 	    |test 	   |1                  |2             |
+|1 	    |test 	   |1                  |2             |    -----这个是转移到undo log段中
 .......................................................
 |1 	    |bbbb 	   |2                  |              |
 .......................................................
@@ -27,7 +28,7 @@ delete from aa where id=1;
 .......................................................
 |id 	|name 	   |create version 	   |delete version|
 .......................................................
-|1 	    |bbbb 	   |2                  |3             |
+|1 	    |bbbb 	   |2                  |3             |   -----这个是转移到undo log段中
 .......................................................
 
 4、查询操作：
@@ -47,13 +48,83 @@ SELECT ... FOR UPDATE,给索引记录加锁，这种情况下跟UPDATE的加锁�
 一致性非锁定读
 consistent read （一致性读），InnoDB用多版本来提供查询数据库在某个时间点的快照。
 如果隔离级别是REPEATABLE READ，那么在同一个事务中的所有一致性读都读的是事务中第一个这样的读读到的快照；
-如果是READ COMMITTED，那么一个事务中的每一个一致性读都会读到它自己刷新的快照版本。
+如果隔离级别是READ COMMITTED，那么一个事务中的每一个一致性读都会读到最新刷新的快照版本。
 Consistent read（一致性读）是READ COMMITTED和REPEATABLE READ隔离级别下普通SELECT语句默认的模式。
 一致性读不会给它所访问的表加任何形式的锁，因此其它事务可以同时并发的修改它们。
-一致性非锁定行读操作是通过MVVC实现的，读取行的快照数据(即行之前版本的数据)，这是通过undo log段实现的。
-因为没必要对历史数据进行修改操作，所以不必等待行的锁释放。undo log段是用来事务回滚的，所以快照数据并没有占用额外的开销;
+一致性非锁定读操作是通过MVVC实现的，读取行的快照数据(即行之前版本的数据)，这是通过undo log段实现的。
+undo log段是用来事务回滚的，所以快照数据并没有占用额外的开销;
 在事务隔离级别COMMITTED READ和REPEATABLE READ,都是使用一致性非锁定行读，但对于快照数据的定义却不同，
 COMMITTED READ的非锁定读是读取最新的一份快照数据;REPEATABLE READ的非锁定读是读取事务开始时的一份数据版本。
+如下是每一行数据(包含3个隐藏列,RowId,DB_TRX_ID,DB_ROLL_PT)
+         事务Id        回滚指针
+RowId    DB_TRX_ID    DB_ROLL_PTR   id     col1     col2     col3
+.....................................................................
+|1      | 1           | xxx         |1     | aa     |bb      |cc    |
+.....................................................................
+|2      | 2           | ccc         |2     | ab     |bc      |cd    |
+.....................................................................
+当插入一条新数据时，记录上对应的回滚段指针为NULL。
+当更新一条数据时，
+a,用排他锁锁定该行,
+b,把该行修改前的值copy到undo log中
+c,修改当前行的值,填写事务编号,使回滚指针指向undo log中修改前的那行
+d,记录redo log，包括undo log中的变化
+更新记录时，原记录将被放入到undo表空间中，并通过DB_ROLL_PT指向该记录,
+在更新记录没提交前，如果有另一个session开启事务查询此记录，查询的返回是未修改的数据，就是从这个undo中返回的。
+mysql就是根据记录上的回滚段指针及事务ID判断记录是否可见，如果不可见继续按照DB_ROLL_PT继续回溯查找。
+具体的判断流程如下:
+RR隔离级别下，在每个事务开始的时候，会将当前系统中的所有的活跃事务拷贝到一个列表中(read view)
+RC隔离级别下，在每个语句开始的时候，会将当前系统中的所有的活跃事务拷贝到一个列表中(read view)
+这个列表中的最早的事务Id为tmin,最晚的事务Id为tmax,当读到某行时，该行的当前事务为tid0,这里特别注意是该行记录中的事务id为tid0，
+mysql中并不是根据事务的事务ID进行比较判断记录是否可见，而是根据每一行记录上的事务ID进行比较来判断记录是否可见。
+当一个事务中执行查询语句时，跟踪调用到的主要函数如下:
+函数row_search_mvcc->lock_clust_rec_cons_read_sees
+bool lock_clust_rec_cons_read_sees (
+    const rec_t*    rec,
+    dict_index_t*   index,
+    const ulint*    offsets,
+    ReadView*   view)
+{
+    ut_ad(index->is_clustered());
+    ut_ad(page_rec_is_user_rec(rec));
+    ut_ad(rec_offs_validate(rec, index, offsets));
+    //只读事务或者临时表是不需要一致性读的判断
+    if (srv_read_only_mode || index->table->is_temporary()) {
+        ut_ad(view == 0 || index->table->is_temporary());
+        return(true);
+    }
+    //获取记录上的TRX_ID
+    trx_id_t    trx_id = row_get_rec_trx_id(rec, index, offsets);
+    //判断记录可见性
+    return(view->changes_visible(trx_id, index->table->name));
+}
+下面是真正判断记录的看见性。
+bool changes_visible(
+    trx_id_t    id,
+    const table_name_t& name) const
+    MY_ATTRIBUTE((warn_unused_result))
+{
+    ut_ad(id > 0);
+    //如果ID小于Read View中最小的, 则这条记录是可以看到。说明此记录是在select语句所处的事务开始之前就结束的
+    if (id < m_up_limit_id || id == m_creator_trx_id) {
+        return(true);
+    }
+    check_trx_id_sanity(id, name);
+    //如果比Read View中最大的还要大，则说明这条记录是在事务开始之后进行修改的，所以此条记录不应查看到
+    if (id >= m_low_limit_id) {
+        return(false);
+    } else if (m_ids.empty()) {
+        return(true);
+    }
+    const ids_t::value_type* p = m_ids.data();
+    //判断是否在Read View中， 如果在说明在创建Read View时,此条记录还处于活跃状态则不应该查询到，
+    //否则说明创建Read View是此条记录的事务id已提交,已经是固化的最新状态，可以查询到。
+    return(!std::binary_search(p, p + m_ids.size(), id));
+}
+对于不可见的记录都是通过row_vers_build_for_consistent_read函数查询UNDO构建老版本记录，直到记录可见。
+需要说明一点 不同的事务隔离级别，可见性的实现也不一样:
+READ-COMMITTED事务内的每个查询语句都会重新创建Read View，这样就会产生不可重复读现象发生
+REPEATABLE-READ事务内开始时创建Read View，在事务结束这段时间内 每一次查询都不会重新重建Read View，从而实现了可重复读。
 
 悲观锁和乐观锁
 悲观锁，数据库总是认为别人会去修改它所要操作的数据，因此在数据库处理过程中将数据加锁。其实现依靠数据库底层。

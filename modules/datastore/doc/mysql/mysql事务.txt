@@ -1,4 +1,10 @@
 ---------------------------------mysql事务----------------------------
+事务有四个特性：ACID
+    原子性（Atomicity）：事务是一个原子操作，由一系列动作组成。事务的原子性确保动作要么全部完成，要么完全不起作用。
+    一致性（Consistency）：一旦事务完成（不管成功还是失败），系统必须确保它所建模的业务处于一致的状态，而不会是部分完成部分失败。在现实中的数据不应该被破坏。
+    隔离性（Isolation）：可能有许多事务会同时处理相同的数据，因此每个事务都应该与其他事务隔离开来，防止数据损坏。
+    持久性（Durability）：一旦事务完成，无论发生什么系统错误，它的结果都不应该受到影响，这样就能从任何系统崩溃中恢复过来。通常情况下，事务的结果被写到持久化存储器中。
+
 mysql默认是repeatable read 隔离级别。也就是可重复读（repeatable-read）。
 mysql事务隔离级别 	            脏读 	不可重复读 	幻读
 读未提交（read-uncommitted） 	    是 	        是 	     是
@@ -6,10 +12,11 @@ mysql事务隔离级别 	            脏读 	不可重复读 	幻读
 可重复读（repeatable-read） 	    否 	        否 	     是
 串行化（serializable） 	        否 	        否 	     否
 --------------------------------------------------------
-select @@tx_isolation;                                    ###查看当前事务隔离级别
+select @@tx_isolation;                                              ###查看当前事务隔离级别
 set session transaction isolation level read committed;
-set session transaction isolation level repeatable read;  ###修改事务隔离级别
-set  [global | session]  transaction isolation level 隔离级别名称;   ###修改全局或当前事物隔离级别
+set session transaction isolation level repeatable read;            ###修改事务隔离级别
+set  [global | session]  transaction isolation level 隔离级别名称;    ###修改全局或当前事物隔离级别
+
 mysql数据库配置事物隔离级别
 vim /etc/my.cnf
     [mysqld]
