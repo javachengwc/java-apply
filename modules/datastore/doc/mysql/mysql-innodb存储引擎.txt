@@ -1,0 +1,36 @@
+-------------------------------------mysql-innodb存储结构-----------------------------------
+InnoDB逻辑存储结构(见innodb-struct.png)包括:
+表空间 tablespace（ibd文件）,段 segment（一个索引2个段）,Extent（1MB）,Page（16KB）,Row,Field
+
+内存结构:
+缓冲池buffer pool                          ###由innodb_buffer_pool_size配置
+重做日志缓冲池redo log buffer               ###由innodb_log_buffer_size配置
+额外内存池additional memory pool            ###由innodb_additional_mem_pool_size配置
+可以使用 show engine innodb status来查看innodb_buffer_pool的使用情况。
+缓冲池buffer pool中的数据库类型有：索引页、数据库页、undo页、插入缓存页(insert buffer)、自适应hash(adaptive hashindex)、innodb存储的锁信息(lock info)、数据字典信息(data dictionary)。
+InnoDB工作方式：将数据文件按页(每页16K)读入InnoDB buffer pool，然后按最近最少使用算法(LRU)保留缓存数据，最后通过一定频率将脏页刷新到文件。
+
+innodb存储引擎后台有7个线程，—–4个IO线程(insert buffer thread,log thread,read thread,write thread)，1个master thread，一个lock监控线程，一个错误监控线程。
+后台线程的主要作用是负责刷新内存池中的数据，保证缓冲池中的内存缓存是最近的数据，此外、将已经修改的数据文件刷新到磁盘文件。
+
+默认表空间文件为ibdata1文件innodb_data_file_path存储数据，innodb_file_per_table可以按表分别产生一个表空间.db文件，但仅存该表的数据索引和插入缓冲等信息，
+其他信息如undo信息，系统事务信息，double write buffer等还是存放在默认表空间(ibdata1或表空间组)里。
+
+所有的数据库都是日志先行，先写日志，再写数据文件，所以才会有redo log的规则。
+redo log是重做日志，用来保证数据完整性。每个innodb存储引擎至少有一个重做日志组,每个重做日志文件组下至少又2个重做日志文件，如默认的ib_logfile0、ib_logfile1。
+这个对innodb存储引擎非常重要，因为它们记录了对于innodb存储引擎的事务日志。
+重做日志文件的主要目的是：
+    万一实例或者介质失败media failure，重做日志就可以派上用场，如果数据库由于所在主机掉电导致实例失败，innodb存储引擎会使用重做日志恢复到掉电前的时刻，以此来保证数据的完整性。
+LSN logsequence number递增产生的，可以唯一的标记一条redo日志，对于数据库故障恢复都是非常重要的，可以唯一定位数据库运行状态。
+为了得到更高的可靠性，可以设置多个重做镜像日志组。因为重做日志条目先被写到日志缓冲中，然后根据一定条件刷新到磁盘重做日志文件中。
+与redo log相关的就是innodb_flush_log_at_trx_commit的值，对innodb的性能影响很大。有0，1，2三个值，
+0代表提交事务时，并不同步写redo log，而是等master threas每秒写。
+1代表commit的时候就将redo log缓存写入磁盘，
+2代表commit的时候将redo log缓存异步的写入磁盘。
+查看参数设置：show variables like 'innodb%log%';
+
+undo日志存在于共享表空间ibdata1里面，有一个回滚段地址，里面存放了头信息，配置头信息，段的头信息，里面存储了与redo相反的数据更新操作，如果rollback的话，就把undo段里面数据回写到数据文件里面。
+如果用了独立表空间的话，则直接存储到表私自的空间中，而不存储到共享表空间中。在innodb存储引擎中，undo log用来完成事务的回滚以及MVCC的功能
+redo与undo他们并不是各自独立没有关系的，他们是有关联的，交替合作来保证数据的一致性和安全性，
+
+-------------------------------------------------------------------------------------------
