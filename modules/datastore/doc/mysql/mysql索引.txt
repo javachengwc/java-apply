@@ -1,12 +1,28 @@
 -----------------------------mysl索引b-tree,hah,full-text,r-tree-------------------------
 mysql里目前只支持4种索引分别是:b-tree,full-text,hash以及r-tree索引
+mysql中主键索引是聚集（clustered）索引，也叫聚簇索引。
+聚集索引是数据行的物理顺序与索引列值（一般是主键的那一列）的逻辑顺序相同，一个表中只能拥有一个聚集索引。聚集索引引用的也是B+树索引。
+聚集索引的叶子节点就是对应的数据节点（MySQL的MyISAM除外，此存储引擎的聚集索引和非聚集索引只多了个唯一约束，其他没什么区别），可以直接获取到对应的全部列的数据，
+而非聚集索引在索引没有覆盖到对应的列的时候需要进行二次查询。因此在查询方面，聚集索引的速度往往会更占优势。
+
+非聚集（unclustered）索引中索引的逻辑顺序与磁盘上行的物理存储顺序不同，一个表中可以拥有多个非聚集索引。
+如果使用非聚集索引查询，而查询列中包含了该索引没有覆盖的列，那么他还要进行第二次的查询，查询节点上对应的数据行的数据。
+非聚集索引叶子节点除了会存储索引覆盖列的数据，也会存放聚集索引所覆盖的列数据。
+解决非聚集索引的二次查询问题就是创建复合索引(覆盖索引),即可查询复合索引里的列的数据而不需要进行回表二次查询
+
+比如表t1永远主键索引id,以及普通索引username,
+select id,username from t1 where id = 1                          ###使用主键索引直接一次性查出结果
+select id,username from t1 where username = 'aa'                 ###使用普通索引username直接查出结果,不需要回表查询,非聚集索引也会存放聚集索引所覆盖的列数据。
+select username from t1 where username = 'aa'                     ###使用普通索引username直接查出结果,不需要回表查询
+select username,score from t1 where username = 'aa'              ###使用普通索引username查询，需要回表查询
 
 --------------b-tree------------
 b-tree索引应该是mysql里最广泛的索引的了,除了archive,基本所有的存储引擎都支持它.
 
 1.b-tree在myisam里的形式和innodb稍有不同
 
-在innodb里面有两种形态:其一是primary key形态其leafnode里存放的是数据.而且不仅存放了索引键的数据,还存放了其他字段的数据.其二是secondary index,其leafnode和普通的b-tree差不多,只是还存放了指向主键的信息.
+在innodb里面有两种形态:其一是primary key形态其leafnode里存放的是数据.而且不仅存放了索引键的数据,还存放了其他字段的数据.
+其二是secondary index,其leafnode和普通的b-tree差不多,只是还存放了指向主键的信息.
 
 而在myisam里,主键和其他的并没有太大区别.不过和innodb不太一样的地方是,在myisam里,leaf node里存放的不是主键的信息,存的是指向数据文件里的对应数据行的信息.
 

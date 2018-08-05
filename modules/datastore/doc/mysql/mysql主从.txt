@@ -125,4 +125,35 @@ change master to master_host='127.0.0.1', master_user='slave', master_password='
 start slave;
 show slave status\G;
 
+mysql主从同步原理
+主库针对写操作，顺序写binlog，从库单线程去主库顺序读”写操作的binlog”，从库取到binlog在本地原样执行（随机写），来保证主从数据逻辑上一致。
+mysql的主从复制都是单线程的操作，主库对所有DDL和DML产生binlog，binlog是顺序写，所以效率很高，slave的Slave_IO_Running线程到主库取日志，效率比较高，
+slave的Slave_SQL_Running线程将主库的DDL和DML操作在slave实施。DML和DDL的IO操作是随即的，不是顺序的，成本高很多。
+
+mysql数据库主从同步延迟的产生
+当主库的TPS并发较高时，产生的DDL数量超过slave一个sql线程所能承受的范围，那么延时就产生了，当然还有就是可能与slave的大型query语句产生了锁等待。
+首要原因：数据库在业务上读写压力太大，CPU计算负荷大，网卡负荷大，硬盘随机IO太高
+次要原因：读写binlog带来的性能影响，网络传输延迟。
+
+mysql数据库主从同步延迟解决方案
+1,slave端,直接关闭slave端的binlog,设置sync_binlog=0,innodb_flushlog=0,innodb_flush_log_at_trx_commit =2
+2,master端,主库是写，如果对数据安全性较高，sync_binlog=1，innodb_flush_log_at_trx_commit = 1 之类的设置是需要的,
+但可根据实际情况调整innodb_flush_log_at_trx_commit=2
+3,系统层面，根据请求修改linux文件系统中文件的etime属性， 由于每当读文件时os都会将读取操作发生的时间回写到磁盘上，对于读操作频繁的数据库文件来说这是没必要的，
+只会增加磁盘系统的负担影响I/O性能。可以通过设置文件系统的mount属性，组织操作系统写atime信息，
+在linux上的操作为：
+vim /etc/fstab
+  /dev/sdb1 /data reiserfs noatime 1 2    ###加上noatime参数
+然后重新mount文件系统
+mount -oremount /data
+
+备注:
+sync_binlog   sync_binlog参数来控制数据库的binlog刷到磁盘上去,默认为0，
+sync_binlog=0，表示mysql不控制binlog的刷新，由文件系统自己控制它的缓存的刷新。这时性能是最好的，但风险也是最大的。一旦系统Crash，在binlog_cache中的所有binlog信息都会被丢失。
+sync_binlog>0，表示每sync_binlog事务提交，mysql调用文件系统的刷新操作将缓存刷下去。
+sync_binlog=1，表示每次事务提交，mysql都会把binlog刷下去，是最安全,但是性能损耗最大的设置。在数据库所在的主机操作系统损坏或者突然掉电的情况下，系统才有可能丢失1个事务的数据。
+binlog虽然是顺序IO，但是设置sync_binlog=1，多个事务同时提交，同样很大的影响mysql和io性能。
+所以很多mysql设置的sync_binlog并不是最安全的1，而是2或者是0。这样牺牲一定的一致性，可以获得更高的并发和性能。
+
+innodb_flush_log_at_trx_commit的说明参看"mysql慢查询分析优化.txt"
 --------------------------------------------------------------------------
