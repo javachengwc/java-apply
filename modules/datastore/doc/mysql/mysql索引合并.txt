@@ -1,0 +1,21 @@
+------------------------------mysql索引合并----------------------------------
+index merge是对多个索引分别进行条件扫描，然后将它们各自的结果进行合并(intersect/union)。
+查询语句where 中可能有多个条件(或者join)涉及到多个字段，它们之间进行 AND 或者 OR，那么此时就有可能会使用到 index merge 技术。
+MySQL5.0之前，一个表一次只能使用一个索引，无法同时使用多个索引分别进行条件扫描。
+但是从5.1开始，引入了 index merge 优化技术，对同一个表可以使用多个索引分别进行条件扫描。
+同一个表的多个索引的范围扫描可以对结果进行合并，合并方式分为三种：union, intersection, 以及它们的组合(先内部intersect然后在外面union)
+
+index intersect merge就是多个索引条件扫描得到的结果进行交集运算。显然在多个索引提交之间是 AND 运算时，才会出现 index intersect merge.
+比如表tbl_name有2个单索引key1与key2,下面查询where条件会进行 index intersect merge
+select * from tbl_name where key1 = 10 and key2 = 20;
+
+index union merge就是多个索引条件扫描，对得到的结果进行并集运算，显然是多个条件之间进行的是 OR 运算。
+select * from tbl_name where key1=1 or key2=2;
+
+index sort_union merge (多个条件扫描进行 OR 运算，但是不符合 index union merge算法的，此时可能会使用 sort_union算法)
+暂无例子，也不太清楚什么情况下会用到index sort_union merge
+
+ndex merge使得可以使用到多个索引同时进行扫描，然后将结果进行合并。如果出现了 index intersect merge，也需要考虑索引建立是否合理，
+因为 index intersect merge 是可以通过建立复合索引进行更一步优化的。
+
+----------------------------------------------------------------------------
