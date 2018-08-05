@@ -14,7 +14,7 @@ public class LineSearch {
 
 		int KeyValue = 22;
 		// 调用线性查找
-		if (Linear_Search(KeyValue)) {
+		if (lineSearch(KeyValue)) {
 			// 输出查找次数
 			System.out.println("");
 			System.out.println("Search Time = " + counter);
@@ -25,7 +25,7 @@ public class LineSearch {
 		}
 	}
 
-	public static boolean Linear_Search(int Key) {
+	public static boolean lineSearch(int Key) {
 		for (int i = 0; i < data.length; i++) {
 			
 			System.out.print("[" + data[i] + "]");
