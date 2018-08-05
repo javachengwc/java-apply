@@ -3,13 +3,43 @@ mysql锁包括表锁，页锁，行锁
 表级------直接锁定整张表，在写锁期间，其它进程无法对该表进行读写操作
 行级------仅对指定的记录进行加锁，这样其它进程还是可以对同一个表中的其它记录进行操作。
 页级------表级锁速度快，但冲突多，行级冲突少，但速度慢。所以取了折衷的页级，一次锁定相邻的一组记录。
+
+表级锁：开销小，加锁快；不会出现死锁；锁定粒度大，发生锁冲突的概率最高，并发度最低。
+行级锁：开销大，加锁慢；会出现死锁；锁定粒度最小，发生锁冲突的概率最低，并发度也最高。
+页面锁：开销和加锁时间界于表锁和行锁之间；会出现死锁；锁定粒度界于表锁和行锁之间，并发度一般。
+
 MySQL 5.1支持对MyISAM和MEMORY表进行表级锁定，对BDB表进行页级锁定，对InnoDB表进行行级锁定。
+
+MyISAM表的读和写是串行的，即在进行读操作时不能进行写操作，反之也是一样。
+但在一定条件下MyISAM表也支持查询和插入的操作的并发进行，其机制是通过控制一个变量（concurrent_insert）来进行的，
+当其值设置为0时，不允许并发插入；
+当其值设置为1 时，如果MyISAM表中没有空洞（即表中没有删除过记录），MyISAM允许在一个进程读表的同时，另一个进程从表尾插入记录；
+当其值设置为2时，无论MyISAM表中有没有空洞，都允许在表尾并发插入记录。
+MyISAM锁调度,当一个进程请求某个MyISAM表的读锁，同时另一个进程也请求同一表的写锁，此时MySQL将会如优先处理进程呢?
+通过研究表明，写进程将先获得锁（即使读请求先到锁等待队列）。但这也造成一个很大的缺陷，即大量的写操作会造成查询操作很难获得读锁，从而可能造成永远阻塞。
+可以通过一些设置来调节MyISAM的调度行为。指定参数low-priority-updates，使MyISAM默认引擎给予读请求以优先的权利。
+
 Innodb实现了共享锁和排他锁两种类型的行级锁
 共享锁：允许事务读一行数据，其它事务可立即获得共享锁。
 排他锁：允许事务更新或删除行，其它事务需等待锁释放才能获取锁。
 Innodb支持意向共享锁和意向排他锁两种类型的表级锁
 意向共享锁：事务想要获得表中某几行的共享锁。
 意向排他锁：事务想要获得表中某几行的排他锁。
+InnoDB行锁是通过给索引项加锁来实现的，即只有通过索引条件检索数据，InnoDB才使用行级锁，否则将使用表锁。
+假设有个表单test ，有id,name两列，id是主键
+select * from test where id=3 for update;               ---行锁
+select * from test where id=3 and type=1 for update;    ---行锁
+select * from test where id=-1 for update;              ---无记录,无锁
+select * from test where name='aa' for update;          ---无索引,表锁
+select * from test where id<>3 for update;              ---主键不明确,表锁
+在行级锁定中，InnoDB 使用一个名为next-key locking的算法。InnoDB以这样一种方式执行行级锁定,
+当它搜索或扫描表的索引之时，它对遇到的索引记录设置共享或独占锁定。因此，行级锁定事实上是索引记录锁定。
+InnoDB对索引记录设置的锁定也影响索引记录之前的“间隙”。如果一个用户对一个索引上的记录R有共享或独占的锁定，
+另一个用户不能紧接在R之前以索引的顺序插入一个新索引记录。这个间隙的锁定被执行来防止所谓的“幽灵问题”。
+READ COMMITTED隔离级别中，SELECT ... FOR UPDATE和SELECT ... LOCK IN SHARE MODE语句仅锁定索引记录，而不锁定记录前的间隙，
+因而允许随意紧挨着已锁定的记录插入新记录。UPDATE和DELETE语句使用一个带唯一搜索条件的唯一的索引仅锁定找到的索引记录，而不包括记录前的间隙。
+而如果在某个查询条件范围类UPDATE和DELETE语句，InnoDB必须对范围覆盖的间隙设置next-key锁定或间隙锁定以及其它用户做的块插入。
+这是很必要的，因为要让MySQL复制和恢复起作用，“幽灵行”必须被阻止掉。
 
 监控和分析事务及可能存在的锁问题涉及的相关表：
 
@@ -17,6 +47,12 @@ select * from information_schema.innodb_trx;             ---查看当前的事�
 kill id  #杀死sql线程
 select * from information_schema.INNODB_LOCKS;           ---查看当前锁定的事务
 select * from information_schema.INNODB_LOCK_WAITS;      ---查看当前等锁的事务
+
+通过检查table_locks_waited和table_locks_immediate状态变量来分析系统上的表锁定争夺
+show status like 'Table_locks%';
+
+通过检查Innodb_row_lock状态变量来分析系统上的行锁的争夺情况
+show status like 'innodb_row_lock%';
 
 
 ------------------------------------------------------------------------
