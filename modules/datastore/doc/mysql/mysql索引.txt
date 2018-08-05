@@ -13,7 +13,7 @@ mysql中主键索引是聚集（clustered）索引，也叫聚簇索引。
 比如表t1永远主键索引id,以及普通索引username,
 select id,username from t1 where id = 1                          ###使用主键索引直接一次性查出结果
 select id,username from t1 where username = 'aa'                 ###使用普通索引username直接查出结果,不需要回表查询,非聚集索引也会存放聚集索引所覆盖的列数据。
-select username from t1 where username = 'aa'                     ###使用普通索引username直接查出结果,不需要回表查询
+select username from t1 where username = 'aa'                    ###使用普通索引username直接查出结果,不需要回表查询
 select username,score from t1 where username = 'aa'              ###使用普通索引username查询，需要回表查询
 
 --------------b-tree------------
@@ -21,10 +21,15 @@ b-tree索引应该是mysql里最广泛的索引的了,除了archive,基本所有
 
 1.b-tree在myisam里的形式和innodb稍有不同
 
-在innodb里面有两种形态:其一是primary key形态其leafnode里存放的是数据.而且不仅存放了索引键的数据,还存放了其他字段的数据.
-其二是secondary index,其leafnode和普通的b-tree差不多,只是还存放了指向主键的信息.
+在innodb里面有两种形态:
+其一是primary key形态其leafnode里存放的是数据.而且不仅存放了索引键的数据,还包括事务ID和回滚指针(rollback pointer)——用于事务和MVCC，和余下的所有表列。
+其二是secondary index,其leafnode和普通的b-tree差不多,只是还存放了指向主键的信息。
 
-而在myisam里,主键和其他的并没有太大区别.不过和innodb不太一样的地方是,在myisam里,leaf node里存放的不是主键的信息,存的是指向数据文件里的对应数据行的信息.
+而在myisam里,主键和其他的并没有太大区别.它不支持聚簇索引,Primary key仅仅只是一个叫做PRIMARY的唯一，非空的索引而已。叶子节点按照主键的顺序存储。
+不过和innodb不太一样的地方是,在myisam里,leaf node里存放的不是主键的信息,存的是指向数据文件里的对应数据行的信息,仅包含行号(row number),也就是行指针。
+
+覆盖索引(Covering Indexes)是索引包含满足查询的所有数据就被称为覆盖索引，它的叶子节点中已经包含要查询的数据，那么就没有必要再回表查询。
+如果查询采用的索引是覆盖索引，使用EXPLAIN时，可以在Extra一列中看到“Using index”。
 
 --------------hash--------------
 2.hash索引,目前我所知道的就只有memory和ndb cluster支持这种索引.

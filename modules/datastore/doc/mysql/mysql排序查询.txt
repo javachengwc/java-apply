@@ -16,6 +16,7 @@ select * from t1 order by key_part2, key_part1;                  //排序键顺�
 select * from t1 order by key_part1 desc, key_part2 asc;         //升降序不一致，无法使用索引排序
 select * from t1 where key_part1> constant order by key_part2;   //key_part1是范围查询，key_part2无法使用索引排序
 
+如果查询语句是多表关联查询，仅当ORDER BY中的所有列都是第一个表的列并且能用上相应的索引时才会使用索引排序。
 对于不能利用索引避免排序的查询，数据库通过自身排序功能来实现，此时SQL的执行计划中会出现“Using filesort”，
 filesort并不意味着就是文件排序，其实也有可能是内存排序，这个主要由sort_buffer_size参数与结果集大小确定。
 MySQL内部实现排序主要有3种方式，常规排序，优化排序和优先队列排序，主要涉及3种排序算法：快速排序、归并排序和堆排序。
@@ -46,6 +47,9 @@ c.优先队列排序
      5.6版本针对Order by limit M，N语句，在空间层面做了优化，加入了一种新的排序方式--优先队列，这种方式采用堆排序实现。堆排序算法特征正好可以解limit M，N 这类排序的问题，
      虽然仍然需要所有元素参与排序，但是只需要M+N个元组的sort buffer空间即可，对于M，N很小的场景，基本不会因为sort buffer不够而导致需要临时文件进行归并排序的问题。
      对于升序，采用大顶堆，最终堆中的元素组成了最小的N个元素，对于降序，采用小顶堆，最终堆中的元素组成了最大的N的元素。
+
+当对多表关联查询进行排序时，如果order by仅仅引用第一个表的列，对该表进行filesort操作，然后进行连接处理，此时，EXPLAIN输出“Using filesort”；
+否则，mysql必须将查询的结果集生成一个临时表，在连接完成之后进行filesort操作，此时，EXPLAIN输出“Using temporary;Using filesort”
 
 排序相关的mysql配置参数
 sort_buffer_size                    ------排序的buffer大小

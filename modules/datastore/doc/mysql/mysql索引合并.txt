@@ -40,6 +40,10 @@ possible_keys: key1,key2
         Extra: Using sort_union(key1,key2); Using where
 这就是使用了sort_union merge
 
+注意:
+相同模式的sql语句，可能有时能使用索引，有时不能使用索引。是否能使用索引，取决于mysql查询优化器对统计数据分析后，是否认为使用索引更快。
+mysql5.6.7之前的版本遵守range优先的原则。也就是说，当一个索引的一个连续段，包含所有符合查询要求的数据时，
+哪怕索引合并能提供效率，也不再使用索引合并。而是使用此次索引。
 index merge使得可以使用到多个索引同时进行扫描，然后将结果进行合并。如果出现了 index intersect merge，也需要考虑索引建立是否合理，
 因为 index intersect merge 是可以通过建立复合索引进行更一步优化的。
 
