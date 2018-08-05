@@ -5,7 +5,7 @@ rpm -ivh jenkins-2.7.4-1.1.noarch.rpm    #安装jenkins
 默认安装后各路径
     /var/lib/jenkins             #jenkins安装目录
     /var/lib/jenkins/workspace   #jenkins工作空间
-    /etc/sysconfig/jenkins       #jenkins服务配置文件
+    /etc/sysconfig/jenkins       #jenkins服务配置文件，服务端口，jvm配置都在这里
     /var/lib/jenkins/config.xml  #jenkins具体配置文件
     /var/lib/jenkins/users       #jenkins的所有用户配置目录
 service jenkins start            #启动jenkins
