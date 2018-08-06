@@ -187,7 +187,7 @@ type:
   innodb_buffer_pool_size
       相当于key_buffer_size对于MyISAM表的作用一样。InnoDB使用该参数指定大小的内存来缓冲数据和索引。
   innodb_log_buffer_size
-      log缓存大小，一般为1-8M，默认为1M，对于较大的事务，可以增大缓存大小。
+      log缓存大小，默认为16M。
   innodb_additional_mem_pool_size
       指定InnoDB用来存储数据字典和其他内部数据结构的内存池大小。缺省值是1M。
   innodb_thread_concurrency=8
@@ -195,7 +195,7 @@ type:
   innodb_flush_log_at_trx_commit
       控制了innodb将log buffer中的数据写入日志文件并flush磁盘的时间点，取值分别为0、1、2三个。
       0，表示当事务提交时，不做日志写入操作，而是每秒钟将log buffer中的数据写入日志文件并flush磁盘一次；
-      1，则在每秒钟或是每次事物的提交都会引起日志文件写入、flush磁盘的操作，确保了事务的ACID；默认值1。
+      1，每次事物的提交都会进行日志文件写入、flush磁盘的操作，确保了事务的ACID；默认值1。
       2，每次事务提交引起写入日志文件的动作，但每秒钟完成一次flush磁盘操作。
       实际使用发现，此值对插入数据的速度影响非常大，设置为2时插入10000条记录只需要2秒，设置为0时只需要1秒，而设置为1时则需要229秒。
       因此，建议尽量将插入操作合并成一个事务，这样可以大幅提高速度。在允许丢失最近部分事务的危险的前提下，可以把该值设为0或2。

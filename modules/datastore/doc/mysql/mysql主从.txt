@@ -136,8 +136,8 @@ mysql数据库主从同步延迟的产生
 次要原因：读写binlog带来的性能影响，网络传输延迟。
 
 mysql数据库主从同步延迟解决方案
-1,slave端,直接关闭slave端的binlog,设置sync_binlog=0,innodb_flushlog=0,innodb_flush_log_at_trx_commit =2
-2,master端,主库是写，如果对数据安全性较高，sync_binlog=1，innodb_flush_log_at_trx_commit = 1 之类的设置是需要的,
+1,slave端,直接关闭slave端的binlog,设置sync_binlog=0,innodb_flush_log_at_trx_commit =2
+2,master端,主库是写,如果对数据安全性较高,sync_binlog=1,innodb_flush_log_at_trx_commit = 1 之类的设置是需要的,
 但可根据实际情况调整innodb_flush_log_at_trx_commit=2
 3,系统层面，根据请求修改linux文件系统中文件的etime属性， 由于每当读文件时os都会将读取操作发生的时间回写到磁盘上，对于读操作频繁的数据库文件来说这是没必要的，
 只会增加磁盘系统的负担影响I/O性能。可以通过设置文件系统的mount属性，组织操作系统写atime信息，
@@ -148,12 +148,6 @@ vim /etc/fstab
 mount -oremount /data
 
 备注:
-sync_binlog   sync_binlog参数来控制数据库的binlog刷到磁盘上去,默认为0，
-sync_binlog=0，表示mysql不控制binlog的刷新，由文件系统自己控制它的缓存的刷新。这时性能是最好的，但风险也是最大的。一旦系统Crash，在binlog_cache中的所有binlog信息都会被丢失。
-sync_binlog>0，表示每sync_binlog事务提交，mysql调用文件系统的刷新操作将缓存刷下去。
-sync_binlog=1，表示每次事务提交，mysql都会把binlog刷下去，是最安全,但是性能损耗最大的设置。在数据库所在的主机操作系统损坏或者突然掉电的情况下，系统才有可能丢失1个事务的数据。
-binlog虽然是顺序IO，但是设置sync_binlog=1，多个事务同时提交，同样很大的影响mysql和io性能。
-所以很多mysql设置的sync_binlog并不是最安全的1，而是2或者是0。这样牺牲一定的一致性，可以获得更高的并发和性能。
-
-innodb_flush_log_at_trx_commit的说明参看"mysql慢查询分析优化.txt"
+sync_binlog参数配置的说明参看"mysql二进制文件.txt"
+innodb_flush_log_at_trx_commit参数配置的说明参看"mysql-innodb存储引擎.txt"
 --------------------------------------------------------------------------

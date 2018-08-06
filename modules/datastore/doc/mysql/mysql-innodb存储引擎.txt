@@ -1,36 +1,108 @@
 -------------------------------------mysql-innodb存储结构-----------------------------------
 InnoDB逻辑存储结构(见innodb-struct.png)包括:
-表空间 tablespace（ibd文件）,段 segment（一个索引2个段）,Extent（1MB）,Page（16KB）,Row,Field
+表空间(tablespace)------可以看做是InnoDB存储引擎逻辑结构的最高层，所有的数据都是存放在表空间中。
+    表空间又由段（segment）、区（extent）、页（page）组成。页在一些文档中有时也称为块（block），1 extent = 64 pages
+    默认情况下InnoDB存储引擎有一个共享表空间ibdata1，即所有数据都放在这个表空间内。默认表空间文件名ibdata1由参数innodb_data_file_path设置。
+    如果启用了参数innodb_file_per_table=on，则每张表内的数据可以单独放到一个表空间内,默认是开启的。单独表空间文件名是xx.ibd
+    开启单独表空间后，每张表的表空间内存放的只是数据、索引和插入缓冲，
+    而其他数据，如撤销（Undo）信息、系统事务信息、二次写缓冲（double write buffer）等还是存放在原来的共享表空间内。
+    这也说明：即使在启用了参数innodb_file_per_table之后，共享表空间还是会不断地增加其大小。以下做一个实际验证:
+    在mysql命令行执行system ls -lh /usr/local/mysql/data/ibdata1,查看默认表空间大小。
+    mysql>set autocommit=0;
+    mysql>update test set aa=0;
+    首先将自动提交设为0，即显式提交事务（注意，上面结束时并没有commit或者rollback该事务）。
+    接着执行update mytest set salary=0,此执行会产生大量Undo操作的语句，
+    完成后再观察共享表空间大小，会发现ibdata1已经增长了一些，这就说明了共享表空间中还包含有Undo信息。
+    如果rollback这个事务，ibdata1这个表空间会不会缩减至原来的大小?
+    mysql>rollback;
+    mysql>system ls -lh /usr/local/var/mysql/ibdata1
+    还是增长后的大小,即InnoDB存储引擎不会在rollback时去收缩这个表空间。
+    虽然InnoDB不会回收这些空间，但是MySQL会自动判断这些Undo信息是否需要，如果不需要，则会将这些空间标记为可用空间，供下次undo使用。
+    事务被提交或回滚后，其所使用的undolog（撤销日志）可能不再需要，因此需要Purge Thread（清理线程）来回收已经使用并分配的undo页。
+    innodb1.1版本之前，purge操作也就是undo日志的回收清理操作仅在innodb引擎中的Master Thread中完成。
+    从innodb1.1版本开始。purge操作可以独立到单独的线程中进行。以此来减轻Master Thread的工作。提高cpu使用率以及提升存储引擎性能。
+段(segment(一个索引2个段)) ------
+Extent（1MB）,
+Page（16KB）,
+Row,
+Field
 
 内存结构:
-缓冲池buffer pool                          ###由innodb_buffer_pool_size配置
+缓冲池buffer pool                           ###由innodb_buffer_pool_size配置
 重做日志缓冲池redo log buffer               ###由innodb_log_buffer_size配置
 额外内存池additional memory pool            ###由innodb_additional_mem_pool_size配置
 可以使用 show engine innodb status来查看innodb_buffer_pool的使用情况。
 缓冲池buffer pool中的数据库类型有：索引页、数据库页、undo页、插入缓存页(insert buffer)、自适应hash(adaptive hashindex)、innodb存储的锁信息(lock info)、数据字典信息(data dictionary)。
-InnoDB工作方式：将数据文件按页(每页16K)读入InnoDB buffer pool，然后按最近最少使用算法(LRU)保留缓存数据，最后通过一定频率将脏页刷新到文件。
+InnoDB工作方式：将数据文件按页(每页16K)读入innodb buffer pool，然后按最近最少使用算法(LRU)保留缓存数据，最后通过一定频率将脏页刷新到文件。
 
-innodb存储引擎后台有7个线程，—–4个IO线程(insert buffer thread,log thread,read thread,write thread)，1个master thread，一个lock监控线程，一个错误监控线程。
+在InnoDB存储引擎表中，每张表都有个主键，如果在创建表时没有显式地定义主键（Primary Key），则InnoDB存储引擎会按如下方式选择或创建主键。
+首先表中是否有非空的唯一索引（Unique NOT NULL），如果有，则该列即为主键。
+不符合上述条件，InnoDB存储引擎自动创建一个6个字节大小的指针。
+
+innodb存储引擎后台线程有:
+4个IO线程(insert buffer thread,log thread,read thread,write thread)，
+1个master thread，
+1个lock监控线程，
+1个错误监控线程。
 后台线程的主要作用是负责刷新内存池中的数据，保证缓冲池中的内存缓存是最近的数据，此外、将已经修改的数据文件刷新到磁盘文件。
-
-默认表空间文件为ibdata1文件innodb_data_file_path存储数据，innodb_file_per_table可以按表分别产生一个表空间.db文件，但仅存该表的数据索引和插入缓冲等信息，
-其他信息如undo信息，系统事务信息，double write buffer等还是存放在默认表空间(ibdata1或表空间组)里。
 
 所有的数据库都是日志先行，先写日志，再写数据文件，所以才会有redo log的规则。
 redo log是重做日志，用来保证数据完整性。每个innodb存储引擎至少有一个重做日志组,每个重做日志文件组下至少又2个重做日志文件，如默认的ib_logfile0、ib_logfile1。
-这个对innodb存储引擎非常重要，因为它们记录了对于innodb存储引擎的事务日志。
-重做日志文件的主要目的是：
-    万一实例或者介质失败media failure，重做日志就可以派上用场，如果数据库由于所在主机掉电导致实例失败，innodb存储引擎会使用重做日志恢复到掉电前的时刻，以此来保证数据的完整性。
-LSN logsequence number递增产生的，可以唯一的标记一条redo日志，对于数据库故障恢复都是非常重要的，可以唯一定位数据库运行状态。
-为了得到更高的可靠性，可以设置多个重做镜像日志组。因为重做日志条目先被写到日志缓冲中，然后根据一定条件刷新到磁盘重做日志文件中。
-与redo log相关的就是innodb_flush_log_at_trx_commit的值，对innodb的性能影响很大。有0，1，2三个值，
-0代表提交事务时，并不同步写redo log，而是等master threas每秒写。
-1代表commit的时候就将redo log缓存写入磁盘，
-2代表commit的时候将redo log缓存异步的写入磁盘。
-查看参数设置：show variables like 'innodb%log%';
+为了得到更高的可靠性，可以设置多个重做镜像日志组。
+InnoDB采用Write Ahead Log策略来防止宕机数据丢失，即事务提交时，先写重做日志，再修改内存数据页，后台线程周期定时将修改的内存数据写到磁盘文件中。
+当数据库宕机时，数据库不需要重做所有的日志，只需要执行上次刷入点之后的日志。这个点就叫做Checkpoint，它解决了以上的问题：
+    缩短数据库恢复时间
+    缓冲池不够用时，将脏页刷新到磁盘
+    重做日志不可用时，刷新脏页
+重做日志被设计成可循环使用，当日志文件写满时，重做日志中对应数据已经被刷新到磁盘的那部分不再需要的日志可以被覆盖重用。
+InnoDB通过LSN(Log Sequence Number)来标记版本，LSN是日志空间中每条日志的结束点，用字节偏移量来表示。
+每个page有LSN，redo log也有LSN，Checkpoint也有LSN。可以通过命令show engine innodb status来观察
+Checkpoint机制每次刷新多少页，从哪里取脏页，什么时间触发刷新？
 
-undo日志存在于共享表空间ibdata1里面，有一个回滚段地址，里面存放了头信息，配置头信息，段的头信息，里面存储了与redo相反的数据更新操作，如果rollback的话，就把undo段里面数据回写到数据文件里面。
-如果用了独立表空间的话，则直接存储到表私自的空间中，而不存储到共享表空间中。在innodb存储引擎中，undo log用来完成事务的回滚以及MVCC的功能
-redo与undo他们并不是各自独立没有关系的，他们是有关联的，交替合作来保证数据的一致性和安全性，
+undo日志存在于共享表空间ibdata1里面，有一个回滚段地址，里面存放了头信息，配置头信息，段的头信息，里面存储了与redo相反的数据更新操作，
+如果rollback的话，就把undo段里面数据回写到数据文件里面。在innodb存储引擎中，undo log用来完成事务的回滚以及MVCC的功能
 
+innodb相关的主要设置参数:
+innodb_data_file_path                                             ###设置默认表空间文件名，默认为ibdata1:12M:autoextend
+innodb_file_per_table=on                                          ###表是否开启独立表空间，默认on,开启后表数据文件为.ibd
+innodb_buffer_pool_instances = n                                  ###设置缓冲池实例
+innodb_buffer_pool_size                                           ###设置缓冲区大小，非常重要，索引，缓存数据，undo日志都在这里内存缓存。
+innodb_max_dirty_pages_pct = 75                                   ###缓冲池中最大允许的脏页面的比例，当缓冲池中脏页的数量占据75%时，强制进行checkpoin，刷新一部分的脏页到磁盘。
+innodb_io_capacity                                                ###磁盘io的吞吐量,默认值是200.对于刷新到磁盘页的数量，会按照inodb_io_capacity的百分比来进行控制。规则如下：
+                                                                     在合并插入缓冲(merge insert buffer)时，合并插入缓冲数量为innodb_io_capacity 值的5%
+                                                                     在从缓冲池刷新脏页时，刷新脏页的数量为innodb_io_capacity的值，也就是默认值200.
+                                                                     如果使用了ssd，或者raid磁盘时，磁盘拥有更高的io速度，可以适当增加该参数的值。
+innodb_log_buffer_size                                            ###缓冲日志数据的缓冲区大小,也是事务日志,重做日志缓冲池,默认18m,当此值快满时, InnoDB将必须刷新数据到磁盘上
+                                                                     由于基本上每秒都会刷新一次,所以没有必要将此值设置的太大
+innodb_adaptive_flushing                                          ###自适应刷新脏页。默认开启。
+innodb_additional_mem_pool_size
+innodb_flush_log_at_trx_commit                                    ###设置将事务日志redo log从innodb log buffer写入到redo log文件中时机，
+                                                                     =0, 每隔一秒，把事务日志缓存区的数据写到日志文件中，以及把日志文件的数据刷新到磁盘上，
+                                                                          在这种情况下，mysql性能最好，但如果 mysqld 进程崩溃，通常会导致最后1s 的日志丢失。
+                                                                     =1,每个事务提交时候，把事务日志从缓存区写到日志文件中，并且刷新日志文件的数据到磁盘上,
+                                                                          在这种情况下，，每次事务提交时，log buffer 会被写入到日志文件并刷写到磁盘。这也是默认值。
+                                                                          这是最安全的配置，但由于每次事务都需要进行磁盘I/O，所以也最慢。
+                                                                          对一致性和完整性要求很高的服务，比如支付服务，及时最慢，也最好设置为1.
+                                                                     =2,每个事务提交的时候，把事务日志数据从缓存区写到日志文件中；但并不会立即刷写到磁盘，日志文件会每秒刷写一次到磁盘。
+                                                                          这里的事务日志数据从缓存区写到日志文件中的写入仅仅是调用了文件系统的文件写入操作。
+                                                                          而文件系统都是有缓存机制的，所以Log Thread 的这个写入并不能保证内容真的已经写入到物理磁盘上面完成持久化的动作。
+                                                                          文件系统什么时候会将缓存中的这个数据同步到物理磁盘文件Log Thread 就完全不知道了。
+                                                                          所以，在这种情况下，MySQL Crash 并不会造成数据的丢失，但是OS Crash 或者是主机断电后可能丢失的数据量就完全控制在文件系统上了。
+
+innodb_read_io_threads                                            ###设置read thread(读线程个数，默认是4个)
+innodb_write_io_threads                                           ###设置write thread(写线程个数，默认是4个)
+innodb_purge_thread = 1                                           ###undo日志的清理回收(purge)线程数,innodb1.2后才支持多个Pugre Thread线程
+innodb_purge_batch_size                                           ###在进行full purge时，回收Undo页的个数，默认是20
+
+
+
+innodb相关主要设置参数查看:
+show variables like 'innodb_file_per_table' \G                    ###查看每张表是否开启独立表空间
+show variables like 'innodb%log%';                                ###查看日志相关东东
+
+
+名词术语解释:
+脏页－linux内核中的概念，因为硬盘的读写速度远赶不上内存的速度，系统就把读写比较频繁的数据事先放到内存中，以提高读写速度，这就叫高速缓存，
+      linux是以页作为高速缓存的单位，当进程修改了高速缓存里的数据时，该页就被内核标记为脏页，
+      内核将会在合适的时间把脏页的数据写到磁盘中去，以保持高速缓存中的数据和磁盘中的数据是一致的。
 -------------------------------------------------------------------------------------------

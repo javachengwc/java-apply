@@ -67,8 +67,8 @@ RowId    DB_TRX_ID    DB_ROLL_PTR   id     col1     col2     col3
 当更新一条数据时，
 a,用排他锁锁定该行,
 b,把该行修改前的值copy到undo log中
-c,修改当前行的值,填写事务编号,使回滚指针指向undo log中修改前的那行
-d,记录redo log，包括undo log中的变化
+c,记录redo log，包括undo log中的变化
+d,修改当前行的值,填写事务编号,使回滚指针指向undo log中修改前的那行
 更新记录时，原记录将被放入到undo表空间中，并通过DB_ROLL_PT指向该记录,
 在更新记录没提交前，如果有另一个session开启事务查询此记录，查询的返回是未修改的数据，就是从这个undo中返回的。
 mysql就是根据记录上的回滚段指针及事务ID判断记录是否可见，如果不可见继续按照DB_ROLL_PT继续回溯查找。
