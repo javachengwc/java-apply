@@ -3,6 +3,8 @@
 reset query cache;
 ---不缓存查询某语句
 select sql_no_cache   * from test ...
+---强制缓存sql_cache
+select sql_cache * from table_name;
 ---设置客户端连接字符集
 set names utf8;
 ---执行查询计划
@@ -11,6 +13,10 @@ explain select ...
 select * from tablea force index(aa_index)
 select * from tba force index(aa_index)
 join tbb force index(bb_index) on tba.id=tab.aid
+---强制连接顺序straight_join
+select a.f1,b.f2 from a straight_join b where b.aid=a.id
+上面的sql语句可知，通过straight_join强迫mysql按a、b的顺序连接表。
+
 ----------------------------------------------
 window下用source还原数据库中文乱码问题无法回避,因为window下的cmd命令字符集固定的gbk,不能换成其他字符集,
 变通的做法直接把sql语句在sql客户端客户端执行,而不用cmd命令行去操作
