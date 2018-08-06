@@ -21,11 +21,32 @@ InnoDB逻辑存储结构(见innodb-struct.png)包括:
     事务被提交或回滚后，其所使用的undolog（撤销日志）可能不再需要，因此需要Purge Thread（清理线程）来回收已经使用并分配的undo页。
     innodb1.1版本之前，purge操作也就是undo日志的回收清理操作仅在innodb引擎中的Master Thread中完成。
     从innodb1.1版本开始。purge操作可以独立到单独的线程中进行。以此来减轻Master Thread的工作。提高cpu使用率以及提升存储引擎性能。
-段(segment(一个索引2个段)) ------
-Extent（1MB）,
-Page（16KB）,
-Row,
-Field
+段(segment) ------常见的段有数据段、索引段、回滚段等。InnoDB存储引擎表是索引组织的（index organized），因此数据即索引，索引即数据。
+    那么数据段即为B+树的页节点,索引段即为B+树的非页节点。
+    注:并不是每个对象都有段。因此更准确地说，表空间是由分散的页和段组成。
+区(extent)------区是由64个连续的页组成的，每个页大小为16KB，即每个区的大小为1MB。
+    对于大的数据段，InnoDB存储引擎最多每次可以申请4个区，以此来保证数据的顺序性能。
+    启用参数innodb_file_per_talbe后，创建的表默认大小是96KB。区是64个连续的页，那创建的表的大小至少是1MB才对啊?
+    这是因为在每个段开始时，先有32个页大小的碎片页（fragment page）来存放数据，当这些页使用完之后才是64个连续页的申请。
+页(page)-------页是InnoDB磁盘管理的最小单位,也被称为块,innodb页的大小16KB,
+    常见的页类型有：
+    数据页（B-tree Node）
+    undo页（Undo Log Page）
+    系统页（System Page）
+    事务数据页（Transaction system Page）
+    插入缓冲位图页（Insert Buffer Bitmap）
+    插入缓冲空闲列表页（Insert Buffer Free List）
+    未压缩的二进制大对象页（Uncompressed BLOB Page）
+    压缩的二进制大对象页（Compressed BLOB Page）
+行(row)--------innodb存储引擎是面向行的（row-oriented），也就是说数据的存放按行进行存放。
+    每个页存放的行记录也是有硬性定义的，最多允许存放16KB/2～200行的记录，即7992行记录。
+
+InnoDB物理存储结构文件包括:
+    共享表空间文件ibdata1
+    日志文件组(redo日志文件组)ib_logfile0,ib_logfile1
+    表结构定义文件 *.frm
+    innodb_file_per_table=on下单独表空间文件 *.ibd,数据、索引、表的内部数据字典信息都将保存在这个单独的表空间文件中
+    其他文件
 
 内存结构:
 缓冲池buffer pool                           ###由innodb_buffer_pool_size配置
@@ -55,13 +76,16 @@ InnoDB采用Write Ahead Log策略来防止宕机数据丢失，即事务提交�
     缓冲池不够用时，将脏页刷新到磁盘
     重做日志不可用时，刷新脏页
 重做日志被设计成可循环使用，当日志文件写满时，重做日志中对应数据已经被刷新到磁盘的那部分不再需要的日志可以被覆盖重用。
-InnoDB通过LSN(Log Sequence Number)来标记版本，LSN是日志空间中每条日志的结束点，用字节偏移量来表示。
-每个page有LSN，redo log也有LSN，Checkpoint也有LSN。可以通过命令show engine innodb status来观察
+InnoDB通过LSN(Log Sequence Number)来标记版本，也被称做日志序列号，是一个64位的整型。LSN是日志空间中每条日志的结束点，用字节偏移量来表示。
+新的LSN＝旧的LSN + 写入的日志大小，每个page有LSN，redo log也有LSN，Checkpoint也有LSN。可以通过命令show engine innodb status来观察
 
 Checkpoint机制每次刷新多少页，从哪里取脏页，什么时间触发刷新?
 Checkpoint分为Sharp Checkpoint和Fuzzy Checkpoint
 Sharp Checkpoint发生在关闭数据库时，将所有脏页刷回磁盘。
-Fuzzy Checkpoint是在运行时进行部分脏页的刷新，部分脏页刷新有以下几种:
+Fuzzy Checkpoint是在运行时进行部分脏页的刷新，Fuzzy Checkpoint的机制，每次取到最老的脏页，然后确保此脏页对应的LSN之前的LSN都已经写入日志文件，
+再将此脏页的LSN作为Checkpoint点记录到日志文件，意思就是“此LSN之前的LSN对应的日志和数据都已经写入磁盘文件”。
+恢复数据文件的时候，Innodb扫描日志文件，当发现LSN小于Checkpoint对应的LSN，就认为恢复已经完成。
+    部分脏页刷新有以下几种:
     Master Thread Checkpoint------Master Thread以每秒或每十秒的速度从缓冲池的脏页列表中刷新一定比例的页回磁盘。这个过程是异步的，不会阻塞查询线程。
     FLUSH_LRU_LIST Checkpoint-----InnoDB要保证LRU列表中有100左右空闲页可使用。
                               在InnoDB1.1.X版本前，检查LRU中是否有足够的页用于用户查询操作线程，如果没有，会将LRU列表尾端的页淘汰，
