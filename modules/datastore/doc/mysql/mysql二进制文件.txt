@@ -36,6 +36,7 @@ sync_binlog：sync_binlog参数来控制数据库的binlog刷到磁盘上去,默
     sync_binlog=0，表示mysql不控制binlog的刷新，由文件系统自己控制它的缓存的刷新。这时性能是最好的，但风险也是最大的。一旦系统Crash，在binlog_cache中的所有binlog信息都会被丢失。
     sync_binlog>0，每向二进制日志文件写入N条SQL或N个事务后，则把二进制日志文件的数据刷新到磁盘上；
     sync_binlog=1，表示每次事务提交，mysql都会把binlog刷下去，是最安全,但是性能损耗最大的设置。
+         当sysnc_binlog=1，还有一个参数需要设置。innodb_support_xa也需要将该值设置为1.避免事务不能被回滚的问题。
          在数据库所在的主机操作系统损坏或者突然掉电的情况下，系统才有可能丢失1个事务的数据。
          binlog虽然是顺序IO，但是设置sync_binlog=1，多个事务同时提交，同样可能影响mysql和io性能。
          所以很多mysql设置的sync_binlog并不是1，而是2或者是0。这样牺牲一定的一致性，可以获得更高的并发和性能。
