@@ -136,7 +136,7 @@ mysql>show profile for query 1;  #显示对应sql语句执行的详细信息
     freeing items           0.000125              ##释放查询缓存里面的空间
     logging slow query      7.6E-5
     cleaning up             3.1E-5
-
+mysql>show profile block io  for query 1;  #显示对应sql语句执行的io相关信息
 
 show profile命令格式：
 SHOW PROFILE [type [, type] … ]
