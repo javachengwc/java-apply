@@ -11,13 +11,66 @@ vim /usr/local/apache2/conf/httpd.conf                                          
         order deny,allow
         allow from all
     </Directory>
+/usr/local/apache2/bin/apachectl start                                                    ###启动apache
+访问http://127.0.0.1/dokuwiki/install.php按照指引进行安装
+如果这里提示访问权限不够，那chmod -R 777 /var/www/html/dokuwiki,再继续
+vim /usr/local/apache2/conf/httpd.conf                                                    ###再次修改apache配置
+    #追加如下文件夹的访问限制
     <LocationMatch "/(data|conf|bin|inc)/">
-        order allow,deny
-        deny from all
-        satisfy all
-    </LocationMatch>
-
+         order allow,deny
+         deny from all
+         satisfy all
+     </LocationMatch>
+rm /var/www/html/dokuwiki/install.php                                                     ###删除安装文件
+/usr/local/apache2/bin/apachectl stop
+/usr/local/apache2/bin/apachectl start                                                    ###启动apache
+直此安装完成，但使用还需要安装插件
+1,Add New Page插件------新增页面
+2,Move Plugin插件 ------方便移动页面和命名空间
+3,Pagemove plugin插件---方便移动页面和命名空间
+4,Markdown插件    ------PHP Markdown Extra plugin
+5,侧边栏
+    a,安装simplenavi插件
+    b,新建/var/www/html/dokuwiki/data/pages/sidebar.txt,内容为:
+          {{simplenavi>}}
+          {{NEWPAGE}}
+安装这些插件，需要php开启openssl,开启过程如下:
+cd /data/setup/php-5.6.31/ext/openssl            ###首先切到下载解压包的openssl目录，如果下载解压包目录不存在
+                                                 ###需重新下载同版本的安装包，然后解压，切入到openssl目录
+/usr/local/php/bin/phpize                        ###执行phpize操作，可能会报错无法找到config.m4,其实config0.m4就是config.m4
+mv config0.m4 config.m4                          ###重命名config0.m4为config.m4
+/usr/local/php/bin/phpize                        ###重执行phpize操作
+./configure --with-openssl --with-php-config=/usr/local/php/bin/php-config   ###就在此openssl目录下执行
+make                                             ###就在此openssl目录执行
+make install                                     ###就在此openssl目录执行
+#这里会输出Installing shared extensions:     /usr/local/php/lib/php/extensions/no-debug-non-zts-20131226/
+cd /usr/local/php/lib/php/extensions/no-debug-non-zts-20131226/                           ###在此目录会发现有一个openssl.so文件了
+mkdir -p /usr/local/php/lib/extensions
+cp openssl.so /usr/local/php/lib/extensions
+vim /usr/local/php/lib/php.ini                                                            ###修改php的配置
+    extension_dir = "/usr/local/php/lib/extensions"                                       ###这里必须绝对路径，不然没效果
+    extension=openssl.so
+/usr/local/apache2/bin/apachectl stop
+/usr/local/apache2/bin/apachectl start                                                    ###启动apache
+-----------------------------------------------------------------
 /var/www/html/dokuwiki/conf/dokuwiki.php                                                  ###dokuwiki配置文件
-
+如果有中文文件名乱码问题
+vim /var/www/html/dokuwiki/conf/local.php
+    #追加配置
+    $conf['fnencode']='gb2312';
+vim /var/www/html/dokuwiki/inc/pageutils.php
+    function utf8_encodeFN($file,$safe=true)
+    ...
+    // 中文支持
+    if ($conf['fnencode']=='gb2312'){
+        return iconv('UTF-8','GB2312',$file);
+    }
+    ...
+    function utf8_decodeFN($file){
+    ...
+    // 中文支持
+    if ($conf['fnencode']=='gb2312'){
+        return iconv('GB2312','UTF-8',$file);
+    }
 
 ---------------------------------------------------------------------------------------------------
