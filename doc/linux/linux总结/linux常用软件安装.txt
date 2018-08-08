@@ -341,7 +341,8 @@ vim /usr/local/apache2/conf/httpd.conf
         DirectoryIndex index.html index.php
 vim /usr/local/apache2/htdocs/test.php
     <?php phpinfo();?>;
-/usr/local/apache2/bin/apachectl restart   #重启apache
+/usr/local/apache2/bin/apachectl stop
+/usr/local/apache2/bin/apachectl start   #启动apache
 http://localhost/test.php    能访问php页面表示在apache中配置php成功
 
 ---------------python
