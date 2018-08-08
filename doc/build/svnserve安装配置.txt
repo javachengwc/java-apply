@@ -42,4 +42,17 @@ svnserve -d -r /data/svnrepo/project      ---启动svnserve,默认启动端口�
 svnserve -d -r /data/svnrepo/project --listen-port 3000      ---指定启动端口启动svnserve
 killall svnserve                          ---停止svnserve
 
+//下面是将svnserve注册成系统服务
+useradd -rm svn
+vim /etc/systemd/system/svn.service
+    [Unit]
+    Description=Subversion Server
+    [Service]
+    Type=forking
+    ExecStart=/usr/bin/svnserve -d -r /data/svnrepo/project
+    ExecStop=/usr/bin/killall svnserve
+    User=svn
+    [Install]
+    WantedBy=default.target
+systemctl enable svn.service
 ---------------------------------------------------------------------------------------------

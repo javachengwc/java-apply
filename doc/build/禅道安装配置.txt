@@ -31,6 +31,8 @@ http://ip:8080                 ###访问禅道
 /opt/zbox/etc/mysql/my.cnf           ###mysql配置文件
 opt/zbox/app/zentao/config/my.php    ###数据库初始密码在此文件有配置
 /opt/zbox/app/zentao/tmp/backup      ###备份文件路径
+/opt/zbox/tmp                        ###启动禅道后,对应的httpd.pid,mysqld.pid目录
+                                     如果启动中提示httpd服务已存在,但根据pid查询没相应进程的时候，需要到此目录把对应的pid文件删除
 
 RPM包安装：可以通过rpm包管理器在Centos系统下安装
 http://dl.cnezsoft.com/zentao/9.8.1/zentaopms-9.8.1-1.noarch.rpm
