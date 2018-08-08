@@ -25,11 +25,14 @@ rm /var/www/html/dokuwiki/install.php                                           
 /usr/local/apache2/bin/apachectl stop
 /usr/local/apache2/bin/apachectl start                                                    ###启动apache
 直此安装完成，但使用还需要安装插件
+如果通过应用的插件管理安装不了插件,可下载插件zip文件，上传到插件目录/var/www/html/dokuwiki/lib/plugins，解压后重命名即可。
 1,Add New Page插件------新增页面
 2,Move Plugin插件 ------方便移动页面和命名空间
 3,Pagemove plugin插件---方便移动页面和命名空间
 4,Markdown插件    ------PHP Markdown Extra plugin
-5,侧边栏
+5,Indexmenu Plugin------索引目录插件
+6,Wrap Plugin     ------排版增强插件
+7,侧边栏
     a,安装simplenavi插件
     b,新建/var/www/html/dokuwiki/data/pages/sidebar.txt,内容为:
           {{simplenavi>}}
@@ -73,4 +76,8 @@ vim /var/www/html/dokuwiki/inc/pageutils.php
         return iconv('GB2312','UTF-8',$file);
     }
 
+修改上传附件大小为2M限制的方法：
+vim /usr/local/php/lib/php.ini
+    upload_max_filesize = 10M
+    post_max_size = 10M
 ---------------------------------------------------------------------------------------------------
