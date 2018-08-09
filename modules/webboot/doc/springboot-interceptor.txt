@@ -1,0 +1,18 @@
+springboot拦截器是通过WebMvcConfigurerAdapter.addInterceptors来添加的
+//代码片段
+@Configuration
+public class MvcConfig extends WebMvcConfigurerAdapter {
+
+    @Resource
+    private LoginInterceptor loginInterceptor;
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(loginInterceptor)
+                .addPathPatterns("/**")
+                .excludePathPatterns("/swagger-resources/configuration/ui",
+                                     "/swagger-resources",
+                                     "/swagger-resources/configuration/security");
+        super.addInterceptors(registry);
+    }
+}

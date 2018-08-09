@@ -1,0 +1,21 @@
+springboot提供FilterRegistrationBean类,来支持web filter
+//代码片段
+@Configuration
+public class MvcConfig extends WebMvcConfigurerAdapter {
+
+    @Bean
+    public FilterRegistrationBean someFilterRegistration() {
+        FilterRegistrationBean registration = new FilterRegistrationBean();
+        registration.setFilter(reqFilter());
+        registration.addUrlPatterns("/*");
+        registration.addInitParameter("paramName", "paramValue");
+        registration.setName("reqFilter");
+        registration.setOrder(1);           //filter顺序
+        return registration;
+    }
+
+    @Bean(name = "reqFilter")
+    public Filter reqFilter() {
+        return new ReqFilter();
+    }
+}
