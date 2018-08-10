@@ -14,6 +14,20 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
         return registration;
     }
 
+    @Bean("xssFilterRegBean")
+    public FilterRegistrationBean xssFilterRegistrationBean() {
+        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+        filterRegistrationBean.setFilter(new XssFilter());
+        filterRegistrationBean.setOrder(2);
+        filterRegistrationBean.setEnabled(true);
+        filterRegistrationBean.addUrlPatterns("/*");
+        Map<String, String> initParameters = new HashMap<String, String>();
+        initParameters.put("excludes", "/favicon.ico,/img/*,/js/*,/css/*");
+        initParameters.put("isIncludeRichText", "true");
+        filterRegistrationBean.setInitParameters(initParameters);
+        return filterRegistrationBean;
+    }
+
     @Bean(name = "reqFilter")
     public Filter reqFilter() {
         return new ReqFilter();
