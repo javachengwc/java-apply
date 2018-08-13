@@ -1,0 +1,88 @@
+-------------------------------------thymeleaf用法------------------------------
+1,引用命名空间 <html xmlns:th="http://www.thymeleaf.org">
+在html中引入此命名空间，可避免编辑器出现html验证错误，虽然加不加命名空间对thymeleaf的功能没有任何影响。
+
+2,输出内容
+<p th:text="#{home.welcome}">welcome to aa</p>
+th:text  用来将内容输出到所在标签的body中。
+#{home.welcome} 用来引入数据home对象中的 welcome属性。
+可以用th:utext 用来显示“unescaped ” 的html内容。
+<p>Today is: <span th:text="${today}"></span></p>
+${today} 用来引用 today 变量
+
+3,访问对象
+${param.x}                 返回名为x 的 request参数。
+${session.x}               返回名为x的Session参数。
+${application.x}           返回名为 servlet context 的参数。
+
+4,基本语法
+#{home.welcome}                                                           ###访问数据
+#{home.welcome(${session.user.name})}
+${today}
+#ctx: the context object.                                                 ###访问基本对象
+#vars: the context variables.
+#locale: the context locale.
+#request: (only in Web Contexts) the HttpServletRequest object.
+#response: (only in Web Contexts) the HttpServletResponse object.
+#session: (only in Web Contexts) the HttpSession object.
+#servletContext: (only in Web Contexts) the ServletContext object.
+<span th:text="${#calendars.format(today,'dd MMMM yyyy')}">aaa</span>    ###日期的输出
+<div th:object="${session.user}">                                        ###星号语法
+    <p>name: <span th:text="*{firstName}">aa</span>.</p>
+    <p>sub name: <span th:text="*{lastName}">bb</span>.</p>
+    <p>nation: <span th:text="*{nationality}">cc</span>.</p>
+</div>
+<a href="product/list.html" th:href="@{/product/list}">product list</a>    ### 输出url
+<a href="details.html" th:href="@{/order/{orderId}/details(orderId=${o.id})}">view</a>
+<div th:insert="~{commons :: main}">...</div>                              ###使用代码段
+<span th:text="'working web application'">                                 ###输出字符
+<span th:text="2013 + 2">                                                  ###输出数据表达式
+<div th:if="${user.isAdmin()} == false">                                   ###输出布尔表达式
+<span th:text="'Welcome to our application, ' + ${user.name} + '!'">       ###带变量的
+<tr th:class="${row.even}? 'even' : 'odd'"></tr>                           ###条件表达式
+<tr th:class="${row.even}? 'alt'"></tr>
+
+5,设置 Attribute 值
+<input type="submit" value="what" th:attr="value=#{subscribe.submit}"/>
+<img src="../../images/gtvglogo.png"  th:attr="src=@{/images/gtvglogo.png},title=#{logo},alt=#{logo}" />
+<li><a href="product/list.html" th:href="@{/product/list}">product list</a></li>
+
+6,循环
+<table>
+<tr th:each="prod : ${prods}">
+     <td th:text="${prod.name}">a</td>
+     <td th:text="${prod.price}">b</td>
+     <td th:text="${prod.cc}? #{true} : #{false}">yes</td>
+</tr>
+</table>
+<table>
+<tr>
+    <th>NAME</th>
+    <th>PRICE</th>
+    <th>BOOLEAN</th>
+</tr>
+<tr th:each="prod,iterStat:${prods}" th:class="${iterStat.odd}? 'odd'">
+    <td th:text="${prod.name}">a</td>
+    <td th:text="${prod.price}">b</td>
+    <td th:text="${prod.inStock}? #{true} : #{false}">yes</td>
+</tr>
+</table>
+
+7,条件判断
+<a href="comments.html" th:href="@{/comments(prodId=${prod.id})}" th:unless="${#lists.isEmpty(prod.comments)}">view</a>
+<a href="comments.html"  th:href="@{/product/comments(prodId=${prod.id})}"   th:if="${not #lists.isEmpty(prod.comments)}">view</a>
+<div th:switch="${user.role}">
+    <p th:case="'admin'">admin</p>
+    <p th:case="#{roles.manager}">manager</p>
+    <p th:case="*">da zong</p>
+</div>
+
+8,局部变量的使用示例
+<div th:with="firstPer=${persons[0]}" >
+    <span th:text="${firstPer.name}" />
+</div>
+<div th:with="firstPer=${persons[0]},secondPer=${persons[1]}">
+    <span th:text="${firstPer.name}" />
+    <span th:text="${secondPer.name}" />
+</div>
+----------------------------------------------------------------------------------
