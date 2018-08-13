@@ -1,4 +1,4 @@
-package com.spring.pseudocode.context;
+package com.spring.pseudocode.context.context;
 
 import org.springframework.context.ApplicationEvent;
 

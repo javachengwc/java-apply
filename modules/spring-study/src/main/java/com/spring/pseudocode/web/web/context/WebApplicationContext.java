@@ -1,6 +1,6 @@
 package com.spring.pseudocode.web.web.context;
 
-import com.spring.pseudocode.context.ApplicationContext;
+import com.spring.pseudocode.context.context.ApplicationContext;
 
 import javax.servlet.ServletContext;
 
