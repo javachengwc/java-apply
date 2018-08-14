@@ -1,8 +1,8 @@
 package com.spring.pseudocode.context.context;
 
+import com.spring.pseudocode.core.core.env.ConfigurableEnvironment;
 import com.spring.pseudocode.web.web.context.Lifecycle;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.core.env.ConfigurableEnvironment;
 
 import java.io.Closeable;
 
