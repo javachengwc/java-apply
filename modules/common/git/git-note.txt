@@ -157,6 +157,10 @@ git checkout -b newBrach origin/master 在origin/master的基础上，创建一�
 git log -p filename                      查看某文件的历史版本信息
 git log --pretty=oneline  filename       显示每个版本都修改了那些文件
 git show 提交版本号                      显示某版本号具体修改内容
+git diff [<commit-id>] [<commit-id>]     比较两个commit-id之间的差异
+git diff --cached [<commit-id>] [<path>  比较暂存区与指定commit-id的差异
+git diff commit-id  [<path>...]          比较工作区与指定commit-id的差异
+git diff                                 不加参数即默认比较工作区与暂存区
 git reset --hard commit_id  filename     将文件恢复到某历史版本
 git reset --hard origin/master           将工程恢复成指定远程分支最新版本内容
 
