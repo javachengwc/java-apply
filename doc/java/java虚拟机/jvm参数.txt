@@ -23,6 +23,8 @@
     -XX:MaxPermSize=512m                             ------持久代最大大小
     -XX:-DontCompileHugeMethods                      ------解除大方法(代码行2500以上)的编译限制,需占用更多的持久代。
                                                            但编译后可让大方法的执行速度变快，且可能提高GC速度
+    -XX:MetaspaceSize=200m                           ------jdk8中metaspace代替了permsize
+    -XX:MaxMetaspaceSize=256m
 class
     -verbose:class                                   ------打印类加载和卸载信息
 对象进入年老代
