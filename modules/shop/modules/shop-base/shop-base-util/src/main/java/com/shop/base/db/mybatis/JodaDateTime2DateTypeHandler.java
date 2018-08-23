@@ -7,7 +7,7 @@ import org.joda.time.DateTime;
 import java.sql.*;
 
 public class JodaDateTime2DateTypeHandler extends BaseTypeHandler<DateTime> {
-    
+
     public void setNonNullParameter(PreparedStatement ps, int i, DateTime parameter, JdbcType jdbcType)
             throws SQLException {
         DateTime dateTime = parameter;

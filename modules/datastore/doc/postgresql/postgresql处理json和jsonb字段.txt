@@ -178,6 +178,7 @@ where pp::json->> 'weight' = '2'
 -------------------------------------------------
 select  data, JSONB_EXTRACT_PATH_TEXT(data,'ownerName') as owner_name from ta;
 
-select
+select  JSONB_ARRAY_ELEMENTS(imgs) as img from pic;
+
 
 ------------------------------------------------------------------------------------------
