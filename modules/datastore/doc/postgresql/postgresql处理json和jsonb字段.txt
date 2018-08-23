@@ -175,4 +175,9 @@ json_extract_path ('{"goods":
 }' , 'goods' ) ) as pp
 where pp::json->> 'weight' = '2'
 输出:2	22
+-------------------------------------------------
+select  data, JSONB_EXTRACT_PATH_TEXT(data,'ownerName') as owner_name from ta;
+
+select
+
 ------------------------------------------------------------------------------------------
