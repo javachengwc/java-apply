@@ -139,6 +139,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
+                    <!--方法参数的名字能保留在Java字节码 通过反射API与Parameter.getName()方法获取 -->
+                    <compilerArgument>-parameters</compilerArgument>
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
