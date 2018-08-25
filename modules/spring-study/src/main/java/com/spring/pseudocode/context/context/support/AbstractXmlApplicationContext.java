@@ -44,7 +44,7 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableA
 
     protected void initBeanDefinitionReader(XmlBeanDefinitionReader reader)
     {
-        reader.setValidating(this.validating);
+        //reader.setValidating(this.validating);
     }
 
     protected void loadBeanDefinitions(XmlBeanDefinitionReader reader)throws BeansException, IOException

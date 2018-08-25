@@ -16,7 +16,7 @@ import org.w3c.dom.Node;
 
 import java.util.*;
 
-//spring的xml配置文件的解析处理由此类BeanDefinitionParserDelegate完成
+//spring的xml配置文件的扩展的解析处理由此bean定义解析委派类BeanDefinitionParserDelegate完成
 //BeanDefinitionParserDelegate将bean的各种标签解析成BeanDefinition对象，并组装成BeanDefinitionHolder返回
 public class BeanDefinitionParserDelegate
 {
@@ -75,6 +75,30 @@ public class BeanDefinitionParserDelegate
         return this.readerContext;
     }
 
+    public boolean isDefaultNamespace(String namespaceUri) {
+        return (!StringUtils.hasLength(namespaceUri)) ||
+                (BEANS_NAMESPACE_URI.equals(namespaceUri));
+    }
+
+    public boolean isDefaultNamespace(Node node) {
+        //return isDefaultNamespace(getNamespaceURI(node));
+        return false;
+    }
+
+    public void initDefaults(Element root)
+    {
+        initDefaults(root, null);
+    }
+
+    public void initDefaults(Element root, BeanDefinitionParserDelegate parent)
+    {
+       //...
+    }
+
+    public BeanDefinitionHolder parseBeanDefinitionElement(Element ele)
+    {
+        return parseBeanDefinitionElement(ele, null);
+    }
 
     //对于<bean id="aa" name="aaa" class="com.xxx.Aa"></bean>这个bean的解析
     //在parseBeanDefinitionElement中会完成id和name标签的解析处理操作，并最终生成BeanDefinitionHolder返回
@@ -149,4 +173,37 @@ public class BeanDefinitionParserDelegate
     {
         return node.getLocalName();
     }
+
+    public boolean nodeNameEquals(Node node, String desiredName)
+    {
+        return (desiredName.equals(node.getNodeName())) || (desiredName.equals(getLocalName(node)));
+    }
+
+    //对命名空间下的标签进行处理
+    public BeanDefinition parseCustomElement(Element ele) {
+        return parseCustomElement(ele, null);
+    }
+
+    public BeanDefinition parseCustomElement(Element ele, BeanDefinition containingBd) {
+        //获取xml配置文件中的命名空间,比如http://www.springframework.org/schema/aop
+        String namespaceUri = getNamespaceURI(ele);
+        //根据命名空间找到命名空间处理类,比如AopNamespaceHandler
+        NamespaceHandler handler = this.readerContext.getNamespaceHandlerResolver().resolve(namespaceUri);
+        if (handler == null) {
+            return null;
+        }
+        //解析命名空间支持的标签
+        return handler.parse(ele, new ParserContext(this.readerContext, this, containingBd));
+    }
+
+    public BeanDefinitionHolder decorateBeanDefinitionIfRequired(Element ele, BeanDefinitionHolder definitionHolder) {
+        //return decorateBeanDefinitionIfRequired(ele, definitionHolder, null);
+        return null;
+    }
+
+    public String getNamespaceURI(Node node)
+    {
+        return node.getNamespaceURI();
+    }
+
 }

@@ -1,13 +1,9 @@
 package com.spring.pseudocode.beans.factory.xml;
 
 import com.spring.pseudocode.beans.factory.BeanDefinitionStoreException;
+import com.spring.pseudocode.beans.factory.config.BeanDefinitionHolder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.config.BeanDefinitionHolder;
-import org.springframework.beans.factory.parsing.BeanComponentDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
-import org.springframework.beans.factory.xml.BeanDefinitionParserDelegate;
-import org.springframework.beans.factory.xml.XmlReaderContext;
 import org.springframework.util.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -90,10 +86,13 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
                 if ((node instanceof Element)) {
                     Element ele = (Element)node;
                     if (delegate.isDefaultNamespace(ele)) {
+                        //对默认命名空间（http://www.springframework.org/schema/beans）下的标签节点（bean、import、alias等）进行处理
                         parseDefaultElement(ele, delegate);
                     }
-                    else
+                    else {
+                        //对非默认命名空间下的标签进行处理
                         delegate.parseCustomElement(ele);
+                    }
                 }
             }
         }
@@ -144,13 +143,12 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
         }
         if (valid) {
             try {
-                getReaderContext().getRegistry().registerAlias(name, alias);
+//              getReaderContext().getRegistry().registerAlias(name, alias);
             }
             catch (Exception ex) {
                 getReaderContext().error("Failed to register alias '" + alias + "' for bean with name '" + name + "'", ele, ex);
             }
-
-            getReaderContext().fireAliasRegistered(name, alias, extractSource(ele));
+//            getReaderContext().fireAliasRegistered(name, alias, extractSource(ele));
         }
     }
 
@@ -167,12 +165,12 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
             try
             {
                 //将bean的元数据BeanDifinition注册到BeanFactory中
-                BeanDefinitionReaderUtils.registerBeanDefinition(bdHolder, getReaderContext().getRegistry());
+                //BeanDefinitionReaderUtils.registerBeanDefinition(bdHolder, getReaderContext().getRegistry());
             }
             catch (BeanDefinitionStoreException ex) {
                 getReaderContext().error("Failed to register bean definition with name '" + bdHolder.getBeanName() + "'", ele, ex);
             }
-            getReaderContext().fireComponentRegistered(new BeanComponentDefinition(bdHolder));
+            //getReaderContext().fireComponentRegistered(new BeanComponentDefinition(bdHolder));
         }
     }
 
