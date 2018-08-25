@@ -8,6 +8,7 @@ import com.spring.pseudocode.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanIsNotAFactoryException;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.*;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.util.ClassUtils;
@@ -74,7 +75,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
     protected <T> T doGetBean(String name, Class<T> requiredType, Object[] args, boolean typeCheckOnly) throws BeansException
     {
+        //查找name是否有别名，获取最终的beanName
         String beanName = transformedBeanName(name);
+        //如果bean是单例模式，首先尝试从缓存中获取
         Object sharedInstance = getSingleton(beanName);
         Object bean=null;
         if ((sharedInstance != null) && (args == null)) {
@@ -84,6 +87,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
         else
         {
             //...
+            //判断容器是否有父容器，如果有则首先尝试从父容器中获取
             //BeanFactory parentBeanFactory = getParentBeanFactory();
             if ((parentBeanFactory != null) && (!containsBeanDefinition(beanName)))
             {
@@ -95,6 +99,85 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
                 return parentBeanFactory.getBean(nameToLookup, requiredType);
             }
             //...
+
+            try {
+                //根据beanName获取bean的元数据
+                final RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
+                //...
+                String[] dependsOn = mbd.getDependsOn();
+                if (dependsOn != null) {
+                    for (String dep : dependsOn) {
+                        if (isDependent(beanName, dep)) {
+                            throw new BeanCreationException(mbd.getResourceDescription(), beanName,
+                                    "Circular depends-on relationship between '" + beanName + "' and '" + dep + "'");
+                        }
+                        registerDependentBean(dep, beanName);
+                        getBean(dep);
+                    }
+                }
+
+                // bean是单例
+                if (mbd.isSingleton()) {
+                    //获取bean，首先会暴露一个ObjectFactory，通过调用getObject来调用createBean(beanName, mbd, args)获取bean
+                    sharedInstance = getSingleton(beanName, new ObjectFactory<Object>() {
+                        public Object getObject() throws BeansException {
+                            try {
+                                return createBean(beanName, mbd, args);
+                            }
+                            catch (BeansException ex) {
+                                destroySingleton(beanName);
+                                throw ex;
+                            }
+                        }
+                    });
+                    //判断bean是否是FactoryBean，如果不是直接返回sharedInstance，否则调用sharedInstance.getObject()方法返回bean
+                    bean = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
+                }
+                //bean是原型
+                else if (mbd.isPrototype()) {
+                    // It's a prototype -> create a new instance.
+                    Object prototypeInstance = null;
+                    try {
+                        //beforePrototypeCreation(beanName);
+                        //初始化bean
+                        prototypeInstance = createBean(beanName, mbd, args);
+                    }
+                    finally {
+                        //afterPrototypeCreation(beanName);
+                    }
+                    bean = getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);
+                }
+                else {
+                    //bean是其他模式
+                    String scopeName = mbd.getScope();
+                    final Scope scope = this.scopes.get(scopeName);
+                    if (scope == null) {
+                        throw new IllegalStateException("No Scope registered for scope name '" + scopeName + "'");
+                    }
+                    try {
+                        Object scopedInstance = scope.get(beanName, new ObjectFactory<Object>() {
+                            @Override
+                            public Object getObject() throws BeansException {
+                                //beforePrototypeCreation(beanName);
+                                try {
+                                    return createBean(beanName, mbd, args);
+                                }
+                                finally {
+                                    //afterPrototypeCreation(beanName);
+                                }
+                            }
+                        });
+                        bean = getObjectForBeanInstance(scopedInstance, name, beanName, mbd);
+                    }
+                    catch (IllegalStateException ex) {
+                        throw new BeanCreationException(beanName,"Scope '" + scopeName + "' is not active for the current thread;...", ex);
+                    }
+                }
+            }
+            catch (BeansException ex) {
+                //...............
+                throw ex;
+            }
         }
         return (T)bean;
     }
@@ -214,9 +297,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
         return object;
     }
 
-    protected abstract boolean containsBeanDefinition(String paramString);
+    protected abstract boolean containsBeanDefinition(String param);
 
-    protected abstract BeanDefinition getBeanDefinition(String paramString) throws BeansException;
+    protected abstract BeanDefinition getBeanDefinition(String param) throws BeansException;
 
-    protected abstract Object createBean(String paramString, RootBeanDefinition paramRootBeanDefinition, Object[] paramArrayOfObject)  throws BeanCreationException;
+    protected abstract Object createBean(String param, RootBeanDefinition rootBeanDefinition, Object[] arrayOfObject)  throws BeanCreationException;
 }
