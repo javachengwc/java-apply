@@ -1,4 +1,4 @@
-package com.designptn;
+package com.designptn.singleton;
 
 import com.util.base.ThreadUtil;
 

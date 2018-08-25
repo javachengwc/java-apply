@@ -44,4 +44,6 @@ public abstract interface BeanDefinition
 
     public abstract boolean isAbstract();
 
+    public abstract Object getSource();
+
 }
