@@ -38,6 +38,17 @@ systemd-journald---统一日志管理服务，红帽7.0后新一代的系统中�
 /var/log.boot.log     ##记录一些开机或者关机启动的一些服务显示的启动或者关闭的信息;
 /var/log/cpus         ##CPU的处理信息
 
+清除系统日志
+cat /dev/null > /var/log/daemon.log
+cat /dev/null > /var/log/syslog
+或者
+echo "" > /var/log/syslog
+echo "" > /var/log/daemon.log
+echo "" > /var/log/messages
+切忌不能直接 rm -f daemon.log，因为应用已经打开文件句柄，直接删除会造成：
+    1.应用无法正确释放日志文件和写入
+    2.显示磁盘空间未释放
+    
 vim /etc/systemd/journald.conf
 如下配置可用于限定journal体积的膨胀速度：
 SystemMaxUse=: 指定journal所能使用的最高持久存储容量。
