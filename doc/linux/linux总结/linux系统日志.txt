@@ -48,7 +48,7 @@ echo "" > /var/log/messages
 切忌不能直接 rm -f daemon.log，因为应用已经打开文件句柄，直接删除会造成：
     1.应用无法正确释放日志文件和写入
     2.显示磁盘空间未释放
-    
+
 vim /etc/systemd/journald.conf
 如下配置可用于限定journal体积的膨胀速度：
 SystemMaxUse=: 指定journal所能使用的最高持久存储容量。
