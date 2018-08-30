@@ -11,6 +11,8 @@ public class NumberMain {
         System.out.println("null to number:"+ NumberUtils.toLong(null) );
         //经典的带小数的值计算为非精准计算
         double ad=2.3d;
+        System.out.println(NumberUtils.isNumber("0.2222"));
+        System.out.println("............................");
         System.out.println(new Double(ad*100).intValue());
 
         //小数的精准计算
