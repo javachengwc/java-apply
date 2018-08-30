@@ -2,9 +2,11 @@ package com.spring.pseudocode.context.context.support;
 
 import com.spring.pseudocode.beans.BeansException;
 import com.spring.pseudocode.beans.factory.BeanFactory;
+import com.spring.pseudocode.beans.factory.config.BeanPostProcessor;
 import com.spring.pseudocode.context.context.ApplicationContext;
 import com.spring.pseudocode.context.context.ApplicationListener;
 import com.spring.pseudocode.context.context.ConfigurableApplicationContext;
+import com.spring.pseudocode.core.core.Ordered;
 import com.spring.pseudocode.core.core.env.ConfigurableEnvironment;
 import com.spring.pseudocode.core.core.io.ResourceLoader;
 import com.spring.pseudocode.core.core.io.support.ResourcePatternResolver;
@@ -14,11 +16,14 @@ import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.MergedBeanDefinitionPostProcessor;
 import org.springframework.context.*;
 import org.springframework.context.event.*;
 import org.springframework.context.expression.StandardBeanExpressionResolver;
 import org.springframework.context.support.DefaultLifecycleProcessor;
 import org.springframework.context.weaving.LoadTimeWeaverAwareProcessor;
+import org.springframework.core.OrderComparator;
+import org.springframework.core.PriorityOrdered;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.util.ReflectionUtils;
@@ -219,7 +224,69 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
     protected void registerBeanPostProcessors(ConfigurableListableBeanFactory beanFactory)
     {
-       //....
+        //获取所有实现BeanPostProcessor的实现类
+        String[] postProcessorNames = beanFactory.getBeanNamesForType(BeanPostProcessor.class, true, false);
+
+        int beanProcessorTargetCount = beanFactory.getBeanPostProcessorCount() + 1 + postProcessorNames.length;
+        //beanFactory.addBeanPostProcessor(new BeanPostProcessorChecker(beanFactory, beanProcessorTargetCount));
+
+        List<BeanPostProcessor> priorityOrderedPostProcessors = new ArrayList<BeanPostProcessor>();
+        List<BeanPostProcessor> internalPostProcessors = new ArrayList<BeanPostProcessor>();
+        List<String> orderedPostProcessorNames = new ArrayList<String>();
+        List<String> nonOrderedPostProcessorNames = new ArrayList<String>();
+        for (String ppName : postProcessorNames) {
+            if (isTypeMatch(ppName, PriorityOrdered.class)) {
+                BeanPostProcessor pp = beanFactory.getBean(ppName, BeanPostProcessor.class);
+                //保存所有的BeanPostProcessor
+                priorityOrderedPostProcessors.add(pp);
+                if (pp instanceof MergedBeanDefinitionPostProcessor) {
+                    internalPostProcessors.add(pp);
+                }
+            }
+            else if (isTypeMatch(ppName, Ordered.class)) {
+                orderedPostProcessorNames.add(ppName);
+            }
+            else {
+                nonOrderedPostProcessorNames.add(ppName);
+            }
+        }
+
+        OrderComparator.sort(priorityOrderedPostProcessors);
+        //注册所有的BeanPostProcessor
+        registerBeanPostProcessors(beanFactory, priorityOrderedPostProcessors);
+
+        List<BeanPostProcessor> orderedPostProcessors = new ArrayList<BeanPostProcessor>();
+        for (String ppName : orderedPostProcessorNames) {
+            BeanPostProcessor pp = beanFactory.getBean(ppName, BeanPostProcessor.class);
+            orderedPostProcessors.add(pp);
+            if (pp instanceof MergedBeanDefinitionPostProcessor) {
+                internalPostProcessors.add(pp);
+            }
+        }
+        OrderComparator.sort(orderedPostProcessors);
+        registerBeanPostProcessors(beanFactory, orderedPostProcessors);
+
+        List<BeanPostProcessor> nonOrderedPostProcessors = new ArrayList<BeanPostProcessor>();
+        for (String ppName : nonOrderedPostProcessorNames) {
+            BeanPostProcessor pp = beanFactory.getBean(ppName, BeanPostProcessor.class);
+            nonOrderedPostProcessors.add(pp);
+            if (pp instanceof MergedBeanDefinitionPostProcessor) {
+                internalPostProcessors.add(pp);
+            }
+        }
+        registerBeanPostProcessors(beanFactory, nonOrderedPostProcessors);
+
+        OrderComparator.sort(internalPostProcessors);
+        registerBeanPostProcessors(beanFactory, internalPostProcessors);
+
+       // beanFactory.addBeanPostProcessor(new ApplicationListenerDetector());
+    }
+
+    //在容器中添加BeanPostProcessor
+    private void registerBeanPostProcessors(ConfigurableListableBeanFactory beanFactory, List<BeanPostProcessor> postProcessors) {
+        for (BeanPostProcessor postProcessor : postProcessors) {
+            //beanFactory.addBeanPostProcessor(postProcessor);
+        }
     }
 
     protected void initMessageSource()
