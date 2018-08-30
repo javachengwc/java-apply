@@ -4,15 +4,15 @@ import com.spring.pseudocode.beans.BeansException;
 import com.spring.pseudocode.beans.factory.BeanFactory;
 import com.spring.pseudocode.beans.factory.FactoryBean;
 import com.spring.pseudocode.beans.factory.NoSuchBeanDefinitionException;
+import com.spring.pseudocode.beans.factory.ObjectFactory;
 import com.spring.pseudocode.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanIsNotAFactoryException;
-import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.*;
-import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.util.ClassUtils;
 
+import java.security.AccessControlContext;
 import java.util.*;
 
 //spring中有两种类型的Bean：一种是普通的JavaBean；另一种就是工厂Bean（FactoryBean），这两种Bean都受Spring的IoC容器管理
@@ -155,18 +155,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
                         throw new IllegalStateException("No Scope registered for scope name '" + scopeName + "'");
                     }
                     try {
-                        Object scopedInstance = scope.get(beanName, new ObjectFactory<Object>() {
-                            @Override
-                            public Object getObject() throws BeansException {
-                                //beforePrototypeCreation(beanName);
-                                try {
-                                    return createBean(beanName, mbd, args);
-                                }
-                                finally {
-                                    //afterPrototypeCreation(beanName);
-                                }
-                            }
-                        });
+                        //Object scopedInstance = scope.get(beanName, new ObjectFactory<Object>() {
+                        Object scopedInstance =null;
                         bean = getObjectForBeanInstance(scopedInstance, name, beanName, mbd);
                     }
                     catch (IllegalStateException ex) {
@@ -295,6 +285,25 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
             object = getObjectFromFactoryBean(factory, beanName, !synthetic);
         }
         return object;
+    }
+
+
+    protected void registerDisposableBeanIfNecessary(String beanName, Object bean, RootBeanDefinition mbd)
+    {
+        AccessControlContext acc = System.getSecurityManager() != null ? getAccessControlContext() : null;
+        if ((!mbd.isPrototype()) && (requiresDestruction(bean, mbd))) {
+            if (mbd.isSingleton()) {
+                //registerDisposableBean(beanName, new DisposableBeanAdapter(bean, beanName, mbd, getBeanPostProcessors(), acc));
+            } else {
+               //...
+            }
+        }
+    }
+
+    protected boolean requiresDestruction(Object bean, RootBeanDefinition mbd)
+    {
+        //...
+        return true;
     }
 
     protected abstract boolean containsBeanDefinition(String param);
