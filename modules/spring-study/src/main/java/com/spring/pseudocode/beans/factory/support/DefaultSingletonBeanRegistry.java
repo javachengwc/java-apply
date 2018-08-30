@@ -1,5 +1,6 @@
 package com.spring.pseudocode.beans.factory.support;
 
+import com.spring.pseudocode.beans.factory.ObjectFactory;
 import com.spring.pseudocode.beans.factory.config.SingletonBeanRegistry;
 import com.spring.pseudocode.core.core.SimpleAliasRegistry;
 import org.apache.commons.logging.Log;
@@ -7,7 +8,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanCreationNotAllowedException;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
