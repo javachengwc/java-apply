@@ -218,7 +218,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
     protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory)
     {
-        //....
+        //...
+        //PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
+        //...
     }
 
     protected void registerBeanPostProcessors(ConfigurableListableBeanFactory beanFactory)
