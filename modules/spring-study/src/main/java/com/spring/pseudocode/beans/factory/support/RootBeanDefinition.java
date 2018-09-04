@@ -22,6 +22,7 @@ public class RootBeanDefinition extends AbstractBeanDefinition
     final Object constructorArgumentLock = new Object();
     Object resolvedConstructorOrFactoryMethod;
     final Object postProcessingLock = new Object();
+    public volatile Boolean beforeInstantiationResolved;
 
     private Set<Member> externallyManagedConfigMembers;
     private Set<String> externallyManagedInitMethods;

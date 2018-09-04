@@ -4,6 +4,7 @@ import com.spring.pseudocode.beans.BeansException;
 import com.spring.pseudocode.beans.PropertyValue;
 import com.spring.pseudocode.beans.factory.*;
 import com.spring.pseudocode.beans.factory.config.BeanDefinition;
+import com.spring.pseudocode.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.MutablePropertyValues;
@@ -185,6 +186,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         try
         {
             //bean在初始化前做一些预处理操作
+            //InstantiationAwareBeanPostProcessor调用postProcessBeforeInstantiation()将在里面执行
             Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
             if (bean != null)
                 return bean;
@@ -203,6 +205,37 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
     public Object resolveBeforeInstantiation(String beanName,RootBeanDefinition mbd) {
         //...
+        Object bean = null;
+        if (!Boolean.FALSE.equals(mbd.beforeInstantiationResolved))
+        {
+            if ((!mbd.isSynthetic()) && (hasInstantiationAwareBeanPostProcessors())) {
+                //Class targetType = determineTargetType(beanName, mbd, new Class[0]);
+                Class targetType=null;
+                if (targetType != null) {
+                    //InstantiationAwareBeanPostProcessor调用postProcessBeforeInstantiation()将在里面执行
+                    bean = applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
+                    if (bean != null) {
+                        bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
+                    }
+                }
+            }
+            mbd.beforeInstantiationResolved = Boolean.valueOf(bean != null);
+        }
+        return bean;
+    }
+
+    protected Object applyBeanPostProcessorsBeforeInstantiation(Class<?> beanClass, String beanName)
+    {
+        for (BeanPostProcessor bp : getBeanPostProcessors()) {
+            if ((bp instanceof InstantiationAwareBeanPostProcessor)) {
+                InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor)bp;
+                //InstantiationAwareBeanPostProcessor调用postProcessBeforeInstantiation()在此执行
+                Object result = ibp.postProcessBeforeInstantiation(beanClass, beanName);
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
         return null;
     }
 
@@ -236,6 +269,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
         Object exposedObject = bean;
         try {
+            //populateBean将进行InstantiationAwareBeanPostProcessor.postProcessPropertyValues()的调用
             //初始化bean的各种注入或者setXX参数
             populateBean(beanName, mbd, instanceWrapper);
             if (exposedObject != null)
@@ -430,6 +464,27 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         //获取要设置的属性值
         PropertyValues pvs = mbd.getPropertyValues();
         //...
+
+        boolean hasInstAwareBpps = hasInstantiationAwareBeanPostProcessors();
+        boolean needsDepCheck = mbd.getDependencyCheck() != 0;
+
+        if ((hasInstAwareBpps) || (needsDepCheck)) {
+            //PropertyDescriptor[] filteredPds = filterPropertyDescriptorsForDependencyCheck(bw, mbd.allowCaching);
+            PropertyDescriptor[] filteredPds=null;
+            if (hasInstAwareBpps) {
+                for (BeanPostProcessor bp : getBeanPostProcessors()) {
+                    if ((bp instanceof InstantiationAwareBeanPostProcessor)) {
+                        InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor)bp;
+                        //InstantiationAwareBeanPostProcessor调用postProcessPropertyValues方法
+                        pvs = ibp.postProcessPropertyValues(pvs, filteredPds, bw.getWrappedInstance(), beanName);
+                        if (pvs == null) {
+                            return;
+                        }
+                    }
+                }
+            }
+            //....
+        }
         applyPropertyValues(beanName, mbd, bw, pvs);
     }
 
@@ -441,10 +496,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
         MutablePropertyValues mpvs = null;
 
-        if ((System.getSecurityManager() != null) &&
-                ((bw instanceof BeanWrapperImpl)))
-            ((BeanWrapperImpl)bw).setSecurityContext(getAccessControlContext());
-        List original;
+        if ((System.getSecurityManager() != null) &&  ((bw instanceof BeanWrapperImpl))) {
+            //((BeanWrapperImpl) bw).setSecurityContext(getAccessControlContext());
+        }
+        List original=null;
         if ((pvs instanceof MutablePropertyValues)) {
             mpvs = (MutablePropertyValues)pvs;
             if (mpvs.isConverted()) {

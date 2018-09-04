@@ -5,11 +5,10 @@ import com.spring.pseudocode.beans.factory.BeanFactory;
 import com.spring.pseudocode.beans.factory.FactoryBean;
 import com.spring.pseudocode.beans.factory.NoSuchBeanDefinitionException;
 import com.spring.pseudocode.beans.factory.ObjectFactory;
-import com.spring.pseudocode.beans.factory.config.BeanDefinition;
+import com.spring.pseudocode.beans.factory.config.*;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanIsNotAFactoryException;
-import org.springframework.beans.factory.config.*;
 import org.springframework.util.ClassUtils;
 
 import java.security.AccessControlContext;
@@ -26,7 +25,10 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
     private ClassLoader tempClassLoader;
 
-    private final List<BeanPostProcessor> beanPostProcessors = new ArrayList();
+    private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<BeanPostProcessor>();
+
+    private boolean hasInstantiationAwareBeanPostProcessors;
+    private boolean hasDestructionAwareBeanPostProcessors;
 
     private final Map<String, Scope> scopes = new LinkedHashMap(8);
 
@@ -71,6 +73,11 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
             beanName = new StringBuilder().append("&").append(beanName).toString();
         }
         return beanName;
+    }
+
+    protected boolean hasInstantiationAwareBeanPostProcessors()
+    {
+        return this.hasInstantiationAwareBeanPostProcessors;
     }
 
     protected <T> T doGetBean(String name, Class<T> requiredType, Object[] args, boolean typeCheckOnly) throws BeansException
@@ -198,9 +205,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
     {
         this.beanPostProcessors.remove(beanPostProcessor);
         this.beanPostProcessors.add(beanPostProcessor);
-//        if ((beanPostProcessor instanceof InstantiationAwareBeanPostProcessor)) {
-//            this.hasInstantiationAwareBeanPostProcessors = true;
-//        }
+        if ((beanPostProcessor instanceof InstantiationAwareBeanPostProcessor)) {
+            this.hasInstantiationAwareBeanPostProcessors = true;
+        }
 //        if ((beanPostProcessor instanceof DestructionAwareBeanPostProcessor))
 //            this.hasDestructionAwareBeanPostProcessors = true;
     }
@@ -221,7 +228,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
         if ((!containsBeanDefinition(beanName)) && ((getParentBeanFactory() instanceof ConfigurableBeanFactory)))
         {
-            return ((ConfigurableBeanFactory)getParentBeanFactory()).isFactoryBean(name);
+            //return ((ConfigurableBeanFactory)getParentBeanFactory()).isFactoryBean(name);
+            return true;
         }
 
         return isFactoryBean(beanName, getMergedLocalBeanDefinition(beanName));
@@ -290,7 +298,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
     protected void registerDisposableBeanIfNecessary(String beanName, Object bean, RootBeanDefinition mbd)
     {
-        AccessControlContext acc = System.getSecurityManager() != null ? getAccessControlContext() : null;
+        //AccessControlContext acc = System.getSecurityManager() != null ? getAccessControlContext() : null;
+        AccessControlContext acc =null;
         if ((!mbd.isPrototype()) && (requiresDestruction(bean, mbd))) {
             if (mbd.isSingleton()) {
                 //registerDisposableBean(beanName, new DisposableBeanAdapter(bean, beanName, mbd, getBeanPostProcessors(), acc));
