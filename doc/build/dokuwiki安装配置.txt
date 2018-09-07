@@ -1,5 +1,7 @@
 ------------------------------------------dokuwiki安装配置-----------------------------------------
 dokuwiki是一个开源wiki引擎程序，运行于PHP环境下。dokuwiki程序小巧而功能强大、灵活，适合中小团队和个人网站知识库的管理。
+注:个人试安装使用，感觉比较难用
+
 在centos7.3下安装dokuwiki (前提:已安装apache,php)
 wget https://download.dokuwiki.org/out/dokuwiki-8a269cc015a64b40e4c918699f1e1142.tgz      ###下载dokuwiki
 mkdir -p /var/www/html
