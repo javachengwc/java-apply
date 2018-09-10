@@ -1,6 +1,7 @@
 ﻿---------------linux网络配置---------
+centos系统下网络ip配置文件:/etc/sysconfig/network-scripts/ifconfg-*
+debian系统下网络if配置文件:/etc/network/interfaces
 
-网络ip配置文件:/etc/sysconfig/network-scripts/ifconfg-*
 可直接编辑配置文件保存并 service network restart重启网络生效
 
 DEVICE=eth0      #网卡编号
@@ -31,6 +32,40 @@ host配置:/ect/hosts
 127.0.0.1   local.meilele.com
 
 系统服务端口配置:/etc/services
+
+---------------------------------------
+ubuntu下网络设置
+vim /etc/modprobe.d/blacklist.conf
+    blacklist ipv6                    ###禁用ipv6
+vim /etc/network/interfaces           ###直接修改网络设置,auto eth0表示让网卡开机自动挂载eth0。
+    source /etc/network/interfaces.d/*
+    allow-hotplug eth0
+    auto lo
+    iface lo inet loopback
+    auto eth0
+    iface eth0 inet dhcp
+注意:修改完interfaces文档后，需修改/etc/NetworkManager/NetworkManager.conf中的managed参数，使之为true，并重启。
+      否则，会提示说“有线网络设备未托管”,
+或
+ifconfig eth0 192.168.2.2 netmask 255.255.255.0
+                                      ###将ip地址改为：192.168.2.2，子网掩码改为：255.255.255.0
+route add default gw 192.168.2.254    ###设置网关
+
+vim  /etc/resolv.conf                 ###查看修改DNS
+/etc/init.d/networking restart        ###重启网络服务
+如果networking restart没生效，可使用
+ifdown eth0
+ifup eth0
+
+设置第二个ubuntu ip地址(虚拟ip地址)
+vim /etc/network/interfaces
+    auto eth0:1
+    iface eth0:1 inet static
+    address 192.168.2.3
+    gateway 192.168.2.254
+    netmask 255.255.255.0
+    #network 192.168.2.0
+    #broadcast 192.168.2.255
 
 ---------------ifconfig--------------
 
