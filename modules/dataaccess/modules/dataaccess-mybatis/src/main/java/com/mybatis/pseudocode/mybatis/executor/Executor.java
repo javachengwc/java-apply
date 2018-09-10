@@ -42,4 +42,7 @@ public abstract interface Executor
     public abstract boolean isClosed();
 
     public abstract void setExecutorWrapper(Executor executor);
+
+    //延迟加载
+    //public abstract void deferLoad(MappedStatement mappedStatement, MetaObject metaObject, String param, CacheKey cacheKey, Class<?> paramClass);
 }

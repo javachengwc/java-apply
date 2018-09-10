@@ -1,6 +1,5 @@
 package com.mybatis.pseudocode.mybatis.session;
 
-
 import com.mybatis.pseudocode.mybatis.cursor.Cursor;
 import com.mybatis.pseudocode.mybatis.executor.BatchResult;
 
@@ -9,6 +8,7 @@ import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 
+//所有操作数据库的api
 public abstract interface SqlSession extends Closeable
 {
     public abstract <T> T selectOne(String param);

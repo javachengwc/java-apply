@@ -1,11 +1,11 @@
 package com.mybatis.pseudocode.mybatis.session;
 
-
 import com.mybatis.pseudocode.mybatis.binding.MapperRegistry;
 import com.mybatis.pseudocode.mybatis.builder.annotation.MethodResolver;
 import com.mybatis.pseudocode.mybatis.cache.Cache;
 import com.mybatis.pseudocode.mybatis.executor.Executor;
 import com.mybatis.pseudocode.mybatis.executor.SimpleExecutor;
+import com.mybatis.pseudocode.mybatis.executor.kengen.KeyGenerator;
 import com.mybatis.pseudocode.mybatis.executor.parameter.ParameterHandler;
 import com.mybatis.pseudocode.mybatis.executor.resultset.DefaultResultSetHandler;
 import com.mybatis.pseudocode.mybatis.executor.resultset.ResultSetHandler;
@@ -16,25 +16,23 @@ import com.mybatis.pseudocode.mybatis.plugin.Interceptor;
 import com.mybatis.pseudocode.mybatis.plugin.InterceptorChain;
 import com.mybatis.pseudocode.mybatis.transaction.Transaction;
 import com.mybatis.pseudocode.mybatis.transaction.jdbc.JdbcTransactionFactory;
+import com.mybatis.pseudocode.mybatis.type.TypeAliasRegistry;
 import com.mybatis.pseudocode.mybatis.type.TypeHandler;
 import com.mybatis.pseudocode.mybatis.type.TypeHandlerRegistry;
 import org.apache.ibatis.builder.CacheRefResolver;
 import org.apache.ibatis.builder.ResultMapResolver;
 import org.apache.ibatis.builder.xml.XMLStatementBuilder;
-import org.apache.ibatis.executor.keygen.KeyGenerator;
 import org.apache.ibatis.executor.loader.ProxyFactory;
 import org.apache.ibatis.executor.loader.javassist.JavassistProxyFactory;
 
 import org.apache.ibatis.parsing.XNode;
 import org.apache.ibatis.reflection.DefaultReflectorFactory;
-import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.ReflectorFactory;
 import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
 import org.apache.ibatis.reflection.factory.ObjectFactory;
 import org.apache.ibatis.reflection.wrapper.DefaultObjectWrapperFactory;
 import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
 import org.apache.ibatis.scripting.LanguageDriverRegistry;
-import org.apache.ibatis.type.TypeAliasRegistry;
 
 import java.util.*;
 
