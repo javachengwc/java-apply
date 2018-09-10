@@ -83,7 +83,8 @@ vim /etc/sysctl.conf
 sysctl -w net.ipv6.conf.all.disable_ipv6=0        ###启用ipv6
 
 sysctl -p  /etc/sysctl.conf                       ###设置生效
-
+ping6 ipv6.baidu.com                              ###测试验证ipv6
+route -A inet6                                    ###测试ipv6的路由
 ---------------ifconfig--------------
 
 ifconfig命令配置并查看网络接口的配置情况
