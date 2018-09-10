@@ -67,6 +67,23 @@ vim /etc/network/interfaces
     #network 192.168.2.0
     #broadcast 192.168.2.255
 
+禁用启用ipv6
+vim /etc/sysctl.conf
+    net.ipv6.conf.all.disable_ipv6 = 1          ###禁用
+    net.ipv6.conf.default.disable_ipv6 = 1      ###禁用
+    net.ipv6.conf.eth0-1.disable_ipv6 = 1       ###禁用
+    net.ipv6.conf.lo.disable_ipv6 = 1           ###禁用
+    net.ipv6.conf.eth0.disable_ipv6 = 1         ###禁用
+
+    net.ipv6.conf.default.forwarding=1           ###启用
+    net.ipv6.conf.all.forwarding=1               ###启用
+    net.ipv6.conf.all.disable_ipv6 = 0           ###启用
+    net.ipv6.conf.default.disable_ipv6 = 0       ###启用
+或者
+sysctl -w net.ipv6.conf.all.disable_ipv6=0        ###启用ipv6
+
+sysctl -p  /etc/sysctl.conf                       ###设置生效
+
 ---------------ifconfig--------------
 
 ifconfig命令配置并查看网络接口的配置情况
