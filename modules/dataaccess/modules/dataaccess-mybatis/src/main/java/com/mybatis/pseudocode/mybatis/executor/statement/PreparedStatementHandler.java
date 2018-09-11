@@ -71,8 +71,7 @@ public class PreparedStatementHandler extends BaseStatementHandler
         return connection.prepareStatement(sql);
     }
 
-    public void parameterize(Statement statement)
-            throws SQLException
+    public void parameterize(Statement statement) throws SQLException
     {
         this.parameterHandler.setParameters((PreparedStatement)statement);
     }

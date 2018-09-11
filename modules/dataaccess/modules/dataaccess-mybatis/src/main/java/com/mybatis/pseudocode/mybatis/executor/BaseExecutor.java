@@ -271,9 +271,11 @@ public abstract class BaseExecutor implements Executor
 
     protected abstract List<BatchResult> doFlushStatements(boolean paramBoolean) throws SQLException;
 
-    protected abstract <E> List<E> doQuery(MappedStatement paramMappedStatement, Object paramObject, RowBounds paramRowBounds, ResultHandler paramResultHandler, BoundSql paramBoundSql) throws SQLException;
+    protected abstract <E> List<E> doQuery(MappedStatement paramMappedStatement, Object paramObject, RowBounds paramRowBounds,
+                                           ResultHandler paramResultHandler, BoundSql paramBoundSql) throws SQLException;
 
-    protected abstract <E> Cursor<E> doQueryCursor(MappedStatement paramMappedStatement, Object paramObject, RowBounds paramRowBounds, BoundSql paramBoundSql) throws SQLException;
+    protected abstract <E> Cursor<E> doQueryCursor(MappedStatement paramMappedStatement, Object paramObject,
+                                                   RowBounds paramRowBounds, BoundSql paramBoundSql) throws SQLException;
 
     protected void closeStatement(Statement statement) {
         if (statement != null) {
@@ -310,8 +312,8 @@ public abstract class BaseExecutor implements Executor
         }
     }
 
-    private <E> List<E> queryFromDatabase(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql)
-            throws SQLException
+    private <E> List<E> queryFromDatabase(MappedStatement ms, Object parameter, RowBounds rowBounds,
+                                          ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException
     {
         this.localCache.putObject(key, ExecutionPlaceholder.EXECUTION_PLACEHOLDER);
         List<E> list = null;
