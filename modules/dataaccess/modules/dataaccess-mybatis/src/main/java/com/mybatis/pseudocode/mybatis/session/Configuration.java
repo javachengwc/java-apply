@@ -36,6 +36,7 @@ import org.apache.ibatis.scripting.LanguageDriverRegistry;
 
 import java.util.*;
 
+//myBatis所有的配置信息都维持在Configuration中
 public class Configuration
 {
     protected Environment environment;
@@ -46,6 +47,8 @@ public class Configuration
     protected boolean multipleResultSetsEnabled = true;
     protected boolean useGeneratedKeys;
     protected boolean useColumnLabel = true;
+
+    //是否缓存，默认true
     protected boolean cacheEnabled = true;
     protected boolean callSettersOnNulls;
     protected boolean useActualParamName = true;
@@ -64,7 +67,9 @@ public class Configuration
     protected ObjectFactory objectFactory = new DefaultObjectFactory();
     protected ObjectWrapperFactory objectWrapperFactory = new DefaultObjectWrapperFactory();
 
+    //延迟加载，默认false
     protected boolean lazyLoadingEnabled = false;
+
     protected ProxyFactory proxyFactory = new JavassistProxyFactory();
     protected String databaseId;
     protected Class<?> configurationFactory;

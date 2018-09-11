@@ -44,7 +44,9 @@ public class PreparedStatementHandler extends BaseStatementHandler
     public <E> List<E> query(Statement statement, ResultHandler resultHandler) throws SQLException
     {
         PreparedStatement ps = (PreparedStatement)statement;
+        //执行SQL查询操作
         ps.execute();
+        //结果交给resultSetHandler来处理
         return this.resultSetHandler.handleResultSets(ps);
     }
 
@@ -71,6 +73,7 @@ public class PreparedStatementHandler extends BaseStatementHandler
         return connection.prepareStatement(sql);
     }
 
+    //设置sql参数
     public void parameterize(Statement statement) throws SQLException
     {
         this.parameterHandler.setParameters((PreparedStatement)statement);

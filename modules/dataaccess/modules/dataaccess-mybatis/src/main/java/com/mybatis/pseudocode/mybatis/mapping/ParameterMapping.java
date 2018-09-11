@@ -6,17 +6,31 @@ import com.mybatis.pseudocode.mybatis.type.TypeHandler;
 
 import java.sql.ResultSet;
 
+//参数映射实体
 public class ParameterMapping
 {
     private Configuration configuration;
+
+    //参数名字
     private String property;
+
+    //参数模型
     private ParameterMode mode;
+
+    //参数的java类型
     private Class<?> javaType = Object.class;
+    //参数对应的jdbc类型
     private JdbcType jdbcType;
+
     private Integer numericScale;
+
+    //参数的typeHandler
     private TypeHandler<?> typeHandler;
+
     private String resultMapId;
+
     private String jdbcTypeName;
+
     private String expression;
 
     public String getProperty()
@@ -108,7 +122,6 @@ public class ParameterMapping
                     throw new IllegalStateException("Missing resultmap in property '" + this.parameterMapping.property +
                             "'.  Parameters of type java.sql.ResultSet require a resultmap.");
                 }
-
             }
             else if (this.parameterMapping.typeHandler == null)
             {

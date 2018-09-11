@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+//表示动态生成的SQL语句以及相应的参数信息
 public class BoundSql
 {
     private final String sql;

@@ -8,7 +8,7 @@ import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 
-//所有操作数据库的api
+//所有操作数据库的顶层api,表示和数据库交互的会话，完成必要数据库增删改查功能
 public abstract interface SqlSession extends Closeable
 {
     public abstract <T> T selectOne(String param);

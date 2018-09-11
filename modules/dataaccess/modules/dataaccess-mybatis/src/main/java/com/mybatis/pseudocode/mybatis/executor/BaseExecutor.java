@@ -1,7 +1,7 @@
 package com.mybatis.pseudocode.mybatis.executor;
 
-
 import com.mybatis.pseudocode.mybatis.cache.CacheKey;
+import com.mybatis.pseudocode.mybatis.cache.impl.PerpetualCache;
 import com.mybatis.pseudocode.mybatis.cursor.Cursor;
 import com.mybatis.pseudocode.mybatis.mapping.*;
 import com.mybatis.pseudocode.mybatis.session.Configuration;
@@ -10,7 +10,6 @@ import com.mybatis.pseudocode.mybatis.session.ResultHandler;
 import com.mybatis.pseudocode.mybatis.session.RowBounds;
 import com.mybatis.pseudocode.mybatis.transaction.Transaction;
 import com.mybatis.pseudocode.mybatis.type.TypeHandlerRegistry;
-import org.apache.ibatis.cache.impl.PerpetualCache;
 
 import org.apache.ibatis.executor.ExecutionPlaceholder;
 import org.apache.ibatis.executor.statement.StatementUtil;
@@ -28,13 +27,23 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public abstract class BaseExecutor implements Executor
 {
     private static final Log log = LogFactory.getLog(BaseExecutor.class);
+
     protected Transaction transaction;
+
+    //包装BaseExecutor的执行器,只是做个引用，其他啥都没用
     protected Executor wrapper;
+
     protected ConcurrentLinkedQueue<DeferredLoad> deferredLoads;
+
+    //本地缓存
     protected PerpetualCache localCache;
     protected PerpetualCache localOutputParameterCache;
+
+
     protected Configuration configuration;
+
     protected int queryStack;
+
     private boolean closed;
 
     protected BaseExecutor(Configuration configuration, Transaction transaction)
@@ -150,7 +159,6 @@ public abstract class BaseExecutor implements Executor
             for (DeferredLoad deferredLoad : this.deferredLoads) {
                 deferredLoad.load();
             }
-
             this.deferredLoads.clear();
             if (this.configuration.getLocalCacheScope() == LocalCacheScope.STATEMENT)
             {
@@ -241,8 +249,7 @@ public abstract class BaseExecutor implements Executor
             this.transaction.commit();
     }
 
-    public void rollback(boolean required)
-            throws SQLException
+    public void rollback(boolean required) throws SQLException
     {
         if (!this.closed)
             try {

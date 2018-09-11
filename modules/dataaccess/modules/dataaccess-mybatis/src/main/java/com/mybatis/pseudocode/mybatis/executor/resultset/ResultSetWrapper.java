@@ -14,6 +14,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.*;
 
+//ResultSetWrapper是ResultSet的包装类
 public class ResultSetWrapper
 {
     private final ResultSet resultSet;

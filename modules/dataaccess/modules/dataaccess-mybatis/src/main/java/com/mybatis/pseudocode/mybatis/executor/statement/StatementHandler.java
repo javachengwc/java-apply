@@ -10,10 +10,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+//封装了JDBC Statement操作，负责对JDBC statement 的操作，如设置参数、将Statement结果集转换成List集合。
 public abstract interface StatementHandler
 {
     public abstract Statement prepare(Connection connection, Integer paramInt) throws SQLException;
 
+    //sql参数设置
     public abstract void parameterize(Statement statement) throws SQLException;
 
     public abstract void batch(Statement statement) throws SQLException;

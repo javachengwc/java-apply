@@ -15,8 +15,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+//StatementHandler的委派器
 public class RoutingStatementHandler implements StatementHandler
 {
+    //委派的StatementHandler (真正的StatementHandler),
     private final StatementHandler delegate;
 
     public RoutingStatementHandler(Executor executor, MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql)

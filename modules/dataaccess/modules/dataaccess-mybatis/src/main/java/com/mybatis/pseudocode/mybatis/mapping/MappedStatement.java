@@ -1,6 +1,7 @@
 package com.mybatis.pseudocode.mybatis.mapping;
 
 
+import com.mybatis.pseudocode.mybatis.cache.Cache;
 import com.mybatis.pseudocode.mybatis.executor.kengen.KeyGenerator;
 import com.mybatis.pseudocode.mybatis.session.Configuration;
 import org.apache.ibatis.logging.Log;
@@ -8,6 +9,7 @@ import org.apache.ibatis.scripting.LanguageDriver;
 
 import java.util.List;
 
+//MappedStatement维护了一条<select|update|delete|insert>节点的封装
 public final class MappedStatement
 {
     private String resource;
@@ -23,6 +25,7 @@ public final class MappedStatement
     private boolean useCache;
     private boolean resultOrdered;
     private SqlSource sqlSource;
+    private Cache cache;
     private SqlCommandType sqlCommandType;
     private KeyGenerator keyGenerator;
     private String[] keyProperties;
@@ -122,6 +125,14 @@ public final class MappedStatement
 
     public void setStatementLog(Log statementLog) {
         this.statementLog = statementLog;
+    }
+
+    public Cache getCache() {
+        return cache;
+    }
+
+    public void setCache(Cache cache) {
+        this.cache = cache;
     }
 
     @Deprecated

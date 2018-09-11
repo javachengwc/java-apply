@@ -4,6 +4,7 @@ import com.mybatis.pseudocode.mybatis.transaction.TransactionFactory;
 
 import javax.sql.DataSource;
 
+//配置中的环境
 public final class Environment
 {
     private final String id;
