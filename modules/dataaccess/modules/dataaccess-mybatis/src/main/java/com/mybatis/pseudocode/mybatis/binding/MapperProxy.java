@@ -11,6 +11,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+//mapper代理类
 public class MapperProxy<T> implements InvocationHandler, Serializable
 {
     private static final long serialVersionUID = -6398559729838L;
@@ -38,6 +39,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable
             throw t;
         }
         MapperMethod mapperMethod = cachedMapperMethod(method);
+        //具体mapper方法调用入口
         return mapperMethod.execute(this.sqlSession, args);
     }
 

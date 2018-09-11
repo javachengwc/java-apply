@@ -8,6 +8,7 @@ import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+//Mapper接口
 public class MapperProxyFactory<T>
 {
     private final Class<T> mapperInterface;

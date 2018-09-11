@@ -7,6 +7,7 @@ import com.mybatis.pseudocode.mybatis.session.SqlSession;
 
 import java.util.*;
 
+//Mapper接口的注册中心
 public class MapperRegistry
 {
     private final Configuration config;

@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+//MapperMethod代表Mapper接口中的一个Method
 public class MapperMethod
 {
     private final SqlCommand command;
@@ -34,63 +35,50 @@ public class MapperMethod
         this.method = new MethodSignature(config, mapperInterface, method);
     }
 
+    //Mapper接口中的一个Method的执行，就是对应的一个增删改查sql
     public Object execute(SqlSession sqlSession, Object[] args)
     {
-        Object result=null;
-
-        //switch (1.$SwitchMap$org$apache$ibatis$mapping$SqlCommandType[this.command.getType().ordinal()]) {
-        Object param=null;
-        int a=1;
-        switch (a) {
-        case 1:
-            param = this.method.convertArgsToSqlCommandParam(args);
-            result = rowCountResult(sqlSession.insert(this.command.getName(), param));
-            break;
-        case 2:
-            param = this.method.convertArgsToSqlCommandParam(args);
-            result = rowCountResult(sqlSession.update(this.command.getName(), param));
-            break;
-        case 3:
-            param = this.method.convertArgsToSqlCommandParam(args);
-            result = rowCountResult(sqlSession.delete(this.command.getName(), param));
-            break;
-        case 4:
-            if ((this.method.returnsVoid()) && (this.method.hasResultHandler())) {
-                executeWithResultHandler(sqlSession, args);
-                result = null;
+        Object result;
+        switch (command.getType()) {
+            case INSERT: {
+                Object param = method.convertArgsToSqlCommandParam(args);
+                result = rowCountResult(sqlSession.insert(command.getName(), param));
+                break;
             }
-            else
-            {
-                if (this.method.returnsMany()) {
+            case UPDATE: {
+                Object param = method.convertArgsToSqlCommandParam(args);
+                result = rowCountResult(sqlSession.update(command.getName(), param));
+                break;
+            }
+            case DELETE: {
+                Object param = method.convertArgsToSqlCommandParam(args);
+                result = rowCountResult(sqlSession.delete(command.getName(), param));
+                break;
+            }
+            case SELECT:
+                if (method.returnsVoid() && method.hasResultHandler()) {
+                    executeWithResultHandler(sqlSession, args);
+                    result = null;
+                } else if (method.returnsMany()) {
                     result = executeForMany(sqlSession, args);
+                } else if (method.returnsMap()) {
+                    result = executeForMap(sqlSession, args);
+                } else if (method.returnsCursor()) {
+                    result = executeForCursor(sqlSession, args);
+                } else {
+                    Object param = method.convertArgsToSqlCommandParam(args);
+                    result = sqlSession.selectOne(command.getName(), param);
                 }
-                else
-                {
-                    if (this.method.returnsMap()) {
-                        result = executeForMap(sqlSession, args);
-                    }
-                    else
-                    {
-                        if (this.method.returnsCursor()) {
-                            result = executeForCursor(sqlSession, args);
-                        } else {
-                            param = this.method.convertArgsToSqlCommandParam(args);
-                            result = sqlSession.selectOne(this.command.getName(), param);
-                        }
-                    }
-                }
-            }
-            break;
-        case 5:
-            result = sqlSession.flushStatements();
-            break;
-        default:
-            throw new BindingException("Unknown execution method for: " + this.command.getName());
+                break;
+            case FLUSH:
+                result = sqlSession.flushStatements();
+                break;
+            default:
+                throw new org.apache.ibatis.binding.BindingException("Unknown execution method for: " + command.getName());
         }
-        if ((result == null) && (this.method.getReturnType().isPrimitive()) && (!this.method.returnsVoid()))
-        {
-            throw new BindingException("Mapper method '" + this.command.getName() + " attempted to return null " +
-                    "from a method with a primitive return type (" + this.method.getReturnType() + ").");
+        if (result == null && method.getReturnType().isPrimitive() && !method.returnsVoid()) {
+            throw new org.apache.ibatis.binding.BindingException("Mapper method '" + command.getName()
+                    + " attempted to return null from a method with a primitive return type (" + method.getReturnType() + ").");
         }
         return result;
     }
@@ -139,12 +127,14 @@ public class MapperMethod
         }
     }
 
+    //查询
     private <E> Object executeForMany(SqlSession sqlSession, Object[] args)
     {
         Object param = this.method.convertArgsToSqlCommandParam(args);
         List result;
         if (this.method.hasRowBounds()) {
             RowBounds rowBounds = this.method.extractRowBounds(args);
+            //command.getName() 是对应的查询id
             result = sqlSession.selectList(this.command.getName(), param, rowBounds);
         } else {
             result = sqlSession.selectList(this.command.getName(), param);
