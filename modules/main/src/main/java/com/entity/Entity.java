@@ -8,6 +8,22 @@ public class Entity {
 	
 	private String name;
 
+	private boolean good;
+
+	public Entity() {
+
+	}
+
+	public Entity(Integer id,String name) {
+		this.id=id;
+		this.name=name;
+	}
+
+	public Entity(Integer id,String name,boolean good) {
+		this(id,name);
+		this.good=good;
+	}
+
 	public Integer getId() {
 		return id;
 	}
@@ -23,7 +39,14 @@ public class Entity {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
+	public boolean isGood() {
+		return good;
+	}
+
+	public void setGood(boolean good) {
+		this.good = good;
+	}
 
 	public String toString()
 	{
