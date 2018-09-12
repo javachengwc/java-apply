@@ -11,12 +11,15 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-//mapper代理类
+//mapper接口类的代理对象InvocationHandler类
 public class MapperProxy<T> implements InvocationHandler, Serializable
 {
     private static final long serialVersionUID = -6398559729838L;
+
     private final SqlSession sqlSession;
+    //Mapper接口类
     private final Class<T> mapperInterface;
+    //当前Mapper接口中所有的方法
     private final Map<Method, MapperMethod> methodCache;
 
     public MapperProxy(SqlSession sqlSession, Class<T> mapperInterface, Map<Method, MapperMethod> methodCache)
@@ -26,6 +29,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable
         this.methodCache = methodCache;
     }
 
+    //执行Mapper接口的方法的调用入口
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
     {
         try {

@@ -67,7 +67,8 @@ public abstract interface SqlSession extends Closeable
 
     public abstract Configuration getConfiguration();
 
-    public abstract <T> T getMapper(Class<T> paramClass);
+    //获取type这个Mapper接口类的代理对象
+    public abstract <T> T getMapper(Class<T> type);
 
     public abstract Connection getConnection();
 }

@@ -11,12 +11,15 @@ import java.util.*;
 public class MapperRegistry
 {
     private final Configuration config;
+
+    //key就是Mapper接口类，balue为该Mapper接口代理对象的工厂
     private final Map<Class<?>, MapperProxyFactory<?>> knownMappers = new HashMap();
 
     public MapperRegistry(Configuration config) {
         this.config = config;
     }
 
+    //获取type这个Mapper接口类的代理对象
     public <T> T getMapper(Class<T> type, SqlSession sqlSession)
     {
         MapperProxyFactory mapperProxyFactory = (MapperProxyFactory)this.knownMappers.get(type);
@@ -43,6 +46,7 @@ public class MapperRegistry
             }
             boolean loadCompleted = false;
             try {
+                //创建MapperProxyFactory对象，并put进knownMappers中
                 this.knownMappers.put(type, new MapperProxyFactory(type));
                 MapperAnnotationBuilder parser = new MapperAnnotationBuilder(this.config, type);
                 parser.parse();
@@ -70,6 +74,7 @@ public class MapperRegistry
             addMapper(mapperClass);
     }
 
+    //注册某个包下面所有的Mapper接口类
     public void addMappers(String packageName)
     {
         addMappers(packageName, Object.class);

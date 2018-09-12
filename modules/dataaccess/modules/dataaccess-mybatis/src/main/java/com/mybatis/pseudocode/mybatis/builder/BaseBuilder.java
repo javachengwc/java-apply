@@ -18,7 +18,11 @@ import java.util.regex.Pattern;
 public abstract class BaseBuilder
 {
     protected final Configuration configuration;
+
+    //别名注册器
     protected final TypeAliasRegistry typeAliasRegistry;
+
+    //数据类型转换注册器
     protected final TypeHandlerRegistry typeHandlerRegistry;
 
     public BaseBuilder(Configuration configuration)

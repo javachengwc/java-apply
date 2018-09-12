@@ -8,10 +8,12 @@ import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-//Mapper接口
+//Mapper接口代理对象的工厂
 public class MapperProxyFactory<T>
 {
+    //Mapper接口类
     private final Class<T> mapperInterface;
+    //当前Mapper接口中所有的方法
     private final Map<Method, MapperMethod> methodCache = new ConcurrentHashMap();
 
     public MapperProxyFactory(Class<T> mapperInterface) {
@@ -26,13 +28,14 @@ public class MapperProxyFactory<T>
         return this.methodCache;
     }
 
+    //创建Mapper接口的代理对象
     protected T newInstance(MapperProxy<T> mapperProxy)
     {
         return (T) Proxy.newProxyInstance(this.mapperInterface.getClassLoader(), new Class[] { this.mapperInterface }, mapperProxy);
     }
 
     public T newInstance(SqlSession sqlSession) {
-        MapperProxy mapperProxy = new MapperProxy(sqlSession, this.mapperInterface, this.methodCache);
-        return (T) newInstance(mapperProxy);
+        MapperProxy<T> mapperProxy = new MapperProxy<T>(sqlSession, this.mapperInterface, this.methodCache);
+        return newInstance(mapperProxy);
     }
 }

@@ -1,7 +1,9 @@
 package com.mybatis.pseudocode.mybatis.session;
 
 import com.mybatis.pseudocode.mybatis.binding.MapperRegistry;
+import com.mybatis.pseudocode.mybatis.builder.ResultMapResolver;
 import com.mybatis.pseudocode.mybatis.builder.annotation.MethodResolver;
+import com.mybatis.pseudocode.mybatis.builder.xml.XMLStatementBuilder;
 import com.mybatis.pseudocode.mybatis.cache.Cache;
 import com.mybatis.pseudocode.mybatis.executor.Executor;
 import com.mybatis.pseudocode.mybatis.executor.SimpleExecutor;
@@ -20,8 +22,6 @@ import com.mybatis.pseudocode.mybatis.type.TypeAliasRegistry;
 import com.mybatis.pseudocode.mybatis.type.TypeHandler;
 import com.mybatis.pseudocode.mybatis.type.TypeHandlerRegistry;
 import org.apache.ibatis.builder.CacheRefResolver;
-import org.apache.ibatis.builder.ResultMapResolver;
-import org.apache.ibatis.builder.xml.XMLStatementBuilder;
 import org.apache.ibatis.executor.loader.ProxyFactory;
 import org.apache.ibatis.executor.loader.javassist.JavassistProxyFactory;
 
@@ -44,12 +44,17 @@ public class Configuration
     protected boolean safeResultHandlerEnabled = true;
     protected boolean mapUnderscoreToCamelCase;
     protected boolean aggressiveLazyLoading;
-    protected boolean multipleResultSetsEnabled = true;
+
     protected boolean useGeneratedKeys;
     protected boolean useColumnLabel = true;
 
+    //这些属性，可通过全局配置文件中的settings节点配置覆盖
     //是否缓存，默认true
     protected boolean cacheEnabled = true;
+    //延迟加载，默认false
+    protected boolean lazyLoadingEnabled = false;
+    protected boolean multipleResultSetsEnabled = true;
+
     protected boolean callSettersOnNulls;
     protected boolean useActualParamName = true;
     protected boolean returnInstanceForEmptyRow;
@@ -62,13 +67,12 @@ public class Configuration
     protected Integer defaultFetchSize;
     protected ExecutorType defaultExecutorType = ExecutorType.SIMPLE;
 
+    //mybatis.xml全局配置文件中properties节点中配置的信息
     protected Properties variables = new Properties();
+
     protected ReflectorFactory reflectorFactory = new DefaultReflectorFactory();
     protected ObjectFactory objectFactory = new DefaultObjectFactory();
     protected ObjectWrapperFactory objectWrapperFactory = new DefaultObjectWrapperFactory();
-
-    //延迟加载，默认false
-    protected boolean lazyLoadingEnabled = false;
 
     protected ProxyFactory proxyFactory = new JavassistProxyFactory();
     protected String databaseId;
@@ -97,12 +101,18 @@ public class Configuration
     protected final Map<String, ParameterMap> parameterMaps = new StrictMap("Parameter Maps collection");
     protected final Map<String, KeyGenerator> keyGenerators = new StrictMap("Key Generators collection");
 
+    //加载的mapper.xml
     protected final Set<String> loadedResources = new HashSet();
+
     protected final Map<String, XNode> sqlFragments = new StrictMap("XML fragments parsed from previous mappers");
 
+    //未完成解析的XMLStatementBuilder
     protected final Collection<XMLStatementBuilder> incompleteStatements = new LinkedList();
+
     protected final Collection<CacheRefResolver> incompleteCacheRefs = new LinkedList();
+
     protected final Collection<ResultMapResolver> incompleteResultMaps = new LinkedList();
+
     protected final Collection<MethodResolver> incompleteMethods = new LinkedList();
 
     protected final Map<String, String> cacheRefMap = new HashMap();
@@ -562,6 +572,7 @@ public class Configuration
         return this.sqlFragments;
     }
 
+    //添加拦截器
     public void addInterceptor(Interceptor interceptor) {
         this.interceptorChain.addInterceptor(interceptor);
     }
@@ -570,18 +581,22 @@ public class Configuration
         this.mapperRegistry.addMappers(packageName, superType);
     }
 
+    //注册某个包下面所有的Mapper接口类
     public void addMappers(String packageName) {
         this.mapperRegistry.addMappers(packageName);
     }
 
+    //增加mapper接口注册
     public <T> void addMapper(Class<T> type) {
         this.mapperRegistry.addMapper(type);
     }
 
+    //获取type这个Mapper接口类的代理对象
     public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
         return this.mapperRegistry.getMapper(type, sqlSession);
     }
 
+    //判断type这个Mapper接口类是否已注册
     public boolean hasMapper(Class<?> type) {
         return this.mapperRegistry.hasMapper(type);
     }

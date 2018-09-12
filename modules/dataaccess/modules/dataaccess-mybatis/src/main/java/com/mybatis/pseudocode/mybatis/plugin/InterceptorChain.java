@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+//拦截器链
 public class InterceptorChain
 {
     private final List<Interceptor> interceptors = new ArrayList();

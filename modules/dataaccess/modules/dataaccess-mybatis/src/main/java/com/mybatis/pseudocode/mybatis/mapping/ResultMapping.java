@@ -8,6 +8,7 @@ import com.mybatis.pseudocode.mybatis.type.TypeHandlerRegistry;
 import java.util.List;
 import java.util.Set;
 
+//resultMapping是<resultMap>下子节点的实体类
 public class ResultMapping
 {
     private Configuration configuration;

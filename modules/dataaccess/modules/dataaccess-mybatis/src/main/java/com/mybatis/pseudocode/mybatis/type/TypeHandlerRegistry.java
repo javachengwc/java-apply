@@ -9,11 +9,15 @@ import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+//typeHandler类型转换注册中心
 public final class TypeHandlerRegistry
 {
     private final Map<JdbcType, TypeHandler<?>> JDBC_TYPE_HANDLER_MAP = new EnumMap(JdbcType.class);
+
     private final Map<Type, Map<JdbcType, TypeHandler<?>>> TYPE_HANDLER_MAP = new ConcurrentHashMap();
+
     private final TypeHandler<Object> UNKNOWN_TYPE_HANDLER = new UnknownTypeHandler(this);
+
     private final Map<Class<?>, TypeHandler<?>> ALL_TYPE_HANDLERS_MAP = new HashMap();
 
     private static final Map<JdbcType, TypeHandler<?>> NULL_TYPE_HANDLER_MAP = new HashMap();
@@ -237,6 +241,7 @@ public final class TypeHandlerRegistry
         this.ALL_TYPE_HANDLERS_MAP.put(handler.getClass(), handler);
     }
 
+    //注册typHandler类
     public void register(Class<?> typeHandlerClass)
     {
         boolean mappedTypeFound = false;
@@ -285,6 +290,7 @@ public final class TypeHandlerRegistry
         }
     }
 
+    //注册包下面所有实现了TypeHandler接口的typeHandler类
     public void register(String packageName)
     {
 //        ResolverUtil resolverUtil = new ResolverUtil();

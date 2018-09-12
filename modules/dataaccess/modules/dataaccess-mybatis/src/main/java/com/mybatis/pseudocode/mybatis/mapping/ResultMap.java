@@ -15,11 +15,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+//ResultMap结果实体类
 public class ResultMap
 {
     private Configuration configuration;
     private String id;
     private Class<?> type;
+    //resultMappings用于存储<resultMap>下所有的子节点实体
     private List<ResultMapping> resultMappings;
     private List<ResultMapping> idResultMappings;
     private List<ResultMapping> constructorResultMappings;

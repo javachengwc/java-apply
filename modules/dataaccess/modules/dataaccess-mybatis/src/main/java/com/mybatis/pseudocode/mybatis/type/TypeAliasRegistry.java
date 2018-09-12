@@ -1,13 +1,17 @@
 package com.mybatis.pseudocode.mybatis.type;
 
 
+import org.apache.ibatis.io.Resources;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.util.*;
 
+//别名注册中心
 public class TypeAliasRegistry
 {
+    //别名map, key为别名，value为对应的类
     private final Map<String, Class<?>> TYPE_ALIASES = new HashMap();
 
     public TypeAliasRegistry() {
@@ -60,13 +64,12 @@ public class TypeAliasRegistry
             if (string == null) {
                 return null;
             }
-
             String key = string.toLowerCase(Locale.ENGLISH);
             Class<T> value=null;
             if (this.TYPE_ALIASES.containsKey(key))
                 value = (Class)this.TYPE_ALIASES.get(key);
             else {
-                //value = Resources.classForName(string);
+                value=(Class<T>)Resources.classForName(string);
             }
             return value;
         } catch (Exception e) {
@@ -74,6 +77,7 @@ public class TypeAliasRegistry
         }
     }
 
+    //注册别名，对指定包下的所有类起一个别名，该别名为首字母小写的类名
     public void registerAliases(String packageName)
     {
         registerAliases(packageName, Object.class);
@@ -91,6 +95,7 @@ public class TypeAliasRegistry
         }
     }
 
+    //注册别名，默认别名为类名，如果有Alias注解，去此注解中的值做为别名
     public void registerAlias(Class<?> type)
     {
         String alias = type.getSimpleName();
@@ -115,7 +120,7 @@ public class TypeAliasRegistry
 
     public void registerAlias(String alias, String value) {
         try {
-            //registerAlias(alias, Resources.classForName(value));
+            registerAlias(alias, Resources.classForName(value));
         } catch (Exception e) {
             throw new TypeException("Error registering type alias " + alias + " for " + value + ". Cause: " + e, e);
         }
