@@ -8,7 +8,9 @@ import javax.sql.DataSource;
 public final class Environment
 {
     private final String id;
+
     private final TransactionFactory transactionFactory;
+
     private final DataSource dataSource;
 
     public Environment(String id, TransactionFactory transactionFactory, DataSource dataSource)

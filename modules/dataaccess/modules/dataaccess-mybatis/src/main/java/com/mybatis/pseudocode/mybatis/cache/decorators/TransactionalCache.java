@@ -16,6 +16,7 @@ public class TransactionalCache implements Cache
 
     private boolean clearOnCommit;
 
+    //临时未提交的缓存
     private final Map<Object, Object> entriesToAddOnCommit;
 
     //获取缓存数据时,没有命中的key集合
@@ -78,6 +79,7 @@ public class TransactionalCache implements Cache
         if (this.clearOnCommit) {
             this.delegate.clear();
         }
+        //提交的时候，把临时未提交的缓存放入正式缓存
         flushPendingEntries();
         reset();
     }
@@ -94,6 +96,7 @@ public class TransactionalCache implements Cache
     }
 
     private void flushPendingEntries() {
+        //把临时未提交的缓存放入正式缓存
         for (Map.Entry entry : this.entriesToAddOnCommit.entrySet()) {
             this.delegate.putObject(entry.getKey(), entry.getValue());
         }

@@ -39,7 +39,9 @@ import java.util.*;
 //myBatis所有的配置信息都维持在Configuration中
 public class Configuration
 {
+    //全局配置文件中的environment节点对应的配置
     protected Environment environment;
+
     protected boolean safeRowBoundsEnabled;
     protected boolean safeResultHandlerEnabled = true;
     protected boolean mapUnderscoreToCamelCase;

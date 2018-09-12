@@ -1,6 +1,5 @@
 package com.mybatis.pseudocode.mybatis.transaction.jdbc;
 
-
 import com.mybatis.pseudocode.mybatis.session.TransactionIsolationLevel;
 import com.mybatis.pseudocode.mybatis.transaction.Transaction;
 import org.apache.commons.logging.Log;
@@ -10,6 +9,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+//使用JDBC的事务管理机制,利用java.sql.Connection对象完成对事务的提交（commit()）、回滚（rollback()）、关闭（close()
 public class JdbcTransaction implements Transaction
 {
     private static final Log log = LogFactory.getLog(JdbcTransaction.class);

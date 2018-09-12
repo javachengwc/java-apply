@@ -35,8 +35,9 @@ public abstract class BaseExecutor implements Executor
 
     protected ConcurrentLinkedQueue<DeferredLoad> deferredLoads;
 
-    //本地缓存
+    //本地缓存,一级缓存，session级别的,事务的提交回滚对MyBatis的一级缓存没有影响
     protected PerpetualCache localCache;
+
     protected PerpetualCache localOutputParameterCache;
 
 

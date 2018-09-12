@@ -25,9 +25,16 @@ public final class MappedStatement
     private boolean useCache;
     private boolean resultOrdered;
     private SqlSource sqlSource;
+
+    //二级缓存
+    //在Mapper.xml文件解析时会根据文件中的cache标签创建Cache实例，并将该实例放入每一个MappedStatement中
+    //在MappedStatement执行select操作时候会获取该cache;
     private Cache cache;
+
     private SqlCommandType sqlCommandType;
+
     private KeyGenerator keyGenerator;
+
     private String[] keyProperties;
     private String[] keyColumns;
     private boolean hasNestedResultMaps;
