@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+//流是java8引入的新概念，用来处理集合中的数据。
+//流只能遍历一次
 public class StreamMain {
 
     public static void main(String args [] ) {
@@ -15,6 +17,10 @@ public class StreamMain {
         list.add("aa");
         list.add("11");
         Stream<String> listStream = list.stream();
+        //计数
+        long count = list.stream().count();
+        System.out.println(count);
+
         //筛选
         List<String> rtList =listStream
                 .filter(NumberUtils::isNumber)
@@ -34,6 +40,10 @@ public class StreamMain {
         //跳过
         rtList= Arrays.stream(names).skip(5).collect(Collectors.toList());
         printList(rtList);
+
+        //连接字串
+        String namesChars = Arrays.stream(names).collect(Collectors.joining(","));
+        System.out.println(namesChars);
 
         List<Entity> entityList = new ArrayList<Entity>();
         entityList.add(new Entity(1,"a"));
@@ -93,12 +103,63 @@ public class StreamMain {
             System.out.println(maxIdOpt.getAsInt());
         }
 
+        //最大值
+        Optional<Entity> maxEntityOpt = entityList.stream()
+                .collect(Collectors.maxBy(Comparator.comparingInt(Entity::getId)));
+        System.out.println(maxEntityOpt.get());
+
         //求和
         sum = entityList.stream().mapToInt(Entity::getId).sum();
         System.out.println(sum);
+        sum = entityList.stream().collect(Collectors.summingInt(Entity::getId));
+        System.out.println(sum);
+        //归约求和
+        sum = entityList.stream().collect(Collectors.reducing(0,Entity::getId,(i,j)->i+j));
+        System.out.println(sum);
+
         List<Entity> emptyList =Collections.EMPTY_LIST;
         sum = emptyList.stream().mapToInt(Entity::getId).sum();
         System.out.println(sum);
+
+        //分组
+        Map<String,List<Entity>> entityGroup = entityList.stream()
+            .collect(Collectors.groupingBy((entity)->{
+                if(entity.getId()>2) {
+                    return "c";
+                }
+                return "a";
+            }));
+        for(String groupKey:entityGroup.keySet()) {
+            System.out.println("-----groupKey-->"+groupKey+" : "+entityGroup.get(groupKey));
+        }
+
+        //对分组进行统计
+        Map<String,Long> groupStat = entityList.stream()
+                .collect(Collectors.groupingBy((entity)->{
+                            if(entity.getId()>2) {
+                                return "c";
+                            }
+                            return "a";
+                        },Collectors.counting()));
+        for(String statKey:groupStat.keySet()) {
+            System.out.println("-----statKey-->"+statKey+" : "+groupStat.get(statKey));
+        }
+
+        //多级分组
+        Map<String,Map<String,List<Entity>>> mapGroup = entityList.stream()
+                .collect(Collectors.groupingBy((entity)->{
+                    if(entity.getId()>2) {
+                        return "c";
+                    }
+                    return "a";
+                },Collectors.groupingBy(Entity::getName)));
+        for(String mapKey:mapGroup.keySet()) {
+            System.out.println("-----mapKey-->"+mapKey+" : ");
+            Map<String,List<Entity>> perGroup = mapGroup.get(mapKey);
+            for(String perKey:perGroup.keySet()) {
+                System.out.println("-----perKey-->"+perKey+" : "+perGroup.get(perKey));
+            }
+        }
     }
 
     public static  <T> void printList(List<T> list) {
