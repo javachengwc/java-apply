@@ -13,24 +13,45 @@ import java.util.List;
 public final class MappedStatement
 {
     private String resource;
+
     private Configuration configuration;
+
+    //statment节点id
     private String id;
+
     private Integer fetchSize;
+
     private Integer timeout;
+
     private StatementType statementType;
+
     private ResultSetType resultSetType;
+
     private ParameterMap parameterMap;
+
     private List<ResultMap> resultMaps;
+
+    //默认下，在select的statment中flushCache为false，在insert、update、delete的statment中flushCache为true
+    //可在statment节点中配置，比如:<select id="a" parameterType="aa" flushCache="true" useCache="false"> </select>
+    //相当于此Mapper.xml中的任意一个insert、update、delete的statment执行，都会将二级缓存刷新
     private boolean flushCacheRequired;
+
+    //默认下，在select的statment中useCache为true，在insert、update、delete的statment中useCache为false
+    //可在statment节点中配置，比如:<select id="a" parameterType="aa" flushCache="true" useCache="false"> </select>
+    //但前提是所在Mapper.xml文件配置了二级缓存。
     private boolean useCache;
+
     private boolean resultOrdered;
+
     private SqlSource sqlSource;
 
     //二级缓存
-    //在Mapper.xml文件解析时会根据文件中的cache标签创建Cache实例，并将该实例放入每一个MappedStatement中
-    //在MappedStatement执行select操作时候会获取该cache;
+    //在Mapper.xml文件解析时会根据文件中的cache标签创建Cache实例，并将该实例放入Mapper.xml中每一个MappedStatement中
+    //比如在Mapper.xml有配置<cache eviction="FIFO" flushInterval="600000" size="4096" readOnly="false"/>,才会产生真正的二级缓存
+    //二级缓存是mapper级别的缓存，多个SqlSession可去操作同一个Mapper的sql语句，多个SqlSession可以共用二级缓存，二级缓存是跨SqlSession的
     private Cache cache;
 
+    //标记语句增删改查类型
     private SqlCommandType sqlCommandType;
 
     private KeyGenerator keyGenerator;
@@ -42,6 +63,10 @@ public final class MappedStatement
     private LanguageDriver lang;
     private Log statementLog;
     private String[] resultSets;
+
+    public MappedStatement() {
+
+    }
 
     public KeyGenerator getKeyGenerator()
     {

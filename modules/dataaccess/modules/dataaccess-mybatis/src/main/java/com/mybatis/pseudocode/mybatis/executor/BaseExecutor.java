@@ -35,7 +35,7 @@ public abstract class BaseExecutor implements Executor
 
     protected ConcurrentLinkedQueue<DeferredLoad> deferredLoads;
 
-    //本地缓存,一级缓存，session级别的,事务的提交回滚对MyBatis的一级缓存没有影响
+    //本地缓存,一级缓存，session级别的
     protected PerpetualCache localCache;
 
     protected PerpetualCache localOutputParameterCache;
@@ -147,6 +147,7 @@ public abstract class BaseExecutor implements Executor
         try
         {
             this.queryStack += 1;
+            //从一级缓存获取缓存数据
             list = resultHandler == null ? (List)this.localCache.getObject(key) : null;
             if (list != null)
                 handleLocallyCachedOutputParameters(ms, key, parameter, boundSql);
@@ -161,6 +162,9 @@ public abstract class BaseExecutor implements Executor
                 deferredLoad.load();
             }
             this.deferredLoads.clear();
+
+            //如果一级缓存的范围是STATEMENT,查询完就清除一级缓存
+            //也就是说，在同一会话中多次同样的查询，实际上是用不到一级缓存的，因为每次查询就把它清除了
             if (this.configuration.getLocalCacheScope() == LocalCacheScope.STATEMENT)
             {
                 clearLocalCache();

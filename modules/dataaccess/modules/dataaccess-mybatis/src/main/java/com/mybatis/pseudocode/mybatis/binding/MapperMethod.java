@@ -57,6 +57,7 @@ public class MapperMethod
             }
             case SELECT:
                 if (method.returnsVoid() && method.hasResultHandler()) {
+                    //如果有查询结果后置处理器
                     executeWithResultHandler(sqlSession, args);
                     result = null;
                 } else if (method.returnsMany()) {
@@ -200,13 +201,22 @@ public class MapperMethod
     public static class MethodSignature
     {
         private final boolean returnsMany;
+
         private final boolean returnsMap;
+
         private final boolean returnsVoid;
+
         private final boolean returnsCursor;
+
         private final Class<?> returnType;
+
         private final String mapKey;
+
+        //如果有查询结果的后置处理器，此值是那后置处理器在代理方法的参数中的下标位置
         private final Integer resultHandlerIndex;
+
         private final Integer rowBoundsIndex;
+
         //private final ParamNameResolver paramNameResolver;
 
         public MethodSignature(Configuration configuration, Class<?> mapperInterface, Method method)
@@ -305,12 +315,16 @@ public class MapperMethod
 
     public static class SqlCommand
     {
+        //对应statment语句id
         private final String name;
+
+        //sql增删改查类型
         private final SqlCommandType type;
 
         public SqlCommand(Configuration configuration, Class<?> mapperInterface, Method method)
         {
             String methodName = method.getName();
+            //方法定义所在的类
             Class declaringClass = method.getDeclaringClass();
             MappedStatement ms = resolveMappedStatement(mapperInterface, methodName, declaringClass, configuration);
 

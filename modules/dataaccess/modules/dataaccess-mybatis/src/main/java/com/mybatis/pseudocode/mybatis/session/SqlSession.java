@@ -11,15 +11,20 @@ import java.util.Map;
 //所有操作数据库的顶层api,表示和数据库交互的会话，完成必要数据库增删改查功能
 public abstract interface SqlSession extends Closeable
 {
-    public abstract <T> T selectOne(String param);
+    public abstract <T> T selectOne(String statmentId);
 
-    public abstract <T> T selectOne(String param, Object object);
+    public abstract <T> T selectOne(String statmentId, Object object);
 
-    public abstract <E> List<E> selectList(String param);
+    public abstract <E> List<E> selectList(String statmentId);
 
-    public abstract <E> List<E> selectList(String param, Object object);
+    public abstract <E> List<E> selectList(String statmentId, Object object);
 
-    public abstract <E> List<E> selectList(String param, Object object, RowBounds rowBounds);
+    /**
+     * @param statmentId   查询statment的标记id,就是Mapper.xml文件中<select>节点中的id属性值
+     * @param parameter       设置sql中的参数
+     * @param rowBounds    查询的范围
+     */
+    public abstract <E> List<E> selectList(String statmentId, Object parameter, RowBounds rowBounds);
 
     public abstract <K, V> Map<K, V> selectMap(String param1, String param2);
 
@@ -37,6 +42,7 @@ public abstract interface SqlSession extends Closeable
 
     public abstract void select(String param, ResultHandler resultHandler);
 
+    //resultHandler是查询结果的后置处理器，语句的查询结果直接交由它处理，就不返回给调用方了
     public abstract void select(String param, Object object, RowBounds rowBounds, ResultHandler resultHandler);
 
     public abstract int insert(String param);

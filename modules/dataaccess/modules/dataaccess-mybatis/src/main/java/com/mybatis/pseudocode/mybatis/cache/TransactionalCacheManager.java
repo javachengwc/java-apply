@@ -9,6 +9,8 @@ import java.util.Map;
 //事务缓存管理器
 public class TransactionalCacheManager
 {
+    //Cache与TransactionalCache中委派的真正Cache实际上是同一个Cache
+    //只是TransactionalCache增强了事务特性
     private final Map<Cache, TransactionalCache> transactionalCaches = new HashMap();
 
     public void clear(Cache cache) {

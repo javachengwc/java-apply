@@ -12,9 +12,10 @@ import com.mybatis.pseudocode.mybatis.transaction.Transaction;
 import java.sql.SQLException;
 import java.util.List;
 
+//当开启二级缓存的时候，就是此执行器
 public class CachingExecutor implements Executor
 {
-    //委派的执行器(真正的执行器)
+    //委派的执行器(真正的执行器),可能是BatchExecutor或ReuseExecutor或SimpleExecutor
     private final Executor delegate;
 
     private final TransactionalCacheManager tcm = new TransactionalCacheManager();
@@ -72,16 +73,19 @@ public class CachingExecutor implements Executor
     public <E> List<E> query(MappedStatement ms, Object parameterObject, RowBounds rowBounds,
                              ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException
     {
+        //这里的缓存实际上是MappedStatement中的缓存，也就是二级缓存
         Cache cache = ms.getCache();
         if (cache != null) {
+            //检查是否需要刷新二级缓存，如果刷新,从二级缓存中获取不到任何数据
+            //一般是在这个二级缓存对应的Mapper中有在insert,update,delete的statment执行后，此二级缓存就会刷新
             flushCacheIfRequired(ms);
             if ((ms.isUseCache()) && (resultHandler == null)) {
                 ensureNoOutParams(ms, boundSql);
 
                 List list = (List)this.tcm.getObject(cache, key);
                 if (list == null) {
-                    //delegate真实的执行器是SimplyExecutor
                     list = this.delegate.query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+                    //结果放入二级缓存中
                     this.tcm.putObject(cache, key, list);
                 }
                 return list;

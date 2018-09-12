@@ -5,6 +5,7 @@ import com.mybatis.pseudocode.mybatis.mapping.Environment;
 import com.mybatis.pseudocode.mybatis.session.*;
 import com.mybatis.pseudocode.mybatis.transaction.Transaction;
 import com.mybatis.pseudocode.mybatis.transaction.TransactionFactory;
+import com.mybatis.pseudocode.mybatis.transaction.managed.ManagedTransactionFactory;
 import org.apache.ibatis.exceptions.ExceptionFactory;
 
 import java.sql.Connection;
@@ -104,8 +105,7 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory
 
     private TransactionFactory getTransactionFactoryFromEnvironment(Environment environment) {
         if ((environment == null) || (environment.getTransactionFactory() == null)) {
-            //return new ManagedTransactionFactory();
-            return null;
+            return new ManagedTransactionFactory();
         }
         return environment.getTransactionFactory();
     }

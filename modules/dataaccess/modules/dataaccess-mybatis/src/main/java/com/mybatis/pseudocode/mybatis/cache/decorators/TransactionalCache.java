@@ -7,7 +7,7 @@ import org.apache.ibatis.logging.LogFactory;
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 
-//待事务特性的缓存
+//带事务特性的缓存
 public class TransactionalCache implements Cache
 {
     private static final Log log = LogFactory.getLog(TransactionalCache.class);

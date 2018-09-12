@@ -7,6 +7,7 @@ import org.apache.ibatis.reflection.factory.ObjectFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+//此类就是把查询出来已经通过ResultSetHandler处理过的结果转存在自己的list成员中,没啥用处
 public class DefaultResultHandler implements ResultHandler<Object>
 {
     private final List<Object> list;

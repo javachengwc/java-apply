@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-//责将JDBC返回的ResultSet结果集对象转换成List类型的集合
+//将JDBC返回的ResultSet结果集对象转换成List类型的处理类
 public abstract interface ResultSetHandler
 {
     //处理结果

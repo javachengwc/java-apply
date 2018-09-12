@@ -5,6 +5,7 @@ import com.mybatis.pseudocode.mybatis.builder.ResultMapResolver;
 import com.mybatis.pseudocode.mybatis.builder.annotation.MethodResolver;
 import com.mybatis.pseudocode.mybatis.builder.xml.XMLStatementBuilder;
 import com.mybatis.pseudocode.mybatis.cache.Cache;
+import com.mybatis.pseudocode.mybatis.executor.CachingExecutor;
 import com.mybatis.pseudocode.mybatis.executor.Executor;
 import com.mybatis.pseudocode.mybatis.executor.SimpleExecutor;
 import com.mybatis.pseudocode.mybatis.executor.kengen.KeyGenerator;
@@ -51,7 +52,7 @@ public class Configuration
     protected boolean useColumnLabel = true;
 
     //这些属性，可通过全局配置文件中的settings节点配置覆盖
-    //是否缓存，默认true
+    //是否启用二级缓存，默认true
     protected boolean cacheEnabled = true;
     //延迟加载，默认false
     protected boolean lazyLoadingEnabled = false;
@@ -62,9 +63,15 @@ public class Configuration
     protected boolean returnInstanceForEmptyRow;
 
 
+    //一级缓存范围，也就是本地缓存换位，默认SESSION ，也可以设置成STATEMENT,
+    //在全局配置文件中设置localCacheScope=STATEMENT
     protected LocalCacheScope localCacheScope = LocalCacheScope.SESSION;
+
     protected JdbcType jdbcTypeForNull = JdbcType.OTHER;
     protected Set<String> lazyLoadTriggerMethods = new HashSet(Arrays.asList(new String[] { "equals", "clone", "hashCode", "toString" }));
+
+    //默认的响应超时时长(毫秒)
+    //比如全局配置文件中设置<setting name="defaultStatementTimeout" value="25000" />
     protected Integer defaultStatementTimeout;
     protected Integer defaultFetchSize;
     protected ExecutorType defaultExecutorType = ExecutorType.SIMPLE;
@@ -425,7 +432,7 @@ public class Configuration
                 executor = new SimpleExecutor(this, transaction);
         }
         if (this.cacheEnabled) {
-           // executor = new CachingExecutor(executor);
+            executor = new CachingExecutor(executor);
         }
          executor = (Executor)this.interceptorChain.pluginAll(executor);
         return executor;

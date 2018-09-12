@@ -59,11 +59,13 @@ public class MapperProxy<T> implements InvocationHandler, Serializable
     @UsesJava7
     private Object invokeDefaultMethod(Object proxy, Method method, Object[] args) throws Throwable
     {
+        //MethodHandle 方法句柄
         Constructor constructor = MethodHandles.Lookup.class.getDeclaredConstructor(new Class[] { Class.class, Integer.TYPE });
 
         if (!constructor.isAccessible()) {
             constructor.setAccessible(true);
         }
+        //方法所在的类
         Class declaringClass = method.getDeclaringClass();
         return
                 ((MethodHandles.Lookup)constructor.newInstance(new Object[] { declaringClass, Integer.valueOf(15) }))
