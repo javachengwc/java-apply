@@ -24,7 +24,9 @@ public class DefaultSqlSession implements SqlSession
     private final Configuration configuration;
     private final Executor executor;
     private final boolean autoCommit;
+
     private boolean dirty;
+
     private List<Cursor<?>> cursorList;
 
     public DefaultSqlSession(Configuration configuration, Executor executor, boolean autoCommit)
@@ -167,6 +169,7 @@ public class DefaultSqlSession implements SqlSession
     public int update(String statement, Object parameter)
     {
         try {
+            //执行了update操作则会将标志位dirty赋值为true
             this.dirty = true;
             MappedStatement ms = this.configuration.getMappedStatement(statement);
             int i = this.executor.update(ms, wrapCollection(parameter));
@@ -197,6 +200,7 @@ public class DefaultSqlSession implements SqlSession
     {
         try {
             this.executor.commit(isCommitOrRollbackRequired(force));
+            //在事务提交时会将dirty赋值为false
             this.dirty = false;
         } catch (Exception e) {
             throw ExceptionFactory.wrapException("Error committing transaction.  Cause: " + e, e);

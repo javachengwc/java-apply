@@ -28,6 +28,7 @@ public abstract class BaseExecutor implements Executor
 {
     private static final Log log = LogFactory.getLog(BaseExecutor.class);
 
+    //事务
     protected Transaction transaction;
 
     //包装BaseExecutor的执行器,只是做个引用，其他啥都没用

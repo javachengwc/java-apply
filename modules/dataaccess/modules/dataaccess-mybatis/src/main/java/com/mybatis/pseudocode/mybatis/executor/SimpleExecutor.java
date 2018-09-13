@@ -38,13 +38,16 @@ public class SimpleExecutor extends BaseExecutor
         }
     }
 
+    //具体的查询
     public <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) throws SQLException
     {
         Statement stmt = null;
         try {
             Configuration configuration = ms.getConfiguration();
             StatementHandler handler = configuration.newStatementHandler(this.wrapper, ms, parameter, rowBounds, resultHandler, boundSql);
+            //准备statment
             stmt = prepareStatement(handler, ms.getStatementLog());
+            //StatementHandler来执行具体的查询
             List localList = handler.query(stmt, resultHandler);
             return localList;
         } finally {
@@ -65,10 +68,14 @@ public class SimpleExecutor extends BaseExecutor
         return Collections.emptyList();
     }
 
+    //准备statment
     private Statement prepareStatement(StatementHandler handler, Log statementLog) throws SQLException
     {
+        //打开连接
         Connection connection = getConnection(statementLog);
+        //创建statment
         Statement stmt = handler.prepare(connection, this.transaction.getTimeout());
+        //sql参数设置
         handler.parameterize(stmt);
         return stmt;
     }

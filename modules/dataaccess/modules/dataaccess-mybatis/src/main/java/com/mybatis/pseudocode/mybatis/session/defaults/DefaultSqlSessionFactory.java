@@ -20,6 +20,7 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory
         this.configuration = configuration;
     }
 
+    //打开Session
     public SqlSession openSession()
     {
         return openSessionFromDataSource(this.configuration.getDefaultExecutorType(), null, false);
@@ -65,6 +66,7 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory
         return this.configuration;
     }
 
+    //从数据源中打开session
     private SqlSession openSessionFromDataSource(ExecutorType execType, TransactionIsolationLevel level, boolean autoCommit) {
         Transaction tx = null;
         try {
@@ -103,6 +105,7 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory
         }
     }
 
+    //从环境中获取事务工厂
     private TransactionFactory getTransactionFactoryFromEnvironment(Environment environment) {
         if ((environment == null) || (environment.getTransactionFactory() == null)) {
             return new ManagedTransactionFactory();

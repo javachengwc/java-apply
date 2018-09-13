@@ -20,6 +20,7 @@ public class MapperRegistry
     }
 
     //获取type这个Mapper接口类的代理对象
+    //每次session都会针对此session创建新的代理对象
     public <T> T getMapper(Class<T> type, SqlSession sqlSession)
     {
         MapperProxyFactory mapperProxyFactory = (MapperProxyFactory)this.knownMappers.get(type);

@@ -40,7 +40,7 @@ import java.util.*;
 //myBatis所有的配置信息都维持在Configuration中
 public class Configuration
 {
-    //全局配置文件中的environment节点对应的配置
+    //全局配置文件中的environment节点对应的配置,里面包含数据源，事务工厂的配置
     protected Environment environment;
 
     protected boolean safeRowBoundsEnabled;
@@ -74,6 +74,8 @@ public class Configuration
     //比如全局配置文件中设置<setting name="defaultStatementTimeout" value="25000" />
     protected Integer defaultStatementTimeout;
     protected Integer defaultFetchSize;
+
+    //执行器类型，默认简单类型
     protected ExecutorType defaultExecutorType = ExecutorType.SIMPLE;
 
     //mybatis.xml全局配置文件中properties节点中配置的信息
