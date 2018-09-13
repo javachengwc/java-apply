@@ -2,14 +2,11 @@ package com.mybatis.pseudocode.mybatis.builder.xml;
 
 import com.mybatis.pseudocode.mybatis.builder.BaseBuilder;
 import com.mybatis.pseudocode.mybatis.builder.BuilderException;
+import com.mybatis.pseudocode.mybatis.builder.MapperBuilderAssistant;
 import com.mybatis.pseudocode.mybatis.builder.ResultMapResolver;
-import com.mybatis.pseudocode.mybatis.mapping.JdbcType;
-import com.mybatis.pseudocode.mybatis.mapping.ResultFlag;
-import com.mybatis.pseudocode.mybatis.mapping.ResultMap;
-import com.mybatis.pseudocode.mybatis.mapping.ResultMapping;
+import com.mybatis.pseudocode.mybatis.mapping.*;
 import com.mybatis.pseudocode.mybatis.session.Configuration;
 import org.apache.ibatis.builder.IncompleteElementException;
-import org.apache.ibatis.builder.MapperBuilderAssistant;
 import org.apache.ibatis.builder.xml.XMLMapperEntityResolver;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.Discriminator;
@@ -18,10 +15,7 @@ import org.apache.ibatis.parsing.XPathParser;
 
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 //解析SqlMap.xml和所有的***Mapper.xml
 public class XMLMapperBuilder extends BaseBuilder {
@@ -38,7 +32,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     @Deprecated
     public XMLMapperBuilder(Reader reader, Configuration configuration, String resource, Map<String, XNode> sqlFragments, String namespace) {
         this(reader, configuration, resource, sqlFragments);
-        //this.builderAssistant.setCurrentNamespace(namespace);
+        this.builderAssistant.setCurrentNamespace(namespace);
     }
 
     @Deprecated
@@ -48,7 +42,7 @@ public class XMLMapperBuilder extends BaseBuilder {
 
     public XMLMapperBuilder(InputStream inputStream, Configuration configuration, String resource, Map<String, XNode> sqlFragments, String namespace) {
         this(inputStream, configuration, resource, sqlFragments);
-        //this.builderAssistant.setCurrentNamespace(namespace);
+        this.builderAssistant.setCurrentNamespace(namespace);
     }
 
     public XMLMapperBuilder(InputStream inputStream, Configuration configuration, String resource, Map<String, XNode> sqlFragments) {
@@ -57,7 +51,7 @@ public class XMLMapperBuilder extends BaseBuilder {
 
     private XMLMapperBuilder(XPathParser parser, Configuration configuration, String resource, Map<String, XNode> sqlFragments) {
         super(configuration);
-        //this.builderAssistant = new MapperBuilderAssistant(configuration, resource);
+        this.builderAssistant = new MapperBuilderAssistant(configuration, resource);
         this.parser = parser;
         this.sqlFragments = sqlFragments;
         this.resource = resource;
@@ -113,9 +107,9 @@ public class XMLMapperBuilder extends BaseBuilder {
             // 解析<cache-ref>节点
             //cacheRefElement(context.evalNode("cache-ref"));
             // 解析<cache>节点
-            //cacheElement(context.evalNode("cache"));
+            cacheElement(context.evalNode("cache"));
             // 解析<parameterMap>节点
-            //parameterMapElement(context.evalNodes("/mapper/parameterMap"));
+            parameterMapElement(context.evalNodes("/mapper/parameterMap"));
             // 解析<resultMap>节点
             resultMapElements(context.evalNodes("/mapper/resultMap"));
             // 解析<sql>节点
@@ -229,7 +223,7 @@ public class XMLMapperBuilder extends BaseBuilder {
         return null;
     }
 
-    //将mapper.xml中的的sql语句解析成MappedStatement对象，并存在configuration的mappedStatements
+    //将mapper.xml中的的sql语句解析成MappedStatement对象，并存入configuration的mappedStatements
     private void buildStatementFromContext(List<XNode> list) {
         if (this.configuration.getDatabaseId() != null) {
             buildStatementFromContext(list, this.configuration.getDatabaseId());
@@ -249,5 +243,53 @@ public class XMLMapperBuilder extends BaseBuilder {
             }
         }
     }
+
+    // 解析<cache>节点
+    private void cacheElement(XNode context) throws Exception {
+        if (context != null) {
+            String type = context.getStringAttribute("type", "PERPETUAL");
+            Class typeClass = this.typeAliasRegistry.resolveAlias(type);
+            String eviction = context.getStringAttribute("eviction", "LRU");
+            Class evictionClass = this.typeAliasRegistry.resolveAlias(eviction);
+            Long flushInterval = context.getLongAttribute("flushInterval");
+            Integer size = context.getIntAttribute("size");
+            boolean readWrite = !context.getBooleanAttribute("readOnly", Boolean.valueOf(false)).booleanValue();
+            boolean blocking = context.getBooleanAttribute("blocking", Boolean.valueOf(false)).booleanValue();
+            Properties props = context.getChildrenAsProperties();
+            //生成Cache对象，并加入到configuration的caches集合中
+            this.builderAssistant.useNewCache(typeClass, evictionClass, flushInterval, size, readWrite, blocking, props);
+        }
+    }
+
+    //解析<parameterMap>节点
+    private void parameterMapElement(List<XNode> list) throws Exception {
+        for (XNode parameterMapNode : list) {
+            String id = parameterMapNode.getStringAttribute("id");
+            String type = parameterMapNode.getStringAttribute("type");
+            Class parameterClass = resolveClass(type);
+            List<XNode> parameterNodes = parameterMapNode.evalNodes("parameter");
+            List parameterMappings = new ArrayList();
+            for (XNode parameterNode : parameterNodes) {
+                String property = parameterNode.getStringAttribute("property");
+                String javaType = parameterNode.getStringAttribute("javaType");
+                String jdbcType = parameterNode.getStringAttribute("jdbcType");
+                String resultMap = parameterNode.getStringAttribute("resultMap");
+                String mode = parameterNode.getStringAttribute("mode");
+                String typeHandler = parameterNode.getStringAttribute("typeHandler");
+                Integer numericScale = parameterNode.getIntAttribute("numericScale");
+                ParameterMode modeEnum = resolveParameterMode(mode);
+                Class javaTypeClass = resolveClass(javaType);
+                JdbcType jdbcTypeEnum = resolveJdbcType(jdbcType);
+
+                Class typeHandlerClass = resolveClass(typeHandler);
+                ParameterMapping parameterMapping = this.builderAssistant.buildParameterMapping(parameterClass, property, javaTypeClass,
+                        jdbcTypeEnum, resultMap, modeEnum, typeHandlerClass, numericScale);
+                parameterMappings.add(parameterMapping);
+            }
+            //生成ParameterMap,并加入到configuration的parameterMaps集合中
+            this.builderAssistant.addParameterMap(id, parameterClass, parameterMappings);
+        }
+    }
+
 }
 

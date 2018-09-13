@@ -10,7 +10,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 //使用MANAGED的事务管理机制,让容器管理事务transaction的整个生命周期
-//MyBatis自身不会去实现事务管理，而是让程序的容器如jboss来实现对事务的管理
+//MyBatis自身不会去实现事务管理，而是让程序的容器如spring来实现对事务的管理,比如SpringManagedTransaction
 public class ManagedTransaction implements Transaction
 {
     private static final Log log = LogFactory.getLog(ManagedTransaction.class);

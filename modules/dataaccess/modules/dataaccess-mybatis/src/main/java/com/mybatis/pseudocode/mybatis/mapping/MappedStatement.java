@@ -167,6 +167,22 @@ public final class MappedStatement
         this.cache = cache;
     }
 
+    public void setFlushCacheRequired(boolean flushCacheRequired) {
+        this.flushCacheRequired = flushCacheRequired;
+    }
+
+    public void setUseCache(boolean useCache) {
+        this.useCache = useCache;
+    }
+
+    public void setResource(String resource) {
+        this.resource = resource;
+    }
+
+    public void setParameterMap(ParameterMap parameterMap) {
+        this.parameterMap = parameterMap;
+    }
+
     @Deprecated
     public String[] getResulSets() {
         return this.resultSets;
@@ -193,5 +209,47 @@ public final class MappedStatement
         return boundSql;
     }
 
+    public static class Builder
+    {
+        private MappedStatement mappedStatement = new MappedStatement();
+
+        public Builder(Configuration configuration, String id, SqlSource sqlSource, SqlCommandType sqlCommandType) {
+            //...
+        }
+
+        public Builder resource(String resource) {
+            mappedStatement.setResource(resource);
+            return this;
+        }
+
+        public Builder cache(Cache cache) {
+            mappedStatement.setCache( cache);
+            return this;
+        }
+
+        public Builder flushCacheRequired(boolean flushCacheRequired) {
+            mappedStatement.setFlushCacheRequired(flushCacheRequired);
+            return this;
+        }
+
+        public Builder useCache(boolean useCache) {
+            mappedStatement.setUseCache(useCache);
+            return this;
+        }
+
+        public Builder parameterMap(ParameterMap parameterMap) {
+            mappedStatement.setParameterMap(parameterMap);
+            return this;
+        }
+
+        public MappedStatement build() {
+            assert (this.mappedStatement.configuration != null);
+            assert (this.mappedStatement.id != null);
+            assert (this.mappedStatement.sqlSource != null);
+            assert (this.mappedStatement.lang != null);
+            //...
+            return this.mappedStatement;
+        }
+    }
 
 }

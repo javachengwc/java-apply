@@ -1,13 +1,14 @@
 package com.mybatis.pseudocode.mybatis.builder.xml;
 
 import com.mybatis.pseudocode.mybatis.builder.BaseBuilder;
+import com.mybatis.pseudocode.mybatis.builder.MapperBuilderAssistant;
 import com.mybatis.pseudocode.mybatis.executor.kengen.KeyGenerator;
 import com.mybatis.pseudocode.mybatis.mapping.ResultSetType;
 import com.mybatis.pseudocode.mybatis.mapping.SqlCommandType;
 import com.mybatis.pseudocode.mybatis.mapping.SqlSource;
 import com.mybatis.pseudocode.mybatis.mapping.StatementType;
+import com.mybatis.pseudocode.mybatis.scripting.LanguageDriver;
 import com.mybatis.pseudocode.mybatis.session.Configuration;
-import org.apache.ibatis.builder.MapperBuilderAssistant;
 import org.apache.ibatis.parsing.XNode;
 
 import java.util.Locale;
@@ -45,7 +46,7 @@ public class XMLStatementBuilder extends BaseBuilder {
         String resultMap = this.context.getStringAttribute("resultMap");
         String resultType = this.context.getStringAttribute("resultType");
         String lang = this.context.getStringAttribute("lang");
-        //LanguageDriver langDriver = getLanguageDriver(lang);
+        LanguageDriver langDriver = getLanguageDriver(lang);
 
         Class resultTypeClass = resolveClass(resultType);
         String resultSetType = this.context.getStringAttribute("resultSetType");
@@ -72,7 +73,7 @@ public class XMLStatementBuilder extends BaseBuilder {
 
         String keyStatementId = id + "!selectKey";
         keyStatementId = this.builderAssistant.applyCurrentNamespace(keyStatementId, true);
-        KeyGenerator keyGenerator;
+        KeyGenerator keyGenerator=null;
         if (this.configuration.hasKeyGenerator(keyStatementId))
             keyGenerator = this.configuration.getKeyGenerator(keyStatementId);
         else {
@@ -80,9 +81,17 @@ public class XMLStatementBuilder extends BaseBuilder {
 //                    Boolean.valueOf((this.configuration.isUseGeneratedKeys())
 //                            && (SqlCommandType.INSERT.equals(sqlCommandType)))).booleanValue() ? Jdbc3KeyGenerator.INSTANCE : NoKeyGenerator.INSTANCE;
         }
-//        this.builderAssistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType, fetchSize, timeout,
-//                parameterMap, parameterTypeClass, resultMap, resultTypeClass, resultSetTypeEnum, flushCache, useCache,
-//                resultOrdered, keyGenerator, keyProperty, keyColumn, databaseId, langDriver, resultSets);
+        //解析成MappedStatement对象，并存入configuration的mappedStatements
+        this.builderAssistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType, fetchSize, timeout,
+                parameterMap, parameterTypeClass, resultMap, resultTypeClass, resultSetTypeEnum, flushCache, useCache,
+                resultOrdered, keyGenerator, keyProperty, keyColumn, databaseId, langDriver, resultSets);
     }
 
+    private LanguageDriver getLanguageDriver(String lang) {
+        Class langClass = null;
+        if (lang != null) {
+            langClass = resolveClass(lang);
+        }
+        return this.builderAssistant.getLanguageDriver(langClass);
+    }
 }

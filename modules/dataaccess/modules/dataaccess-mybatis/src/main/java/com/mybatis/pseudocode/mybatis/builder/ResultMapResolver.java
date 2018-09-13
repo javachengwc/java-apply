@@ -2,7 +2,6 @@ package com.mybatis.pseudocode.mybatis.builder;
 
 import com.mybatis.pseudocode.mybatis.mapping.ResultMap;
 import com.mybatis.pseudocode.mybatis.mapping.ResultMapping;
-import org.apache.ibatis.builder.MapperBuilderAssistant;
 import org.apache.ibatis.mapping.Discriminator;
 
 import java.util.List;
@@ -31,9 +30,8 @@ public class ResultMapResolver
         this.autoMapping = autoMapping;
     }
 
-    //构造ResultMap对象，并将其存入Configuration对象的resultMaps容器中,这个过程是借助于MapperBuilderAssistant.addResultMap完成。
+    //构造ResultMap对象，并将其存入Configuration对象的resultMaps容器中。
     public ResultMap resolve() {
-        //return this.assistant.addResultMap(this.id, this.type, this.extend, this.discriminator, this.resultMappings, this.autoMapping);
-        return new ResultMap();
+        return this.assistant.addResultMap(this.id, this.type, this.extend, this.discriminator, this.resultMappings, this.autoMapping);
     }
 }

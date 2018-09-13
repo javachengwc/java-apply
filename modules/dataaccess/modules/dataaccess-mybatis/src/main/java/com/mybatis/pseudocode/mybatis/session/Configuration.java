@@ -17,6 +17,7 @@ import com.mybatis.pseudocode.mybatis.executor.statement.StatementHandler;
 import com.mybatis.pseudocode.mybatis.mapping.*;
 import com.mybatis.pseudocode.mybatis.plugin.Interceptor;
 import com.mybatis.pseudocode.mybatis.plugin.InterceptorChain;
+import com.mybatis.pseudocode.mybatis.scripting.LanguageDriverRegistry;
 import com.mybatis.pseudocode.mybatis.transaction.Transaction;
 import com.mybatis.pseudocode.mybatis.transaction.jdbc.JdbcTransactionFactory;
 import com.mybatis.pseudocode.mybatis.type.TypeAliasRegistry;
@@ -33,7 +34,6 @@ import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
 import org.apache.ibatis.reflection.factory.ObjectFactory;
 import org.apache.ibatis.reflection.wrapper.DefaultObjectWrapperFactory;
 import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
-import org.apache.ibatis.scripting.LanguageDriverRegistry;
 
 import java.util.*;
 
@@ -105,11 +105,22 @@ public class Configuration
 
     protected final LanguageDriverRegistry languageRegistry = new LanguageDriverRegistry();
 
+    //所有MappedStatement的map集合,每在mapper.xml中发现一个statment,就会放到这里
+    //key为mapper.xml的namespace+statment的id
     protected final Map<String, MappedStatement> mappedStatements = new StrictMap("Mapped Statements collection");
 
+    //所有二级缓存的map集合，每在mapper.xml中发现一个cache,就会放到这里
+    //key为mapper.xml的namespace
     protected final Map<String, Cache> caches = new StrictMap("Caches collection");
+
+    //所有ResultMap的map集合,每在mapper.xml中发现一个resultMap,就会放到这里
+    //key为mapper.xml的namespace+resultMap的id
     protected final Map<String, ResultMap> resultMaps = new StrictMap("Result Maps collection");
+
+    //所有ParameterMap的map集合,每在mapper.xml中发现一个parameterMap,就会放到这里
+    //key为mapper.xml的namespace+parameterMap的id
     protected final Map<String, ParameterMap> parameterMaps = new StrictMap("Parameter Maps collection");
+
     protected final Map<String, KeyGenerator> keyGenerators = new StrictMap("Key Generators collection");
 
     //加载的mapper.xml
@@ -122,6 +133,7 @@ public class Configuration
 
     protected final Collection<CacheRefResolver> incompleteCacheRefs = new LinkedList();
 
+    //未完成解析的ResultMap
     protected final Collection<ResultMapResolver> incompleteResultMaps = new LinkedList();
 
     protected final Collection<MethodResolver> incompleteMethods = new LinkedList();

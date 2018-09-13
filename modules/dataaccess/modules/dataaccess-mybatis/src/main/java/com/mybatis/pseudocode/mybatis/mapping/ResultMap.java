@@ -1,11 +1,9 @@
 package com.mybatis.pseudocode.mybatis.mapping;
 
-
 import com.mybatis.pseudocode.mybatis.annotations.Param;
 import com.mybatis.pseudocode.mybatis.session.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.ibatis.mapping.ResultMapping;
 import org.apache.ibatis.reflection.Jdk;
 import org.apache.ibatis.reflection.ParamNameUtil;
 
