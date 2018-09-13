@@ -1,6 +1,7 @@
 package com.mybatis.pseudocode.mybatisspring;
 
 import com.mybatis.pseudocode.mybatis.cursor.Cursor;
+import com.mybatis.pseudocode.mybatis.exceptions.PersistenceException;
 import com.mybatis.pseudocode.mybatis.executor.BatchResult;
 import com.mybatis.pseudocode.mybatis.session.*;
 import org.mybatis.spring.MyBatisExceptionTranslator;
@@ -215,39 +216,36 @@ public class SqlSessionTemplate implements SqlSession, DisposableBean
         {
 
         }
-
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
         {
-//            SqlSession sqlSession = SqlSessionUtils.getSqlSession(SqlSessionTemplate.this.sqlSessionFactory,
-//                    SqlSessionTemplate.this.executorType,
-//                    SqlSessionTemplate.this.exceptionTranslator);
-
-            SqlSession sqlSession=null;
+            SqlSession sqlSession = SqlSessionUtils.getSqlSession(SqlSessionTemplate.this.sqlSessionFactory,
+                    SqlSessionTemplate.this.executorType,
+                    SqlSessionTemplate.this.exceptionTranslator);
             try
             {
                 Object result = method.invoke(sqlSession, args);
-//                if (!SqlSessionUtils.isSqlSessionTransactional(sqlSession, SqlSessionTemplate.this.sqlSessionFactory))
-//                {
-//                    sqlSession.commit(true);
-//                }
+                if (!SqlSessionUtils.isSqlSessionTransactional(sqlSession, SqlSessionTemplate.this.sqlSessionFactory))
+                {
+                    sqlSession.commit(true);
+                }
                 Object localObject1 = result;
                 return localObject1;
             } catch (Throwable t) {
                 //Throwable unwrapped = ExceptionUtil.unwrapThrowable(t);
                 Throwable unwrapped=null;
-//                if ((SqlSessionTemplate.this.exceptionTranslator != null) && ((unwrapped instanceof PersistenceException)))
-//                {
-//                    SqlSessionUtils.closeSqlSession(sqlSession, SqlSessionTemplate.this.sqlSessionFactory);
-//                    sqlSession = null;
-//                    Throwable translated = SqlSessionTemplate.this.exceptionTranslator.translateExceptionIfPossible((PersistenceException)unwrapped);
-//                    if (translated != null) {
-//                        unwrapped = translated;
-//                    }
-//                }
+                if ((SqlSessionTemplate.this.exceptionTranslator != null) && ((unwrapped instanceof PersistenceException)))
+                {
+                    SqlSessionUtils.closeSqlSession(sqlSession, SqlSessionTemplate.this.sqlSessionFactory);
+                    sqlSession = null;
+                    Throwable translated = SqlSessionTemplate.this.exceptionTranslator.translateExceptionIfPossible((PersistenceException)unwrapped);
+                    if (translated != null) {
+                        unwrapped = translated;
+                    }
+                }
                 throw unwrapped;
             } finally {
                 if (sqlSession != null) {
-                    //SqlSessionUtils.closeSqlSession(sqlSession, SqlSessionTemplate.this.sqlSessionFactory);
+                    SqlSessionUtils.closeSqlSession(sqlSession, SqlSessionTemplate.this.sqlSessionFactory);
                 }
             }
         }
