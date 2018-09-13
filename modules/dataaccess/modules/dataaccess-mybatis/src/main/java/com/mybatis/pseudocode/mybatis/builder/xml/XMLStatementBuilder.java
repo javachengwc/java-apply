@@ -80,7 +80,7 @@ public class XMLStatementBuilder extends BaseBuilder {
         if (this.configuration.hasKeyGenerator(keyStatementId))
             keyGenerator = this.configuration.getKeyGenerator(keyStatementId);
         else {
-            //dbc3KeyGenerator和NoKeyGenerator对应于insert语句是否取回表的自增Id，
+            //Jdbc3KeyGenerator和NoKeyGenerator对应于insert语句是否取回表的自增Id，
             //KeyGenerator idbc3KeyGenerator= Jdbc3KeyGenerator.INSTANCE;
             //KeyGenerator noKeyGenerator=NoKeyGenerator.INSTANCE;
             KeyGenerator idbc3KeyGenerator=null;

@@ -41,7 +41,6 @@ public abstract class BaseExecutor implements Executor
 
     protected PerpetualCache localOutputParameterCache;
 
-
     protected Configuration configuration;
 
     protected int queryStack;

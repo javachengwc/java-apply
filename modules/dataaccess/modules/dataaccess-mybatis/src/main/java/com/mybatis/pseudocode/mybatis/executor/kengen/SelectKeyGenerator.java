@@ -51,6 +51,7 @@ public class SelectKeyGenerator implements KeyGenerator
                 MetaObject metaParam =null;
                 if (keyProperties != null)
                 {
+                    //获取生成的主键的执行器，与insert语句的执行器是不同的执行器，但属于同一个session,同一个事务，共用同一个数据库连接
                     Executor keyExecutor = configuration.newExecutor(executor.getTransaction(), ExecutorType.SIMPLE);
                     List values = keyExecutor.query(this.keyStatement, parameter, RowBounds.DEFAULT, Executor.NO_RESULT_HANDLER);
                     if (values.size() == 0)
