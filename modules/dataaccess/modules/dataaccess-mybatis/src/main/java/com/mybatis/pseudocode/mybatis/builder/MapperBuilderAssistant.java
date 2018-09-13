@@ -178,7 +178,9 @@ public class MapperBuilderAssistant extends BaseBuilder
     }
 
     //增加MappedStatement
-    public MappedStatement addMappedStatement(String id, SqlSource sqlSource, StatementType statementType, SqlCommandType sqlCommandType, Integer fetchSize, Integer timeout, String parameterMap, Class<?> parameterType, String resultMap, Class<?> resultType, ResultSetType resultSetType, boolean flushCache, boolean useCache, boolean resultOrdered, KeyGenerator keyGenerator, String keyProperty, String keyColumn, String databaseId, LanguageDriver lang, String resultSets)
+    public MappedStatement addMappedStatement(String id, SqlSource sqlSource, StatementType statementType, SqlCommandType sqlCommandType, Integer fetchSize, Integer timeout, String parameterMap, Class<?> parameterType, String resultMap,
+          Class<?> resultType, ResultSetType resultSetType, boolean flushCache, boolean useCache, boolean resultOrdered,
+          KeyGenerator keyGenerator, String keyProperty, String keyColumn, String databaseId, LanguageDriver lang, String resultSets)
     {
         if (this.unresolvedCacheRef) {
             throw new IncompleteElementException("Cache-ref not yet resolved");
@@ -202,7 +204,9 @@ public class MapperBuilderAssistant extends BaseBuilder
                 //.resultMaps(getStatementResultMaps(resultMap, resultType, id))
                 //.resultSetType(resultSetType)
                 .flushCacheRequired(((Boolean)valueOrDefault(Boolean.valueOf(flushCache), Boolean.valueOf(!isSelect))).booleanValue())
+                //useCache=true 或则 useCache为空但是select的statment，MappedStatement的useCache才设置成true
                 .useCache(((Boolean)valueOrDefault(Boolean.valueOf(useCache), Boolean.valueOf(isSelect))).booleanValue())
+                //这里用的cache,就是mapper.xml中配置的那cache。
                 .cache(this.currentCache);
 
         ParameterMap statementParameterMap = getStatementParameterMap(parameterMap, parameterType, id);
