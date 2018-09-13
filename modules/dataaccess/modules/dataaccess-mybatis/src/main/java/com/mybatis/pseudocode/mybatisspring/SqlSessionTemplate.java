@@ -15,11 +15,20 @@ import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 
+//<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+//<constructor-arg index="0" ref="sqlSessionFactory"/>
+//<constructor-arg index="1" value="SIMPLE"/>
+//</bean>
 public class SqlSessionTemplate implements SqlSession, DisposableBean
 {
+
     private final SqlSessionFactory sqlSessionFactory;
+
+    //执行器类型
     private final ExecutorType executorType;
+
     private final SqlSession sqlSessionProxy;
+
     private final PersistenceExceptionTranslator exceptionTranslator;
 
     public SqlSessionTemplate(SqlSessionFactory sqlSessionFactory)

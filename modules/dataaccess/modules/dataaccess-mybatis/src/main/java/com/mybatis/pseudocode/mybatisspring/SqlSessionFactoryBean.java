@@ -31,6 +31,16 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.Properties;
 
+//<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+//    <property name="dataSource" ref="dataSource"/>
+//    <property name="configLocation" value="classpath:mybatis/mybatis-config.xml"/>
+//    <property name="mapperLocations">
+//    <array>
+//        <value>classpath*:mybatis/sqlmap/shop/*.xml</value>
+//        <value>classpath*:mybatis/sqlmap/shop/ext/*.xml</value>
+//    </array>
+//    </property>
+//</bean>
 public class SqlSessionFactoryBean implements FactoryBean<SqlSessionFactory>, InitializingBean, ApplicationListener<ApplicationEvent>
 {
     private static final Log LOGGER = LogFactory.getLog(SqlSessionFactoryBean.class);
