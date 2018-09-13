@@ -121,6 +121,7 @@ public class Configuration
     //key为mapper.xml的namespace+parameterMap的id
     protected final Map<String, ParameterMap> parameterMaps = new StrictMap("Parameter Maps collection");
 
+    //所有KeyGenerator的map集合,每在mapper.xml中每个insert的statment,如果有SelectKeyGenerator,就会放到这里
     protected final Map<String, KeyGenerator> keyGenerators = new StrictMap("Key Generators collection");
 
     //加载的mapper.xml

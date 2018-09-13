@@ -15,6 +15,8 @@ import org.apache.ibatis.reflection.MetaClass;
 import java.sql.ResultSet;
 import java.util.*;
 
+//解析Mapper.xml文件信息生成相应的对象,并添加到configuration相应的集合中
+//解析配置中很重要的一个类
 public class MapperBuilderAssistant extends BaseBuilder
 {
     private String currentNamespace;

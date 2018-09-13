@@ -1,6 +1,5 @@
 package com.mybatis.pseudocode.mybatis.executor.kengen;
 
-
 import com.mybatis.pseudocode.mybatis.executor.Executor;
 import com.mybatis.pseudocode.mybatis.executor.ExecutorException;
 import com.mybatis.pseudocode.mybatis.mapping.MappedStatement;
@@ -12,11 +11,15 @@ import org.apache.ibatis.reflection.MetaObject;
 import java.sql.Statement;
 import java.util.List;
 
-
+//SelectkeyGenerator对应于生成主键操作，即针对insert类型的sql语句，配置selectKey的策略，自动为insert语句的参数补全id
+//<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">SELECT LAST_INSERT_ID()</selectKey>
 public class SelectKeyGenerator implements KeyGenerator
 {
     public static final String SELECT_KEY_SUFFIX = "!selectKey";
+
+    //生成id的sql语句，在insert语句执行前还是执行后执行，一般都是执行后
     private final boolean executeBefore;
+    //生成id的sql语句对应的MappedStatement
     private final MappedStatement keyStatement;
 
     public SelectKeyGenerator(MappedStatement keyStatement, boolean executeBefore)
@@ -37,6 +40,7 @@ public class SelectKeyGenerator implements KeyGenerator
             processGeneratedKeys(executor, ms, parameter);
     }
 
+    //执行id生成语句
     private void processGeneratedKeys(Executor executor, MappedStatement ms, Object parameter)
     {
         try {
@@ -102,6 +106,7 @@ public class SelectKeyGenerator implements KeyGenerator
         if (metaParam.hasSetter(property))
             metaParam.setValue(property, value);
         else
-            throw new ExecutorException("No setter found for the keyProperty '" + property + "' in " + metaParam.getOriginalObject().getClass().getName() + ".");
+            throw new ExecutorException("No setter found for the keyProperty '" + property +
+                    "' in " + metaParam.getOriginalObject().getClass().getName() + ".");
     }
 }

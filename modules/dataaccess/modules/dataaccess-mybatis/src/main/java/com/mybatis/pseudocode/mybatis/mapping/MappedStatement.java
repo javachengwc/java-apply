@@ -54,11 +54,17 @@ public final class MappedStatement
     //标记语句增删改查类型
     private SqlCommandType sqlCommandType;
 
+    //主键生成器
     private KeyGenerator keyGenerator;
 
+    //就是mapper.xml文件中个statment节点的keyProperty属性
+    //比如:<insert id="addUser" useGeneratedKeys="true" keyProperty="id" parameterType="com.User">
     private String[] keyProperties;
+
     private String[] keyColumns;
+
     private boolean hasNestedResultMaps;
+
     private String databaseId;
     private LanguageDriver lang;
     private Log statementLog;

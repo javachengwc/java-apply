@@ -3,14 +3,15 @@ package com.mybatis.pseudocode.mybatis.builder.xml;
 import com.mybatis.pseudocode.mybatis.builder.BaseBuilder;
 import com.mybatis.pseudocode.mybatis.builder.MapperBuilderAssistant;
 import com.mybatis.pseudocode.mybatis.executor.kengen.KeyGenerator;
-import com.mybatis.pseudocode.mybatis.mapping.ResultSetType;
-import com.mybatis.pseudocode.mybatis.mapping.SqlCommandType;
-import com.mybatis.pseudocode.mybatis.mapping.SqlSource;
-import com.mybatis.pseudocode.mybatis.mapping.StatementType;
+import com.mybatis.pseudocode.mybatis.executor.kengen.SelectKeyGenerator;
+import com.mybatis.pseudocode.mybatis.mapping.*;
 import com.mybatis.pseudocode.mybatis.scripting.LanguageDriver;
 import com.mybatis.pseudocode.mybatis.session.Configuration;
+import org.apache.ibatis.executor.keygen.Jdbc3KeyGenerator;
+import org.apache.ibatis.executor.keygen.NoKeyGenerator;
 import org.apache.ibatis.parsing.XNode;
 
+import java.util.List;
 import java.util.Locale;
 
 //XMLMapperBuilder中对Statement的解析(即SqlMap.xml中SELECT|INSERT|UPDATE|DELETE定义部分)委托给XMLStatementBuilder来完成
@@ -63,7 +64,9 @@ public class XMLStatementBuilder extends BaseBuilder {
 //        XMLIncludeTransformer includeParser = new XMLIncludeTransformer(this.configuration, this.builderAssistant);
 //        includeParser.applyIncludes(this.context.getNode());
 //
-//        processSelectKeyNodes(id, parameterTypeClass, langDriver);
+        //解析Mapper.xml中statment节点中的<selectKey>节点
+        //比如<insert id="addUser"><selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">SELECT LAST_INSERT_ID()</selectKey>...
+        processSelectKeyNodes(id, parameterTypeClass, langDriver);
 
 //        SqlSource sqlSource = langDriver.createSqlSource(this.configuration, this.context, parameterTypeClass);
         SqlSource sqlSource =null;
@@ -77,9 +80,18 @@ public class XMLStatementBuilder extends BaseBuilder {
         if (this.configuration.hasKeyGenerator(keyStatementId))
             keyGenerator = this.configuration.getKeyGenerator(keyStatementId);
         else {
-//            keyGenerator = this.context.getBooleanAttribute("useGeneratedKeys",
-//                    Boolean.valueOf((this.configuration.isUseGeneratedKeys())
-//                            && (SqlCommandType.INSERT.equals(sqlCommandType)))).booleanValue() ? Jdbc3KeyGenerator.INSTANCE : NoKeyGenerator.INSTANCE;
+            //dbc3KeyGenerator和NoKeyGenerator对应于insert语句是否取回表的自增Id，
+            //KeyGenerator idbc3KeyGenerator= Jdbc3KeyGenerator.INSTANCE;
+            //KeyGenerator noKeyGenerator=NoKeyGenerator.INSTANCE;
+            KeyGenerator idbc3KeyGenerator=null;
+            KeyGenerator noKeyGenerator=null;
+            //当Mapper中insert操作的useGeneratedKeys属性为true或则没配置但全局配置了useGeneratedKeys=true则生成Jdbc3KeyGenerator对象，
+            //否则生成NoKeyGenerator对象,NoKeyGenerator的方法都为空，不产生任何效果
+            //比如:<insert id="addUser" useGeneratedKeys="true" keyProperty="id" parameterType="com.User">
+            //就会生成Jdbc3KeyGenerator对象,取回表的自增Id赋值给对象的id属性
+            keyGenerator = this.context.getBooleanAttribute("useGeneratedKeys",
+                    Boolean.valueOf((this.configuration.isUseGeneratedKeys())
+                            && (SqlCommandType.INSERT.equals(sqlCommandType)))).booleanValue() ?idbc3KeyGenerator:noKeyGenerator;
         }
         //解析成MappedStatement对象，并存入configuration的mappedStatements
         this.builderAssistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType, fetchSize, timeout,
@@ -94,4 +106,60 @@ public class XMLStatementBuilder extends BaseBuilder {
         }
         return this.builderAssistant.getLanguageDriver(langClass);
     }
+
+    //解析Mapper.xml中statment节点中的<selectKey>节点
+    private void processSelectKeyNodes(String id, Class<?> parameterTypeClass, LanguageDriver langDriver)
+    {
+        List selectKeyNodes = this.context.evalNodes("selectKey");
+        parseSelectKeyNodes(id, selectKeyNodes, parameterTypeClass, langDriver, this.configuration.getDatabaseId());
+        removeSelectKeyNodes(selectKeyNodes);
+    }
+
+    private void parseSelectKeyNodes(String parentId, List<XNode> list, Class<?> parameterTypeClass,
+                                     LanguageDriver langDriver, String skRequiredDatabaseId) {
+        for (XNode nodeToHandle : list) {
+            String id = parentId + "!selectKey";
+            String databaseId = nodeToHandle.getStringAttribute("databaseId");
+            //if (databaseIdMatchesCurrent(id, databaseId, skRequiredDatabaseId))
+                parseSelectKeyNode(id, nodeToHandle, parameterTypeClass, langDriver, databaseId);
+        }
+    }
+
+    private void parseSelectKeyNode(String id, XNode nodeToHandle, Class<?> parameterTypeClass, LanguageDriver langDriver, String databaseId)
+    {
+        String resultType = nodeToHandle.getStringAttribute("resultType");
+        Class resultTypeClass = resolveClass(resultType);
+        StatementType statementType = StatementType.valueOf(nodeToHandle.getStringAttribute("statementType", StatementType.PREPARED.toString()));
+        String keyProperty = nodeToHandle.getStringAttribute("keyProperty");
+        String keyColumn = nodeToHandle.getStringAttribute("keyColumn");
+        boolean executeBefore = "BEFORE".equals(nodeToHandle.getStringAttribute("order", "AFTER"));
+
+        boolean useCache = false;
+        boolean resultOrdered = false;
+        //KeyGenerator keyGenerator = NoKeyGenerator.INSTANCE;
+        KeyGenerator keyGenerator =null;
+        Integer fetchSize = null;
+        Integer timeout = null;
+        boolean flushCache = false;
+        String parameterMap = null;
+        String resultMap = null;
+        ResultSetType resultSetTypeEnum = null;
+
+        SqlSource sqlSource = langDriver.createSqlSource(this.configuration, nodeToHandle, parameterTypeClass);
+        SqlCommandType sqlCommandType = SqlCommandType.SELECT;
+
+        this.builderAssistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType, fetchSize, timeout, parameterMap,
+                parameterTypeClass, resultMap, resultTypeClass, resultSetTypeEnum, flushCache, useCache, resultOrdered,
+                keyGenerator, keyProperty, keyColumn, databaseId, langDriver, null);
+        id = this.builderAssistant.applyCurrentNamespace(id, false);
+
+        MappedStatement keyStatement = this.configuration.getMappedStatement(id, false);
+        this.configuration.addKeyGenerator(id, new SelectKeyGenerator(keyStatement, executeBefore));
+    }
+
+    private void removeSelectKeyNodes(List<XNode> selectKeyNodes) {
+        for (XNode nodeToHandle : selectKeyNodes)
+            nodeToHandle.getParent().getNode().removeChild(nodeToHandle.getNode());
+    }
+
 }
