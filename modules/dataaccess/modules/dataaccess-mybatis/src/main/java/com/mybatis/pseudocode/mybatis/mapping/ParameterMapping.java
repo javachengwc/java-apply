@@ -6,7 +6,7 @@ import com.mybatis.pseudocode.mybatis.type.TypeHandler;
 
 import java.sql.ResultSet;
 
-//参数映射实体
+//参数映射中的每一项信息
 public class ParameterMapping
 {
     private Configuration configuration;

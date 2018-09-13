@@ -5,6 +5,7 @@ import com.mybatis.pseudocode.mybatis.transaction.TransactionFactory;
 import javax.sql.DataSource;
 
 //配置中的环境
+//数据源，事务工厂都在这里面
 public final class Environment
 {
     private final String id;

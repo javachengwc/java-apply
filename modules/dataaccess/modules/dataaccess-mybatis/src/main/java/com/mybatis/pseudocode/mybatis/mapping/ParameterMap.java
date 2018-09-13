@@ -4,10 +4,13 @@ import com.mybatis.pseudocode.mybatis.session.Configuration;
 
 import java.util.List;
 
+//参数映射实体类
 public class ParameterMap
 {
     private String id;
+
     private Class<?> type;
+
     private List<ParameterMapping> parameterMappings;
 
     public String getId()

@@ -12,6 +12,8 @@ public class FifoCache  implements Cache
     //委派的cache对象
     private final Cache delegate;
 
+    //deque是双向队列,是Queue的子接口,它支持从两个端点方向检索和插入元素
+    // 因此qeque既可以支持FIFO形式也可以支持LIFO形式
     private final Deque<Object> keyList;
 
     private int size;
