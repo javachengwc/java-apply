@@ -57,10 +57,7 @@ nginx的前置依赖
     tar -zxvf nginx-1.8.1.tar.gz
     cd nginx-1.8.1
 
-    ./configure
-    --user=nginx
-    --group=nginx
-    --with-http_ssl_module
+    ./configure --user=nginx --group=nginx --with-http_ssl_module
     ##下面三选项可不要
     --with-pcre=/usr/local/src/pcre-8.38
     --with-zlib=/usr/local/src/zlib-1.2.11
