@@ -44,7 +44,8 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
             AutoConfigurationMetadata autoConfigurationMetadata = AutoConfigurationMetadataLoader.loadMetadata(this.beanClassLoader);
 
             AnnotationAttributes attributes = getAttributes(annotationMetadata);
-            List configurations = getCandidateConfigurations(annotationMetadata, attributes);
+            //选择命中的类
+            List<String> configurations = getCandidateConfigurations(annotationMetadata, attributes);
 
 //            configurations = removeDuplicates(configurations);
 //            configurations = sort(configurations, autoConfigurationMetadata);
@@ -78,9 +79,10 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 
     protected List<String> getCandidateConfigurations(AnnotationMetadata metadata, AnnotationAttributes attributes)
     {
-        List configurations = SpringFactoriesLoader.loadFactoryNames(
-                getSpringFactoriesLoaderFactoryClass(), getBeanClassLoader());
-
+        //SpringFactoriesLoader从包文件META-INF/spring.factories获取需要装配的EnableAutoConfiguration类
+        List<String> configurations = SpringFactoriesLoader.loadFactoryNames(getSpringFactoriesLoaderFactoryClass(), getBeanClassLoader());
+//        Assert.notEmpty(configurations, "No auto configuration classes found in META-INF/spring.factories. " +
+//                "If you are using a custom packaging, make sure that file is correct.");
         return configurations;
     }
 
