@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration  scan="true" scanPeriod="60 seconds" debug="false">
+    <contextName>applog</contextName>
+    <property name="history_days" value="5"/>
+    <property name="log_dir" value="/data/log/application/%d{yyyMMdd}" />
+    <property name="log_msg" value="%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"/>
+    <property name="file_size" value="200MB" />
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern> ${log_msg}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="logFile"  class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 使用prudent模式，FileAppender将安全的写入到指定文件 -->
+        <Prudent>true</Prudent>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>
+                ${log_dir}/spring.%i.log
+            </FileNamePattern>
+            <MaxHistory>${history_days}</MaxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>${file_size}</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <!-- encoder主要工作有两个：1,将一个event事件转换成一组byte数组，2,将转换后的字节数据输出到文件中 -->
+        <!-- encoder默认是PatternLayoutEncoder类-->
+        <encoder>
+            <pattern>
+                ${log_msg}
+            </pattern>
+            <!-- 记录日志的编码 -->
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="modelFile"  class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>
+                ${log_dir}/model.%i.log
+            </FileNamePattern>
+            <MaxHistory>${history_days}</MaxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>${file_size}</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <pattern>
+                ${log_msg}
+            </pattern>
+            <!-- 记录日志的编码 -->
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <root level="error">
+        <appender-ref ref="console"/>
+        <appender-ref ref="logFile" />
+    </root>
+
+    <logger level="info" name="com.app" additivity="false">
+        <appender-ref ref="console"/>
+        <appender-ref ref="logFile" />
+    </logger>
+
+    <logger level="info" name="com.app.model" additivity="false">
+        <appender-ref ref="console"/>
+        <appender-ref ref="modelFile" />
+    </logger>
+
+</configuration>
