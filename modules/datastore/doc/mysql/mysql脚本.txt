@@ -115,7 +115,7 @@ delete a from a left join b on a.id=b.aid where b.aid is null
 
 3,从两个表中找出相同记录的数据并把两个表中的数据都删除掉
 
-delte a,b from a join b on a.id =b.aid
+delete a,b from a join b on a.id =b.aid
 
 注:修改(增删改)一个表的时候，子查询不能是同一个表,否则会报1093错误，
 解决办法：把子查询再套一层，变成原来表的子子查询即可。

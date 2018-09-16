@@ -5,7 +5,7 @@ MyBatis的一级缓存指的是在一个Session域内,session未关闭的时候�
 集成spring中，SqlSessionDaoSupport内部sqlSession的实现是使用动态代理实现的,这个动态代理sqlSessionProxy使用一个模板方法封装了select()等操作,
 每一次select()查询都会自动先执行openSession(),执行完后调用close()方法。这就导致查询用不上MyBatis的一级缓存。
 
-二级缓存就是global caching,它超出session范围之外,可以被所有sqlSession共享,开启它只需要在mybatis的配置文件配置settings
+二级缓存就是mapper caching,可以被所有sqlSession共享,开启它只需要在mybatis的配置文件配置settings
 <setting name="cacheEnabled" value="true"/>
 以及在相应的Mapper文件里开启缓存的设置
 <mapper namespace="com.manageplat.dao.job.XXDao">
@@ -15,7 +15,7 @@ MyBatis的一级缓存指的是在一个Session域内,session未关闭的时候�
         size="128"
         readOnly="true" />
 </mapper>
-global caching的作用域是针对Mapper的Namespace而言的,就是说只在有在这个Namespace内的查询才能共享这个cache。
+二级缓存的作用域是针对Mapper的Namespace而言的,就是说只在有在这个Namespace内的查询才能共享这个cache。
 
 使用二级缓存注意事项
 1. 只能在单表单空间的表上使用二级缓存

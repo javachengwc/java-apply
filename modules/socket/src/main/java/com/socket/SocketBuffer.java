@@ -9,6 +9,19 @@ import java.nio.ByteOrder;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
+//buffer最重要的状态变量有三个，以及重要方法
+//    position---缓冲区的位置，是下一个要读取或写入的元素的索引。缓冲区的位置不能为负，并且不能大于其限制
+//    limit---缓冲区的限制。
+//    capacity---指定了可以存储在缓冲区中的最大数据容量
+//0 <= position <= limit <= capacity
+//clear() 清除方法，使缓冲区为一系列新的通道读取或相对放置 操作做好准备：它将限制设置为容量大小，将位置设置为 0。
+//flip()  反转方法，使缓冲区为一系列新的通道写入或相对获取 操作做好准备：它将限制设置为当前位置，然后将位置设置为 0。
+//rewind() 重绕方法， 使缓冲区为重新读取已包含的数据做好准备：它使限制保持不变，将位置设置为 0。
+//remaining() 返回当前位置与限制之间的元素数。
+//compact() 压缩缓冲区方法，将缓冲区的当前位置和界限之间的字（如果有复制到缓冲区的开始处。
+// 即将索引 p = position() 处的字节复制到索引 0 处，将索引 p + 1 处的字节复制到索引 1 处，
+// 依此类推，直到将索引 limit() - 1 处的字节复制到索引 n = limit() - 1 - p 处。
+// 然后将缓冲区的位置设置为 n+1，并将其界限设置为其容量。
 public class SocketBuffer
 {
 	private static Logger m_logger = LoggerFactory.getLogger(SocketBuffer.class);
