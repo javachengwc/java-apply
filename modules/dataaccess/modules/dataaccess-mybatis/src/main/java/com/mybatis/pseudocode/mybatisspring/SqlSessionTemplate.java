@@ -15,6 +15,8 @@ import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.reflect.Proxy.newProxyInstance;
+
 //<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
 //<constructor-arg index="0" ref="sqlSessionFactory"/>
 //<constructor-arg index="1" value="SIMPLE"/>
@@ -47,8 +49,8 @@ public class SqlSessionTemplate implements SqlSession, DisposableBean
         this.sqlSessionFactory = sqlSessionFactory;
         this.executorType = executorType;
         this.exceptionTranslator = exceptionTranslator;
-        this.sqlSessionProxy = (SqlSession) ((DisposableBean) Proxy.newProxyInstance(SqlSessionFactory.class.getClassLoader(),
-                new Class[] { DisposableBean.class }, new SqlSessionInterceptor()));
+        this.sqlSessionProxy = (SqlSession) newProxyInstance(SqlSessionFactory.class.getClassLoader(), new Class[] { SqlSession.class },
+                new SqlSessionTemplate.SqlSessionInterceptor());
     }
 
     public SqlSessionFactory getSqlSessionFactory()
