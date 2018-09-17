@@ -1,6 +1,8 @@
 Redis是个高性能的key-value数据库，它的key具有丰富的数据结构：string，hash，list set和sorted set。
 作为NOSQL，比起memcache之类，不仅仅key数据结构丰富，而且具有持久化的功能，并且能够支持主从复制，很方便构建集群。
 redis高性能很大程度上源于它是个内存型数据库，它的高性能表现在：set操作11w/s，get操作8.1w/s
+redis的所有操作都是原子性的，同时Redis还支持对几个操作全并后的原子性执行。
+redis支持多个DB，默认是16个，你可以设置将数据存在哪一个DB中，不同DB间的数据具有隔离性。也可以在多个DB间移动数据
 
 1,下载安装
 wget http://download.redis.io/releases/redis-3.0.6.tar.gz

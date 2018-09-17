@@ -1,0 +1,99 @@
+---------------------------redis主从复制-------------------------------
+Redis 支持简单且易用的主从复制（master-slave replication）功能，
+该功能可以让从服务器(slave server)成为主服务器(master server)的精确复制品。
+    1,Redis 使用异步复制。 从 Redis 2.8 开始， 从服务器会以每秒一次的频率向主服务器报告复制流（replication stream）的处理进度。
+    2,一个主服务器可以有多个从服务器。从服务器也可以有自己的从服务器
+    3,复制功能不会阻塞主服务器： 即使有一个或多个从服务器正在进行初次同步， 主服务器也可以继续处理命令请求。
+    4,复制功能可以单纯地用于数据冗余（data redundancy）， 也可以通过让多个从服务器处理只读命令请求来提升扩展性（scalability）
+    5,可以通过复制功能来让主服务器免于执行持久化操作： 只要关闭主服务器的持久化功能， 然后由从服务器去执行持久化操作即可。
+------------------------
+主从复制配置:
+    #从服务器上
+    vim /etc/redis.conf
+    #做如下修改，其他配置保持默认即可
+    slaveof 172.17.16.7 6379
+    slave-read-only no       ###slave是否只读,如果从主读写分离，可设置成yes
+    masterauth redispass     ###主服务的验证密码
+    requirepass redispass    ###从服务设置的尼玛
+
+    #主服务器上
+    vim /etc/redis.conf
+    #做如下修改，其他配置保持默认即可
+    masterauth redispass
+    requirepass redispass
+
+    redis-cli -h 127.0.0.1 -p 6381  -a redispass info replication
+    ---查看redis主从情况
+-------------------
+Redis主从复制原理:按照同步内容的多少可以分为全同步和部分同步；按照同步的时机可以分为slave刚启动时的初始化同步和正常运行过程中的数据修改同步；
+Redis初始(全备份)同步:(见图redis-full-cc.png)
+    1,Slave服务启动，主动连接Master，并发送SYNC命令，请求初始化同步
+      无论是初次连接还是重新连接，当建立一个从服务器时，从服务器都将向主服务器发送一个 SYNC 命令
+    2,Master收到SYNC后，执行BGSAVE命令生成RDB文件，并缓存该时间段内的写命令
+    3,Master BGSAVE 执行完毕后， 主服务器将执行保存操作所得的 .rdb 文件发送给从服务器,
+      如果rdb复制时间超过60秒（repl-timeout），那么slave node就会认为复制失败，可以适当调节大这个参数
+      对于千兆网卡的机器，一般每秒传输100MB，6G文件，很可能超过60s。
+    4,Slave服务器接收到RDB文件后，删除内存中旧的缓存数据，并装载RDB文件
+      如果slave node开启了AOF，那么会立即执行BGREWRITEAOF，重写AOF
+      rdb生成、rdb通过网络拷贝、slave旧数据的清理、slave aof rewrite，很耗费时间
+      如果复制的数据量在4G~6G之间，那么很可能全量复制时间消耗到1分半到2分钟
+    6,Master在发送完RDB后，以 Redis 命令协议的格式，将写命令缓冲区中积累的所有内容都发送给从服务器。
+      如果在复制期间，内存缓冲区持续消耗超过64MB，或者一次性超过256MB，那么停止复制，复制失败
+      client-output-buffer-limit slave 256MB 64MB 60
+    7,至此初始化完成，后续进行增量同步
+Redis运行过程中的数据修改同步:(见图redis-cc.jpg)
+    1,master接收到一条用户的操作后，将调用函数call函数来执行具体的操作函数，该函数中首先通过proc执行操作函数，
+      然后将判断操作是否需要扩散到各slave，如果需要则调用函数propagate（）来完成此操作。
+    2,propagate（）函数完成将一个操作记录到aof文件中或者扩散到其他slave中；在该函数中通过调用feedAppendOnlyFile（）将操作记录到aof中，
+     通过调用replicationFeedSlaves（）将操作扩散到各slave中。
+    3,函数feedAppendOnlyFile（）中主要保存操作到aof文件，在该函数中首先将操作转换成redis内部的协议格式，并以字符串的形式存储，
+      然后将字符串存储的操作追加到aof文件后。
+    4,函数replicationFeedSlaves（）主要将操作扩散到每一个slave中；在该函数中将遍历自己下面挂的每一个slave，
+      以此对每个slave进行如下两步的处理：将slave的数据库切换到本操作所对应的数据库（如果slave的数据库id与当前操作的数据id不一致时才进行此操作）；
+      将命令和参数按照redis的协议格式写入到slave的回复缓存中。写入切换数据库的命令时将调用addReply，写入命令和参数时将调用addReplyMultiBulkLen和addReplyBulk，
+      函数addReplyMultiBulkLen和addReplyBulk最终也将调用函数addReply。
+    5,函数addReply中将调用prepareClientToWrite（）设置slave的socket写入事件处理函数sendReplyToClient（通过函数aeCreateFileEvent进行设置），
+      这样一旦slave对应的socket发送缓存中有空间写入数据，即调用sendReplyToClient进行处理。
+    6,函数sendReplyToClient（）的主要功能是将slave中要发送的数据通过socket发出去。
+
+-----------------
+主从复制的断点续传
+    从服务器可以在主从服务器之间的连接断开时进行自动重连， 在 Redis 2.8 版本之前， 断线之后重连的从服务器总要执行一次完整重同步（full resynchronization）操作，
+    从redis 2.8开始，就支持主从复制的断点续传(部分同步(partial resynchronization))，如果主从复制过程中，网络连接断掉了，那么可以接着上次复制的地方，继续复制下去，而不是从头开始复制一份。
+    master node会在内存中创建一个backlog,默认是1MB大小，master和slave都会保存一个复制偏移量replication offset还有一个主服务器 IDmaster id，
+    offset就是保存在backlog中的。如果master和slave网络连接断掉了，从服务器会重新连接,slave会让master从上次的replication offset开始继续复制
+    如果从服务器记录的主服务器 ID 和当前要连接的主服务器的 ID 相同， 并且从服务器记录的偏移量所指定的数据仍然保存在主服务器的复制流缓冲区里面，
+    那么主服务器会向从服务器发送断线时缺失的那部分数据， 然后复制工作可以继续执行。否则的话， 从服务器就要执行完整重同步操作。
+    Redis 2.8 的这个部分重同步特性会用到一个新增的 PSYNC 内部命令， 而 Redis 2.8 以前的旧版本只有 SYNC 命令，
+    不过， 只要从服务器是 Redis 2.8 或以上的版本， 它就会根据主服务器的版本来决定到底是使用 PSYNC 还是 SYNC ：
+        如果主服务器是 Redis 2.8 或以上版本，那么从服务器使用 PSYNC 命令来进行同步。
+        如果主服务器是 Redis 2.8 之前的版本，那么从服务器使用 SYNC 命令来进行同步。
+-------------------------
+主服务器只在有至少 N 个从服务器的情况下，才执行写操作
+    从 Redis 2.8 开始， 为了保证数据的安全性，可以通过配置， 让主服务器只在有至少 N 个当前已连接从服务器的情况下， 才执行写命令。
+    不过， 因为 Redis 使用异步复制， 所以主服务器发送的写数据并不一定会被从服务器接收到， 因此， 数据丢失的可能性仍然是存在的。
+    以下是这个特性的运作原理：
+        从服务器以每秒一次的频率 PING 主服务器一次， 并报告复制流的处理情况。
+        主服务器会记录各个从服务器最后一次向它发送 PING 的时间。
+        用户可以通过配置， 指定网络延迟的最大值 min-slaves-max-lag ， 以及执行写操作所需的至少从服务器数量 min-slaves-to-write 。
+    如果至少有 min-slaves-to-write 个从服务器， 并且这些服务器的延迟值都少于 min-slaves-max-lag 秒， 那么主服务器就会执行客户端请求的写操作。
+    另一方面， 如果条件达不到 min-slaves-to-write 和 min-slaves-max-lag 所指定的条件， 那么写操作就不会被执行，
+    主服务器会向请求执行写操作的客户端返回一个错误。
+    以下是这个特性的两个选项和它们所需的参数：
+        min-slaves-to-write <number of slaves>
+        min-slaves-max-lag <number of seconds>
+------------------------
+主从复制心跳heartbeat
+    master默认每隔10秒发送一次heartbeat，salve node每隔1秒发送一个heartbeat
+
+#主从备份
+在从服务器上执行下列命令：
+#备份
+redis-cli save
+#关闭redis服务器
+redis-cli shutdown
+然后，拷贝数据目录下的rdb文件
+
+从 Redis 2.6 开始， 从服务器支持只读模式， 并且该模式为从服务器的默认模式。
+只读模式由 redis.conf 文件中的 slave-read-only 选项控制， 也可以通过 CONFIG SET 命令来开启或关闭这个模式。
+-------------------------------------------------------------------
