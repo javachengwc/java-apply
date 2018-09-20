@@ -1,17 +1,23 @@
 package com.struct.rbtree;
 
 /**
- * 红黑树,它一种特殊的二叉树。红黑树的每个节点上都有存储位表示节点的颜色，可以是红(Red)或黑(Black)
+ * 红黑树,是一种自平衡二叉查找树,它一种特殊的二叉查找树。红黑树的每个节点上都有存储位表示节点的颜色，可以是红(Red)或黑(Black)
  * 红黑树的特性:
  *（1）每个节点或者是黑色，或者是红色。
  *（2）根节点是黑色。
- *（3）每个叶子节点（NIL）是黑色。 这里叶子节点，是指为空(NIL或NULL)的叶子节点。
+ *（3）每个叶子节点（NIL）是黑色。 这里叶子节点，是指为空(NIL或NULL)的叶子节点。[注意：这里叶子节点，是指为空的叶子节点！]
  *（4）如果一个节点是红色的，则它的子节点必须是黑色的。
- *（5）从一个节点到该节点的子孙节点的所有路径上包含相同数目的黑节点。
+ *（5）对于任意结点而言，其到叶结点树尾端NIL指针的每条路径都包含相同数目的黑结点。
+ * 这些约束强制了红黑树的关键性质: 从根到叶子的最长的可能路径不多于最短的可能路径的两倍长。结果是这个树大致上是平衡的。
+ * 最短的可能路径都是黑色节点，最长的可能路径有交替的红色和黑色节点。
+ * 因为根据性质5所有最长的路径都有相同数目的黑色节点，这就表明了没有路径能多于任何其他路径的两倍长。
+ * 一棵含有n个节点的红黑树的高度至多为2log(n+1)
  * 注意：
  * 特性(5)，确保没有一条路径会比其他路径长出俩倍。因而，红黑树是相对是接近平衡的二叉树。
  * 红黑树主要是用它来存储有序的数据，它的时间复杂度是O(lgn)，效率非常之高
  * java集合中的TreeSet和TreeMap,Linux虚拟内存的管理都是通过红黑树实现的。
+ * 默认插入的结点为红色。为何?
+ * 因为红黑树中黑节点至少是红节点的两倍，因此插入节点的父节点为黑色的概率较大，而此时并不需要作任何调整，因此效率较高。
  */
 public class RBTree<T extends Comparable<T>> {
 
@@ -189,7 +195,7 @@ public class RBTree<T extends Comparable<T>> {
         }
         // 如果x没有右子节点。
         // x是一个左子节点，则x的后继节点为它的父节点。
-        // x是一个右子节点，则查找x的最低的父节点，并且该父节点要具有左子节点，找到的这个最低的父节点就是x的后继节点。
+        // x是一个右子节点，则查找x的最低的父节点，并且该父节点的左分支下(或左或右)包含x节点，找到的这个最低的父节点就是x的后继节点。
         RBTNode<T> y = x.getParent();
         while ((y!=null) && (x==y.getRight())) {
             x = y;
@@ -210,7 +216,7 @@ public class RBTree<T extends Comparable<T>> {
 
         // 如果x没有左子节点。
         // x是一个右子节点，则x的前驱节点为它的父节点。
-        // x是"一个左子节点，则查找x的最低的父节点，并且该父节点要具有右子节点，找到的这个最低的父节点就是x的前驱节点。
+        // x是"一个左子节点，则查找x的最低的父节点，并且该父节点的右分支下(或左或右)包含x节点，找到的这个最低的父节点就是x的前驱节点。
         RBTNode<T> y = x.getParent();
         while ((y!=null) && (x==y.getLeft())) {
             x = y;
@@ -220,7 +226,8 @@ public class RBTree<T extends Comparable<T>> {
     }
 
     /*
-     * 对红黑树的节点x进行左旋转
+     * 对红黑树的节点x进行左旋转,对x进行左旋，意味着"将x变成一个左节点"
+     * 对x进行左旋，意味着，将“x的右孩子”设为“x的父亲节点”；即，将 x变成了一个左节点(x成了为y的左孩子)
      *      px                              px
      *     /                               /
      *    x                               y
@@ -233,11 +240,11 @@ public class RBTree<T extends Comparable<T>> {
         // 设置x的右子节点为y
         RBTNode<T> y = x.getRight();
 
-        // 将y的左子节点设为x的右子节点
+        // 将y的左子节点设为x的右子节点,将 “y的左孩子” 设为 “x的右孩子”
         // 如果y的左子节点非空，将x设为y的左子节点的父节点
         x.setRight(y.getLeft());
         if (y.getLeft() != null) {
-            y.getLeft().setParent(x);
+            y.getLeft().setParent(x); //// 将 “x” 设为 “y的左孩子的父亲”
         }
 
         // 将x的父节点设为y的父节点
@@ -245,13 +252,16 @@ public class RBTree<T extends Comparable<T>> {
 
         if (x.getParent() == null) {
             // 如果x的父节点是空节点，则将y设为根节点
+            // 情况1：如果 “x的父亲” 是空节点，则将y设为根节点
             this.mRoot = y;
         } else {
             if (x.getParent().getLeft() == x) {
+                //// 情况2：如果 x是它父节点的左孩子，则将y设为“x的父节点的左孩子”
                 // 如果x是它父节点的左子节点，则将y设为x的父节点的左子节点
                 x.getParent().setLeft(y) ;
             }
             else {
+                //情况3：(x是它父节点的右孩子) 将y设为“x的父节点的右孩子”
                 x.getParent().setRight(y);
             }
         }
@@ -263,7 +273,8 @@ public class RBTree<T extends Comparable<T>> {
     }
 
     /*
-     * 对红黑树的节点y进行右旋转
+     * 对红黑树的节点y进行右旋转，对y进行右旋，意味着"将y变成一个右节点"
+     * 对y进行右旋，意味着，将“y的左孩子”设为“y的父亲节点”；即，将 y变成了一个右节点(y成了为x的右孩子)！
      *            py                               py
      *           /                                /
      *          y                                x
@@ -276,25 +287,28 @@ public class RBTree<T extends Comparable<T>> {
         // 设置x是当前节点的左子节点
         RBTNode<T> x = y.getLeft();
 
-        // 将x的右子节点设为y的左子节点
-        // 如果x的右子节点不为空，将y设为x的右子节点的父节点
+        // 将x的右子节点设为y的左子节点, 将 “x的右孩子” 设为 “y的左孩子”
+        // 如果x的右子节点不为空，将y设为x的右子节点的父节点,将 “y” 设为 “x的右孩子的父亲”
         y.setLeft(x.getRight());
         if (x.getRight() != null) {
             x.getRight().setParent(y);
         }
 
-        // 将y的父节点设为x的父节点
+        // 将y的父节点设为x的父节点,将 “y的父亲” 设为 “x的父亲”
         x.setParent(y.getParent());
 
         if (y.getParent() == null) {
+            // 情况1：如果 “y的父亲” 是空节点，则将x设为根节点
             // 如果y的父节点是空节点，则将x设为根节点
             this.mRoot = x;
         } else {
             if (y == y.getParent().getRight()) {
+                // 情况2：如果 y是它父节点的右孩子，则将x设为“y的父节点的右孩子”
                 // 如果y是它父节点的右子节点，则将x设为y的父节点的右子节点
                 y.getParent().setRight(x);
             }
             else {
+                // 情况3：(y是它父节点的左孩子) 将x设为“y的父节点的左孩子”
                 y.getParent().setLeft(x);
             }
         }
@@ -400,7 +414,7 @@ public class RBTree<T extends Comparable<T>> {
             this.mRoot = node;
         }
 
-        //2,设置节点的颜色为红色
+        //2,设置节点的颜色为红色,默认插入的结点为红色
         node.setColor(RBTNode.RED);
 
         //3,将它重新修正为一颗红黑树
