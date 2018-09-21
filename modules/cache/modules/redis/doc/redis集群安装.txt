@@ -4,7 +4,7 @@
 集群正常运作至少需要三个主节点，建议使用六个节点:其中三个为主节点，另三个则是各个主节点的从节点。
 
 redis集群安装:
-    1,各节点安装redis实例(每台服务器部2个节点)
+    1,各节点安装redis实例(3台服务器,每台服务器部2个节点)
         wget http://download.redis.io/releases/redis-3.2.0.tar.gz
         tar -zxvf redis-3.2.0.tar.gz                          #解压
         cd redis-3.2.0
@@ -26,12 +26,32 @@ redis集群安装:
         yum install ruby
         yum install rubygems
         wget https://rubygems.global.ssl.fastly.net/gems/redis-3.2.2.gem
-        gem install redis-3.2.2.gem
+        gem install redis-3.2.2.gem             ###安装ruby和redis的接口程序
+    3,启动各节点redis服务
+        cd /usr/local/redis-cluster/redis01     ###redis01...redis06
+        ./redis-server ./redis.conf
+    4,创建集群
+        cd /usr/local/redis-cluster/redis01     ###切换到任意一个redis0X下
+        ./redis-trib.rb create --replicas 1 127.0.0.1:7001 127.0.0.1:7002 127.0.0.1:7003 127.0.0.1:7004 127.0.0.1:7005 127.0.0.1:7006
+                                                ###创建集群,replicas指定为1表示每个主节点有一个从节点
+            ...................
+            [OK] All nodes agree about slots configuration.
+            >>> Check for open slots...
+            >>> Check slots coverage...
+            [OK] All 16384 slots covered.       ###输出这样的信息，表示集群创建成功。
+    5,检查集群状态
+    ###连接访问任意redis结点查询集群中的节点情况
+    ./redis-cli -c -p 7001                      ###-c表示以集群方式连接redis
+        cluster info                            ###查看集群状态
+        cluster nodes                           ###查看集群各节点状态,见下
+###节点ID                                IP地址    端口     标识                上一次发ping包时间  上一次收到pong包时间 连接状态     节点使用的哈希槽
+5ee994e6de9050e6393af28b3abf80b5fff92f29 172.0.0.1:7001 myself,master -         0 0                                      1 connected   0-5460
+02183d38a42d44e669154109b1f5d8167b80b17c 172.0.0.1:7003 master -                0 1537513949139                          3 connected   5461-10922
+30ac025200c44af5f2e2ccf2821b2f8b48654c2a 172.0.0.1:7005 master -                0 1537513949639                          5 connected   10923-16383
+4e0bccb2f683c9c3212f6a6ef352b00c6e101d0a 172.0.0.1:7002 slave 02183d38a42d44e669154109b1f5d8167b80b17c 0 1537513949638   3 connected
+3344877b828e3a10215aba2286bf77c79ad823c2 172.0.0.1:7004 slave 5ee994e6de9050e6393af28b3abf80b5fff92f29 0 1537513948638   4 connected
+ce3431d9972b7c2178c721ecc84a94bcbb4d454b 172.0.0.1:7006 slave 30ac025200c44af5f2e2ccf2821b2f8b48654c2a 0 1537513949239   6 connected
+###这里干掉一个主节点，其从节点自动变成主节点，重启之前干掉的节点，此节点自动加入集群中，并成为当前主节点的从节点
+###如果某主从节点都挂掉，集群将不可用，读写命令都执行不了,重启挂掉的某一节点，会自动加入集群中，被当做主节点，集群恢复可用状态。
 
-
-$redis-cli cluster nodes                     ###查看集群状态
-###节点ID                                IP地址    端口 标识 上一次发ping包时间  上一次收到pong包时间 连接状态     节点使用的哈希槽
-d1861060fe6a534d42d8a19aeb36600e18785e04 127.0.0.1:6379 myself - 0               1318428930          1 connected    0-1364
-3886e65cc906bfd9b1f7e7bde468726a052d1dae 127.0.0.1:6380 master - 1318428930      1318428931          2 connected    1365-2729
-d289c575dcbc4bdd2931585fd4339089e461a27d 127.0.0.1:6381 master - 1318428931      1318428931          3 connected    2730-4095
 ------------------------------------------------------------------
