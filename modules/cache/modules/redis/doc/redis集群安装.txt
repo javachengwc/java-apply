@@ -49,13 +49,39 @@ redis集群安装:
         cluster info                            ###查看集群状态
         cluster nodes                           ###查看集群各节点状态,见下
 ###节点ID                                IP地址    端口     标识                上一次发ping包时间  上一次收到pong包时间 连接状态     节点使用的哈希槽
-5ee994e6de9050e6393af28b3abf80b5fff92f29 172.0.0.1:7001 myself,master -         0 0                                      1 connected   0-5460
-02183d38a42d44e669154109b1f5d8167b80b17c 172.0.0.1:7003 master -                0 1537513949139                          3 connected   5461-10922
-30ac025200c44af5f2e2ccf2821b2f8b48654c2a 172.0.0.1:7005 master -                0 1537513949639                          5 connected   10923-16383
-4e0bccb2f683c9c3212f6a6ef352b00c6e101d0a 172.0.0.1:7002 slave 02183d38a42d44e669154109b1f5d8167b80b17c 0 1537513949638   3 connected
-3344877b828e3a10215aba2286bf77c79ad823c2 172.0.0.1:7004 slave 5ee994e6de9050e6393af28b3abf80b5fff92f29 0 1537513948638   4 connected
-ce3431d9972b7c2178c721ecc84a94bcbb4d454b 172.0.0.1:7006 slave 30ac025200c44af5f2e2ccf2821b2f8b48654c2a 0 1537513949239   6 connected
+5ee994e6de9050e6393af28b3abf80b5fff92f29 127.0.0.1:7001 myself,master -         0 0                                      1 connected   0-5460
+02183d38a42d44e669154109b1f5d8167b80b17c 127.0.0.1:7003 master -                0 1537513949139                          3 connected   5461-10922
+30ac025200c44af5f2e2ccf2821b2f8b48654c2a 127.0.0.1:7005 master -                0 1537513949639                          5 connected   10923-16383
+4e0bccb2f683c9c3212f6a6ef352b00c6e101d0a 127.0.0.1:7002 slave 02183d38a42d44e669154109b1f5d8167b80b17c 0 1537513949638   3 connected
+3344877b828e3a10215aba2286bf77c79ad823c2 127.0.0.1:7004 slave 5ee994e6de9050e6393af28b3abf80b5fff92f29 0 1537513948638   4 connected
+ce3431d9972b7c2178c721ecc84a94bcbb4d454b 127.0.0.1:7006 slave 30ac025200c44af5f2e2ccf2821b2f8b48654c2a 0 1537513949239   6 connected
 ###这里干掉一个主节点，其从节点自动变成主节点，重启之前干掉的节点，此节点自动加入集群中，并成为当前主节点的从节点
 ###如果某主从节点都挂掉，集群将不可用，读写命令都执行不了,重启挂掉的某一节点，会自动加入集群中，被当做主节点，集群恢复可用状态。
 
+redis集群添加节点
+    添加主节点，准备一个干净的redis节点,按上面集群版修改redis配置文件,并开启该redis节点(127.0.0.1:7007)
+    执行./redis-trib.rb add-node 127.0.0.1:7007 127.0.0.1:7001 添加节点
+    连上任意节点查看集群节点状态，确认新加节点已添加到集群中
+    添加完主节点需要对主节点进行hash槽分配，这样该主节才可以存储数据。
+    ./redis-trib.rb reshard 127.0.0.1:7002  ###连接集群中任意一个可用结点，为7007节点分配hash槽
+        How many slots do you want to move (from 1 to 16384)?4000                    ###键入需要分配hash槽个数
+        What is the receiving node ID? 909df0fb5aa606da184be3065c63a2dd195379ca      ###键入接收hash槽的节点id,也就是7007的节点id
+        Please enter all the source node IDs.
+          Type 'all' to use all the nodes as source nodes for the hash slots.
+          Type 'done' once you entered all the source nodes IDs.
+        Source node #1: all               ###输入源节点id，hash槽将从源节点中获取，分配后的槽在源节点中就不存在了
+                                          ###输入all表示从所有源节点中平均获取hash槽,比如之前键入的分配hash槽数为4000,那这里就是从每个源节点获取4000/n个槽给新节点
+                                          ###输入done表示取消分配
+        Do you want to proceed with the proposed reshard plan (yes/no)?              ###是否开始移动hash槽，输入yes开始移动槽到目标节点id
+    连上任意节点查看集群节点状态，确认新加节点已经从三个主节点中获取了slot。
+
+    添加从节点也一样先准备一个干净的redis节点,按上面集群版修改redis配置文件,并开启该redis节点(127.0.0.1:7008)
+    执行./redis-trib.rb add-node --slave --master-id 主节点id 127.0.0.1:7008 127.0.0.1:7001 添加从节点
+    连上任意节点查看集群节点状态，确认新加从节点已添加到集群中,并且是指定主节点的从节点。
+redis集群移除节点
+    ./redis-trib.rb del-node 127.0.0.1:7001 909df0fb5aa606da184be3065c63a2dd195379ca
+    这是移除刚才添加的那主节点7007，将会失败，因为删除已经占有hash槽的节点会失败，提示信息如下
+    [ERR] Node 127.0.0.1:7007 is not empty! Reshard data away and try again.
+    需要将该节点占用的hash槽分配出去才能移除节点，就像上面给新的主节点分配hash槽一样，把需要移除的节点的hash槽移到别的节点上去
+    再执行移除此节点的命令操作就可以成功了，移除从节点就没有移除主节点的限制，直接执行移除命令操作即可。
 ------------------------------------------------------------------
