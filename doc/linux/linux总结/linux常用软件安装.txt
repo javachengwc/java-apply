@@ -348,6 +348,16 @@ http://localhost/test.php    能访问php页面表示在apache中配置php成功
 ---------------ruby
 yum install ruby
 yum install rubygems
+或编译安装
+wget https://cache.ruby-lang.org/pub/ruby/2.3/ruby-2.3.1.tar.gz
+tar -zxvf ruby-2.3.1.tar.gz
+cd  ruby-2.3.1
+./configure --prefix=/usr/local/ruby
+make && make install                                  ###编译安装
+cd /usr/bin/
+ln -s /usr/local/ruby/bin/ruby ruby                   ###建软连
+ln -s /usr/local/ruby/bin/gem gem
+ruby -v                                               ###查看ruby版本
 
 ---------------python
 yum install python 或 apt-get install python
