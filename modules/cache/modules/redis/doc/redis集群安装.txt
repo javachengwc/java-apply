@@ -71,7 +71,7 @@ redis集群添加节点
           Type 'done' once you entered all the source nodes IDs.
         Source node #1: all               ###输入源节点id，hash槽将从源节点中获取，分配后的槽在源节点中就不存在了
                                           ###输入all表示从所有源节点中平均获取hash槽,比如之前键入的分配hash槽数为4000,那这里就是从每个源节点获取4000/n个槽给新节点
-                                          ###输入done表示取消分配
+                                          ###输入done表示确认分配
         Do you want to proceed with the proposed reshard plan (yes/no)?              ###是否开始移动hash槽，输入yes开始移动槽到目标节点id
     连上任意节点查看集群节点状态，确认新加节点已经从三个主节点中获取了slot。
 
@@ -83,5 +83,11 @@ redis集群移除节点
     这是移除刚才添加的那主节点7007，将会失败，因为删除已经占有hash槽的节点会失败，提示信息如下
     [ERR] Node 127.0.0.1:7007 is not empty! Reshard data away and try again.
     需要将该节点占用的hash槽分配出去才能移除节点，就像上面给新的主节点分配hash槽一样，把需要移除的节点的hash槽移到别的节点上去
-    再执行移除此节点的命令操作就可以成功了，移除从节点就没有移除主节点的限制，直接执行移除命令操作即可。
+    再执行移除此节点的命令操作就可以成功了，这时对应的redis节点进程将会关闭，重新开启此节点进程是不会加入到集群中的。因为已经把它移除了。
+    移除从节点就没有移除主节点的限制，直接执行移除命令操作即可。
+如果在创建集群,或添加节点中报错
+[ERR] Node 127.0.0.1:XXXX is not empty. Either the node already knows other nodes (check with CLUSTER NODES) or contains some key in database 0.
+表示对应的节点有可能是其他集群的一个节点，或则曾经是其他集群的节点,有nodes.conf文件存在，
+可以先删除此节点的nodes.conf文件，然后再执行之前的操作，一般情况下能操作成功。如果仍然报错，
+可把此节点的持久化文件appendonly.aof,dump.rdb文件备份后也删除掉，再执行之前的操作。
 ------------------------------------------------------------------
