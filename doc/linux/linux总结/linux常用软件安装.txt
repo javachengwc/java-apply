@@ -345,6 +345,10 @@ vim /usr/local/apache2/htdocs/test.php
 /usr/local/apache2/bin/apachectl start   #启动apache
 http://localhost/test.php    能访问php页面表示在apache中配置php成功
 
+---------------ruby
+yum install ruby
+yum install rubygems
+
 ---------------python
 yum install python 或 apt-get install python
 yum install python-setuptools                            ---装python

@@ -4,13 +4,15 @@
 集群正常运作至少需要三个主节点，建议使用六个节点:其中三个为主节点，另三个则是各个主节点的从节点。
 
 redis集群安装:
-    1,redis实例安装
+    1,各节点安装redis实例(每台服务器部2个节点)
         wget http://download.redis.io/releases/redis-3.2.0.tar.gz
         tar -zxvf redis-3.2.0.tar.gz                          #解压
         cd redis-3.2.0
         make                                                  #编译
         make install  PREFIX=/usr/local/redis-cluster
-        cp redis.conf /usr/local/redis-cluster/bin            #将配置文件redis.conf复制到相应目录下
+        cp redis.conf /usr/local/redis-cluster/bin            #将配置文件redis.conf复制到部署目录下
+        cp src/redis-trib.rb /usr/local/redis-cluster/bin     #将src下的redis-trib.rb复制到部署目录下
+                                                               redis-trib.rb文件是redis集群的管理文件
         cd /usr/local/redis-cluster
         mv bin redis01                                        #改redis的目录名，复制redis01为redis02...redis06，可以在不同的服务器间复制
     各redis实例的配置(redis.conf):
@@ -20,10 +22,12 @@ redis集群安装:
         cluster-config-file nodes.conf          ###节点配置文件的路径
         cluster-node-timeout 5000
         appendonly yes
+    2,各节点安装ruby环境
+        yum install ruby
+        yum install rubygems
+        wget https://rubygems.global.ssl.fastly.net/gems/redis-3.2.2.gem
+        gem install redis-3.2.2.gem
 
-
-
-redis-trib.rb文件是redis集群的管理文件
 
 $redis-cli cluster nodes                     ###查看集群状态
 ###节点ID                                IP地址    端口 标识 上一次发ping包时间  上一次收到pong包时间 连接状态     节点使用的哈希槽
