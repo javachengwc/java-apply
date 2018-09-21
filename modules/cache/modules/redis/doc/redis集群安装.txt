@@ -22,6 +22,10 @@ redis集群安装:
         cluster-config-file nodes.conf          ###节点配置文件的路径
         cluster-node-timeout 5000
         appendonly yes
+        bind 0.0.0.0
+        pidfile redis.pid
+        appendfilename "appendonly.aof"
+        appendfsync everysec
     2,各节点安装ruby环境
         yum install ruby
         yum install rubygems
