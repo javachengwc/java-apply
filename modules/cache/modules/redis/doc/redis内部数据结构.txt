@@ -132,7 +132,7 @@ ziplist--dict
 
 set数据结构内部实现
 intset--dict
-set-max-intset-entries 512
+set-max-intset-entries 512 表示只要集合存储的整数数量没有超过512，Redis就会使用整数集合表示以减少数据的体积
 
 sorted set数据结构内部实现
 ziplist--dict+skiplist

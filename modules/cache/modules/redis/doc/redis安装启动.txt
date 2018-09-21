@@ -9,7 +9,7 @@ wget http://download.redis.io/releases/redis-3.0.6.tar.gz
 tar -zxvf redis-3.0.6.tar.gz        #解压
 cd redis-3.0.6
 make                                #编译 编译完成后二进制文件是在./src目录下
-make install                        #安装
+make install                        #安装 ,可加PREFIX=/usr/local/redis来指定目录
 cp redis.conf /etc/redis/           #将配置文件redis.conf复制到/etc/redis下
 
 #把redis设置成开机自启动

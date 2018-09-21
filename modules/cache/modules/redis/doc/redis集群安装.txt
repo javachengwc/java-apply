@@ -1,17 +1,29 @@
 ------------------------------------------------------------------
-搭建集群需要一些运行在集群模式的Redis实例. 这意味着集群并不是由一些普通的Redis实例组成的，集群模式需要通过配置启用，
+搭建Redis集群需要一些运行在集群模式的Redis实例. 这意味着集群并不是由一些普通的Redis实例组成的，集群模式需要通过配置启用，
 开启集群模式后的Redis实例便可以使用集群特有的命令和特性了
 集群正常运作至少需要三个主节点，建议使用六个节点:其中三个为主节点，另三个则是各个主节点的从节点。
 
-如下是一个最少选项的集群的配置文件:
-    port 7000
-    cluster-enabled yes                     ###开启集群模式
-    cluster-config-file nodes.conf          ###节点配置文件的路径
-    cluster-node-timeout 5000
-    appendonly yes
+redis集群安装:
+    1,redis实例安装
+        wget http://download.redis.io/releases/redis-3.2.0.tar.gz
+        tar -zxvf redis-3.2.0.tar.gz                          #解压
+        cd redis-3.2.0
+        make                                                  #编译
+        make install  PREFIX=/usr/local/redis-cluster
+        cp redis.conf /usr/local/redis-cluster/bin            #将配置文件redis.conf复制到相应目录下
+        cd /usr/local/redis-cluster
+        mv bin redis01                                        #改redis的目录名，复制redis01为redis02...redis06，可以在不同的服务器间复制
+    各redis实例的配置(redis.conf):
+        daemonize yes                           ###后台启动
+        port 7001                               ###端口号从7001-7006
+        cluster-enabled yes                     ###开启集群模式
+        cluster-config-file nodes.conf          ###节点配置文件的路径
+        cluster-node-timeout 5000
+        appendonly yes
 
 
 
+redis-trib.rb文件是redis集群的管理文件
 
 $redis-cli cluster nodes                     ###查看集群状态
 ###节点ID                                IP地址    端口 标识 上一次发ping包时间  上一次收到pong包时间 连接状态     节点使用的哈希槽
