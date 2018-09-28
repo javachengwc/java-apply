@@ -307,8 +307,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
         for (String beanName : beanNames) {
             try {
                 result.put(beanName, getBean(beanName, type));
-            }
-            catch (BeanCreationException ex) {
+            } catch (BeanCreationException ex) {
                 Throwable rootCause = ex.getMostSpecificCause();
                 if ((rootCause instanceof BeanCurrentlyInCreationException)) {
                     BeanCreationException bce = (BeanCreationException)rootCause;
@@ -388,7 +387,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
     }
 
     protected boolean isAutowireCandidate(String beanName, DependencyDescriptor descriptor,
-                                          AutowireCandidateResolver resolver) throws NoSuchBeanDefinitionException
+          AutowireCandidateResolver resolver) throws NoSuchBeanDefinitionException
     {
         String beanDefinitionName = BeanFactoryUtils.transformedBeanName(beanName);
         if (containsBeanDefinition(beanDefinitionName)) {
