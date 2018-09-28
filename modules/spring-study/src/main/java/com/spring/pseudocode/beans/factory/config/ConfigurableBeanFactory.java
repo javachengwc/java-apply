@@ -1,7 +1,8 @@
 package com.spring.pseudocode.beans.factory.config;
 
 import com.spring.pseudocode.beans.factory.BeanFactory;
-import org.springframework.beans.factory.HierarchicalBeanFactory;
+import com.spring.pseudocode.beans.factory.HierarchicalBeanFactory;
+import com.spring.pseudocode.beans.factory.NoSuchBeanDefinitionException;
 
 public abstract interface ConfigurableBeanFactory extends HierarchicalBeanFactory, SingletonBeanRegistry
 {
@@ -47,6 +48,8 @@ public abstract interface ConfigurableBeanFactory extends HierarchicalBeanFactor
     public abstract void destroyBean(String paramString, Object paramObject);
 
     public abstract void destroyScopedBean(String paramString);
+
+    public abstract BeanDefinition getMergedBeanDefinition(String paramString) throws NoSuchBeanDefinitionException;
 
     public abstract void destroySingletons();
 }

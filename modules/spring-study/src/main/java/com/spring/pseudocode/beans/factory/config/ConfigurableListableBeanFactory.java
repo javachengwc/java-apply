@@ -2,9 +2,8 @@ package com.spring.pseudocode.beans.factory.config;
 
 import com.spring.pseudocode.beans.BeansException;
 import com.spring.pseudocode.beans.factory.AutowireCapableBeanFactory;
+import com.spring.pseudocode.beans.factory.ListableBeanFactory;
 import com.spring.pseudocode.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.DependencyDescriptor;
 
 import java.util.Iterator;

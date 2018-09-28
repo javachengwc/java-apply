@@ -1,0 +1,26 @@
+Stream   ---   Stream 作为 Java 8 的一大亮点，它与 java.io 包里的 InputStream 和 OutputStream 是完全不同的概念
+               Java 8 中的 Stream 是对集合（Collection）对象功能的增强，它专注于对集合对象进行各种非常便利、
+               高效的聚合操作（aggregate operation），或者大批量数据操作 (bulk data operation)
+               Stream API 借助于同样新出现的 Lambda 表达式，极大的提高编程效率和程序可读性。
+               同时它提供串行和并行两种模式进行汇聚操作，并发模式能够充分利用多核处理器的优势，使用 fork/join 并行方式来拆分任务和加速处理过程。
+Predicate---   断言型函数式接口，接受一个输入参数，返回一个布尔值结果。
+Function ---   功能型函数式接口，接受一个输入参数T，返回一个结果R。
+Consumer ---   消费型函数式接口，代表接受一个输入参数并且无返回的操作
+Supplier ---   供给型函数式接口, 无参数，返回一个结果。
+               public static String supplierTest(Supplier<String> supplier) {
+                   return supplier.get();
+               }
+               String data = "aa";
+               System.out.println(supplierTest(() -> data.length() + ""));
+Collector---   Collector接口包含了一系列方法，为实现具体的归约操作(即收集器)，例如toList或groupingBy
+Collectors---  Collectors提供了各种各样的，具有具体功能的Collector,以完成大多数日常的集合运算操作。
+               Collectors类的所有方法返回都是Collector的实例。
+UnaryOperator --- 函数式接口，接收一个操作符并返回相同类型的值。
+                UnaryOperator<Integer> unaryOpt = i->i*i;
+                System.out.println(unaryOpt.apply(3)); ###返回9
+BinaryOperator--- 函数式接口，接收两个操作数返回一个相同类型的值,用于执行lambda表达式并返回一个T类型的返回值
+                BinaryOperator<Integer> add = (n1, n2) -> n1 + n2;
+                //apply方法用于接收参数，并返回BinaryOperator中的Integer类型
+                System.out.println(add.apply(2, 3)); ###返回5
+                BinaryOperator<Integer> bi = BinaryOperator.minBy(Comparator.naturalOrder());
+                System.out.println(bi.apply(2, 3));  ###返回2

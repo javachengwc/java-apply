@@ -6,6 +6,10 @@ public class NoSuchBeanDefinitionException extends BeansException {
 
     private String beanName;
 
+    public NoSuchBeanDefinitionException (Class<?> requiredType) {
+
+    }
+
     public NoSuchBeanDefinitionException(String name)
     {
         //...

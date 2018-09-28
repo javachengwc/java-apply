@@ -1,11 +1,13 @@
 package com.spring.pseudocode.beans.factory.support;
 
 import com.spring.pseudocode.beans.BeansException;
+import com.spring.pseudocode.beans.TypeConverter;
 import com.spring.pseudocode.beans.factory.BeanFactory;
 import com.spring.pseudocode.beans.factory.FactoryBean;
 import com.spring.pseudocode.beans.factory.NoSuchBeanDefinitionException;
 import com.spring.pseudocode.beans.factory.ObjectFactory;
 import com.spring.pseudocode.beans.factory.config.*;
+import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanIsNotAFactoryException;
@@ -20,6 +22,8 @@ import java.util.*;
 public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport implements ConfigurableBeanFactory
 {
     private BeanFactory parentBeanFactory;
+
+    private TypeConverter typeConverter;
 
     private ClassLoader beanClassLoader = ClassUtils.getDefaultClassLoader();
 
@@ -212,6 +216,14 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 //            this.hasDestructionAwareBeanPostProcessors = true;
     }
 
+    public BeanDefinition getMergedBeanDefinition(String name) throws BeansException
+    {
+        String beanName = transformedBeanName(name);
+        if ((!containsBeanDefinition(beanName)) && ((getParentBeanFactory() instanceof ConfigurableBeanFactory))) {
+            return ((ConfigurableBeanFactory)getParentBeanFactory()).getMergedBeanDefinition(beanName);
+        }
+        return getMergedLocalBeanDefinition(beanName);
+    }
 
     public boolean isFactoryBean(String name) throws NoSuchBeanDefinitionException
     {
@@ -235,8 +247,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
         return isFactoryBean(beanName, getMergedLocalBeanDefinition(beanName));
     }
 
-    protected RootBeanDefinition getMergedLocalBeanDefinition(String beanName)
-            throws BeansException
+    protected RootBeanDefinition getMergedLocalBeanDefinition(String beanName) throws BeansException
     {
         //RootBeanDefinition mbd = (RootBeanDefinition)this.mergedBeanDefinitions.get(beanName);
         RootBeanDefinition mbd =null;
@@ -295,6 +306,24 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
         return object;
     }
 
+    protected TypeConverter getCustomTypeConverter()
+    {
+        return this.typeConverter;
+    }
+
+    public TypeConverter getTypeConverter()
+    {
+        TypeConverter customConverter = getCustomTypeConverter();
+        if (customConverter != null) {
+            return customConverter;
+        }
+
+        //SimpleTypeConverter typeConverter = new SimpleTypeConverter();
+        //typeConverter.setConversionService(getConversionService());
+        //registerCustomEditors(typeConverter);
+        //return typeConverter;
+        return null;
+    }
 
     protected void registerDisposableBeanIfNecessary(String beanName, Object bean, RootBeanDefinition mbd)
     {

@@ -1,9 +1,11 @@
 package com.java8;
 
 import com.entity.Entity;
+import com.util.base.NumberUtil;
 import org.apache.commons.lang.math.NumberUtils;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -26,6 +28,15 @@ public class StreamMain {
                 .filter(NumberUtils::isNumber)
                 .collect(Collectors.toList());
         printList(rtList);
+
+        Predicate<String> predicate = isNumber();
+        list.forEach(n -> {
+              if (predicate.test(n)) {
+                  System.out.println(n + " is number ");
+              }else {
+                  System.out.println(n + " is not number ");
+              }
+        });
 
         String[] names = {"a","c","c","b","e","f","g"};
         Stream<String> arrayStream = Arrays.stream(names);
@@ -172,5 +183,17 @@ public class StreamMain {
                 i++;
             }
         }
+    }
+
+    public static Predicate<Entity> isGood() {
+        return a ->{
+            return a.isGood();
+        };
+    }
+
+    public static Predicate<String> isNumber() {
+        return a ->{
+            return NumberUtil.isNumeric(a);
+        };
     }
 }
