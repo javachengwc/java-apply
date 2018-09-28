@@ -46,4 +46,6 @@ public abstract interface BeanDefinition
 
     public abstract Object getSource();
 
+    public abstract String getResourceDescription();
+
 }

@@ -507,13 +507,16 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
                 ((AbstractBeanDefinition)beanDefinition).validate();
             }
             catch (BeanDefinitionValidationException ex) {
-                throw new BeanDefinitionStoreException(beanDefinition.getResourceDescription(), beanName, "Validation of bean definition failed", ex);
+//                throw new BeanDefinitionStoreException(beanDefinition.getResourceDescription(), beanName,
+//                "Validation of bean definition failed", ex);
             }
         }
         BeanDefinition oldBeanDefinition = (BeanDefinition)this.beanDefinitionMap.get(beanName);
         if (oldBeanDefinition != null) {
             if (!isAllowBeanDefinitionOverriding()) {
-                throw new BeanDefinitionStoreException(beanDefinition.getResourceDescription(), beanName, new StringBuilder().append("Cannot register bean definition [").append(beanDefinition).append("] for bean '").append(beanName).append("': There is already [").append(oldBeanDefinition).append("] bound.").toString());
+//                throw new BeanDefinitionStoreException(beanDefinition.getResourceDescription(), beanName,
+//                        new StringBuilder().append("Cannot register bean definition [").append(beanDefinition).append("] for bean '")
+//                                .append(beanName).append("': There is already [").append(oldBeanDefinition).append("] bound.").toString());
             }
             this.beanDefinitionMap.put(beanName, beanDefinition);
         }
@@ -571,13 +574,13 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
     protected void resetBeanDefinition(String beanName)
     {
-        clearMergedBeanDefinition(beanName);
+        //clearMergedBeanDefinition(beanName);
         destroySingleton(beanName);
         for (String bdName : this.beanDefinitionNames)
             if (!beanName.equals(bdName)) {
                 BeanDefinition bd = (BeanDefinition)this.beanDefinitionMap.get(bdName);
-                if (beanName.equals(bd.getParentName()))
-                    resetBeanDefinition(bdName);
+//                if (beanName.equals(bd.getParentName()))
+//                    resetBeanDefinition(bdName);
             }
     }
 
@@ -604,6 +607,10 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
             this.manualSingletonNames.add(beanName);
         }
         clearByTypeCache();
+    }
+
+    public boolean hasBeanCreationStarted() {
+        return false;
     }
 
     public void destroySingleton(String beanName)
@@ -706,65 +713,6 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
         this.singletonBeanNamesByType.clear();
     }
 
-    public <T> NamedBeanHolder<T> resolveNamedBean(Class<T> requiredType) throws BeansException
-    {
-        NamedBeanHolder namedBean = resolveNamedBean(requiredType, (Object[])null);
-        if (namedBean != null) {
-            return namedBean;
-        }
-        BeanFactory parent = getParentBeanFactory();
-        if ((parent instanceof AutowireCapableBeanFactory)) {
-            return ((AutowireCapableBeanFactory)parent).resolveNamedBean(requiredType);
-        }
-        throw new NoSuchBeanDefinitionException(requiredType);
-    }
-
-    private <T> NamedBeanHolder<T> resolveNamedBean(Class<T> requiredType, Object[] args) throws BeansException
-    {
-        String[] candidateNames = getBeanNamesForType(requiredType);
-        if (candidateNames.length > 1) {
-            List autowireCandidates = new ArrayList(candidateNames.length);
-            for (String beanName : candidateNames) {
-                if ((!containsBeanDefinition(beanName)) || (getBeanDefinition(beanName).isAutowireCandidate())) {
-                    autowireCandidates.add(beanName);
-                }
-            }
-            if (!autowireCandidates.isEmpty()) {
-                candidateNames = (String[])autowireCandidates.toArray(new String[autowireCandidates.size()]);
-            }
-        }
-
-        if (candidateNames.length == 1) {
-            String beanName = candidateNames[0];
-            return new NamedBeanHolder(beanName, getBean(beanName, requiredType, args));
-        }
-        if (candidateNames.length > 1) {
-            Map candidates = new LinkedHashMap(candidateNames.length);
-            for (String beanName : candidateNames) {
-                if (containsSingleton(beanName)) {
-                    candidates.put(beanName, getBean(beanName, requiredType, args));
-                }
-                else {
-                    candidates.put(beanName, getType(beanName));
-                }
-            }
-            String candidateName = determinePrimaryCandidate(candidates, requiredType);
-            if (candidateName == null) {
-                candidateName = determineHighestPriorityCandidate(candidates, requiredType);
-            }
-            if (candidateName != null) {
-                Object beanInstance = candidates.get(candidateName);
-                if ((beanInstance instanceof Class)) {
-                    beanInstance = getBean(candidateName, requiredType, args);
-                }
-                return new NamedBeanHolder(candidateName, beanInstance);
-            }
-            throw new NoUniqueBeanDefinitionException(requiredType, candidates.keySet());
-        }
-
-        return null;
-    }
-
     private Object resolveMultipleBeans(DependencyDescriptor descriptor, String beanName,
             Set<String> autowiredBeanNames, TypeConverter typeConverter)
     {
@@ -860,15 +808,6 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
             instancesToBeanNames.put(entry.getValue(), entry.getKey());
         }
         return new FactoryAwareOrderSourceProvider(instancesToBeanNames);
-    }
-
-    private void addCandidateEntry(Map<String, Object> candidates, String candidateName, DependencyDescriptor descriptor, Class<?> requiredType)
-    {
-        if (((descriptor instanceof MultiElementDescriptor)) || (containsSingleton(candidateName))) {
-            //candidates.put(candidateName, descriptor.resolveCandidate(candidateName, requiredType, this));
-        }
-        else
-            candidates.put(candidateName, getType(candidateName));
     }
 
     protected String determineAutowireCandidate(Map<String, Object> candidates, DependencyDescriptor descriptor)
@@ -998,7 +937,8 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
                             getAutowireCandidateResolver())))
             {
                 Object beanInstance = getSingleton(beanName, false);
-                Class beanType = beanInstance != null ? beanInstance.getClass() : predictBeanType(beanName, mbd, new Class[0]);
+                //Class beanType = beanInstance != null ? beanInstance.getClass() : predictBeanType(beanName, mbd, new Class[0]);
+                Class beanType =null;
                 if (!type.isAssignableFrom(beanType)) {
                     throw new BeanNotOfRequiredTypeException(beanName, type, beanType);
                 }
@@ -1052,30 +992,13 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
         return false;
     }
 
-    private static class MultiElementDescriptor extends DefaultListableBeanFactory.NestedDependencyDescriptor
-    {
-        public MultiElementDescriptor(DependencyDescriptor original)
-        {
-            super();
-        }
-    }
-
-    private static class NestedDependencyDescriptor extends DependencyDescriptor
-    {
-        public NestedDependencyDescriptor(DependencyDescriptor original)
-        {
-            super();
-            increaseNestingLevel();
-        }
-    }
-
     private class FactoryAwareOrderSourceProvider implements OrderComparator.OrderSourceProvider
     {
         private final Map<Object, String> instancesToBeanNames;
 
-        public FactoryAwareOrderSourceProvider()
+        public FactoryAwareOrderSourceProvider( Map<Object, String> instancesToBeanNames)
         {
-            this.instancesToBeanNames = instancesToBeanNames;
+            this.instancesToBeanNames=instancesToBeanNames;
         }
 
         public Object getOrderSource(Object obj)
