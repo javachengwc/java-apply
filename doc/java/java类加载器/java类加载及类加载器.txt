@@ -1,0 +1,87 @@
+类加载过程:
+1,加载：类加载过程的一个阶段：通过一个类的完全限定查找此类字节码文件，并利用字节码文件创建一个Class对象
+2,验证：目的在于确保Class文件的字节流中包含信息符合当前虚拟机要求，不会危害虚拟机自身安全。
+    主要包括四种验证，文件格式验证，元数据验证，字节码验证，符号引用验证。
+3,准备：为类变量(即static修饰的字段变量)分配内存并且设置该类变量的初始值即0(如static int i=5;这里只将i初始化为0，至于5的值将在初始化时赋值)，
+    这里不包含用final修饰的static，因为final在编译的时候就会分配了，注意这里不会为实例变量分配初始化，类变量会分配在方法区中，
+    而实例变量是会随着对象一起分配到Java堆中。
+4,解析：主要将常量池中的符号引用替换为直接引用的过程。符号引用就是一组符号来描述目标，可以是任何字面量，
+    而直接引用就是直接指向目标的指针、相对偏移量或一个间接定位到目标的句柄。
+    有类或接口的解析，字段解析，类方法解析，接口方法解析
+5,初始化：类加载最后阶段，若该类具有超类，则对其进行初始化，执行静态初始化器和静态初始化成员变量
+    (如前面只初始化了默认值的static变量将会在这个阶段赋值，成员变量也将被初始化)。
+这便是类加载的5个过程，而类加载器的任务是根据一个类的全限定名来读取此类的二进制字节流到JVM中，然后转换为一个与目标类对应的java.lang.Class对象实例，
+在虚拟机提供了3种类加载器，引导（Bootstrap）类加载器、扩展（Extension）类加载器、系统（System）类加载器（也称应用类加载器）
+启动（Bootstrap）类加载器:
+    启动类加载器主要加载的是JVM自身需要的类，这个类加载使用C++语言实现的，是虚拟机自身的一部分，
+    它负责将 <JAVA_HOME>/lib路径下的核心类库或-Xbootclasspath参数指定的路径下的jar包加载到内存中，
+    (出于安全考虑，Bootstrap启动类加载器只加载包名为java、javax、sun等开头的类)。
+扩展（Extension）类加载器
+    扩展类加载器是sun.misc.Launcher$ExtClassLoader类，由Java语言实现的，是Launcher的静态内部类，
+    它负责加载<JAVA_HOME>/lib/ext目录下或者由系统变量-Djava.ext.dir指定位路径中的类库，开发者可以直接使用标准扩展类加载器。
+系统（System）类加载器
+    也称应用程序加载器是sun.misc.Launcher$AppClassLoader。
+    它负责加载系统类路径java -classpath或-D java.class.path 指定路径下的类库，也就是经常用到的classpath路径，
+    一般情况下该类加载是程序中默认的类加载器，通过ClassLoader.getSystemClassLoader()方法可以获取到该类加载器。
+需要注意的是，Java虚拟机对class文件采用的是按需加载的方式，也就是说当需要使用该类时才会将它的class文件加载到内存生成class对象，
+而且加载某个类的class文件时，Java虚拟机采用的是双亲委派模式即把请求交由父类处理，它一种任务委派模式。
+双亲委派模式
+    双亲委派模式是在Java 1.2后引入的，其工作原理的是，如果一个类加载器收到了类加载请求，
+    它并不会自己先去加载，而是把这个请求委托给父类的加载器去执行，如果父类加载器还存在其父类加载器，则进一步向上委托，依次递归，
+    请求最终将到达顶层的启动类加载器，如果父类加载器可以完成类加载任务，就成功返回，倘若父类加载器无法完成此加载任务，
+    子加载器才会尝试自己去加载。
+采用双亲委派模式的是好处是Java类随着它的类加载器一起具备了一种带有优先级的层次关系，
+通过这种层级关可以避免类的重复加载，当父亲已经加载了该类时，就没有必要子ClassLoader再加载一次。
+其次是考虑到安全因素，java核心api中定义类型不会被随意替换，假设通过网络传递一个名为java.lang.Integer的类，
+通过双亲委托模式传递到启动类加载器，而启动类加载器在核心Java API发现这个名字的类，发现该类已被加载，
+并不会重新加载网络传递的过来的java.lang.Integer，而直接返回已加载过的Integer.class，这样便可以防止核心API库被随意篡改。
+
+双亲委派模型的破坏者-线程上下文类加载器
+    在Java应用中存在着很多服务提供者接口（Service Provider Interface，SPI），这些接口允许第三方为它们提供实现，如常见的 SPI 有 JDBC、JNDI等，
+    这些 SPI 的接口属于 Java 核心库，一般存在rt.jar包中，由Bootstrap类加载器加载，而SPI 的第三方实现代码则是作为Java应用所依赖的 jar 包被存放在classpath路径下，、
+    由于SPI接口中的代码经常需要加载具体的第三方实现类并调用其相关方法，但SPI的核心接口类是由引导类加载器来加载的，
+    而Bootstrap类加载器无法直接加载SPI的实现类，同时由于双亲委派模式的存在，Bootstrap类加载器也无法反向委托AppClassLoader加载器SPI的实现类。
+    在这种情况下，就需要一种特殊的类加载器来加载第三方的类库，而线程上下文类加载器就是很好的选择。
+线程上下文类加载器
+    线程上下文类加载器（contextClassLoader）是从 JDK 1.2 开始引入的，可以通过java.lang.Thread类中的getContextClassLoader()和
+    setContextClassLoader(ClassLoader cl)方法来获取和设置线程的上下文类加载器。如果没有手动设置上下文类加载器，
+    线程将继承其父线程的上下文类加载器，初始线程的上下文类加载器是系统类加载器（AppClassLoader）,在线程中运行的代码可以通过此类加载器来加载类和资源
+双亲委派模型的另一次“被破坏”是由于用户对程序动态性的追求而导致的，这里所说的“动态性”指的是：代码热替换（HotSwap）、模块热部署（HotDeployment）等，
+    就是希望应用程序能像计算机外设那样，接上鼠标、U盘，不用重启机器就能立即使用,这种情况下热部署就对软件开发者，尤其是企业级软件开发者具有很大的吸引力。
+    Sun公司所提出的JSR-294、JSR-277规范在与JCP组织的模块化规范之争中落败给JSR-291（即OSGiR4.2），目前OSGi已经成为了业界“事实上”的Java模块化标准，
+    而OSGi实现模块化热部署的关键则是它自定义的类加载器机制的实现。每一个程序模块（OSGi中称为Bundle）都有一个自己的类加载器，
+    当需要更换一个Bundle时，就把Bundle连同类加载器一起换掉以实现代码的热替换。
+Tomcat的类加载器架构
+    主流的Java Web服务器（也就是Web容器），如Tomcat、Jetty等都实现了自己定义的类加载器（一般都不止一个）。因为一个功能健全的Web容器，要解决如下几个问题：
+        1）部署在同一个Web容器上的两个Web应用程序所使用的Java类库可以实现相互隔离。
+        两个不同的应用程序可能会依赖同一个第三方类库的不同版本，不能要求一个类库在一个服务器中只有一份，服务器应当保证两个应用程序的类库可以互相独立使用。
+        2）部署在同一个Web容器上的两个Web应用程序所使用的Java类库可以互相共享。
+        3）Web容器需要尽可能地保证自身的安全不受部署的Web应用程序影响。
+        一般来说，基于安全考虑，容器所使用的类库应该与应用程序的类库互相独立。
+        4）支持JSP应用的Web容器，大多数都需要支持HotSwap功能。JSP文件最终要编译成Java Class才能由虚拟机执行，但JSP文件由于其纯文本存储的特性，
+        运行时修改的概率远远大于第三方类库或程序自身的Class文件。而且ASP、PHP和JSP这些网页应用也把修改后无须重启作为一个很大的“优势”来看待，
+        因此“主流”的Web容器都会支持JSP生成类的热替换。
+    由于存在上述问题，在部署Web应用时，单独的一个Class Path就无法满足需求了，所以各种Web容都“不约而同”地提供了好几个Class Path路径供用户存放第三方类库，
+        这些路径一般都以“lib”或“classes”命名。被放置到不同路径中的类库，具备不同的访问范围和服务对象，
+        通常，每一个目录都会有一个相应的自定义类加载器去加载放置在里面的Java类库。
+        以Tomcat容器为例，看一看Tomcat具体是如何规划用户类库结构和类加载器的。
+     在Tomcat目录结构中，有3组目录（“/common/*”、“/server/*”和“/shared/*”）可以存放Java类库，另外还可以加上Web应用程序自身的目录“/WEB-INF/*”，
+            一共4组，把Java类库放置在这些目录中的含义分别如下：
+         1,放置在/common目录中：类库可被Tomcat和所有的Web应用程序共同使用。
+         2,放置在/server目录中：类库可被Tomcat使用，对所有的Web应用程序都不可见。
+           3,放置在/shared目录中：类库可被所有的Web应用程序共同使用，但对Tomcat自己不可见。
+           4,放置在/WebApp/WEB-INF目录中：类库仅仅可以被此Web应用程序使用，对Tomcat和其他Web应用程序都不可见。
+           为了支持这套目录结构，并对目录里面的类库进行加载和隔离，Tomcat自定义了多个类加载器，这些类加载器按照经典的双亲委派模型来实现，其关系图见tomcat-class-loader.png。
+         图中灰色背景的3个类加载器是JDK默认提供的类加载器，这3个加载器的作用已经介绍过了。
+         而CommonClassLoader、CatalinaClassLoader、SharedClassLoader和WebappClassLoader则是Tomcat自己定义的类加载器，
+         它们分别加载/common/*、/server/*、/shared/*和/WebApp/WEB-INF/*中的Java类库。
+         其中WebApp类加载器和Jsp类加载器通常会存在多个实例，每一个Web应用程序对应一个WebApp类加载器，每一个JSP文件对应一个Jsp类加载器。
+         从图中的委派关系中可以看出，CommonClassLoader能加载的类都可以被Catalina ClassLoader和SharedClassLoader使用，
+         而CatalinaClassLoader和Shared ClassLoader自己能加载的类则与对方相互隔离。
+         WebAppClassLoader可以使用SharedClassLoader加载到的类，但各个WebAppClassLoader实例之间相互隔离。
+         而JasperLoader的加载范围仅仅是这个JSP文件所编译出来的那一个.Class文件，
+         它出现的目的就是为了被丢弃：当Web容器检测到JSP文件被修改时，会替换掉目前的JasperLoader的实例，并通过再建立一个新的Jsp类加载器来实现JSP文件的HotSwap功能。
+         对于Tomcat的6.x版本，只有指定了tomcat/conf/catalina.properties配置文件的server.loader和share.loader项后才会真正建立Catalina ClassLoader和SharedClassLoader的实例，
+         否则在用到这两个类加载器的地方都会用Common ClassLoader的实例代替，而默认的配置文件中没有设置这两个loader项，
+         所以Tomcat 6.x顺理成章地把/common、/server和/shared三个目录默认合并到一起变成一个/lib目录，这个目录里的类库相当于以前/common目录中类库的作用。
+         如果默认设置不能满足需要，用户可以通过修改配置文件指定server.loader和share.loader的方式重新启用Tomcat。
