@@ -1,0 +1,22 @@
+redis-benchmark是官方自带的redis性能测试工具,测试redis的读写性能
+benchmark可以模拟N个机器，同时发送M个请求
+redis-benchmark [-h <host>] [-p <port>] [-c <clients>] [-n <requests]> [-k <boolean>]
+    -h <hostname>      Server hostname (default 127.0.0.1)
+    -p <port>          Server port (default 6379)
+    -s <socket>        Server socket (overrides host and port)
+    -c <clients>       Number of parallel connections (default 50),并发数
+    -n <requests>      Total number of requests (default 10000)   ,请求数
+    -d <size>          Data size of SET/GET value in bytes (default 2)
+    -k <boolean>       1=keep alive 0=reconnect (default 1)
+    -r <keyspacelen>   Use random keys for SET/GET/INCR, random values for SADD...
+    -P <numreq>        Pipeline <numreq> requests. Default 1 (no pipeline).
+    -q                 Quiet. Just show query/sec values 只显示每秒钟能处理多少请求数结果
+    --csv              Output in CSV format
+    -l                 Loop. Run the tests forever 永久测试
+    -t <tests>         Only run the comma separated list of tests. The testnames are the same as the ones produced as output.
+    -I                 Idle mode. Just open N idle connections and wait.
+redis-benchmark -h 127.0.0.1 -p 6379 -c 100 -n 1000           ###100个并发连接，1000个请求，检测redis服务器性能
+redis-benchmark -h 127.0.0.1 -p 6379 -q                       ###显示每秒钟能处理多少请求数结果
+redis-benchmark -t set,lpush -n 100000 -q                     ###指定需要测试的命令set,lpush进行测试
+redis-benchmark -n 1000000 -t set,get -P 16 -q                ###使用 pipelining 组织 16 条命令进行测试
+                                                              ###Redis 支持 /topics/pipelining，使得可以一次性执行多条命令成为可能。Redis pipelining 可以提高服务器的 TPS
