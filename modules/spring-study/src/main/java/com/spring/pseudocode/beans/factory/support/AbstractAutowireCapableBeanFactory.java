@@ -30,12 +30,15 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 {
     private ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
 
+    //是否自动尝试去解析循环引用的bean
     private boolean allowCircularReferences = true;
 
     private boolean allowRawInjectionDespiteWrapping = false;
 
+    //在依赖检查和自动绑定时要忽略的依赖类型，是一组类对象
     private final Set<Class<?>> ignoredDependencyTypes = new HashSet();
 
+    //在依赖检查和自动绑定时要忽略的依赖接口，是一组类对象，默认情况下，只有beanFactory接口被忽略。
     private final Set<Class<?>> ignoredDependencyInterfaces = new HashSet();
 
     private final Map<String, BeanWrapper> factoryBeanInstanceCache = new ConcurrentHashMap(16);
@@ -359,6 +362,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         }
     }
 
+    //创建bean 实例的策略
     public InstantiationStrategy getInstantiationStrategy () {
         //...
         return null;

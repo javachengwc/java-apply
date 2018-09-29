@@ -40,14 +40,23 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
     private static Class<?> javaUtilOptionalClass = null;
 
     private static Class<?> javaxInjectProviderClass = null;
+
     private static final Map<String, Reference<DefaultListableBeanFactory>> serializableFactories;
+
     private String serializationId;
+
+    //是否允许同名的不同bean definition再次进行注册；
     private boolean allowBeanDefinitionOverriding = true;
 
+    //是否允许eager（相对于lazy）的加载，也就是及时加载
     private boolean allowEagerClassLoading = true;
+
     private Comparator<Object> dependencyComparator;
+
+    //autowireCandidateResolver是一个策略接口，决定一个特定的bean definition 是否满足做一个特定依赖的自动绑定的候选项
     private AutowireCandidateResolver autowireCandidateResolver = new SimpleAutowireCandidateResolver();
 
+    //定义了依赖类型和其对应的自动绑定值的键值对集合
     private final Map<Class<?>, Object> resolvableDependencies = new ConcurrentHashMap(16);
 
     private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap(256);
@@ -59,7 +68,9 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
     private volatile List<String> beanDefinitionNames = new ArrayList(256);
 
     private volatile Set<String> manualSingletonNames = new LinkedHashSet(16);
+
     private volatile String[] frozenBeanDefinitionNames;
+
     private volatile boolean configurationFrozen = false;
 
     public DefaultListableBeanFactory()

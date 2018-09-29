@@ -31,7 +31,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
     private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<BeanPostProcessor>();
 
+    //是否注册有任何的InstantiationAwareBeanPostProcessors
     private boolean hasInstantiationAwareBeanPostProcessors;
+    //是否注册有任何的DestructionAwareBeanPostProcessors
     private boolean hasDestructionAwareBeanPostProcessors;
 
     private final Map<String, Scope> scopes = new LinkedHashMap(8);
@@ -320,6 +322,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
         //SimpleTypeConverter typeConverter = new SimpleTypeConverter();
         //typeConverter.setConversionService(getConversionService());
+        //customEditors 是自定义的属性编辑器，适用于该beanFactory的所有bean
         //registerCustomEditors(typeConverter);
         //return typeConverter;
         return null;
