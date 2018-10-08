@@ -1,0 +1,62 @@
+mongodb的java驱动包版本以及与spring整合的jar包版本匹配
+mongodb java driver 2.X版本与spirng框架版本4.X的，使用的spring-data-mongodb是1.X的版本
+<!--mongodb-spring整合-->
+<dependency>
+    <groupId>org.mongodb</groupId>
+    <artifactId>mongo-java-driver</artifactId>
+    <version>2.14.3</version>
+</dependency>
+<dependency>
+    <groupId>org.springframework.data</groupId>
+    <artifactId>spring-data-mongodb</artifactId>
+    <version>1.10.7.RELEASE</version>
+</dependency>
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+     <mongo:mongo replica-set="${mongo.hostport}">
+         <mongo:options connections-per-host="${mongo.connectionsPerHost}"
+                        threads-allowed-to-block-for-connection-multiplier="${mongo.threadsAllowedToBlockForConnectionMultiplier}"
+                        connect-timeout="${mongo.connectTimeout}"
+                        max-wait-time="${mongo.maxWaitTime}"
+                        auto-connect-retry="true"
+                        socket-keep-alive="true"
+                        socket-timeout="${mongo.socketTimeout}"
+                        slave-ok="true"
+                        write-number="1"
+                        write-timeout="0"
+                        write-fsync="true"  />
+     </mongo:mongo>
+     <mongo:db-factory username="root" password="root" dbname="admin" mongo-ref="mongo"/>
+     <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+             <constructor-arg name="mongoDbFactory" ref="mongoDbFactory"/>
+     </bean>
+</beans>
+
+mongodb java driver 3.X版本与spirng框架版本5.X的，使用的spring-data-mongodb是2.X的版本
+<!--mongodb-spring整合-->
+<dependency>
+    <groupId>org.mongodb</groupId>
+    <artifactId>mongo-java-driver</artifactId>
+    <version>3.5.0</version>
+</dependency>
+<dependency>
+    <groupId>org.springframework.data</groupId>
+    <artifactId>spring-data-mongodb</artifactId>
+    <version>2.0.1.RELEASE</version>
+</dependency>
+<beans>
+    <mongo:mongo-client id="mongoClient" replica-set="${mongo.hostport}"
+                        credentials="${mongo.username}:${mongo.password}@${mongo.authenticationDbname}">
+        <mongo:client-options connections-per-host="${mongo.connectionsPerHost}"
+                              threads-allowed-to-block-for-connection-multiplier="${mongo.threadsAllowedToBlockForConnectionMultiplier}"
+                              connect-timeout="${mongo.connectTimeout}"
+                              max-wait-time="${mongo.maxWaitTime}"
+                              socket-timeout="${mongo.socketTimeout}"/>
+    </mongo:mongo-client>
+    <mongo:db-factory dbname="${mongo.databaseName}" mongo-ref="mongoClient"/>
+    <mongo:template db-factory-ref="mongoDbFactory"/>
+</beans>
+
+
+
