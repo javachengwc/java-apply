@@ -28,6 +28,8 @@ usermod -g groupa -u 333 aa
 usermod -l ab aa           ---用户aa改名成ab
 usermod -L ab              ---锁定用户ab
 usermod -U ab              ---解锁用户ab
+usermod -s /sbin/nologin + 用户名   ---更改用户不能ssh登录
+usermod -s /bin/bash + 用户名       ---更改用户可ssh登录
 passwd                     ---修改当前用户密码
 passwd ab                  ---修改用户ab的密码
 passwd -l ab               ---锁定用户ab不能更改密码
