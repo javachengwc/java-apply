@@ -8,6 +8,12 @@ uname -r                                         ---查看系统的发行版号
 getconf LONG_BIT                                 ---查看系统位数
 lsb_release -a                                   ---查看lsb和特定版本的相关信息
    ###如果无此命令，通过yum install -y redhat-lsb 安装lsb_release
+--------------系统字符集
+echo $LANG                                       ---查看linux系统字符集
+vim /etc/sysconfig/i18n
+    LANG="en_US.UTF-8"
+    SYSFONT="latarcyrheb-sun16"
+source /etc/sysconfig/i18n                       ---修改系统字符集
 
 --------date
 date -s 05/15/2016  ---修改日期
