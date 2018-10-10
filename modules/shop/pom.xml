@@ -30,6 +30,7 @@
 		<module>modules/shop-zipkin-server</module>
 		<module>modules/shop-book</module>
 		<module>modules/shop-book-search</module>
+		<module>modules/shop-book-manage</module>
 	</modules>
 
 </project>
