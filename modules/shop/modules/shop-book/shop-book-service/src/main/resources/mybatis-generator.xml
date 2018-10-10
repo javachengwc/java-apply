@@ -29,6 +29,14 @@
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
+        <!--
+        <table tableName="test" domainObjectName="Test">
+            <property name="useActualColumnNames" value="true" />
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+            <columnOverride column="data" javaType="java.lang.String" jdbcType="VARCHAR" />
+        </table>
+        -->
+
         <!-- 添加需要生成的表，以及生成方式 -->
         <table tableName="dict" >
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
