@@ -60,3 +60,20 @@ create table advert (
     key idx_title(title),
     key idx_start_end(start_time,end_time)
 ) engine INNODB default charset utf8 comment '广告表';
+
+create table dict (
+   id bigint auto_increment,
+   dict_key varchar(64) default '' comment '字典key',
+   dict_label varchar(128) default '' comment '字典标签',
+   dict_value varchar(256) default '' comment '字典值',
+   dict_ext varchar(256) default '' comment '字典扩展信息',
+   dict_type int comment '字典类型',
+   dict_type_name varchar(64) default '' comment '字典类型名称',
+   is_use int default 1 comment '是否启用 0--否 1--是',
+   sort int default 0 comment '顺序',
+   create_time datetime comment '创建时间',
+   modified_time datetime comment '修改时间',
+   primary key (id),
+   key idx_dict_key(dict_key),
+   key idx_dict_type(dict_type)
+) engine INNODB default charset utf8 comment '字典表';

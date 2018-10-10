@@ -1,5 +1,6 @@
 package com.shop.book.service.impl;
 
+import com.shop.book.annotation.DataCache;
 import com.shop.book.dao.mapper.QaMapper;
 import com.shop.book.model.pojo.Qa;
 import com.shop.book.model.pojo.QaExample;
@@ -20,6 +21,7 @@ public class QaServiceImpl implements QaService {
     @Autowired
     private QaMapper qaMapper;
 
+    @DataCache
     public List<Qa> queryAll() {
         QaExample example= new QaExample();
         example.setOrderByClause(" sort asc ");

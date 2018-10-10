@@ -34,4 +34,22 @@ public class Resp<T> {
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
+
+    public static <T> Resp<T> error(String msg) {
+        Resp<T> resp = new Resp<T>();
+        resp.getHeader().setCode(RespHeader.FAIL);
+        resp.getHeader().setMsg(msg);
+        return resp;
+    }
+
+    public static <T> Resp<T> success(T data) {
+        return  success(data,null);
+    }
+
+    public static <T> Resp<T> success(T data,String msg) {
+        Resp<T> resp = new Resp<T>();
+        resp.getHeader().setMsg(msg);
+        resp.setData(data);
+        return resp;
+    }
 }
