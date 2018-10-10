@@ -1,0 +1,13 @@
+-----------------------------------mongodb复制集安装-----------------------------
+机器节点:192.168.0.2 192.168.0.3 192.168.0.6
+系统:centos7.4 64位
+mongodb版本:mongodb-linux-x86_64-rhel70-3.6.8.tgz
+
+##在各节点上操作
+1,添加mongod用户
+    useradd mongod
+    echo 123456|passwd --stdin mongod
+2,安装mongodb
+    wget https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel70-3.6.8.tgz
+
+---------------------------------------------------------------------------------
