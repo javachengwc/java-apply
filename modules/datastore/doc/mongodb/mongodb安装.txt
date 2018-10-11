@@ -27,6 +27,7 @@ mongodb启动参数：
 --serviceDisplayName 	   指定服务名称
 --install 	               指定作为一个Windows服务
 --rest                     启用mongdb自带的http用户界面功能,MongoDB的Web访问端口比服务的端口多1000
+--replSet repset           指定副本集名称
 ----------------------------------------
 linux下安装mongodb
 

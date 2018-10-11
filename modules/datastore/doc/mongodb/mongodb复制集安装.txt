@@ -45,6 +45,7 @@ mongodb版本:mongodb-linux-x86_64-rhel70-3.6.8.tgz
           fork: true
         net:
           port: 28017
+          bindIp: 0.0.0.0
         replication:
           oplogSizeMB: 2048
           replSetName: my_rep
@@ -56,5 +57,12 @@ mongodb版本:mongodb-linux-x86_64-rhel70-3.6.8.tgz
     ###如果非正常关闭，有可能需要删除mongodb.lock，然后使用repair参数进行恢复mongod --repair,恢复后再进行重启
 6,配置复制集
     mongo --port 28017
-
+   >config = {_id:'my_rep',members:[{_id:0,host:'192.168.0.2:28017'},{_id:1,host:'192.168.0.2:28018'},{_id:2,host:'192.168.0.6:28019'}]}
+   >rs.initiate(config)                                       ###mongodb复制集初始化,这里初始化了一个3个节点的复制集
+    {
+    	"ok" : 1,                                             ###mongodb复制集初始化成功会返回ok:1
+    	........
+    }
+   >rs.status()                                               ###查看复制集状态
+   ###从复制集状态中能看出哪个节点是主节点，哪些是副节点，主节点负责写操作
 ---------------------------------------------------------------------------------
