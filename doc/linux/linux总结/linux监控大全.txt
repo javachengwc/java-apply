@@ -231,6 +231,14 @@ ulimit选项
 -u <程序数目>：用户最多可开启的程序数目。
 -v <虚拟内存大小>：指定可使用的虚拟内存上限，单位为KB。
 
+直接在当前shell中设置限制，类似ulimit -n <value>，例如:
+    ulimit -f unlimited
+    ulimit -t unlimited
+    ulimit -v unlimited
+    ulimit -n 65536
+    ulimit -m unlimited
+    ulimit -u 65536
+永久生效，需要在/etc/security/limits.conf中进行配置
 linux系统限制配置
 /etc/security/limits.conf
 limits.conf的格式如下：

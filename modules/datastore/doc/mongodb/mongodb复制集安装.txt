@@ -2,12 +2,59 @@
 机器节点:192.168.0.2 192.168.0.3 192.168.0.6
 系统:centos7.4 64位
 mongodb版本:mongodb-linux-x86_64-rhel70-3.6.8.tgz
-
-##在各节点上操作
-1,添加mongod用户
+准备在各节点各安2个mongodb实例
+1,添加mongod用户(各节点都执行)
     useradd mongod
     echo 123456|passwd --stdin mongod
-2,安装mongodb
+2,安装mongodb(各节点都执行)
     wget https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel70-3.6.8.tgz
+    tar -zxvf mongodb-linux-x86_64-rhel70-3.6.8.tgz
+    cd mongodb-linux-x86_64-rhel70-3.6.8/bin
+    mkdir -p /usr/local/mongodb/bin
+    cp * /usr/local/mongodb/bin
+    chown -R mongod:mongod /usr/local/mongodb
+    vim /etc/profile                                                           # 设置环境变量path
+          PATH=/usr/local/mongodb/bin:$PATH
+    source /etc/profile                                                        # 环境变量设置生效
+    mongo --version                                                            # 查看mongo版本
+3,创建所需目录(共6个按进程命名的父目录,节点1父目录28017,28018,节点2父目录28019,28020,节点3父目录28021,28022)
+    mkdir -p /data/mongodb/28017/conf
+    mkdir -p /data/mongodb/28017/data
+    mkdir -p /data/mongodb/28017/log
+4,配置各实例环境(各实例都配置)
+    vim /data/mongodb/28017/conf/mongod.conf
+        systemLog:
+          destination: file
+          path: /data/mongodb/28017/log/mongodb.log
+          logAppend: true
+        storage:
+          journal:
+            enabled: true
+          dbPath: /data/mongodb/28017/data
+          directoryPerDB: true
+          #engine: wiredTiger
+          wiredTiger:
+            engineConfig:
+              #cacheSizeGB: 1
+              directoryForIndexes: true
+            collectionConfig:
+              blockCompressor: zlib
+            indexConfig:
+              prefixCompression: true
+        processManagement:
+          fork: true
+        net:
+          port: 28017
+        replication:
+          oplogSizeMB: 2048
+          replSetName: my_rep
+    chown -R mongod:mongod /data/mongodb
+5,启动各实例
+    su mongod        ###切换到mongod用户下启动实例
+    mongod -f /mongodb/28017/conf/mongod.conf                 ###启动实例
+    mongod --shutdown  -f /mongodb/28017/conf/mongod.conf     ###关闭实例
+    ###如果非正常关闭，有可能需要删除mongodb.lock，然后使用repair参数进行恢复mongod --repair,恢复后再进行重启
+6,配置复制集
+    mongo --port 28017
 
 ---------------------------------------------------------------------------------
