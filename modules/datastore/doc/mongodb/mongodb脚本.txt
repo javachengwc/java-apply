@@ -6,6 +6,8 @@ db.version()              ------查看mongodb版本
 db.serverStatus()         ------查看mongodb服务状态
 show collections;         ------显示当前数据库下所有集合
 
+use app                                            ######创建数据库
+db.createCollection('a')                           ######创建集合,也就是表
 db.data.insert({"a":"a","b":"b"})                  ######插入数据(data是集合名)
 db.data.find()                                     ######查询数据
 db.data.count()                                    ######集合计数
