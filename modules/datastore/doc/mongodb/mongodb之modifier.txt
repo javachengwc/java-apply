@@ -1,0 +1,20 @@
+----------------------------------mongodb之modifier--------------------------------------
+mongodb除了CRUD这些常规操作，还包含针对字段,数组的很多特定指令--修改器(modifier),一般就是依$符号开始的指令。
+mongodb中，有很多被称为Modifier的特殊标识符。通过这些Modifier，可以增加查询条件限定，对数据进行特定变更，实现像常规数据库的的特定条件更新与查询。
+更新操作中，可能用到的modifier如下:
+    $inc 即Increase，增(减)，只能用于数字增减操作
+    db.user.update({"uid" : "u111111"},{"$inc":{"age":1}})                  ###对age做加1
+    $set就是一个完全覆盖的指令
+    db.user.update({"uid" : "u111111"},{"$set":{"age":30}})                 ###age直接置为30
+    $unset是删除某个字段
+    db.user.update({"uid" : "u111111"},{"$unset":{"age":1}})                ###干掉age这个字段
+    $push追加元素,用于数组操作
+    db.user.update({"uid" : "u111111"},{ $push : {"comments" : {"name":"ttt"}}})            ###向记录中追加comments数组
+    $pull删除某一个元素，用于数组操作
+    db.user.update({"uid" : "u111111"},{ $pull : {"comments" : {"name":"ttt"}}})
+    $addToSet——add to set,可以避免添加重复数据
+    db.user.update({"uid" : "u111111"},{ $addToSet :{"email":"aa@163.com" } })              ###向email数组中增加一个不重复的元素
+    $each批量处理
+    db.user.update({"uid" : "u111111"},{ $addToSet :{"email":{"$each":["aa@163.com","bb@163.com","cc@163.com"] }}})
+                                                                                            ###向email数组中批量添加多个元素
+-----------------------------------------------------------------------------------------
