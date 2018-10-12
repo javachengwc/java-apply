@@ -1,0 +1,201 @@
+----------------------------------mongodb复制集维护---------------------------------
+Mongodb 3.0里，复制集成员最多50个，其中只有7个成员拥有投票权。这是为了减少心跳请求的网络流量和选举话费的时间。心跳每2秒发送一次。
+新增副本集成员
+在复制集的primary交互命令行中执行
+    >use admin
+    >rs.add("new_node:port") 或
+    rs.add({"_id":5,"host":"new_node:port","priority":1,"hidden":false})       ###增加副节点
+    >rs.addArb("new_node;port") 或
+    >rs.addArb({"_id":6,"host":"new_node:port"})或
+    >rs.add({'_id':5,"host":"new_node:port","arbiterOnly":true})               ###增加仲裁者节点
+注：如果复制集中 priority=1 （默认），调用rs.add("new_node:port") 或rs.remove("node:port") 命令会产生主从切换即选举操作。
+
+删除副本集成员
+在复制集的primary交互命令行中执行
+    >use admin
+    >rs.remove("del_node:port");
+
+修改成员节点属性
+在复制集的primary交互命令行中执行
+    >use admin
+    >conf=rs.conf()
+    >conf.members[1].priority=[0-1000]
+    >conf.members[1].hidden=true #隐藏节点的priority必须为0
+    >rs.reconfig(conf); 或
+    >rs.reconfig(conf,{"force":true})  ###强制重新配置
+成员的属性有下列选项
+    [, arbiterOnly : true]
+    [, buildIndexes : <bool>]
+    [, hidden : true]
+    [, priority: <priority>]
+    [, tags: {loc1 : desc1, loc2 : desc2, ..., locN : descN}]
+    [, slaveDelay : <n>]      #延迟的时间,秒为单位。
+    [, votes : <n>]
+如果成员要设置为 隐藏(hidden:true) 或延迟(slaveDelay:30) 则其优先级priority必须设置为0。
+优先级为0的成员不能发起选举操作,只要优先级>0即使该成员不具有投票资格，也可以成为主节点。
+如果某个节点的索引结构和其他节点上的索引结构不一致，则该节点就永远不会变为主节点。
+优先级用于表示一个成员渴望成为主节点的程度。优先级的取值范围是[0-100],默认为1。优先级为0的成员永远不能成为主节点。
+使用rs.status()和rs.config()能够看到隐藏成员，隐藏成员只对rs.isMaster()不可见。
+客户端连接到副本集时，会调用rs.isMaster()来查看可用成员。将隐藏成员设定为非隐藏成员，只需将配置中的hidden设定为false，或删除hidden选项。
+每个成员可以拥有多个标签tags {"dc":"tag1",dd:"tag2"}
+votes：0 代表阻止这些成员在选举中投主动票，但仍然可以投否决票。
+修改副本集成员配置时的限制：
+    1,不能修改_id；
+    2,不能将接收rs.reconfig命令的成员的优先级设置为0；
+    3,不能将仲裁者成员变为非仲裁者成员，反正亦然；
+    4,不能将buildIndexes:false改为true；
+
+查看副本集成员节点数据同步(延迟)情况
+    >db.printReplicationInfo();
+    >db.printSlaveReplicationInfo();     ###在secondary上执行
+    >rs.printReplicationInfo()
+    >rs.printSlaveReplicationInfo()
+    >use local
+    >db.slaves.find()
+在主节点上的local.slaves集合中保存着所有正从当前成员进行数据同步的成员，以及每个成员的数据新旧程度。
+在复制集的primary交互命令行中执行
+    >use local
+    >db.slaves.find()
+查看每个成员对应的"syncedTo":{"t":9999999,"i":2} 部分可知道数据的同步程度。
+"_id"字段的值是每个当前成员服务器标识符。可以在每个成员的local.me.find()查看本节点标识符。
+如果多节点有相同的_id标识符，则依次登录每个节点成员，删除local.me集合（local.me.dorp()）,
+重启mongodb，mongod会使用新的“_id”重新生成local.me集合。
+如果节点的地址改变但_id没有变,主机名变了,该情况会在本地数据库的日志中看到重复键异常(duplicate key exception)。
+解决方法是删除local.slaves集合即可，不需要重启mongodb。该集合中的数据是记录该成员被作为同步源的服务器的数据。
+该集合用于报告副本集状态。删除后不久如果有新的节点成员将该服务器节点作为复制源，该集合就会重新生成。
+
+主节点降为secondary
+在复制集的primary交互命令行中执行
+    >use admin
+    >rs.stepDown(60)        #单位为秒
+
+锁定节点在指定时间内不能成为主节点(阻止选举)
+    >rs.freeze(120)         #单位为秒
+    >rs.freeze(0)           #释放阻止
+
+强制节点进入维护模式（recovering）
+可以通过执行replSetMaintenanceMode命令强制一个成员进入维护模式。
+    >db.adminCommand({"replSetMaintenanceMode":true}
+    >db.adminCommand({"replSetMaintenanceMode":false})    ###将节点从维护模式转入正常模式
+自动检测成员落后主节点指定时间，则将其转入维护模式
+function maybeMaintenanceMode(){
+    var local=db.getSisterDB("local");
+    if (!local.isMaster().secondary)
+    {    return;   }
+    var last=local.oplog.rs.find().sort({"$natural":-1}).next();
+    var lasttime=last['ts']['t'];
+    if (lasttime<(new date()).getTime()-30)
+    {
+         ###落后30s时间,转入维护模式
+         db.adminCommand({"replSetMaintenanceMode":true});
+    }
+};
+
+阻止创建索引（不可再修改为可以创建索引）
+通常会在备份节点的延迟节点上设置阻止创建索引。因为该节点通常只是起到备份数据作用。
+设置选项 buildIndexs:false即可。该选项也要求成员的优先级为0。该选项是永久性的。
+如果要将不创建索引的成员修改为可以创建索引的成员，那么必须将这个成员从副本集中移除，再删除它上的所有数据，最后再将其重新添加到副本集中。
+并且允许其重新进行数据同步。
+
+指定复制源（复制链）查看复制图谱
+使用db.adminCommand({"replSetGetStatus":1})['syncingTo'] 可以查看复制图谱；
+在备份节点上执行 rs.status()['sysncingTo'] 同样可以查看复制图谱（同步源）；
+mongodb是根据ping时间来选择同步源的，会选择一个离自己最近而且数据比自己新的成员作为同步源。
+可以使用replSetSyncFrom 命令来指定复制源或使用辅助函数rs.sysncFrom()来修改复制源。
+db.adminCommand({"replSetSyncFrom":"server_name:port"});
+副本集默认情况下是允许复制链存在的，因为这样可以减少网络流量。但也有可能花费是时间更长，
+因为复制链越长，将数据同步到全部服务器的时间有可能就越长
+（比如每个备份节点都比前一个备份节点稍微旧点，这样就得从主节点复制数据）,解决方法是手动改变复制源。
+如果一个备份节点从另一个备份节点（而非主节点）复制数据时，就会形成复制链。
+复制链是可以被禁用的，可以强制要求所有备份节点都从主节点复制数据。
+禁用复制链：即禁止备份节点从另一个备份节点复制数据。
+    >cfg=rs.config()
+    >cfg.settings=config.settings ||{}
+    >cfg.settings.chainingAllowed=false
+    >rs.reconfig(config);
+
+修改oplog大小
+如果是主节点，则先将primary 降为 secondary。最后确保没有其他secondary 从该节点复制数据。
+    >rs.status()
+    >use admin
+    >db.adminCommand({shutdownServer:1});                ###关闭该mongod服务
+    再以单机方式重启该mongod（注释掉配置文件中的 replSetNam，修改端口号）
+    > use local
+    >var cursor=db.oplog.rs.find({"op":"i"});
+    >var lastinsert=cursor.sort({$natural:-1}).limit(1).next();
+    >db.templastop.save(lastinsert);                    ###将local.oplog.rs中的最后一条insert操作记录保存到临时集合中
+    >db.templastop.findOne()                            ###确保写入
+    >db.oplog.rs.drop();                                ###将oplog.rs删除
+    >db.createCollection("oplog.rs":{"capped":true,"size":10240});      ###创建一个新的oplog.rs集合
+    >var temp=db.templastop.findOne();
+    >db.oplog.rs.insert(temp);                          ###将临时集合中的最后一条insert操作记录写回新创建的oplog.rs
+    >db.oplog.rs.findOne()                              ###确保写回,否则该节点重新加入副本集后会删除该节点上所有数据，然后重新同步所有数据。
+    最后改回配置文件信息，重启该节点,此节点就会以副节点身份加入副本集。
+
+rollback回滚
+mongodb只支持小于300M的数据量回滚，如果大于300M的数据需要回滚或要回滚的操作在30分钟以上，只能是手动去回滚。
+会在mongodb日志中报以下错误：[replica set sync] replSet syncThread: 13410 replSet too much data to roll back
+尽量避免让rollback发生。方法是使用复制的写顾虑（Write Concern）规则来阻止回滚的发生。
+如果发生了回滚操作，则会在mongodb数据文件目录下产生一个以database.collection.timestamp.bson的文件。
+查看该文件的内容用bsondump工具来查看。
+
+读偏好设置（ReadPreferred）
+读取偏好是指选择从哪个复制集节点读取数据的方式。可以为驱动指定5中模式来设置读取偏好。
+readPreference=primary|primaryPreferred|secondary|secondaryPreferred|nearest
+setReadPreferred()命令设置读取偏好。
+    primary:只从主服务器上读取数据。如果用户显式指定使用标签读取偏好，该读取偏好将被阻塞。这也是默认的读取偏好。
+    primaryPreferred:读取将被重定向至主服务器；如果没有可用的主服务器，那么读取将被重定向至某个辅助服务器；
+    secondary：读取将被重定向至辅助服务器节点。如果没有辅助服务器节点，该选项将会产生异常；
+    secondaryPreferred：读取将被重定向至辅助服务器；如果没有辅助服务器，那么读取将被重定向至主服务器。该选项对应旧的“slaveOK”方法；
+    nearest:从最近的节点读取数据，不论它是主服务器还是辅助服务器。该选项通过网络延迟决定使用哪个节点服务器。
+
+写顾虑设置（Write Concern）
+写顾虑类似读取偏好，通过写顾虑选项可以指定在写操作被确认完成前，数据必须被安全提交到多少个节点。
+写顾虑的模式决定了写操作时如何持久化数据。参数“w”会强制 getLastError等待，一直到给定数据的成员都执行完了最后的写入操作。w的值是包含主节点的。
+写顾虑的5中模式：
+    w=0或不确定：单向写操作。写操作执行后，不需要确认提交状态。
+    w=1或确认：写操作必须等到主服务器的确认。这是默认行为。
+    w=n或复制集确认：主服务器必须确认该写操作。并且n-1个成员必须从主服务器复制该写入操作。该选项更强大，但是会引起延迟。
+    w=majority:写操作必须被主服务器确认，同时也需要集合中的大多数成员都确认该操作。而w=n可能会因为系统中断或复制延迟引起问题。
+    j=true日志：可以与w=写顾虑一起共同指定写入操作必须被写入到日志中，只有这样才算是确认完成。
+    wtimeout：避免getLastError一直等待下去，该值是命令的超时时间值，如果超过这个时间还没有返回，就会返回失败。单位毫秒。
+    如果返回失败，值在规定的时间内没有将写入操作复制到"w"个成员。
+修改默认写顾虑
+    >cfg = rs.conf()
+    >cfg.settings = {}
+    >cfg.settings.getLastErrorDefaults = { w: "majority" , wtimeout: 5000 }
+    >rs.reconfig(cfg)
+设置写等待
+db.runCommand({"getLastError":1,w:"majority"}) 或
+db.runCommand({"getLastError":1,"w":"majority","wtimeout":5000})
+即，表示写入操作被复制到了多数个节点上(majority 或 数字），这时的 w会强制getLastError等待，一直到给定数量的成员执行完了最后的写入操作。
+而wtimeout是指超过这个时间没有返回则返回失败提示（即无法在指定时间内将写入操作复制到w个成员中），
+getLastError并不代表写操作失败了，而是代表在指定给定wtimeout时间内没有将写入操作复制到指定的w个成员中。
+w是限制（控制）写入速度，只会阻塞这个连接上的操作，其他连接上的操作不受影响。
+
+mongodb3.0禁用大内存页面
+    echo never > /sys/kernel/mm/transparent_hugepage/enabled
+    echo never > /sys/kernel/mm/transparent_hugepage/defrag
+执行上面两命令后只是当前起作用。如果重启mongod服务后就失效。永久起效则写入到/etc/rc.local
+在/etc/rc.local中加入如下两行
+if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
+ echo never > /sys/kernel/mm/transparent_hugepage/enabled
+fi
+if test -f /sys/kernel/mm/transparent_hugepage/defrag; then
+ echo never > /sys/kernel/mm/transparent_hugepage/defrag
+fi
+如果是grub2的linux系统
+vim /etc/default/grub
+    ###在GRUB_CMDLINE_LINUX加入选项 transparent_hugepage=never
+    GRUB_CMDLINE_LINUX="rd.lvm.lv=fedora/swap rd.lvm.lv=fedora/root rhgb quiet transparent_hugepage=never"
+###重新生成grub配置文件
+grub2-mkconfig -o /boot/grub2/grub.cfg
+grub2-mkconfig -o /boot/efi/EFI/redhat/grub.cfg
+重启linux系统
+如果是grub的linux系统，把选项transparent_hugepage=never写入grub.conf文件就好了。
+cat /sys/kernel/mm/transparent_hugepage/enabled      ###查看hugepage状态
+cat /sys/kernel/mm/transparent_hugepage/defrag
+
+grep Huge /proc/meminfo          ### 查看大内存页面是否被禁用，禁用的话AnonHugePages:         0 kB
+Transparent HugePages是RHEL6的新特性。为了提升性能，Kernel会将程序缓存在内存中，每页内存以2M为单位。
+尽管THP的本意是为提升性能，但某些数据库厂商还是建议直接关闭THP(比如说Oracle、MongoDB等)，否则可能导致性能下降，内存锁，甚至系统重启等问题。

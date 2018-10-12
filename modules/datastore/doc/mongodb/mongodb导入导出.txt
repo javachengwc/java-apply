@@ -31,6 +31,13 @@ mongodump -h dbhost --port=27017 -utest -ptest -d dbname -o backupdir
     -o： 备份的数据存放位置
 ep:
     mongodump -h 127.0.0.1:27017 -d test -o /data/mongodump
+mongodump选项--oplog,这是replica set或者master/slave模式下专用,它的作用是在导出的同时生成一个oplog.bson文件，存放在开始进行dump到dump结束之间所产生的oplog
+在replica set中oplog是一个定容集合（capped collection），它的默认大小是磁盘空间的5%（可以通过--oplogSizeMB参数修改），位于local库的db.oplog.rs,
+记录的是整个mongod实例一段时间内数据库的所有变更（插入/更新/删除）操作。当空间用完时新记录自动覆盖最老的记录。
+其覆盖范围被称作oplog时间窗口。需要注意的是，因为oplog是一个定容集合，所以时间窗口能覆盖的范围会因为单位时间内的更新次数不同而变化。
+查看当前的oplog时间窗口预计值，可以使用以下命令：
+    rs.printReplicationInfo()
+oplog有一个非常重要的特性——幂等性（idempotent）。即对一个数据集合，使用oplog中记录的操作重放时，无论被重放多少次，其结果会是一样的。
 
 数据恢复
 mongorestore -h dbhost -d dbname --dir dbdirectory
@@ -41,5 +48,13 @@ mongorestore -h dbhost -d dbname --dir dbdirectory
     --drop： 恢复的时候，先删除当前数据，然后恢复备份的数据。
 ep:
     mongorestore -h 127.0.0.1:27017 -d test --dir /data/mongodump
+mongorestore的选项中跟oplog相关的选项有--oplogReplay,--oplogLimit，
+--oplogReplay可以重放oplog.bson中的操作内容
+--oplogLimit与--oplogReplay一起使用时，可以限制重放到的时间点。
+ep:
+    mongorestore -h 127.0.0.1:27017 --oplogReplay dump
+    mongorestore -h 127.0.0.1 --oplogReplay --oplogLimit "1333024507:1" dump
+这里的"1333024507:1" 是指在oplog.bson文件中(可通过bsondump查看)，某个操作的$timestamp部分，它代表的发生这个操作的时间，
+其中1333024507即是$timestamp中的"t"，1即是$timestamp中的"i"。这样配置后oplog将会重放到这个时间点以前。
 
 --------------------------------------------------------------------------------

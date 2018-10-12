@@ -3,6 +3,7 @@ MongoDB自带简洁但功能强大的JavaScript shell
 db.help()                 ------查看数据库级别的命令的帮助
 db.foo.help()             ------查看集合命令的帮助
 db.version()              ------查看mongodb版本
+db.serverStatus()         ------查看mongodb服务状态
 show collections;         ------显示当前数据库下所有集合
 
 db.data.insert({"a":"a","b":"b"})                  ######插入数据(data是集合名)
@@ -88,4 +89,5 @@ db.data.find().skip(20).limit(10)                  ######分页查询,相当于l
 db.data.find({"name":"t3"}).hint("m_1")            ######强制使用索引
 db.data.find({"name":"t3"}).explain()              ######explain执行计划
 
+bsondump --outFile collection.json collection.bson ######将bson数据转换成json数据
 --------------------------------------------------------------------------------

@@ -57,14 +57,48 @@ mongodb版本:mongodb-linux-x86_64-rhel70-3.6.8.tgz
     ###如果非正常关闭，有可能需要删除mongodb.lock，然后使用repair参数进行恢复mongod --repair,恢复后再进行重启
 6,配置复制集
     mongo --port 28017
-   >config = {_id:'my_rep',members:[{_id:0,host:'192.168.0.2:28017'},{_id:1,host:'192.168.0.2:28018'},{_id:2,host:'192.168.0.6:28019'}]}
-   >rs.initiate(config)                                       ###mongodb复制集初始化,这里初始化了一个3个节点的复制集
+    >config = {_id:'my_rep',members:[{_id:0,host:'192.168.0.2:28017'},{_id:1,host:'192.168.0.2:28018'},{_id:2,host:'192.168.0.3:28019'}]}
+    >rs.initiate(config)                                       ###mongodb复制集初始化,这里初始化了一个3个节点的复制集
     {
-    	"ok" : 1,                                             ###mongodb复制集初始化成功会返回ok:1
-    	........
+        "ok" : 1,                                             ###mongodb复制集初始化成功会返回ok:1
+        ........
     }
-   >rs.status()                                               ###查看复制集状态
-   >db.isMaster()                                             ###查看自己是否是主节点
-   >rs.addArb("192.168.0.6:28020")                            ###增加一个arbiter仲裁者节点
-   ###从复制集状态中能看出哪个节点是主节点，哪些是副节点，主节点负责写操作
+    >rs.status()                                               ###查看复制集状态
+    >rs.config()                                               ###查看集群配置
+    >db.isMaster()                                             ###查看自己是否是主节点
+    >rs.addArb("192.168.0.3:28020")                            ###增加一个arbiter仲裁者节点
+    >rs.add("192.168.0.6:28021")                               ###添加复制集成员节点
+    >rs.remove("192.168.0.6:28022")                            ###删除复制集成员节点
+    ###从复制集状态中能看出哪个节点是主节点，哪些是副节点，主节点负责写操作
+
+mongodb复制集在交互命令行中的一些操作:
+    >rs.status()                                               ###查看复制集状态
+    >rs.config()                                               ###查看集群配置
+    >rs.reconfig(config)                                       ###重新初始化
+    >rs.reconfig(conf,{"force":true})                          ###强制重新配置
+    >db.isMaster()                                             ###查看自己是否是主节点
+    >rs.addArb("192.168.0.3:28020")                            ###增加一个arbiter仲裁者节点
+    >rs.add({'_id':5,"host":"new_node:port","arbiterOnly":true})
+    >rs.add("192.168.0.6:28021")                               ###添加复制集成员节点
+    >rs.add("new_node:port") 或 rs.add({"_id":6,"host":"new_node:port","priority":1,"hidden":false})
+    >rs.remove("192.168.0.6:28022")                            ###删除复制集成员节点，需在主节点执行
+    >rs.slaveOk(true)                                          ###副节点可读
+    >rs.stepDown(60)                                           ###主节点降级为secondary,单位为秒
+    >rs.freeze(120)                                            ###锁定指定节点在指定时间内不能成为主节点（阻止选举）,单位为秒
+    >rs.freeze(0)                                              ###释放阻止
+    >cfg=rs.config();
+    >cfg.members[1].slaveDelay=300
+    >cfg.members[1].priority=[0-1000]
+    >cfg.members[1].hidden=true #priority必须为0
+    >cfg.members[1].tags={"dc":"tag1"}
+    >rs.reconfig(cfg)                                          ###如果需要修改配置,需将rs.config()赋予一个变量，修改变量，
+                                                               ###再rs.reconfig(变量)的方式修改配置。
+    >db.printReplicationInfo();                                ###查看副本集成员数据同步(延迟)情况
+    >db.printSlaveReplicationInfo();                           ###最好在secondary上执行
+    >rs.printReplicationInfo()
+    >rs.printSlaveReplicationInfo()
+    >use local>db.slaves.find()
+    ###在主节点上跟踪延迟,local.slaves集合保存着所有正从当前成员进行数据同步的成员，以及每个成员的数据新旧程度。
+       登录主节点执行>use local ,>db.slaves.find()查看成员对应的"syncedTo":{"t":9999999,"i":32} 部分，可知道数据的同步程度。
+    >db.serverStatus().metrics.repl                            ###查看producer的buffer和apply线程的统计信息
 ---------------------------------------------------------------------------------

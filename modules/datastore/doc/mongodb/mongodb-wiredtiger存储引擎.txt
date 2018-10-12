@@ -1,0 +1,13 @@
+WiredTiger（简称WT）是一个优秀的单机数据库存储引擎，它拥有诸多的特性，支持BTree索引，也支持LSM Tree索引，
+支持行存储和列存储，实现ACID级别事务、支持大到4G的记录等。
+mongodb-3.2已经WiredTiger设置为了默认的存储引擎,按照Mongodb默认的配置，WiredTiger的写操作会先写入Cache，并持久化到WAL(Write ahead log)，
+journal存储Write ahead log,每60s或log文件达到2GB时会做一次Checkpoint，将当前的数据持久化，产生一个新的快照。
+Wiredtiger连接初始化时，首先将数据恢复至最新的快照状态，然后根据WAL恢复数据，以保证存储可靠性。
+
+WT充分利用CPU并行计算的内存模型的无锁并行框架，使得WT引擎在多核CPU上的表现优于其他存储引擎。
+针对磁盘存储特性，WT实现了一套基于BLOCK/Extent的友好的磁盘访问算法，使得WT在数据压缩和磁盘I/O访问上优势明显。
+实现了基于snapshot技术的ACID事务，snapshot技术大大简化了WT的事务模型，摒弃了传统的事务锁隔离又同时能保证事务的ACID。
+WT根据现代内存容量特性实现了一种基于Hazard Pointer 的LRU cache模型，充分利用了内存容量的同时又能拥有很高的事务读写并发。
+虽然WT实现了多操作事务模型，然而mongodb并没有提供事务，这或许和mongodb本身的架构和产品定位有关系。
+但是mongodb利用了WT的短事务的隔离性实现了文档级行锁。
+---------------------
