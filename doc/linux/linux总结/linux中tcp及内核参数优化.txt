@@ -1,0 +1,138 @@
+linux中tcp/ip及内核参数优化有多种方式，参数配置得当可以大大提高系统的性能
+vim sysctl.conf                             ###可使用sysctl -p生效
+
+    net.core.optmem_max = 10000000
+    ###表示每个套接字所允许的最大缓冲区的大小
+
+    net.core.rmem_default = 8388608
+    ###表示接收套接字缓冲区大小的默认值，单位字节。
+
+    net.core.rmem_max = 8388608
+    ###表示接收套接字缓冲区大小的最大值，单位字节。
+
+    net.core.wmem_default = 8388608
+    ###默认的发送窗口大小
+
+    net.core.wmem_max = 8388608
+    ###发送窗口的最大大小
+
+    net.core.somaxconn = 100000
+    ###linux kernel参数，表示socket监听的backlog(监听队列)上限
+
+    net.core.netdev_max_backlog = 50000
+    ###表示网络设备接收数据包的速率比内核处理这些包的速率快时，允许送到队列的数据包的最大数目。
+
+    net.ipv4.tcp_window_scaling = 1
+    ###启用tcp_window_scaling   0--关闭  1--启用，要支持超过 64KB 的窗口，必须启用该值。
+
+    net.ipv4.conf.all.rp_filter = 1
+    net.ipv4.conf.default.rp_filter = 1
+    ###反向路径过滤，系统收到一个ip包后，会反查该ip包的ip是否与它们到达的网络接口匹配，若不匹配则丢弃。是防ip包欺骗策略
+
+    net.ipv4.conf.all.accept_redirects = 0
+    net.ipv4.conf.default.accept_redirects = 0
+    net.ipv4.conf.all.secure_redirects = 0
+    net.ipv4.conf.default.secure_redirects = 0
+    ###是否重定向。
+    如果主机所在的网络有多个路由器，其中一个设为缺省网关，但该网关在收到ip包时，发现该ip包必须经过另外一个路由器，
+    于是此网关就給主机发一个“重定向”的icmp包，告诉主机把包转发到另外一个路由器。
+    0--表示忽略，1--表示主机接受这样的重定向包，linux默认是1，可以设位0以消除隐患
+
+    net.ipv4.ip_forward = 0
+    net.ipv4.conf.all.send_redirects = 0
+    net.ipv4.conf.default.send_redirects = 0
+    ###禁止数据包转发，不做路由器功能。
+
+    kernel.exec-shield = 1
+    kernel.randomize_va_space = 1
+    ###开启execshield，execshield 主要用于随机化堆栈地址，避免被exploit 程序修改恶意地址，而导致执行攻击程序。
+
+    net.ipv4.tcp_mem
+    ###确定 TCP 栈应该如何反映内存使用；每个值的单位都是内存页（通常是 4KB）。
+    ###第1个值是内存使用的下限。
+    ###第2个值是内存压力模式开始对缓冲区使用应用压力的上限。
+    ###第3个值是内存上限。
+
+    net.ipv4.tcp_rmem = 4096 87380 8388608
+    net.ipv4.tcp_wmem = 4096 87380 8388608
+    ###为自动调优定义每个 socket 使用的内存。
+    ###第1个值是为 socket 的发送缓冲区或读缓冲区分配的最少字节数。
+    ###第2个值是默认值（该值会被 wmem_default 覆盖），缓冲区在系统负载不重的情况下可以增长到这个值。
+    ###第3个值是发送缓冲区或读缓冲区的最大字节数（该值会被 wmem_max 或rmem_max覆盖）。
+
+    net.ipv4.icmp_echo_ignore_broadcasts = 1
+    ###忽略icmp ping广播包，应开启，避免放大攻击
+
+    net.ipv4.icmp_ignore_bogus_error_responses = 1
+    ###开启恶意icmp错误消息保护
+
+    net.ipv4.tcp_syncookies = 1
+    ###开启SYN洪水攻击保护，表示开启SYN Cookies。当出现SYN等待队列溢出时，启用cookies来处理，可防范少量SYN攻击，默认为0，表示关闭
+
+    net.ipv4.conf.all.log_martians = 1
+    net.ipv4.conf.default.log_martians = 1
+    ###开启并记录欺骗，源路由和重定向包
+
+    net.ipv4.conf.all.accept_source_route = 0
+    net.ipv4.conf.default.accept_source_route = 0
+    ###是否接受含有源路由信息的ip包。参数值为布尔值，1表示接受，0表示不接受。
+    ###在充当网关的linux主机上缺省值为1，在一般的linux主机上缺省值为0。
+
+    net.ipv4.tcp_congestion_control = bic
+    ###默认推荐设置是 htcp
+
+    net.ipv4.tcp_ecn = 0
+    ###把TCP的直接拥塞通告(tcp_ecn)关掉
+
+    net.ipv4.tcp_max_tw_buckets = 10000
+    ###表示系统同时保持TIME_WAIT套接字的最大数量
+
+    net.ipv4.tcp_max_syn_backlog = 8192
+    ###表示SYN队列长度，默认1024，改成8192，可以容纳更多等待连接的网络连接数。
+
+    net.ipv4.tcp_timestamps = 1
+    ###开启TCP时间戳,以一种比重发超时更精确的方法（参阅RFC1323）来启用对 RTT 的计算；为了实现更好的性能应该启用这个选项。
+
+    net.ipv4.tcp_tw_reuse = 1
+    ###表示开启重用。允许将TIME-WAIT sockets重新用于新的TCP连接，默认为0，表示关闭；
+
+    net.ipv4.tcp_tw_recycle = 1
+    ###表示开启TCP连接中TIME-WAIT sockets的快速回收，默认为0，表示关闭。
+
+    net.ipv4.tcp_fin_timeout = 10
+    ###表示如果套接字由本端要求关闭，这个参数决定了它保持在FIN-WAIT-2状态的时间。
+
+    net.ipv4.tcp_keepalive_time = 1800
+    ###表示当keepalive起用的时候，TCP发送keepalive消息的频度。缺省是2小时，改为30分钟。
+
+    net.ipv4.tcp_keepalive_probes = 3
+    ###如果对方不予应答，探测包的发送次数
+
+    net.ipv4.tcp_keepalive_intvl = 15
+    ###keepalive探测包的发送间隔
+
+    net.ipv4.ip_local_port_range = 1024 65000
+    ###表示用于向外连接的端口范围,可增加系统IP端口限制,缺省情况下很小:32768到61000
+
+    net.ipv4.netfilter.ip_conntrack_max=204800
+    ###设置系统对最大跟踪的TCP连接数的限制
+
+    net.ipv4.tcp_slow_start_after_idle = 0
+    ###关闭tcp的连接传输的慢启动，即先休止一段时间，再初始化拥塞窗口。
+
+    net.ipv4.route.gc_timeout = 100
+    ###路由缓存刷新频率，当一个路由失败后多长时间跳到另一个路由，默认是300。
+
+    net.ipv4.tcp_syn_retries = 1
+    ###表示在内核放弃建立连接之前发送SYN包的数量。
+
+    net.inet.udp.checksum=1
+    ###表示防止不正确的udp包的攻击
+
+    fs.file-max = 65535
+    ###增加系统文件描述符限制
+
+    kernel.pid_max = 65536
+    ###允许更多的PIDs (减少滚动翻转问题); may break some programs 32768
+
+sysctl -p                                   ###使sysctl.conf生效
