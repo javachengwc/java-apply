@@ -4,6 +4,8 @@ db.help()                 ------查看数据库级别的命令的帮助
 db.foo.help()             ------查看集合命令的帮助
 db.version()              ------查看mongodb版本
 db.serverStatus()         ------查看mongodb服务状态
+db.stats()                ------查看db的状态，包括存储大小storageSize，数据大小dataSize,索引大小indexSize
+                                storageSize = dataSize+size(删除的文档)（文档删除后，storageSize并不会变小）。
 show collections;         ------显示当前数据库下所有集合
 
 use app                                            ######创建数据库
