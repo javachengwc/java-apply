@@ -1,6 +1,7 @@
 package com.spring.pseudocode.context.context.support;
 
 import com.spring.pseudocode.beans.BeansException;
+import com.spring.pseudocode.beans.factory.AutowireCapableBeanFactory;
 import com.spring.pseudocode.beans.factory.BeanFactory;
 import com.spring.pseudocode.beans.factory.config.BeanPostProcessor;
 import com.spring.pseudocode.context.context.ApplicationContext;
@@ -16,6 +17,7 @@ import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.MergedBeanDefinitionPostProcessor;
 import org.springframework.context.*;
 import org.springframework.context.event.*;
@@ -28,6 +30,7 @@ import org.springframework.core.ResolvableType;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.util.ReflectionUtils;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -404,8 +407,116 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
     protected abstract void refreshBeanFactory() throws BeansException, IllegalStateException;
 
-    protected abstract void closeBeanFactory();
+    protected void closeBeanFactory() {
+
+    }
 
     public abstract ConfigurableListableBeanFactory getBeanFactory() throws IllegalStateException;
+
+
+
+    public void start()
+    {
+//        getLifecycleProcessor().start();
+//        publishEvent(new ContextStartedEvent(this));
+    }
+
+    public void stop()
+    {
+//        getLifecycleProcessor().stop();
+//        publishEvent(new ContextStoppedEvent(this));
+    }
+
+    public boolean isRunning()
+    {
+        return (this.lifecycleProcessor != null) && (this.lifecycleProcessor.isRunning());
+    }
+
+    /////////////////////////////////////
+    public void setParent(ApplicationContext paramApplicationContext) {
+
+    }
+
+    public ConfigurableEnvironment getEnvironment() {
+        return null;
+    }
+
+    public void setEnvironment(ConfigurableEnvironment paramConfigurableEnvironment) {
+
+    }
+
+    public void addApplicationListener(ApplicationListener<?> paramApplicationListener) {
+
+    }
+
+    public boolean isActive() {
+        return false;
+    }
+
+    public String getId() {
+        return null;
+    }
+
+    public String getDisplayName() {
+        return null;
+    }
+
+    public long getStartupDate() {
+        return 0;
+    }
+
+    public ApplicationContext getParent() {
+        return null;
+    }
+
+    public AutowireCapableBeanFactory getAutowireCapableBeanFactory() throws IllegalStateException {
+        return null;
+    }
+
+    public Object getBean(String paramString) {
+        return null;
+    }
+
+    public <T> T getBean(String paramString, Class<T> paramClass) {
+        return null;
+    }
+
+    public <T> T getBean(Class<T> paramClass) {
+        return null;
+    }
+
+    public Object getBean(String paramString, Object[] paramArrayOfObject) {
+        return null;
+    }
+
+    public <T> T getBean(Class<T> paramClass, Object[] paramArrayOfObject) {
+        return null;
+    }
+
+    public boolean containsBean(String paramString) {
+        return false;
+    }
+
+    public boolean isSingleton(String paramString) {
+        return false;
+    }
+
+    public boolean isPrototype(String paramString) {
+        return false;
+    }
+
+    public boolean isTypeMatch(String paramString, Class<?> paramClass) {
+        return false;
+    }
+
+    public Class<?> getType(String paramString) {
+        return null;
+    }
+
+    public String[] getAliases(String paramString) {
+        return new String[0];
+    }
+
+
 
 }
