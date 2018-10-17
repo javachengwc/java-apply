@@ -4,10 +4,14 @@ package com.spring.pseudocode.webmvc;
 import com.spring.pseudocode.context.context.ApplicationContext;
 import com.spring.pseudocode.context.context.ApplicationContextAware;
 import com.spring.pseudocode.web.web.context.WebApplicationContext;
+import com.spring.pseudocode.web.web.context.request.RequestAttributes;
+import com.spring.pseudocode.web.web.context.request.RequestContextHolder;
+import com.spring.pseudocode.web.web.context.request.ServletRequestAttributes;
 import com.spring.pseudocode.web.web.context.support.XmlWebApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.i18n.LocaleContext;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 
@@ -19,6 +23,8 @@ import java.io.IOException;
 public abstract class FrameworkServlet extends HttpServletBean implements ApplicationContextAware {
 
     private static Logger logger= LoggerFactory.getLogger(FrameworkServlet.class);
+
+    private boolean threadContextInheritable = false;
 
     private String contextAttribute;
     private Class<?> contextClass =  XmlWebApplicationContext.class;
@@ -161,6 +167,19 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
     {
         long startTime = System.currentTimeMillis();
         Throwable failureCause = null;
+//
+//        LocaleContext previousLocaleContext = LocaleContextHolder.getLocaleContext();
+//        LocaleContext localeContext = buildLocaleContext(request);
+        LocaleContext localeContext = null;
+
+        RequestAttributes previousAttributes = RequestContextHolder.getRequestAttributes();
+        ServletRequestAttributes requestAttributes = buildRequestAttributes(request, response, previousAttributes);
+//
+//        WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
+//        asyncManager.registerCallableInterceptor(FrameworkServlet.class.getName(), new RequestBindingInterceptor(null));
+
+        //绑定request到当前线程
+        initContextHolders(request, localeContext, requestAttributes);
 
         try
         {
@@ -209,5 +228,27 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
         ((ConfigurableApplicationContext)this.webApplicationContext).close();
     }
 
+    protected ServletRequestAttributes buildRequestAttributes(HttpServletRequest request,
+              HttpServletResponse response, RequestAttributes previousAttributes)
+    {
+        if ((previousAttributes == null) || ((previousAttributes instanceof ServletRequestAttributes))) {
+            return new ServletRequestAttributes(request, response);
+        }
+
+        return null;
+    }
+
+    private void initContextHolders(HttpServletRequest request, LocaleContext localeContext, RequestAttributes requestAttributes)
+    {
+//        if (localeContext != null) {
+//            LocaleContextHolder.setLocaleContext(localeContext, this.threadContextInheritable);
+//        }
+        if (requestAttributes != null) {
+            RequestContextHolder.setRequestAttributes(requestAttributes, this.threadContextInheritable);
+        }
+        if (this.logger.isTraceEnabled()) {
+            this.logger.trace("Bound request context to thread: " + request);
+        }
+    }
 
 }

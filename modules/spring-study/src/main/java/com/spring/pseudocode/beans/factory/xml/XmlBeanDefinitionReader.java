@@ -14,8 +14,12 @@ import org.xml.sax.InputSource;
 import java.io.IOException;
 import java.io.InputStream;
 
+//读取spring xml配置
 public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader
 {
+
+    private DocumentLoader documentLoader = new DefaultDocumentLoader();
+
     public XmlBeanDefinitionReader(BeanDefinitionRegistry registry)
     {
         super(registry);
@@ -35,8 +39,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader
         return loadBeanDefinitions(new EncodedResource(resource));
     }
 
-    public int loadBeanDefinitions(EncodedResource encodedResource)
-            throws BeanDefinitionStoreException
+    public int loadBeanDefinitions(EncodedResource encodedResource) throws BeanDefinitionStoreException
     {
         //....
         try

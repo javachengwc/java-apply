@@ -4,6 +4,7 @@ import com.spring.pseudocode.beans.factory.BeanDefinitionStoreException;
 import com.spring.pseudocode.core.core.env.Environment;
 import com.spring.pseudocode.core.core.io.Resource;
 import com.spring.pseudocode.core.core.io.ResourceLoader;
+import com.spring.pseudocode.core.core.io.support.PathMatchingResourcePatternResolver;
 import com.spring.pseudocode.core.core.io.support.ResourcePatternResolver;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -15,6 +16,8 @@ public abstract class AbstractBeanDefinitionReader implements  BeanDefinitionRea
 {
     protected final Log logger = LogFactory.getLog(getClass());
 
+    private final BeanDefinitionRegistry registry;
+
     private ResourceLoader resourceLoader;
 
     private ClassLoader beanClassLoader;
@@ -23,7 +26,22 @@ public abstract class AbstractBeanDefinitionReader implements  BeanDefinitionRea
 
     protected AbstractBeanDefinitionReader(BeanDefinitionRegistry registry)
     {
-        //...
+        this.registry = registry;
+
+        if (this.registry instanceof ResourceLoader) {
+            this.resourceLoader = (ResourceLoader) this.registry;
+        }
+        else {
+            //初始化xml资源读取器
+            this.resourceLoader = new PathMatchingResourcePatternResolver();
+        }
+//
+//        if (this.registry instanceof EnvironmentCapable) {
+//            this.environment = ((EnvironmentCapable) this.registry).getEnvironment();
+//        }
+//        else {
+//            this.environment = new StandardEnvironment();
+//        }
     }
 
     public void setResourceLoader(ResourceLoader resourceLoader)
