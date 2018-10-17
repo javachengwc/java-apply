@@ -51,4 +51,8 @@ public class XmlWebApplicationContext extends AbstractRefreshableWebApplicationC
         }
         return new String[] { "/WEB-INF/applicationContext.xml" };
     }
+
+    public ConfigurableListableBeanFactory getBeanFactory() throws IllegalStateException {
+        return null;
+    }
 }
