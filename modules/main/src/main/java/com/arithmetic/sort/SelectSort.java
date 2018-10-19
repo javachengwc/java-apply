@@ -40,4 +40,23 @@ public class SelectSort {
         }
     }
 
+    public static void sort(Integer [] data) {
+        if(data==null ||data.length<=1) {
+            return;
+        }
+        int len = data.length;
+        for(int i=0;i<len;i++) {
+            int min = data[i];
+            int minPos =i;
+            for(int j=i+1;j<len;j++) {
+                if (data[j] < min) {
+                    min = data[j];
+                    minPos = j;
+                }
+            }
+            int tmp = data[i];
+            data[i]=min;
+            data[minPos]=tmp;
+        }
+    }
 }
