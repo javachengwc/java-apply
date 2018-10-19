@@ -17,70 +17,57 @@ public class ZheBanSearch2 {
 		return lCount;
 	}
 
-	/**
-	 * 执行递归二分查找，返回第一次出现该值的位置
-	 * @param sortedData 已排序的数组
-	 * @param start 开始位置
-	 * @param end   结束位置
-	 * @param findValue 需要找的值
-	 * @return 值在数组中的位置，从0开始。找不到返回-1
-	 */
-	public int searchRecursive(int[] sortedData, int start, int end,
-			int findValue) {
-		rCount++;
-		if (start <= end) {
-			// 中间位置
-			int middle = (start + end) >> 1; // 相当于(start+end)/2
-			// 中值
-			int middleValue = sortedData[middle];
-
-			if (findValue == middleValue) {
-				// 等于中值直接返回
-				return middle;
-			} else if (findValue < middleValue) {
-				// 小于中值时在中值前面找
-				return searchRecursive(sortedData, start, middle - 1, findValue);
-			} else {
-				// 大于中值在中值后面找
-				return searchRecursive(sortedData, middle + 1, end, findValue);
-			}
-		} else {
-			// 找不到
-			return -1;
+	public static Integer find(int [] data,int target) {
+		if(data==null || data.length<=0) {
+			return null;
 		}
+		int len = data.length;
+		int begin = 0;
+		int end = len-1;
+		while(begin<=end) {
+			int mid = begin+(end-begin)/2;
+			System.out.println("mid= "+mid);
+			if(target==data[mid]) {
+				return mid;
+			}
+			if(target<data[mid]) {
+				end = mid-1;
+			}
+			if(target>data[mid]) {
+				begin =mid+1;
+			}
+			System.out.println(begin+" "+end);
+		}
+		return null;
 	}
 
-	/**
-	 * 循环二分查找，返回第一次出现该值的位置
-	 * @param sortedData 已排序的数组
-	 * @param findValue  需要找的值
-	 * @return 值在数组中的位置，从0开始。找不到返回-1
-	 */
-	public int searchLoop(int[] sortedData, int findValue) {
-		int start = 0;
-		int end = sortedData.length - 1;
-
-		while (start <= end) {
-			lCount++;
-			// 中间位置
-			int middle = (start + end) >> 1; // 相当于(start+end)/2
-			// 中值
-			int middleValue = sortedData[middle];
-
-			if (findValue == middleValue) {
-				// 等于中值直接返回
-				return middle;
-			} else if (findValue < middleValue) {
-				// 小于中值时在中值前面找
-				end = middle - 1;
-			} else {
-				// 大于中值在中值后面找
-				start = middle + 1;
-			}
+	public static Integer find2(int [] data,int target) {
+		if(data==null || data.length<=0) {
+			return null;
 		}
-		// 找不到
-		return -1;
+		return _innerFind(data,0,data.length-1,target);
 	}
+
+	public static Integer _innerFind(int [] data,int begin ,int end ,int target) {
+		int mid = begin+(end-begin)/2;
+		System.out.println(begin+" "+end+" "+mid);
+		if(target==data[mid]) {
+			return mid;
+		}
+		if(mid<=begin || mid>=end) {
+			return null;
+		}
+		if(target<data[mid]) {
+			end = mid-1;
+			return _innerFind(data,begin,end,target);
+		}
+		if(target>data[mid]) {
+			begin =mid+1;
+			return _innerFind(data,begin,end,target);
+		}
+		return null;
+	}
+
 	
 	public static void main(String args [])
 	{
@@ -90,10 +77,10 @@ public class ZheBanSearch2 {
         int findValue=9;  
         int length=sortedData.length;  
           
-        int pos=bs.searchRecursive(sortedData, 0, length-1, findValue);  
-        System.out.println("Recursice:"+findValue+" found in pos "+pos+";count:"+bs.getrCount());  
-        int pos2=bs.searchLoop(sortedData, findValue);  
-          
+        int pos=bs.find2(sortedData, findValue);
+        System.out.println("Recursice:"+findValue+" found in pos "+pos+";count:"+bs.getrCount());
+
+        int pos2=bs.find(sortedData, findValue);
         System.out.println("Loop:"+findValue+" found in pos "+pos2+";count:"+bs.getlCount());
 	}
 
