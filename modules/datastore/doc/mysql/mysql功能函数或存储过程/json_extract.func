@@ -3,7 +3,7 @@
 create function json_extract(
     json_text varchar(4096),#json数组字符串
     in_index int, #json对象序号,从1开始
-    node_name varchar(128)#节点明
+    node_name varchar(128)#节点名
 ) returns varchar(512) charset utf8
 begin
     declare vs_return varchar(4096);
