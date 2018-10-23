@@ -16,4 +16,48 @@ vim db-data-config.xml
         </document>
     </dataConfig>
 /data/solrhome/{collect}/conf/managed-schema文件是solr {collect}的field schema配置文件
+
+特别注意:如果查询语句中，某个查询字段用到了substring,left,right等这些字符串函数处理，一定要将最终的结果值
+进行cast( xxx as char)转换，才能在solr建索引中，正常的获取到结果值。
+
+一个比较完成的db-data-config.xml例子如下:
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataConfig>
+  <dataSource driver="" url="jdbc:mysql://localhost/db" user="root" password="root" batchSize="100"/>
+  <document>
+    <entity
+      name="book"
+      pk="bookId"
+      query="select id as bookId,title,create_time as createTime,statu,content,type_id as typeId from book"
+      deltaQuery="select id as bookId from book where create_time > '${dataimporter.last_index_time}'"
+      deletedPkQuery="select id as bookId  from book where is_delete=1"
+      deltaImportQuery="select id as bookId,title,create_time as createTime,statu,content,type_id as typeId
+                        from book where id='${dataimporter.delta.bookId}'"
+      transformer="ClobTransformer,DateFormatTransformer" >
+      <field column="bookId" name="bookId" />
+      <field column="title" name="title" />
+      <field column="createTime" name="createTime" dateTimeFormat="yyyy-MM-dd" />
+      <field column="statu" name="statu" />
+      <field column="content" name="content" />
+      <field column="typeId" name="typeId" />
+      <entity name="bookType" query="select id as typeId,nams as typeName from book_type where id=${book.typeId}">
+        <field column="typeName" name="typeName" />
+      </entity>
+    </entity>
+  </document>
+</dataConfig>
+
+<!--query:全量查询-->
+<!--deltaQuery:增量或修改查询-->
+<!--deletedPkQuery:查询出需要删除的数据记录主键Id-->
+<!--deltaImportQuery:此查询是获取以上两步的Id，然后获取相关数据-->
+<!--transformer:格式转化-->
+
+全量索引:http://ip:port/webapp_name/core_name/dataimport?command=full-import&clean=false&commit=true
+增量索引:http://ip:port/webapp_name/core_name/dataimport?command=delta-import&clean=false&commit=true
+full-import : "全量导入"操作,通过 http://:/solr/dataimport?command=full-import 完成
+delta-import: "增量导入"操作,通过 http://:/solr/dataimport?command=delta-import 完成
+status :      查看命令执行的状态，访问http://:/solr/dataimport?command=status获取
+reload-config: 如果data-config.xml改变，不重启solr下重新加载配置时，访问http://:/solr/dataimport?command=reload-config
+
 ------------------------------------------------------------------------------

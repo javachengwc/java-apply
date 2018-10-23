@@ -6,7 +6,8 @@
 --二进制文件的查看
 mysql> show binlog events in 'mysql-bin.000002'
 mysqlbinlog mysql_bin.000001
-mysqlbinlog D:\mysqlquery\mysql-bin.000005 > D:\log.txt
+mysqlbinlog D:\mysqlquery\mysql-bin.000005 > D:\log.txt  报错的话，可用
+mysqlbinlog --no-defaults D:\mysqlquery\mysql-bin.000005 > D:\log.txt 试一下
 
 --根据二进制文件恢复误删除数据
 --根据操作点恢复
