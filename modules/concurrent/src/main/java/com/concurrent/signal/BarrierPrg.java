@@ -31,7 +31,7 @@ class Performace
 
         barrier = new CyclicBarrier(2,new Runnable() {
 
-            @Override
+            //@Override
             public void run() {
                 barrierDo();
             }
