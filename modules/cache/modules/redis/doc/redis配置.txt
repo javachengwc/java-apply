@@ -86,7 +86,7 @@ allkeys-lru       在主键空间中，优先移除最近未使用的key。
 volatile-lru      在设置了过期时间的键空间中，优先移除最近未使用的key。
 allkeys-random    在主键空间中，随机移除某个key。
 volatile-random   在设置了过期时间的键空间中，随机移除某个key。
-volatile-tt       在设置了过期时间的键空间中，具有更早过期时间的key优先移除。
+volatile-ttl      在设置了过期时间的键空间中，具有更早过期时间的key优先移除。
 
 24）appendonly no|yes
 是否开启AOF持久化
