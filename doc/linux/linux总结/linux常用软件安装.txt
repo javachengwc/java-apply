@@ -397,6 +397,17 @@ vi /etc/ld.so.conf
 添加新的一行内容/usr/local/lib
 /sbin/ldconfig
 /sbin/ldconfig -v
+
+-------------------------go
+wget https://dl.google.com/go/go1.11.linux-amd64.tar.gz     ---下载相应版本压缩包
+tar -xzvf go1.11.linux-amd64.tar.gz
+mv go /usr/local/go
+vi /etc/profile                                             ---环境变量配置
+    GO_HOME=/usr/local/go
+    PATH=$GO_HOME/bin:$PATH
+    export GO_HOME PATH
+source /etc/profile                                         ---生效及测试
+go version
 ---------------------------------------
 #安装过程中找不到相应库解决
 vi /etc/ld.so.conf  #添加相应的库路径在里面
