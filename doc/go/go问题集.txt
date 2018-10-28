@@ -1,0 +1,2 @@
+用vscode编译运行程序，报错Failed to continue: "Cannot find Delve debugger. Ensure it is in your "GOPATH/bin" or "PATH"
+    原因是未安装delve编译器引起的。在项目的根目录下，通过命令运行：go get github.com/derekparker/delve/cmd/dlv，安装delve即可进行调试。
