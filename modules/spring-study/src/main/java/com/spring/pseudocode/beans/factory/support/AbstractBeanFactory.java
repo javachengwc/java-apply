@@ -124,6 +124,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
                             throw new BeanCreationException(mbd.getResourceDescription(), beanName,
                                     "Circular depends-on relationship between '" + beanName + "' and '" + dep + "'");
                         }
+                        //先实例化依赖的bean
                         registerDependentBean(dep, beanName);
                         getBean(dep);
                     }
@@ -148,14 +149,17 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
                 }
                 //bean是原型
                 else if (mbd.isPrototype()) {
+
                     // It's a prototype -> create a new instance.
                     Object prototypeInstance = null;
                     try {
+                        //实例化bean的前置准备（默认实现中，是把当前beanName加入到prototypesCurrentlyInCreation集合中，用于检查循环依赖的问题）
                         //beforePrototypeCreation(beanName);
                         //初始化bean
                         prototypeInstance = createBean(beanName, mbd, args);
                     }
                     finally {
+                        //实例化的后置操作（默认实现中，是把当前beanName从prototypesCurrentlyInCreation集合中删除）
                         //afterPrototypeCreation(beanName);
                     }
                     bean = getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);

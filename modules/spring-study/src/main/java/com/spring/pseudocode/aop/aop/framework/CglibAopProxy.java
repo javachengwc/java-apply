@@ -9,6 +9,7 @@ import org.springframework.util.ClassUtils;
 
 import java.io.Serializable;
 
+//cglib代理
 public class CglibAopProxy implements AopProxy, Serializable
 {
     //...

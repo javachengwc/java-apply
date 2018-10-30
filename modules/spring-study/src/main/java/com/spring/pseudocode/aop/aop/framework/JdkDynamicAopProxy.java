@@ -16,6 +16,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.List;
 
+//jdk代理
 public final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializable
 {
     private static final long serialVersionUID = 5531744639992436476L;
