@@ -98,7 +98,6 @@ public class InvocableHandlerMethod extends HandlerMethod
         return null;
     }
 
-    //具体执行请求处理
     public Object invokeForRequest(NativeWebRequest request, ModelAndViewContainer mavContainer, Object[] providedArgs) throws Exception
     {
         Object[] args = getMethodArgumentValues(request, mavContainer, providedArgs);
@@ -115,6 +114,7 @@ public class InvocableHandlerMethod extends HandlerMethod
         }
         return returnValue;
     }
+    //具体执行请求处理
 
     //具体请求方法调用
     protected Object doInvoke(Object[] args) throws Exception {

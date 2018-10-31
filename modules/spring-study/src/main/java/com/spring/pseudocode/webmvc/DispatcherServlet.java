@@ -86,6 +86,8 @@ public class DispatcherServlet extends FrameworkServlet
         initHandlerExceptionResolvers(context);
         //initRequestToViewNameTranslator(context);
         initViewResolvers(context);
+        //FlashMap主要是用在redirect中传递参数的,FlashMapManager是用来管理FlashMap的
+        //默认实现是 org.sptingframework.web.servlet.support.SessionFlashMapManager。它将参数保存在session中，其原理就是利用session中转站保存request中的参数，达到redirect来传递参数的。
         //initFlashMapManager(context);
     }
 
