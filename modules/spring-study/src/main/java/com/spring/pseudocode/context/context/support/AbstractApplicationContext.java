@@ -4,6 +4,7 @@ import com.spring.pseudocode.beans.BeansException;
 import com.spring.pseudocode.beans.factory.AutowireCapableBeanFactory;
 import com.spring.pseudocode.beans.factory.BeanFactory;
 import com.spring.pseudocode.beans.factory.config.BeanPostProcessor;
+import com.spring.pseudocode.beans.factory.config.ConfigurableListableBeanFactory;
 import com.spring.pseudocode.context.context.ApplicationContext;
 import com.spring.pseudocode.context.context.ApplicationListener;
 import com.spring.pseudocode.context.context.ConfigurableApplicationContext;
@@ -16,19 +17,20 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.MergedBeanDefinitionPostProcessor;
 import org.springframework.context.*;
 import org.springframework.context.event.*;
 import org.springframework.context.expression.StandardBeanExpressionResolver;
 import org.springframework.context.support.DefaultLifecycleProcessor;
+import org.springframework.context.weaving.LoadTimeWeaverAware;
 import org.springframework.context.weaving.LoadTimeWeaverAwareProcessor;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.PriorityOrdered;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringValueResolver;
 
 import java.io.IOException;
 import java.util.*;
@@ -183,7 +185,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
     protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory)
     {
         beanFactory.setBeanClassLoader(getClassLoader());
-        beanFactory.setBeanExpressionResolver(new StandardBeanExpressionResolver(beanFactory.getBeanClassLoader()));
+        //beanFactory.setBeanExpressionResolver(new StandardBeanExpressionResolver(beanFactory.getBeanClassLoader()));
 //        beanFactory.addPropertyEditorRegistrar(new ResourceEditorRegistrar(this, getEnvironment()));
 
         //beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
@@ -202,7 +204,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
         //beanFactory.addBeanPostProcessor(new ApplicationListenerDetector(this));
 
         if (beanFactory.containsBean("loadTimeWeaver")) {
-            beanFactory.addBeanPostProcessor(new LoadTimeWeaverAwareProcessor(beanFactory));
+            //beanFactory.addBeanPostProcessor(new LoadTimeWeaverAwareProcessor(beanFactory));
            // beanFactory.setTempClassLoader(new ContextTypeMatchClassLoader(beanFactory.getBeanClassLoader()));
         }
         if (!beanFactory.containsLocalBean("environment")) {
@@ -306,7 +308,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
         }
         else
         {
-            this.applicationEventMulticaster = new SimpleApplicationEventMulticaster(beanFactory);
+            //this.applicationEventMulticaster = new SimpleApplicationEventMulticaster(beanFactory);
             beanFactory.registerSingleton("applicationEventMulticaster", this.applicationEventMulticaster);
         }
     }
@@ -320,7 +322,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
         else
         {
             DefaultLifecycleProcessor defaultProcessor = new DefaultLifecycleProcessor();
-            defaultProcessor.setBeanFactory(beanFactory);
+            //defaultProcessor.setBeanFactory(beanFactory);
             this.lifecycleProcessor = defaultProcessor;
             beanFactory.registerSingleton("lifecycleProcessor", this.lifecycleProcessor);
         }
@@ -338,8 +340,33 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
     protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory)
     {
-        //....
+//        if ((beanFactory.containsBean("conversionService")) &&
+//                (beanFactory.isTypeMatch("conversionService", ConversionService.class)))
+//        {
+//            beanFactory.setConversionService(
+//                    (ConversionService)beanFactory.getBean("conversionService", ConversionService.class));
+//        }
+//
+//        if (!beanFactory.hasEmbeddedValueResolver()) {
+//            beanFactory.addEmbeddedValueResolver(new StringValueResolver()
+//            {
+//                public String resolveStringValue(String strVal) {
+//                    return AbstractApplicationContext.this.getEnvironment().resolvePlaceholders(strVal);
+//                }
+//            });
+//        }
+
+        String[] weaverAwareNames = beanFactory.getBeanNamesForType(LoadTimeWeaverAware.class, false, false);
+        for (String weaverAwareName : weaverAwareNames) {
+            getBean(weaverAwareName);
+        }
+
+        beanFactory.setTempClassLoader(null);
+        beanFactory.freezeConfiguration();
+        //这里真正对单态Bean进行初始化并注册到容器中
+        beanFactory.preInstantiateSingletons();
     }
+
 
     protected void finishRefresh()
     {

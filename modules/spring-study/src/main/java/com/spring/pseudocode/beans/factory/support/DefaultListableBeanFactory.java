@@ -480,6 +480,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
         return  true;
     }
 
+    //对单例的bean进行初始化并注册到容器中
     public void preInstantiateSingletons() throws BeansException
     {
         List<String> beanNames = new ArrayList(this.beanDefinitionNames);

@@ -29,5 +29,6 @@ public abstract interface ConfigurableListableBeanFactory extends ListableBeanFa
 
     public abstract boolean isConfigurationFrozen();
 
+    //对单例的bean进行初始化并注册到容器中
     public abstract void preInstantiateSingletons() throws BeansException;
 }
