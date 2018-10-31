@@ -1,0 +1,7 @@
+Controller中有如下注入方式时:
+@Autowired
+private HttpServletRequest request;
+
+疑问:@Autowired只注入一次,在sping mvc中controller是单例,request变量如果做到每次请求都是新的请求变量?
+原因:@autowired注入的request对象的确只注入一个，但注入的是一个request的代理对象，
+每次使用request时，这个代理对象就会获取当前线程对应的request对象来供controller使用

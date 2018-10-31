@@ -1,0 +1,43 @@
+spring中bean的scope属性，有如下5种类型：
+    singleton 表示在spring容器中的单例，通过spring容器获得该bean时总是返回唯一的实例
+    prototype表示每次获得bean都会生成一个新的对象
+    request表示在一次http请求内有效（只适用于web应用）
+    session表示在一个用户会话内有效（只适用于web应用）
+    globalSession表示在全局会话内有效（只适用于web应用）
+web应用中scope为request,session,globalSession的spring bean的使用和内部实现及生命周期
+比如有spring bean:
+<bean class="*.A" scope="request"></bean>
+<bean class="*.B"></bean>
+
+public class B {
+   @Autowired
+   private A a;
+}
+如果就这么使用，spring会抛异常,因为长生命周期的bean B依赖了短生命周期的bean A。
+spring中的解决方法是
+spring自然有解决之道:修改spring配置文件中bean A的配置，改成
+<bean class="*.A" scope="request">
+ <aop:scoped-proxy/>
+</bean>
+<bean class="*.B"></bean>
+就是在A中加了<aop:scoped-proxy/>标签即可。
+此标签表示spring给A这个bean创建一个代理对象。
+当B要注入A时，其实注入的是spring给A创建的代理对象。
+当请求到B处理的时候，这个A的代理对象会创建一个与此请求对应的实际对象，提供给B对象调用。
+也就是每个请求都会有对应的一个实际的A对象，然后由A的代理对象来判断当前使用的实际对象是哪个。
+这样，代理对象在整个spring上下文中只有一个，但通过代理对象使用的实际对象是属于当前请求范围内的。
+scope为request的bean，在每个请求到来时，会创建一个A的实际对象与当前的请求对应。
+而使用A的代理对象时，会通过某种方式获得当前的请求，再根据当前这个请求，获得对应A的实际对象。
+使用代理对象间接操控的就是与当前请求对应的A的实际对象。
+
+当你把一个生命周期较短的bean注入至一个生命周期较长的bean时，
+例如把session范围的 bean注入到单例bean， spring容器会创建一个代理类，使之与 被代理的类实现相同的接口，
+并能根据作用域（request、session，等等）去获得真正的实际对象。
+spring容器将这个代理类的对象注入到依赖它的bean中 ，但宿主bean并不清楚它获得的其实是个代理。
+当宿主bean调用注入的对象的某个方法时，实际上调用的是代理对象的方法。
+然后,代理对象从request,或session中获取、并将方法调用委派给真正的对象。
+
+Spring IoC 容器不仅负责管理对象（beans）的创建，也负责有合作（依赖）关系对象之间的组装。
+如果想将一个request作用域的bean注入到另一个 bean，必须注入一个AOP代理来取代request作用域的bean本身。
+也就是说，需要一个和作用域bean实现了相同接口、能在相应请求作用域访问真正的对象的代理对象，
+而且这个代理对象要能把方法调用委派给真正的请求作用域bean， 然后把代理对象注入到请求作用域bean该注入的地方。
