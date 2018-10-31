@@ -4,6 +4,8 @@ import org.springframework.core.NamedInheritableThreadLocal;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.util.ClassUtils;
 
+//直接获取request的方法
+//HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 public abstract class RequestContextHolder
 {
     //是否有FacesContext类存在
@@ -25,6 +27,8 @@ public abstract class RequestContextHolder
         setRequestAttributes(attributes, false);
     }
 
+    //在FrameworkServlet的processRequest()这个处理请求的方法中会调用initContextHolders()方法，
+    //它会调用此方法来绑定request到当前线程
     public static void setRequestAttributes(RequestAttributes attributes, boolean inheritable)
     {
         if (attributes == null) {

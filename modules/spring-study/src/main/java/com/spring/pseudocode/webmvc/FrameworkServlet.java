@@ -238,6 +238,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
         return null;
     }
 
+    //绑定request到当前线程
     private void initContextHolders(HttpServletRequest request, LocaleContext localeContext, RequestAttributes requestAttributes)
     {
 //        if (localeContext != null) {

@@ -61,6 +61,7 @@ public class ContextLoader {
         long startTime = System.currentTimeMillis();
         try
         {
+            //创建IoC容器WebApplicationContext
             if (this.context == null) {
                this.context = createWebApplicationContext(servletContext);
             }
@@ -76,6 +77,8 @@ public class ContextLoader {
 //                    configureAndRefreshWebApplicationContext(cwac, servletContext);
                 }
             }
+            //Spring的IoC容器WebApplicationContext，以WebApplicationContext.ROOTWEBAPPLICATIONCONTEXTATTRIBUTE为属性Key
+            //存储到ServletContext中，以便于获取
             servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
 
             ClassLoader ccl = Thread.currentThread().getContextClassLoader();
