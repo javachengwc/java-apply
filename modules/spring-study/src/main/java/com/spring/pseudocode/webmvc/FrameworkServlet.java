@@ -305,6 +305,11 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
         }
         //postProcessWebApplicationContext(wac);
         //applyInitializers(wac);
-        //wac.refresh();
+        try {
+            //refresh()方法触发容器初始化,注册bean之类的事情
+            wac.refresh();
+        }catch (Exception ee) {
+
+        }
     }
 }

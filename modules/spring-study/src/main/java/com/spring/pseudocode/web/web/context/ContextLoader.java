@@ -8,7 +8,7 @@ import org.springframework.context.ApplicationContextException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.util.ClassUtils;
-import org.springframework.web.context.ConfigurableWebApplicationContext;
+import org.springframework.util.ObjectUtils;
 
 import javax.servlet.ServletContext;
 import java.io.IOException;
@@ -76,7 +76,7 @@ public class ContextLoader {
 //                        ApplicationContext parent = loadParentContext(servletContext);
 //                        cwac.setParent(parent);
                     }
-//                    configureAndRefreshWebApplicationContext(cwac, servletContext);
+                    configureAndRefreshWebApplicationContext(cwac, servletContext);
                 }
             }
             //Spring的IoC容器WebApplicationContext，以WebApplicationContext.ROOTWEBAPPLICATIONCONTEXTATTRIBUTE为属性Key
@@ -170,6 +170,39 @@ public class ContextLoader {
             servletContext.removeAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
             if (this.parentContextRef != null)
                 this.parentContextRef.release();
+        }
+    }
+
+    protected void configureAndRefreshWebApplicationContext(ConfigurableWebApplicationContext wac, ServletContext sc)
+    {
+        if (ObjectUtils.identityToString(wac).equals(wac.getId()))
+        {
+            String idParam = sc.getInitParameter("contextId");
+            if (idParam != null) {
+                wac.setId(idParam);
+            }
+            else
+            {
+                wac.setId(ConfigurableWebApplicationContext.APPLICATION_CONTEXT_ID_PREFIX +
+                        ObjectUtils.getDisplayString(sc
+                                .getContextPath()));
+            }
+        }
+        wac.setServletContext(sc);
+        String configLocationParam = sc.getInitParameter("contextConfigLocation");
+        if (configLocationParam != null) {
+            wac.setConfigLocation(configLocationParam);
+        }
+//        ConfigurableEnvironment env = wac.getEnvironment();
+//        if ((env instanceof ConfigurableWebEnvironment)) {
+//            ((ConfigurableWebEnvironment)env).initPropertySources(sc, null);
+//        }
+//        customizeContext(sc, wac);
+        try {
+            //refresh()方法触发容器初始化,注册bean之类的事情
+            wac.refresh();
+        }catch (Exception ee) {
+
         }
     }
 }
