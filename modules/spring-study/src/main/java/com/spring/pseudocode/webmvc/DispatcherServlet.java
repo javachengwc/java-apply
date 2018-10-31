@@ -75,7 +75,7 @@ public class DispatcherServlet extends FrameworkServlet
         initStrategies(context);
     }
 
-    //初始化
+    //初始化,DispatcherServlet初始化自己的上下文
     protected void initStrategies(ApplicationContext context)
     {
         initMultipartResolver(context);

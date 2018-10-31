@@ -46,7 +46,9 @@ public class ContextLoader {
         this.context = context;
     }
 
-
+    //ServletContext是web应用级的上下文。web容器比如tomcat启动的时候，会为每个web应用程序创建一个ServletContext对象，代表当前web应用的上下文
+    //每个web应用有且仅创建一个ServletContext，一个web中的所有servlet共享一个ServletContext对象
+    //这里是web应用启动时创建IoC容器WebApplicationContext的入口，WebApplicationContext创建后，会放入ServletContext的属性中，以便于获取
     public WebApplicationContext initWebApplicationContext(ServletContext servletContext)
     {
         if (servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE) != null) {
