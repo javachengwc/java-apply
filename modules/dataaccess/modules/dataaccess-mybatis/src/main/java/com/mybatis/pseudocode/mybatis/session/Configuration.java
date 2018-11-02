@@ -45,6 +45,7 @@ public class Configuration
 
     protected boolean safeRowBoundsEnabled;
     protected boolean safeResultHandlerEnabled = true;
+    //自动驼峰转换,如果为true，数据库列name_ch将自动映射到pojo中的nameCh属性
     protected boolean mapUnderscoreToCamelCase;
     protected boolean aggressiveLazyLoading;
 
