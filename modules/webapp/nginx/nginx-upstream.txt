@@ -1,0 +1,48 @@
+-------------------------------nginx-upstream配置---------------------------------
+upstrem配置实例
+upstream appservice {
+    server 192.168.1.2:8080;
+    server 192.168.1.3:8080 down;                  ###down表示当前的server不参与负载
+    server 192.168.1.4:8080 weight=2 backup;       ###backup表示当所有有非backup机器down或者忙的时候，请求backup机器
+    server 192.168.1.3:8080 weight=2;
+    server 192.168.1.5:8080 weight=100 max_fails=3 fail_timeout=30s;
+    ###如果机器在fail_timeout时间内出现了max_fails次连接失败,那么nginx会认为其已经挂掉了,从而在fail_timeout时间内不再去请求它。
+       fail_timeout默认为10s，max_fails默认为1。
+       第三方模块nginx_upstream_check_module用来检测后端server的健康情况
+}
+
+nginx负载均衡种类
+1,轮询,默认选项
+    每个请求按时间顺序逐一分配到不同的后端服务器，如果后端服务器down掉，能自动剔除。
+    upstream appservice {
+        server 192.168.1.2;
+        server 192.168.1.3;
+    }
+2,权重,指定轮询加权，weight和访问比率成正比，用于后端服务器性能不均的情况。
+    如果后端服务器down掉，能自动剔除。
+    upstream appservice {
+        server 192.168.1.2 weight=1;
+        server 192.168.1.3 weight=2;
+    }
+3,ip_hash,每个请求按访问ip的hash取模分配
+    如果后端服务器down掉，要手工down掉。
+    upstream appservice {
+        ip_hash;
+        server 192.168.1.2:8080;
+        server 192.168.1.3:8080;
+    }
+4,url_hash（第三方插件）,按访问url的hash取模分配
+    在upstream中加入hash语句，hash_method是使用的hash算法。
+    upstream appservice {
+        hash $request_uri;
+        hash_method crc32;
+        server 192.168.1.2:8080;
+        server 192.168.1.3:8080;
+    }
+5,fair（第三方插件）,按后端服务器的响应时间来分配请求，响应时间短的优先分配。
+    upstream appservice {
+        fair;
+        server 192.168.1.2:8080;
+        server 192.168.1.3:8080;
+    }
+----------------------------------------------------------------------------------

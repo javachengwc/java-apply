@@ -1,0 +1,49 @@
+机器环境:
+nginx机器2台,灾备，高可用, 机器分别为n1,n2
+keepalived在每台nginx机器上部署，相当于2台keepalived,可做主从
+
+n1节点keepalived配置:
+    global_defs {
+       router_id k_master
+    }
+    vrrp_instance VI_1 {
+        state MASTER
+        interface eth1
+        virtual_router_id 55
+        priority 150
+        advert_int 1
+        authentication {
+            auth_type PASS
+            auth_pass 123456
+        }
+        virtual_ipaddress {
+            192.168.2.5/24 dev eth1 label eth1:1
+        }
+    }
+    ......
+n2节点keepalived配置:
+    global_defs {
+       router_id k_slave
+    }
+    vrrp_instance VI_1 {
+        state BACKUP
+        interface eth1
+        virtual_router_id 55
+        priority 100
+        advert_int 1
+        authentication {
+            auth_type PASS
+            auth_pass 123456
+        }
+        virtual_ipaddress {
+            192.168.2.5 dev eth1 label eth1:1
+        }
+    }
+    ......
+修改主节点之后，启动keepalived，几分钟内会生成一个虚拟IP:192.168.2.5
+通过命令ip addr来查看机器的网卡接口
+修改从节点后，在主节点启动的情况下重启从节点keepalived，不会生成虚拟IP，
+如果生成那就是从节点和主节点争用IP资源，此现象叫做“裂脑”
+
+高可用的主从节点故障切换验证
+

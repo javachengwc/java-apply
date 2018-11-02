@@ -9,7 +9,8 @@ nginx -s reload                    ---重启nginx
 
 kill -HUP  nginx.pid               ---平滑重启nginx进程
 
-nginx -s stop                      ---停止nginx
+nginx -s stop                      ---停止nginx,强制停止nginx服务器，如果有未处理的数据，丢弃
+nginx -s quit                      ---优雅的停止nginx服务器，如果有未处理的数据，等待处理完成之后停止
 
 nginx -v                           ---查看版本号
 nginx -V                           ---查看编译参数

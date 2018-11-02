@@ -1,0 +1,56 @@
+-----------------------------------keepalived安装配置------------------------------
+yum install -y openssl openssl-devel keepalived          ---安装依赖及keepalived
+/usr/sbin/keepalived –D                                 ---启动keepalived, 启动后会有3个进程
+
+/etc/keepalived/keepalived.conf                          ---这是安装后keepalived的配置文件
+keepalived至少配置主从才能提供高可用功能
+vim /etc/keepalived/keepalived.conf
+    global_defs {                                        ---全局配置
+       notification_email {                              ---定义报警邮件地址
+           aa@cc.com
+       }
+       notification_email_from cc@cc.com                 ---定义发送邮件的地址
+       smtp_server 192.168.200.1                         ---邮箱服务器
+       smtp_connect_timeout 30                           ---定义邮件超时时间
+       router_id LVS_MASTER                              ---#定义路由标识信息,每个keepalived配置一个唯一的表示，(主从节点配置要不一样)
+       vrrp_skip_check_adv_addr
+       vrrp_strict
+       vrrp_garp_interval 0
+       vrrp_gna_interval 0
+    }
+    vrrp_instance VI_1 {
+        state MASTER                                     ---指定该节点为主节点，备用节点设置为BACKUP
+        interface eth0                                   ---虚拟IP地址放置的网卡位置
+        virtual_router_id 51                             ---VRRP组名，如果keepalived做了主从，从节点设置一样，以指明两节点同属一VRRP组
+        priority 100                                     ---节点的优先级，数值在1~254，注意从节点必须比主节点的优先级别低
+        advert_int 1                                     ---组播信息发送间隔，两个节点需一致
+        nopreempt                                        ---不抢占，只在优先级高的机器上设置即可，优先级低的机器不设置
+        authentication{                                  ---设置验证信息，主从节点需一致
+          auth_type PASS
+          auth_pass 1111
+        }
+        virtual_ipaddress{                               ---指定虚拟IP，主从节点需设置一样
+          192.168.0.200
+        }
+    }
+    virtual_server 192.168.0.200 80 {
+        delay_loop 2                                     ---每2秒检查一次real_server状态
+        lb_algo rr                                       ---指定LVS算法
+        lb_kind NAT                                      ---指定LVS模式
+        persistence_timeout 50                           ---持久连接设置，会话保持时间
+        protocol TCP                                     ---转发协议为TCP
+
+        real_server 192.168.0.100 80 {                     ---后端实际TCP服务配置
+             weight 1
+             notify_down /usr/local/start.sh               ---检测到服务down后执行的脚本
+             TCP_CHECK {
+                 connect_timeout 10                        ---连接超时时间
+                 nb_get_retry 3                            ---重连次数
+                 delay_before_retry 3                      ---重连间隔时间
+                 connect_port 80                           ---健康检查端口
+             }
+        }
+        real_server 192.168.0.120 80 {
+             weight 1
+        }
+    }
