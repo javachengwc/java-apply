@@ -5,6 +5,7 @@ default-character-set=utf8
 [mysqld]
 port=3306
 default-character-set=utf8
+max_allowed_packet = 16M
 max_connections=500
 thread_concurrency=16
 default-storage-engine=InnoDB
