@@ -46,8 +46,9 @@ public class DateTimeUtil {
         try {
             if (StringUtils.isNotBlank(date)) {
                 new SimpleDateFormat(FMT_YMD).parse(date);
+                return true;
             }
-            return true;
+            return false;
         } catch (Exception e) {
             return false;
         }
@@ -57,8 +58,9 @@ public class DateTimeUtil {
         try {
             if (StringUtils.isNotBlank(date)) {
                 new SimpleDateFormat(FMT_YMD_HMS).parse(date);
+                return true;
             }
-            return true;
+            return false;
         } catch (Exception e) {
             return false;
         }
