@@ -34,6 +34,7 @@ sudo -l                                         ---查看sudo的配置
 Defaults env_keep +="http_proxy https_proxy ftp_proxy no_proxy DISPLAY XAUTHORITY"
 或者直接将
 Defaults    env_reset  修改成为: Defaults    !env_reset
+
 ---------cpu
 cat /proc/cpuinfo                               ---查看cpu相关信息
 cat /proc/cpuinfo |grep "processor"|wc -l       ---查看逻辑cpu个数(多少核)
@@ -42,7 +43,6 @@ getconf LONG_BIT                                ---查看cpu运行在多少位�
 cat /proc/cpuinfo | grep flags | grep ' lm '|wc -l
 #结果等于24，说明24个逻辑CPU都支持64位运算， lm指long mode, 支持lm则是64bit
                                                 ------查看CPU是否支持64位运算
-
 ---------关机
 shutdown -h now                                 ---关闭系统
 init 0                                          ---关闭系统
