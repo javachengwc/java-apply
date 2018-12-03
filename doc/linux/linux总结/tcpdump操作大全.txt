@@ -50,4 +50,42 @@ tcpdump选项
     -vv：更详细显示指令执行过程；
     -x：用十六进制字码列出数据包资料；
     -w<数据包文件>：把数据包数据写入指定的文件。
+
+tcpdump结果片段分析
+09:32:57.671275 IP shfishdfisdhifhsiewereZ.60674 > 192.168.100.102.https: Flags [P.], seq 2877865144:2877865213, ack 1664585779, win 327, length 69
+09:32:57.671314 IP shfishdfisdhifhsiewereZ.60674 > 192.168.100.102.https: Flags [F.], seq 69, ack 1, win 327, length 0
+09:32:57.676641 IP shfishdfisdhifhsiewereZ.34030 > 192.168.100.102.https: Flags [S], seq 2803425103, win 29200, options [mss 1460,sackOK,TS val 2813526682 ecr 0,nop,wscale 7], length 0
+09:32:57.718606 IP 192.168.100.102.https > shfishdfisdhifhsiewereZ.60674: Flags [R], seq 1664585779, win 0, length 0
+09:32:57.718611 IP 192.168.100.102.https > shfishdfisdhifhsiewereZ.60674: Flags [R], seq 1664585779, win 0, length 0
+09:32:57.719624 IP 192.168.100.102.https > shfishdfisdhifhsiewereZ.34030: Flags [S.], seq 1000785279, ack 2803425104, win 29200, options [mss 1456,nop,nop,sackOK,nop,wscale 7], length 0
+09:32:57.719651 IP shfishdfisdhifhsiewereZ.34030 > 192.168.100.102.https: Flags [.], ack 1, win 229, length 0
+09:32:57.720338 IP shfishdfisdhifhsiewereZ.34030 > 192.168.100.102.https: Flags [P.], seq 1:235, ack 1, win 229, length 234
+09:32:57.755689 IP 192.168.100.102.https > shfishdfisdhifhsiewereZ.34030: Flags [.], ack 235, win 237, length 0
+09:32:57.756760 IP 192.168.100.102.https > shfishdfisdhifhsiewereZ.34030: Flags [.], seq 1:1457, ack 235, win 237, length 1456
+09:32:57.756779 IP shfishdfisdhifhsiewereZ.34030 > 192.168.100.102.https: Flags [.], ack 1457, win 251, length 0
+09:32:57.758665 IP 192.168.100.102.https > shfishdfisdhifhsiewereZ.34030: Flags [P.], seq 1457:3137, ack 235, win 237, length 1680
+09:32:57.758679 IP shfishdfisdhifhsiewereZ.34030 > 192.168.100.102.https: Flags [.], ack 3137, win 278, length 0
+09:32:57.764906 IP shfishdfisdhifhsiewereZ.34030 > 192.168.100.102.https: Flags [P.], seq 235:310, ack 3137, win 278, length 75
+09:32:57.767345 IP shfishdfisdhifhsiewereZ.34030 > 192.168.100.102.https: Flags [P.], seq 310:316, ack 3137, win 278, length 6
+09:32:57.767486 IP shfishdfisdhifhsiewereZ.34030 > 192.168.100.102.https: Flags [P.], seq 316:401, ack 3137, win 278, length 85
+09:32:57.803618 IP 192.168.100.102.https > shfishdfisdhifhsiewereZ.34030: Flags [.], ack 401, win 237, length 0
+09:32:57.803642 IP 192.168.100.102.https > shfishdfisdhifhsiewereZ.34030: Flags [P.], seq 3137:3228, ack 401, win 237, length 91
+09:32:57.805086 IP shfishdfisdhifhsiewereZ.34030 > 192.168.100.102.https: Flags [P.], seq 401:1542, ack 3228, win 278, length 1141
+09:32:57.879630 IP 192.168.100.102.https > shfishdfisdhifhsiewereZ.34030: Flags [.], ack 1542, win 260, length 0
+09:32:57.900641 IP 192.168.100.102.https > shfishdfisdhifhsiewereZ.34030: Flags [P.], seq 3228:3937, ack 1542, win 260, length 709
+09:32:57.940586 IP shfishdfisdhifhsiewereZ.34030 > 192.168.100.102.https: Flags [.], ack 3937, win 300, length 0
+09:33:58.382024 IP shfishdfisdhifhsiewereZ.34030 > 192.168.100.102.https: Flags [P.], seq 1542:2683, ack 3937, win 300, length 1141
+09:33:58.416715 IP 192.168.100.102.https > shfishdfisdhifhsiewereZ.34030: Flags [.], ack 2683, win 283, length 0
+09:33:58.458761 IP 192.168.100.102.https > shfishdfisdhifhsiewereZ.34030: Flags [P.], seq 3937:4646, ack 2683, win 283, length 709
+09:33:58.458780 IP shfishdfisdhifhsiewereZ.34030 > 192.168.100.102.https: Flags [.], ack 4646, win 311, length 0
+第1列是时间戳:时，分，秒，微妙
+第2列是网际网路协议的名称
+第3列是包发送方的十进制网际网路协议地址，以及紧跟其后的端口号(也可能是协议名如http,https,如果仍想显示端口号加-n 选项)
+第4列是大于号
+第5列是包接收方地址以及端口号
+第6列是冒号
+第7列是Flags标识，取值可能是[S][.][P.][F.]
+第8,9,10列是tcp协议报文头的一些变量值
+seq是请求同步的序列号,ack是已经同步的序列号,win是当前可用的窗口,length是tcp协议报文体的长度
+
 --------------------------------------------------------------------------------

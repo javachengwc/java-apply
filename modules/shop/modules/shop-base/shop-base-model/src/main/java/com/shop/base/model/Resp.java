@@ -42,6 +42,20 @@ public class Resp<T> {
         return resp;
     }
 
+    public static <T> Resp<T> error(Resp<?> bizResp) {
+        Resp<T> resp = new Resp<T>();
+        resp.getHeader().setCode(bizResp.getHeader().getCode());
+        resp.getHeader().setMsg(bizResp.getHeader().getMsg());
+        return resp;
+    }
+
+    public static <T> Resp<T> error(Integer code,String msg) {
+        Resp<T> resp = new Resp<T>();
+        resp.getHeader().setCode(code);
+        resp.getHeader().setMsg(msg);
+        return resp;
+    }
+
     public static <T> Resp<T> success(T data) {
         return  success(data,null);
     }

@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,7 +19,7 @@ import java.util.regex.Pattern;
 
 public class RequestUtil {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RequestUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(RequestUtil.class);
 
     /**
      * 无数据绑定功能也能使用
@@ -42,7 +43,7 @@ public class RequestUtil {
             // BeanUtils.populate(bean, parametersMap);
             return bean;
         } catch (Exception e) {
-            LOGGER.error("request parameters & " + beanType.getName() + " bond exception! " + e.getMessage(), e);
+            logger.error("RequestUtil requestParametersWrapper error,beanType={}，",beanType.getName(), e);
         }
         return null;
     }
@@ -235,6 +236,36 @@ public class RequestUtil {
             return defaultValue;
         }
         return ret;
+    }
+
+    //获取请求中body内容
+    public static String getBody(HttpServletRequest request) {
+         ServletInputStream inputStream = null;
+         String content=null;
+         try {
+
+            inputStream = request.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+            StringBuilder buf = new StringBuilder();
+
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                buf.append(line);
+            }
+            content=buf.toString();
+        } catch (IOException e) {
+             logger.error("RequestUtil getBody error,", e);
+        }finally {
+            try {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+            }catch (Exception e) {
+
+            }
+        }
+        return content;
     }
 
     /**

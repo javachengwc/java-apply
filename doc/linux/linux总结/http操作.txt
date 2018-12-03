@@ -1,0 +1,20 @@
+--------------------------wget---post请求
+wget --limit-rate=300k http://www.cc.com/cc.zip     ---下载cc.zip,且限制速度为300k/s
+wget -O name.zip http://www.cc.com/download.aspx?id=100  ---下载内容保存为name.zip,wget默认以最后一个/的后面的字符来命令文件名
+wget -P /tmp/dd/  http://www.cc.com/cc.zip          ---下载cc.zip到指定目录/tmp/dd/中
+wget -c http://www.cc.com/cc.zip                    ---断点续传cc.zip文件
+wget -b http://www.cc.com/cc.zip                    ---后台下载cc.zip文件
+wget --spider http://www.cc.com/cc.zip              ---测试资源是否可下载
+wget --tries=40 http://www.cc.com/cc.zip            ---下载cc.zip文件,重试次数设为40
+wget --ftp-user=aa --ftp-password=bb ftp://ftp.cc.com/f/cc.zip         ---带账号的ftp下载文件
+wget --user-agent="Mozilla/5.0 Chrome..." http://www.cc.com/cc.zip     ---伪装代理下载
+wget --header="Content-Type: application/json;charset=utf-8" --post-data='{"mobile":"11111111111","captha":"666666"}' http://xxx.com
+                                                                       ---post请求
+--------------------------curl
+curl http://xxx.com -d "a=1&b=2&c=cc"                                  ---普通请求
+curl -H "Content-Type: application/json;charset=utf-8" -X POST -d '{"mobile":"11111111111","captha":"666666"}' http://xxx.com
+                                                                       ---post请求
+
+
+
+

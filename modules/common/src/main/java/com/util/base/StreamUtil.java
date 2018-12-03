@@ -105,4 +105,35 @@ public class StreamUtil {
         return is;
     }
 
+    public static int copy(final Reader input, final Writer output) throws IOException {
+        char[] buffer = new char[BUFFER_SIZE];
+        int totalCount = 0;
+        int count=-1;
+        while ((count = input.read(buffer, 0, BUFFER_SIZE)) !=-1) {
+            output.write(buffer, 0, count);
+            totalCount += count;
+        }
+        output.flush();
+        return totalCount;
+    }
+
+    public static int copy(final InputStream input, final OutputStream output) throws IOException {
+        byte[] buffer = new byte[BUFFER_SIZE];
+        int totalCount = 0;
+        int count=-1;
+
+        while ((count = input.read(buffer, 0, BUFFER_SIZE)) !=-1) {
+            output.write(buffer, 0, count);
+            totalCount += count;
+        }
+        output.flush();
+        return totalCount;
+    }
+
+    public static byte []  readBytes(Reader reader,String encoding) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream(BUFFER_SIZE);
+        Writer writer =  new OutputStreamWriter(out, encoding);
+        copy(reader, writer);
+        return out.toByteArray();
+    }
 }
