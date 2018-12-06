@@ -18,8 +18,7 @@ public class RedisCacheManager implements CacheManager {
 
     private final ConcurrentMap<String, Cache> caches = new ConcurrentHashMap<>();
 
-    @Resource
-    @Qualifier("redisTemplate")
+    @Resource(name="redisTemplate")
     private RedisTemplate<String, Object> redisTemplate;
 
     private String keyPrefix = "shiro_redis_cache:";

@@ -20,8 +20,7 @@ public class RedisSessionDAO extends AbstractSessionDAO{
 
     private static Logger logger = LoggerFactory.getLogger(RedisSessionDAO.class);
 
-    @Resource
-    @Qualifier("redisTemplate")
+    @Resource(name="redisTemplate")
     private RedisTemplate<String, byte[]> redisTemplate;
 
     private String keyPrefix = "shiro_redis_session:";
@@ -91,7 +90,7 @@ public class RedisSessionDAO extends AbstractSessionDAO{
         }
         String key = this.keyPrefix+session.getId();
         byte[] value = SerializeUtil.serialize(session);
-        session.setTimeout(30*24* 60 * 60 *1000); //30天
-        redisTemplate.opsForValue().set(key, value, session.getTimeout(), TimeUnit.MILLISECONDS);
+        session.setTimeout(30*24* 60 * 60); //30天
+        redisTemplate.opsForValue().set(key, value, session.getTimeout(), TimeUnit.SECONDS);
     }
 }

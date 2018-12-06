@@ -27,6 +27,7 @@ public class ShiroConfig {
 
     private final static Logger logger = LoggerFactory.getLogger(ShiroConfig.class);
 
+    //负责org.apache.shiro.util.Initializable类型bean的生命周期的，初始化和销毁。
     @Bean
     public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
         return new LifecycleBeanPostProcessor();
@@ -91,10 +92,12 @@ public class ShiroConfig {
         ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
         shiroFilter.setSecurityManager(securityManager);
         shiroFilter.setLoginUrl("/login");
-        shiroFilter.setUnauthorizedUrl("/unauthorized");
+        //shiroFilter.setSuccessUrl("/home");  登录成功的url
+        shiroFilter.setUnauthorizedUrl("/unauthorized");//未授权界面
 
+        //配置访问权限
         Map<String, String> filterMap = new LinkedHashMap<String, String>();
-        filterMap.put("/swagger/**", "anon");
+        filterMap.put("/swagger/**", "anon");//表示可以匿名访问
         filterMap.put("/v2/api-docs", "anon");
         filterMap.put("/swagger-ui.html", "anon");
         filterMap.put("/webjars/**", "anon");
@@ -104,16 +107,20 @@ public class ShiroConfig {
         filterMap.put("/favicon.ico", "anon");
         filterMap.put("/mock/**", "anon");
 
-        filterMap.put("/**", "authc");
+        filterMap.put("/**", "authc");//表示需要认证才可以访问
 
-        LinkedHashMap<String, Filter> filtsMap=new LinkedHashMap<>();
+        //加载shiroFilter权限控制规则
+        shiroFilter.setFilterChainDefinitionMap(filterMap);
+
+        //自定义拦截器
+        LinkedHashMap<String, Filter> filtsMap=new LinkedHashMap<String, Filter>();
         filtsMap.put("authc",new ShiroAuthFilter() );
         shiroFilter.setFilters(filtsMap);
 
-        shiroFilter.setFilterChainDefinitionMap(filterMap);
         return shiroFilter;
     }
 
+    //DefaultAdvisorAutoProxyCreator，Spring的一个bean，由Advisor决定对哪些类的方法进行AOP代理
     @Bean
     public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
         DefaultAdvisorAutoProxyCreator proxyCreator = new DefaultAdvisorAutoProxyCreator();
@@ -124,9 +131,9 @@ public class ShiroConfig {
     //开启shiro aop注解支持
     @Bean
     public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager) {
-        AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
-        authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
-        return authorizationAttributeSourceAdvisor;
+        AuthorizationAttributeSourceAdvisor advisor = new AuthorizationAttributeSourceAdvisor();
+        advisor.setSecurityManager(securityManager);
+        return advisor;
     }
 
 

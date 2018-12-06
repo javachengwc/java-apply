@@ -1,0 +1,2 @@
+1,set值时报错JedisDataException: ERR unknown command 'PSETEX'
+版本兼容问题，Redis Psetex 命令以毫秒为单位设置 key 的生存时间，可用版本 >= 2.6.0。

@@ -17,6 +17,7 @@
         <javaModelGenerator targetPackage="com.shop.book.manage.model.pojo" targetProject="src\main\java">
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="true"/>
+            <property name="rootClass" value="com.shop.base.model.BasePojo"/>
         </javaModelGenerator>
 
         <!-- mybatis xml file path -->
