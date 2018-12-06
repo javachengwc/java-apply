@@ -9,7 +9,7 @@ public class TransUtil {
 
     public static <R,P> List<R> transList(List<P> list, Class<R> clazz ) {
         if(list==null) {
-            return Collections.emptyList();
+            return Collections.EMPTY_LIST;
         }
         List<R> rtList = new ArrayList<R>();
         for(P per:list) {
@@ -31,7 +31,7 @@ public class TransUtil {
 
     public static <R,P> List<R> transList(List<P> list,ITrans<R,P> trans) {
         if(list==null) {
-            return Collections.emptyList();
+            return Collections.EMPTY_LIST;
         }
         List<R> rtList = new ArrayList<R>();
         for(P per:list) {
