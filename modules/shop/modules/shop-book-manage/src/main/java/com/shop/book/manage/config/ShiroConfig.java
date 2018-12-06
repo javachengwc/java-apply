@@ -103,7 +103,6 @@ public class ShiroConfig {
         filterMap.put("/login", "anon");
         filterMap.put("/favicon.ico", "anon");
         filterMap.put("/mock/**", "anon");
-        filterMap.put("/user/**", "anon");
 
         filterMap.put("/**", "authc");
 
