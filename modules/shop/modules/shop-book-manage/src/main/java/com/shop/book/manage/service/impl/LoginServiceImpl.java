@@ -1,11 +1,11 @@
-package com.shop.book.manage.service.rdbc.impl;
+package com.shop.book.manage.service.impl;
 
 import com.shop.base.model.Resp;
 import com.shop.book.manage.enums.ApiCode;
 import com.shop.book.manage.model.pojo.User;
 import com.shop.book.manage.model.vo.LoginResultVo;
 import com.shop.book.manage.model.vo.LoginVo;
-import com.shop.book.manage.service.rdbc.LoginService;
+import com.shop.book.manage.service.LoginService;
 import com.shop.book.manage.service.rdbc.UserService;
 import com.shop.book.manage.shiro.ShiroConstant;
 import com.shop.book.manage.shiro.ShiroManager;

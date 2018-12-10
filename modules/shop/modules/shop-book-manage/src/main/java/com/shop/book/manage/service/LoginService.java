@@ -1,4 +1,4 @@
-package com.shop.book.manage.service.rdbc;
+package com.shop.book.manage.service;
 
 import com.shop.base.model.Resp;
 import com.shop.book.manage.model.vo.LoginResultVo;

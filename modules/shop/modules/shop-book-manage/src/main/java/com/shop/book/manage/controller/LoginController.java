@@ -5,7 +5,7 @@ import com.shop.base.model.Resp;
 import com.shop.book.manage.enums.ApiCode;
 import com.shop.book.manage.model.vo.LoginResultVo;
 import com.shop.book.manage.model.vo.LoginVo;
-import com.shop.book.manage.service.rdbc.LoginService;
+import com.shop.book.manage.service.LoginService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
