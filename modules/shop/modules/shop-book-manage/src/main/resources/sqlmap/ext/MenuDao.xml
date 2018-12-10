@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.book.manage.dao.MenuDao">
+
+    <resultMap id="MenuMap" type="com.shop.book.manage.model.vo.MenuVo" >
+        <result column="id" property="id" jdbcType="BIGINT" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="url" property="url" jdbcType="VARCHAR" />
+        <result column="perms" property="perms" jdbcType="VARCHAR" />
+        <result column="type" property="type" jdbcType="INTEGER" />
+        <result column="icon" property="icon" jdbcType="VARCHAR" />
+        <result column="sort" property="sort" jdbcType="INTEGER" />
+        <result column="nav" property="nav" jdbcType="INTEGER" />
+        <result column="parent_id" property="parentId" jdbcType="BIGINT" />
+    </resultMap>
+
+    <select id="queryPage" resultMap="MenuMap">
+        select id,name,url,perms,type,icon,sort,nav,parent_id
+        from menu
+        <where>
+            <if test="name != null and name != ''">
+                name like concat(#{name}, '%')
+            </if>
+            <if test="url != null and url != ''">
+                and url = #{url}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="parentId != null">
+                and parent_id = #{parentId}
+            </if>
+        </where>
+        order by parent_id asc ,sort asc
+    </select>
+
+</mapper>

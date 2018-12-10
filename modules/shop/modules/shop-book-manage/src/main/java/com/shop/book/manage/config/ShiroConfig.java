@@ -102,10 +102,12 @@ public class ShiroConfig {
         filterMap.put("/swagger-ui.html", "anon");
         filterMap.put("/webjars/**", "anon");
         filterMap.put("/swagger-resources/**", "anon");
+        filterMap.put("/favicon.ico", "anon");
         filterMap.put("/statics/**", "anon");
         filterMap.put("/login", "anon");
-        filterMap.put("/favicon.ico", "anon");
         filterMap.put("/mock/**", "anon");
+        filterMap.put("/role/**", "anon");
+        filterMap.put("/menu/**", "anon");
 
         filterMap.put("/**", "authc");//表示需要认证才可以访问
 

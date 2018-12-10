@@ -49,12 +49,9 @@ public class UserController {
         }
         queryVo.genPage();
 
-        List<UserVo> list = userService.queryPage(queryVo);
+        Page<UserVo> page= userService.queryPage(queryVo);
 
-        Page<UserVo> data = new Page<UserVo>();
-        data.setList(list);
-
-        Resp<Page<UserVo>> resp = Resp.success(data,"成功");
+        Resp<Page<UserVo>> resp = Resp.success(page,"成功");
         return  resp;
     }
 

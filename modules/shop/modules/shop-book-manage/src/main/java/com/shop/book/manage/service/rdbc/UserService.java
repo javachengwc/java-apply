@@ -1,10 +1,10 @@
 package com.shop.book.manage.service.rdbc;
 
+import com.shop.base.model.Page;
 import com.shop.book.manage.model.pojo.User;
 import com.shop.book.manage.model.vo.UserQueryVo;
 import com.shop.book.manage.model.vo.UserVo;
 
-import java.util.List;
 import java.util.Set;
 
 public interface UserService {
@@ -23,7 +23,7 @@ public interface UserService {
     //启用
     public boolean enable(Long userId);
 
-    public List<UserVo> queryPage(UserQueryVo queryVo);
+    public Page<UserVo> queryPage(UserQueryVo queryVo);
 
     //查询用户权限
     public Set<String> queryUserPerms(Long userId);

@@ -1,23 +1,30 @@
 package com.shop.book.manage.service.rdbc.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.shop.base.model.Page;
 import com.shop.base.util.TransUtil;
+import com.shop.book.manage.dao.MenuDao;
 import com.shop.book.manage.dao.mapper.MenuMapper;
 import com.shop.book.manage.model.pojo.Menu;
 import com.shop.book.manage.model.pojo.MenuExample;
+import com.shop.book.manage.model.vo.MenuQueryVo;
 import com.shop.book.manage.model.vo.MenuVo;
 import com.shop.book.manage.service.rdbc.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Service
 public class MenuServiceImpl implements MenuService {
 
     @Autowired
-    public MenuMapper menuMapper;
+    private MenuMapper menuMapper;
+
+    @Autowired
+    private MenuDao menuDao;
 
     public Menu getById(Long id) {
         Menu menu = menuMapper.selectByPrimaryKey(id);
@@ -28,11 +35,7 @@ public class MenuServiceImpl implements MenuService {
         MenuExample example = new MenuExample();
         MenuExample.Criteria criteria = example.createCriteria();
         criteria.andNameEqualTo(name);
-
         List<Menu> list = menuMapper.selectByExample(example);
-        if(list==null) {
-            return Collections.EMPTY_LIST;
-        }
         return list;
     }
 
@@ -68,6 +71,17 @@ public class MenuServiceImpl implements MenuService {
         return count;
     }
 
+    public Page<MenuVo> queryPage(MenuQueryVo queryVo) {
+        PageHelper.startPage(queryVo.getPageNum(), queryVo.getPageSize());
+        List<MenuVo> list = menuDao.queryPage(queryVo);
+        PageInfo<MenuVo> pageInfo = new PageInfo<MenuVo>(list);
+        int totalCnt = new Long(pageInfo.getTotal()).intValue();
+        Page<MenuVo> page = new Page<MenuVo>();
+        page.setList(list);
+        page.setTotalCount(totalCnt);
+        return page;
+    }
+
     //菜单树
     public List<MenuVo> queryMenuTree() {
         MenuExample example = new MenuExample();
@@ -79,7 +93,7 @@ public class MenuServiceImpl implements MenuService {
 
     public List<MenuVo> genTree(List<Menu> list) {
         if(list==null || list.size()<=0) {
-            return Collections.EMPTY_LIST;
+            return null;
         }
         List<MenuVo> rtList = new ArrayList<MenuVo>();
         for (Menu menu : list) {

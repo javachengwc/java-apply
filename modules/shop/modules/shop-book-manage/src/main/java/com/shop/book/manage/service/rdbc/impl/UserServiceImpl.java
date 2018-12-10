@@ -1,5 +1,8 @@
 package com.shop.book.manage.service.rdbc.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.shop.base.model.Page;
 import com.shop.book.manage.dao.UserDao;
 import com.shop.book.manage.dao.mapper.UserMapper;
 import com.shop.book.manage.enums.UserStatuEnum;
@@ -8,7 +11,6 @@ import com.shop.book.manage.model.pojo.UserExample;
 import com.shop.book.manage.model.vo.UserQueryVo;
 import com.shop.book.manage.model.vo.UserVo;
 import com.shop.book.manage.service.rdbc.UserService;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -70,21 +72,24 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
-    public List<UserVo> queryPage(UserQueryVo queryVo) {
+    public Page<UserVo> queryPage(UserQueryVo queryVo) {
+        PageHelper.startPage(queryVo.getPageNum(), queryVo.getPageSize());
         List<UserVo> list = userDao.queryPage(queryVo);
-        if(list==null) {
-            list= Collections.EMPTY_LIST;
-        }
-        return list;
+        PageInfo<UserVo> pageInfo = new PageInfo<UserVo>(list);
+        int totalCnt = new Long(pageInfo.getTotal()).intValue();
+        Page<UserVo> page = new Page<UserVo>();
+        page.setList(list);
+        page.setTotalCount(totalCnt);
+        return page;
     }
 
     //查询用户权限
     public Set<String> queryUserPerms(Long userId) {
+        Set<String> permSet = new HashSet<String>();
         List<String> list = userDao.queryUserPerms(userId);
         if(list==null || list.size()<=0){
-            return Collections.EMPTY_SET;
+            return permSet;
         }
-        Set<String> permSet = new HashSet<String>();
         for (String perm : list) {
             if(StringUtils.isBlank(perm)) {
                 continue;

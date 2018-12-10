@@ -1,11 +1,19 @@
 package com.main;
 import java.util.*;
 
-
+/**
+ *  Collections.emptyList()，Collections.EMPTY_LIST的list不能再add元素，如果add()调用，将报错UnsupportedOperationException
+ */
 public class ListMain2 {
 
 	public static void main(String args [])
 	{
+
+//	    List<Object> emptyList = Collections.EMPTY_LIST;
+//	    emptyList.add(0,"ddd");
+//        System.out.println(emptyList==null);
+//	    System.out.println(emptyList.size());
+
 	    List<Object> a=null;
 	    List<Object> c = new ArrayList<Object>();
 	    c.addAll(a);

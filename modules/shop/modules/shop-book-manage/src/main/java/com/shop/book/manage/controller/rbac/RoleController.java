@@ -3,9 +3,9 @@ package com.shop.book.manage.controller.rbac;
 import com.shop.base.model.Page;
 import com.shop.base.model.Req;
 import com.shop.base.model.Resp;
-import com.shop.book.manage.model.vo.MenuQueryVo;
-import com.shop.book.manage.model.vo.MenuVo;
-import com.shop.book.manage.service.rdbc.MenuService;
+import com.shop.book.manage.model.vo.RoleQueryVo;
+import com.shop.book.manage.model.vo.RoleVo;
+import com.shop.book.manage.service.rdbc.RoleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,26 +18,25 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
 
-@Api(value = "菜单相关接口", description = "菜单相关接口")
+@Api(value = "角色相关接口", description = "角色相关接口")
 @RestController
-@RequestMapping("/menu")
-public class MenuController {
+@RequestMapping("/role")
+public class RoleController {
 
     @Autowired
-    private MenuService menuService;
+    private RoleService roleService;
 
-    @ApiOperation(value = "分页查询菜单", notes = "分页查询菜单")
+    @ApiOperation(value = "分页查询角色", notes = "分页查询角色")
     @PostMapping("/queryPage")
-    public Resp<Page<MenuVo>> queryPage(@Validated @RequestBody Req<MenuQueryVo> req, Errors errors) {
-        MenuQueryVo queryVo = req.getData();
+    public Resp<Page<RoleVo>> queryPage(@Validated @RequestBody Req<RoleQueryVo> req, Errors errors) {
+        RoleQueryVo queryVo = req.getData();
         queryVo.genPage();
 
-        Page<MenuVo> page= menuService.queryPage(queryVo);
+        Page<RoleVo> page= roleService.queryPage(queryVo);
         if(page.getList()==null) {
             page.setList(Collections.EMPTY_LIST);
         }
-
-        Resp<Page<MenuVo>> resp = Resp.success(page,"成功");
+        Resp<Page<RoleVo>> resp = Resp.success(page,"成功");
         return  resp;
     }
 }

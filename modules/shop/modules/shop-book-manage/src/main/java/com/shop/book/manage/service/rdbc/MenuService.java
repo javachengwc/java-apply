@@ -1,7 +1,11 @@
 package com.shop.book.manage.service.rdbc;
 
+import com.shop.base.model.Page;
 import com.shop.book.manage.model.pojo.Menu;
+import com.shop.book.manage.model.vo.MenuQueryVo;
 import com.shop.book.manage.model.vo.MenuVo;
+import com.shop.book.manage.model.vo.RoleQueryVo;
+import com.shop.book.manage.model.vo.RoleVo;
 
 import java.util.List;
 
@@ -19,6 +23,8 @@ public interface MenuService {
 
     //父id是parentId的菜单记录数
     public Integer countByParent(Long parentId);
+
+    public Page<MenuVo> queryPage(MenuQueryVo queryVo);
 
     //菜单树
     public List<MenuVo> queryMenuTree();
