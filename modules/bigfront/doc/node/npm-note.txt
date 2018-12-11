@@ -1,3 +1,13 @@
+
+npm -v                                                         ------显示版本
+npm install express                                            ------安装express模块
+npm install -g express                                         ------全局安装express模块
+npm show express                                               ------显示模块详情
+npm list                                                       ------列出已安装模块
+npm update                                                     ------级当前目录下的项目的所有模块
+npm update express                                             ------升级当前目录下的项目的指定模块
+npm update -g express                                          ------升级全局安装的express模块
+npm uninstall express                                          ------删除指定的模块
 npm config list                                                ------查看npm配置信息
 npm config set registry https://registry.npm.taobao.org        ------指定淘宝镜像
 npm config set sass-binary-site http://npm.taobao.org/mirrors/node-sass          ------指定sass相关淘宝镜像
