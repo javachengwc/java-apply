@@ -82,7 +82,7 @@ public interface Lock {
     //返回当前锁的条件变量，通过条件变量可以实现类似notify和wait的功能，一个锁可以有多个条件变量
     Condition newCondition();
 }
-Lock底层是CAS乐观锁的体现，主要靠AQS(AbstractQueuedSynchronizer类)和CAS操作实现的。
+Lock底层是CAS乐观锁的体现，主要靠AQS(AbstractQueuedSynchronizer类)队列同步器和CAS操作实现的。
 ReetrantLock采用的并发策略是基于冲突检测的乐观并发策略,
 基于冲突检测的乐观并发策略，通俗地讲就是先进性操作，如果没有其他线程争用共享数据，那操作就成功了，
 如果共享数据被争用，产生了冲突，那就再进行其他的补偿措施（最常见的补偿措施就是不断地重拾，直到试成功为止），
