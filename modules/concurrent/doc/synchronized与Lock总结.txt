@@ -89,6 +89,21 @@ ReetrantLock采用的并发策略是基于冲突检测的乐观并发策略,
 这种乐观的并发策略的许多实现都不需要把线程挂起，因此这种同步被称为非阻塞同步。
 在乐观的并发策略中，需要操作和冲突检测这两个步骤具备原子性，它靠硬件指令来保证，这里用的是CAS操作（Compare and Swap）。
 
+ReentrantLock的实现
+ReentrantLock的Lock过程,ReentrantLock把所有Lock接口的操作都委派到一个Sync类上，该类继承了AbstractQueuedSynchronizer（简称AQS）
+    1,在初始化ReentrantLock的时候，如果我们不传参数是否公平，那么默认使用非公平锁，也就是NonfairSync。
+    2,调用ReentrantLock的lock方法的时候，实际上是调用了NonfairSync的lock方法，这个方法先用CAS操作，去尝试抢占该锁。
+      如果成功，就把当前线程设置在这个锁上，表示抢占成功。如果失败，则调用acquire模板方法，等待抢占。
+    3,调用acquire(1)实际上使用的是AbstractQueuedSynchronizer的acquire方法，它是一套锁抢占的模板，总体原理是先去尝试获取锁，
+      如果没有获取成功，就在CLH队列中增加一个当前线程的节点，表示等待抢占。然后进入CLH队列的抢占模式，进入的时候也会去执行一
+      次获取锁的操作，如果还是获取不到，就调用LockSupport.park将当前线程挂起。当持有锁的那个线程调用unlock的时候，会将CLH
+      队列的头节点的下一个节点上的线程唤醒，调用的是LockSupport.unpark方法。
+ReentrantLock的UnLock过程
+    1,调用unlock方法，其实是直接调用AbstractQueuedSynchronizer的release操作。
+    2,进入release方法，内部先尝试tryRelease操作,主要是去除锁的独占线程，然后将状态减一，这里减一主要是考虑到可重入锁可能自身会
+      多次占用锁，只有当状态变成0，才表示完全释放了锁。
+    3，tryRelease成功，则将CHL队列的头节点的状态设置为0，然后唤醒下一个非取消的节点线程。
+     一旦下一个节点的线程被唤醒，被唤醒的线程就会进入acquireQueued代码流程中，去获取锁
 
 Lock与synchronized的异同
 相同处:
