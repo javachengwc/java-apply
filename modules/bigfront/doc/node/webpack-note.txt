@@ -7,6 +7,11 @@ webpack中文网站地址:https://www.webpackjs.com/
 
 npm install -g webpack webpack-cli                 ###安装webpack和webpack-cli
 webpack  {entry file}                              ###通过webpack打包
+webpack --mode development/production              ###指定mode为dev或prod打包
+webpack                                            ###自动根据配置文件打包
+
+webpack默认的入口为'./src/'和默认出口'./dist'；
+对压缩(optimization.minimize)的设置，默认在production时开启，在development时关闭
 
 webpack打包的项目可定义一个配置文件webpack.config.js，可以把所有的与打包相关的信息放在里面。比如:
 module.exports = {
