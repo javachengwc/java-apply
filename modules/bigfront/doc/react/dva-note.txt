@@ -1,0 +1,46 @@
+dva 是一个基于 redux 和 redux-saga 的数据流方案，内置了 react-router 和 fetch ，所以也可以理解为一个轻量级的应用框架
+dva不支持ie8,因为使用了 redux-saga。
+
+npm install -g dva-cli  或
+yarn global add dva-cli                              ###安装 dva-cli 用于初始化项目
+dva init                                             ###初始化项目
+npm start 或 yarn start                              ###运行项目
+
+项目结构:
+    testweb
+    | - mock                              ###存放用于 mock 数据的文件
+    | - node_modules                      ###依赖的模块
+    | - package.json
+    | - public                            ###一般用于存放静态文件，打包时会被直接复制到输出目录(./dist)
+    | - src                               ###项目代码
+      | - asserts                       ###用于存放静态资源，打包时会经过 webpack 处理
+      | - components                    ###用于存放 React 组件，一般是该项目公用的无状态组件；
+        | - models                        ###用于存放模型文件
+      | - routes                        ###用于存放需要 connect model 的路由组件；
+        | - services                      ###用于存放服务文件，一般是网络请求等；
+        | - utils                         ###工具类库
+        | - router.js                     ###路由文件
+        | - index.js                      ###项目的入口文件
+        | - index.css                     ###一般是共用的样式
+    | - .editorconfig                     ###编辑器配置文件
+    | - .eslintrc                         ###eslint配置文件
+    | - .gitignore                        ###git忽略配置
+    | - .roadhogrc.mock.js                ###mock配置文件
+    | - .webpackrc.js                     ###自定义的webpack配置文件
+antd 按需引入
+npm install antd babel-plugin-import --save 或
+yarn add antd babel-plugin-import
+###babel-plugin-import 也可以通过 -D 参数安装到 devDependencies 中，它用于实现按需加载。
+然后在 .webpackrc.js 中添加如下配置
+{
+  "extraBabelPlugins": [
+    ["import", {
+      "libraryName": "antd",
+      "libraryDirectory": "es",
+      "style": true
+    }]
+  ]
+}
+就可以按需引入 antd 的组件了，如 import { Button } from 'antd'，Button 组件的样式文件也会自动引入。
+
+--------------------------------------------
