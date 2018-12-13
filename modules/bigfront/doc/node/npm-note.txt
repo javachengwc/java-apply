@@ -17,3 +17,4 @@ rm package-lock.json
 npm install --chromedriver_cdnurl=https://npm.taobao.org/mirrors/chromedriver    ------编译,并指定chromedriver资源地址
 npm run start                                                                    ------启动项目
 
+npm init                                                       ------创建一个标准的npm说明文件package.json

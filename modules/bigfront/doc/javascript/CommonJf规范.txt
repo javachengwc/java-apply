@@ -1,0 +1,25 @@
+JavaScript的规范比较落后并且有很多缺陷，这使得难以使用JavaScript开发大型应用。比如：
+    没有模块系统
+    标准库较少
+    没有标准接口
+    缺乏包管理系统
+CommonJS规范，主要是为了弥补JavaScript没有标准的缺陷，
+以达到像Python、Ruby和Java那样具备开发大型应用的基础能力，而不是停留在开发浏览器端小脚本程序的阶段。
+CommonJS模块规范主要分为三部分：模块引用、模块定义、模块标识。
+1,模块引用
+    var math=require（'math');                   ###表示使用require（)方法，引入math模块，并赋值给变量math。
+    var add=require('./add.js')                  ###引入了当前目录下的add.js文件，并赋值给add变量
+    require的参数如果是模块名字,没有带有路径，那它引用的是当前目录下的node_modules目录下的相应模块。
+2,模块定义
+    module对象：在每一个模块中，module对象代表该模块自身。
+    export属性：module对象的一个属性，它向外提供接口。
+    add.js中的函数要能被其他模块使用，就需要暴露一个对外的接口，export属性用于完成这一工作。如:
+        exports.add=function (num1,num2){
+            alert(num1+num2);
+        }
+3,模块标识指的是传递给require方法的参数，必须是符合小驼峰命名的字符串，或者以 . 、.. 、开头的相对路径，或者绝对路径。
+
+CommonJS模块规范的好处
+    CommonJS模块规范很好地解决变量污染问题，每个模块具有独立空间，互不干扰，命名空间等方案与之相比相形见绌。
+    CommonJS规范定义模块十分简单，接口十分简洁。
+    CommonJS模块规范支持引入和导出功能，这样可以顺畅地连接各个模块，实现彼此间的依赖关系。
