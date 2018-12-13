@@ -8,6 +8,9 @@ public class NumberMain {
 	
 	public static void main(String args [])
 	{
+        BigDecimal bd1=new BigDecimal(2.01);
+        BigDecimal bd2 = new BigDecimal(2);
+        System.out.println(bd1.compareTo(bd2));
         System.out.println("null to number:"+ NumberUtils.toLong(null) );
         //经典的带小数的值计算为非精准计算
         double ad=2.3d;
