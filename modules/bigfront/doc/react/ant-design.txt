@@ -1,0 +1,3 @@
+ant design是蚂蚁金服的react实现。整合dva+umi
+
+npm install antd                       ###安装ant design
