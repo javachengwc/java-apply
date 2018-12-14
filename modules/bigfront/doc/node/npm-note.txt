@@ -1,20 +1,49 @@
+npm是javascript的包管理工具，是前端模块化下的一个标志性产物，通过npm下载模块，复用已有的代码，提高工作效率
+npm官网地址:https://www.npmjs.com/  (也是npm包的发布中心地址)
+npm淘宝镜像地址:https://npm.taobao.org
+
+npm安装模块的方式------本地安装模块和全局安装模块
+什么时候用本地／全局安装？
+1.当试图安装命令行工具的时候，例如 grunt CLI的时候，使用全局安装
+    全局安装的方式：npm install -g 模块名称
+2.当试图通过npm install 某个模块，并通过require('XXX')的方式引入的时候，使用本地安装
+    本地安装的方式：npm install 模块名称
 
 npm -v                                                         ------显示版本
-npm install express                                            ------安装express模块
+npm init                                                       ------构建新项目初始化，创建一个标准的npm说明文件package.json
+npm install express                                            ------在项目中安装express模块
 npm install -g express                                         ------全局安装express模块
+npm install -save express                                      ------在项目中安装express模块，并把此模块添加到项目配置文件package.json中,作为项目依赖
+npm install -save-dev express                                  ------在项目中安装express模块，并把此模块添加到项目配置文件package.json中，作为项目开发依赖（devDependency）
+npm i 模块名称@版本号  -save
 npm show express                                               ------显示模块详情
-npm list                                                       ------列出已安装模块
+npm list                                                       ------列出项目中已安装模块
+npm list -g                                                    ------列出全局安装的所有模块
 npm update                                                     ------级当前目录下的项目的所有模块
 npm update express                                             ------升级当前目录下的项目的指定模块
 npm update -g express                                          ------升级全局安装的express模块
-npm uninstall express                                          ------删除指定的模块
+npm uninstall express                                          ------删除项目中的指定模块
+npm uninstall -g express                                       ------删除全局模块
+npm remove 模块名称                                            ------从项目中移除已安装的模块
+npm remove -g 模块名称                                         ------从全局安装中移除已安装的模块
+npm remove 模块名称 -save                                      ------从项目中移除已安装的模块，并从配置依赖中移除依赖关系
+npm remove 模块名称 -save-dev                                  ------从项目中移除已安装的模块，并从配置依赖中移除开发依赖（devDependency）关系
 npm config list                                                ------查看npm配置信息
+npm config get prefix                                          ------查看npm所在目录
 npm config set registry https://registry.npm.taobao.org        ------指定淘宝镜像
 npm config set sass-binary-site http://npm.taobao.org/mirrors/node-sass          ------指定sass相关淘宝镜像
+
+npm adduser, 提示输入账号，密码和邮箱，然后将提示创建成功      ------创建一个npm账号，以便发布包
+npm login，  输入你账号，密码和邮箱                            ------登录npm账号
+npm publish  模块名称@版本号                                   ------发布包
+###npm对包名的限制:不能有大写字母/空格/下滑线,包的名称和版本就是项目中package.json里的name和version
+###项目中如果有部分私密的代码不想发布到npm上mm,将它写入.gitignore 或.npmignore中，上传就会被忽略了
+npm unpublish 模块名称@版本号 --force                          ------撤销发布包
+###只有在发包的24小时内才允许撤销发布的包,再次发包时,不能再和被撤销的包的名称和版本重复
+
 cd  webdir
 rmdir /q/s node_modules
 rm package-lock.json
 npm install --chromedriver_cdnurl=https://npm.taobao.org/mirrors/chromedriver    ------编译,并指定chromedriver资源地址
 npm run start                                                                    ------启动项目
 
-npm init                                                       ------创建一个标准的npm说明文件package.json
