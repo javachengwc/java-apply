@@ -1,5 +1,17 @@
-node是服务器上的 JavaScript 运行环境,2009年诞生。
+node是一个基于Chrome V8引擎的JavaScript运行环境,2009年诞生。使用了一个事件驱动、非阻塞式 I/O 的模型，使其轻量又高效。
+
 node的意义:
 JavaScript 成为服务器脚本语言，与 Python 和 Ruby 一样
 JavaScript 成为唯一的浏览器和服务器都支持的语言
 前端工程师可以编写后端程序了
+
+vim helloworld.js                               ###helloworld node程序
+    console.log("hello world");
+node helloworld.js                              ###运行helloworld.js
+
+命令行交互模式，直接在命令行中执行node,就进入交互模式，输入js代码行后，能看到执行结果
+$ node
+> console.log('hello world');
+hello world
+
+node的入门教程参考:http://www.runoob.com/nodejs

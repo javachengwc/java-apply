@@ -12,4 +12,27 @@
     npm install -g n                  ###安装n模块,n模块不支持windows系统，windows下下载新版本覆盖原安装目录即可
     n stable                          ###升级node.js到最新稳定版
     n v0.10.26                        ###升级node.js到指定版本
+
+linux下已编译好的node包安装
+wget http://nodejs.org/dist/v10.3.0/node-v10.3.0-linux-x64.tar.gz
+tar zxvf  node-v10.3.0-linux-x64.tar.gz
+cd node-v10.3.0-linux-x64
+./bin/node -v                         ###执行node命令,查看版本
+ln -s ./bin/npm   /usr/local/bin/npm  ###建软连接
+ln -s ./bin/node  /usr/local/bin/node
+
+centos下源码安装node
+wget http://nodejs.org/dist/v10.3.0/node-v10.3.0.tar.gz
+tar zxvf node-v10.3.0.tar.gz
+cd node-v10.3.0
+./configure --prefix=/usr/local/node
+make
+make install
+
+vim /etc/profile
+    export NODE_HOME=/usr/local/node
+    export PATH=$NODE_HOME/bin:$PATH
+source /etc/profile
+node -v                              ###验证是否安装配置成功
+
 -------------------------------------------------------------------------
