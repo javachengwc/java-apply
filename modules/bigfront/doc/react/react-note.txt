@@ -62,5 +62,5 @@ create-react-app 自动创建的项目是基于 Webpack + ES6
 react代码的书写格式和以前的js有一些不同。
 以前js定义一个变量使用 var 现在用 const，如:const div = document.createElement('div');
 ReactDOM.render(...) 是渲染方法，所有的 js,html 都可通过它进行渲染绘制，他有两参数，内容和渲染目标js对象。如:
-ReactDOM.render(<App />, div);
+ReactDOM.render(<App/>, div);
 
