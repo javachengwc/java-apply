@@ -1,0 +1,83 @@
+React组件
+
+###使用函数定义了一个组件
+function HelloMessage(props) {
+    return <h1>Hello World!</h1>;
+}
+
+###使用函数组件
+const element = <HelloMessage />;
+
+ReactDOM.render(
+    element,
+    document.getElementById('example')
+);
+
+
+###使用 ES6 class 来定义一个组件
+class Welcome extends React.Component {
+  render() {
+    return <h1>Hello World!</h1>;
+  }
+}
+
+
+class Clock extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {date: new Date()};
+  }
+
+  componentDidMount() {
+    this.timerID = setInterval(
+      () => this.tick(),
+      1000
+    );
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
+  tick() {
+    this.setState({
+      date: new Date()
+    });
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>Hello, world!</h1>
+        <h2>现在是 {this.state.date.toLocaleTimeString()}.</h2>
+      </div>
+    );
+  }
+}
+
+###使用 ES6 class 定义的组件
+ReactDOM.render(
+  <Clock />,
+  document.getElementById('example')
+);
+
+React 把组件看成是一个状态机（State Machines）。通过与用户的交互，实现不同状态，然后渲染 UI，让用户界面和数据保持一致。
+React 里，只需更新组件的 state，然后根据新的 state 重新渲染用户界面（不要操作 DOM）。
+
+React 组件的生命周期可分成三个状态：
+    Mounting：已插入真实 DOM
+    Updating：正在被重新渲染
+    Unmounting：已移出真实 DOM
+
+生命周期的方法有：
+    componentWillMount 在渲染前调用,在客户端也在服务端。
+    componentDidMount : 在第一次渲染后调用，只在客户端。之后组件已经生成了对应的DOM结构，可以通过this.getDOMNode()来进行访问。
+    componentWillReceiveProps 在组件接收到一个新的 prop (更新后)时被调用。这个方法在初始化render时不会被调用。
+    shouldComponentUpdate 返回一个布尔值。在组件接收到新的props或者state时被调用。在初始化时或者使用forceUpdate时不被调用。
+    componentWillUpdate在组件接收到新的props或者state但还没有render时被调用。在初始化时不会被调用。
+    componentDidUpdate 在组件完成更新后立即调用。在初始化时不会被调用。
+    componentWillUnmount在组件从 DOM 中移除之前立刻被调用。
+
+react组件的数据可以通过componentDidMount方法中的ajax来获取，当从服务端获取数据时可以将数据存储在state中，再用this.setState方法重新渲染UI。
+当使用异步加载数据时，在组件卸载前使用componentWillUnmount来取消未完成的请求。
+

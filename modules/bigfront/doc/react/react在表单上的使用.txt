@@ -1,0 +1,91 @@
+实例1:输入框值变化对应文本变化
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>React 实例1</title>
+<script src="https://cdn.staticfile.org/react/16.4.0/umd/react.development.js"></script>
+<script src="https://cdn.staticfile.org/react-dom/16.4.0/umd/react-dom.development.js"></script>
+<script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
+</head>
+<body>
+<div id="example"></div>
+
+<script type="text/babel">
+class Content extends React.Component {
+  render() {
+    return  <div>
+            <input type="text" value={this.props.myDataProp} onChange={this.props.updateStateProp} />
+            <h4>{this.props.myDataProp}</h4>
+            </div>;
+  }
+}
+class HelloMessage extends React.Component {
+  constructor(props) {
+      super(props);
+      this.state = {value: '输入值'};
+      this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange(event) {
+    this.setState({value: event.target.value});
+  }
+  render() {
+    var value = this.state.value;
+    return <div>
+            <Content myDataProp = {value}
+              updateStateProp = {this.handleChange}></Content>
+           </div>;
+  }
+}
+ReactDOM.render(
+  <HelloMessage />,
+  document.getElementById('example')
+);
+</script>
+
+</body>
+</html>
+
+实例2:在react中，不使用selected属性，而在select标签上用value属性来表示选中项。
+class SelectForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {value: 'aa'};
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleChange(event) {
+    this.setState({value: event.target.value});
+  }
+
+  handleSubmit(event) {
+    alert('selected is: ' + this.state.value);
+    event.preventDefault();//相当于return false;
+  }
+
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <label>
+          you select is :
+          <select value={this.state.value} onChange={this.handleChange}>
+            <option value="aa">aa</option>
+            <option value="bb">bb</option>
+            <option value="cc">cc</option>
+            <option value="dd">dd</option>
+          </select>
+        </label>
+        <input type="submit" value="提交" />
+      </form>
+    );
+  }
+}
+
+ReactDOM.render(
+  <FlavorForm />,
+  document.getElementById('example')
+);
+
