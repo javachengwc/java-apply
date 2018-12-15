@@ -21,6 +21,7 @@ npm list                                                       ------列出项�
 npm list -g                                                    ------列出全局安装的所有模块
 npm list express                                               ------查看已安装模块express的信息
 npm search express                                             ------搜索express模块
+npm info express                                               ------查看express的信息
 npm update                                                     ------级当前目录下的项目的所有模块
 npm update express                                             ------升级当前目录下的项目的指定模块
 npm update -g express                                          ------升级全局安装的express模块

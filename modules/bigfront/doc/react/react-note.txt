@@ -1,1 +1,66 @@
-react起源于 Facebook 的内部项目。
+react是一个用于构建用户界面的js库。主要用于构建UI，很多人认为react是MVC中的V（视图）。
+react起源于facebook的内部项目，于2013年5月开源。拥有较高的性能，代码逻辑简单。
+react特点:
+    1.声明式设计−react采用声明范式，可以轻松描述应用。
+    2.高效−react通过对DOM的模拟，最大限度地减少与DOM的交互。
+    3.灵活−react可以与已知的库或框架很好地配合。
+    4.JSX−JSX是js语法的扩展。babel内嵌了对 JSX 的支持。
+    5.组件−通过react构建组件，使得代码更加容易得到复用，能够很好的应用在大项目的开发中。
+    6.单向响应的数据流−react实现了单向响应的数据流，从而减少了重复代码，比传统数据绑定更简单。
+
+react的入门教程参考:http://www.runoob.com/react
+
+react的hello world例子
+vim helloworld.html
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <meta charset="UTF-8" />
+    <title>Hello React!</title>
+    <script src="https://cdn.staticfile.org/react/16.4.0/umd/react.development.js"></script>
+    <script src="https://cdn.staticfile.org/react-dom/16.4.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
+    </head>
+    <body>
+
+    <div id="example"></div>
+    <script type="text/babel">
+        ReactDOM.render(
+            <h1>Hello, world!</h1>,
+            document.getElementById('example')
+        );
+    </script>
+
+    </body>
+    </html>
+
+使用create-react-app快速构建react开发环境
+create-react-app 是来自于 facebook，通过该命令无需配置就能快速构建react开发环境。
+create-react-app 自动创建的项目是基于 Webpack + ES6
+    cnpm install -g create-react-app                      ###全局安装create-react-app
+    create-react-app my-app                               ###创建项目my-app
+    cd my-app/
+    npm start                                             ###启动my-app
+项目目录结构
+    my-app/
+        README.md
+        node_modules/
+        package.json
+        .gitignore
+        public/
+            favicon.ico
+            index.html
+            manifest.json                                  ###manifest.json指定开始页面index.html
+        src/
+            App.css
+            App.js
+            App.test.js
+            index.css
+            index.js
+            logo.svg
+----------------------------------------------
+react代码的书写格式和以前的js有一些不同。
+以前js定义一个变量使用 var 现在用 const，如:const div = document.createElement('div');
+ReactDOM.render(...) 是渲染方法，所有的 js,html 都可通过它进行渲染绘制，他有两参数，内容和渲染目标js对象。如:
+ReactDOM.render(<App />, div);
+
