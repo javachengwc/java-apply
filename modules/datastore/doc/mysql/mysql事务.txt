@@ -6,11 +6,11 @@
     持久性（Durability）：一旦事务完成，无论发生什么系统错误，它的结果都不应该受到影响，这样就能从任何系统崩溃中恢复过来。通常情况下，事务的结果被写到持久化存储器中。
 
 mysql默认是repeatable read 隔离级别。也就是可重复读（repeatable-read）。
-mysql事务隔离级别 	            脏读 	不可重复读 	幻读
+mysql事务隔离级别 	                脏读 	不可重复读 	幻读
 读未提交（read-uncommitted） 	    是 	        是 	     是
-不可重复读（read-committed） 	    否 	        是 	     是
-可重复读（repeatable-read） 	    否 	        否 	     是
-串行化（serializable） 	        否 	        否 	     否
+读已提交（read-committed） 	        否 	        是 	     是
+可重复读（repeatable-read） 	    否 	        否 	     否/是(InnoDB和XtraDB存储引擎通过多版本并发控制（MVCC）解决了幻读的问题)
+串行化（serializable） 	            否 	        否 	     否
 --------------------------------------------------------
 select @@tx_isolation;                                              ###查看当前事务隔离级别
 set session transaction isolation level read committed;
