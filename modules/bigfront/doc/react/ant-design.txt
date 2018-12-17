@@ -1,3 +1,40 @@
-ant design是蚂蚁金服的react实现。整合dva+umi
+ant design是蚂蚁金服的react实现。整合dva+umi，开发和服务于企业级后台产品。
+特性
+    提炼自企业级中后台产品的交互语言和视觉风格。
+    开箱即用的高质量 React 组件。
+    使用 TypeScript 构建，提供完整的类型定义文件。
+    全链路开发和设计工具体系。
+支持环境
+    现代浏览器和IE9及以上
+    支持服务端渲染
 
-npm install antd                       ###安装ant design
+npm install antd 或
+yarn add antd                      ###安装ant design
+npm install -g create-umi          ###安装全局create-umi
+cd myapp
+create-umi                         ###通过create-umi初始化项目myapp
+yarn 或 npm install                ###安装myapp项目依赖
+yarn start 或 npm run start        ###启动myapp项目
+
+antd 按需加载组件,使用 babel-plugin-import
+// .babelrc or babel-loader option
+{
+  "plugins": [
+    ["import", {
+      "libraryName": "antd",
+      "libraryDirectory": "es",
+      "style": "css"   ###`style: true` 会加载less文件
+    }]
+  ]
+}
+
+按需引入:
+import { DatePicker } from 'antd';
+
+手动引入:
+import DatePicker from 'antd/lib/date-picker';  ###加载 JS
+import 'antd/lib/date-picker/style/css';        ###加载 CSS
+// import 'antd/lib/date-picker/style';         ###加载 LESS
+
+antd 的样式使用了 Less 作为开发语言，并定义了一系列全局/组件的样式变量，可以根据需求进行相应调整。
+

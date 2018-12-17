@@ -9,3 +9,5 @@ umi 是蚂蚁金服的底层前端框架，它的特点有:
     一键兼容到 IE9，基于 umi-plugin-polyfills
     完善的 TypeScript 支持，包括 d.ts 定义和 umi test
     与 dva 数据流的深入融合，支持 duck directory、model 的自动加载、code splitting 等等
+
+umi 里约定 src/models 下的 model 会被自动注入，无需手动注入。
