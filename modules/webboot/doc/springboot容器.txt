@@ -15,6 +15,8 @@ server.tomcat.basedir=H:/springboot-tomcat-tmp
 logging.path=E:/springboot-tomcat-log
 # 日志文件名称，默认为spring.log
 logging.file=info.log
+##解除tomcat上传文件大小限制
+server.tomcat.max-http-post-size=0
 
 spring boot对容器的初始化,大致有如下两种方式:
 1,@Component()

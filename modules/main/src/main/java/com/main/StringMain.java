@@ -29,6 +29,8 @@ public class StringMain {
 
     public static void main(String args []) throws Exception
 	{
+
+	    System.out.println("aa".equalsIgnoreCase(null));
         String abce="1y94932749237";
         int ablen =abce.length();
         System.out.println(abce.substring(ablen-3));
