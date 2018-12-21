@@ -15,3 +15,31 @@ $ node
 hello world
 
 node的入门教程参考:http://www.runoob.com/nodejs
+
+node.js最重要的一个文件就是package.json，其中的配置参数决定了功能。
+node package有两种依赖，一种是dependencies，是正常运行该包时所需要的依赖项，
+另一种是devDependencies，是开发的时候需要的依赖项。
+"dependencies": {}                         ###生产环境
+"devDependencies": {}                      ###开发环境
+npm install                                ###dependencies,devDependencies里面的模块都会被安装。
+npm install --production                   ###只安装dependencies里面的包
+npm install --dev                          ###只安装devDependencies里面的包
+每一个模块后面对应的就是它的版本号，如:^1.2.3，
+npm包版本号采用3元组的版本控制，[major，minor，patch]
+例如版本号1.0.9，1是major，主版本号 ，0是minor，小版本号，9是patch，补丁号。
+对于版本^1.0.0，允许变更的是minor和patch，因为左边第一位major是1，非零，不能发生改变，它右边的都可以发生改变，即minor 0和patch 0都可以发生改变。
+版本号表达式                        版本范围
+^1.2.3 	                            >=1.2.3 <2.0.0           ###^表示大于等于
+^0.2.3 	                            >=0.2.3 <0.3.0
+^0.0.3                             	>=0.0.3 <0.0.4
+^1.2.x 	                            >=1.2.0 <2.0.0
+^0.0.x 	                            >=0.0.0 <0.1.0
+^0.0 	                            >=0.0.0 <0.1.0
+^1.x 	                            >=1.0.0 <2.0.0
+^0.x 	                            >=0.0.0 <1.0.0
+1.2                                 >=1.2.0 <1.3.0
+1.2.x                               >=1.2.0 <1.3.0
+1.2.3 - 2.3.4                       >=1.2.3 <=2.3.4
+~1.2.3                              >=1.2.3 <1.3.0            ###~表示依这个开头
+~1.2                                >=1.2.0 <1.3.0
+~1                                  >=1.0.0 <2.0.0
