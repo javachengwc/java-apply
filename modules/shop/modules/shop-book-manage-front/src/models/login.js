@@ -14,17 +14,21 @@ export default {
 
   effects: {
     *login(param, { call, put, select }) {
+      //这里将会调用services中对应的loginIn方法
       const response = yield call(loginIn, param.data);
-      localStorage.removeItem('carDealer');
-      // Login successfully
-      if (get(response, 'header.ret') === 'S') {
+      //登录成功
+      if (get(response, 'header.code') === 0) {
+        //myuser--当前登录用户
         localStorage.setItem('myuser', JSON.stringify(response.data));
-        localStorage.setItem('token', response.data.token);
-        yield put.resolve({
-          type: 'global/fetchCityTree',
-        });
-        const cityTree = yield select(state => state.global.cityTree);
-        localStorage.setItem('gjCity', JSON.stringify(getNew(cityTree)));
+        //token--当前登录用户的token
+        const token =response.data.token;
+        //alert(token);
+        localStorage.setItem('token',token);
+//        yield put.resolve({
+//          type: 'global/fetchCityTree',
+//        });
+//        const cityTree = yield select(state => state.global.cityTree);
+//        localStorage.setItem('gjCity', JSON.stringify(getNew(cityTree)));
         let path = '';
         //菜单列表
         const menuData = getMenu();

@@ -35,7 +35,7 @@ export default class LoginPage extends Component {
   };
 
   checkPhone = (rule, value, callback) => {
-    //校验电话的同事改变获取验证码的样式
+    //手机号校验
     const reg = /^1\d{10}/;
     if (value && !reg.test(value)) {
       this.setState({
@@ -51,7 +51,7 @@ export default class LoginPage extends Component {
   };
   onGetCaptcha = () => {
     //获取验证码
-    let count = 59;
+    let count = 60;
     const { form } = this.props;
     let data = form.getFieldValue('mobile');
     this.props.dispatch({

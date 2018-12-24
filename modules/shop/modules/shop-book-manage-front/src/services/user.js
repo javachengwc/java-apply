@@ -18,10 +18,10 @@ export async function getCaptcha(params) {
     })
   );
 }
-/**
- * 登录
- */
+
+//登录
 export async function loginIn(params) {
+  alert("services user loginIn start");
   return catchError(
     request('/login', {
       method: 'POST',
@@ -30,9 +30,7 @@ export async function loginIn(params) {
   );
 }
 
-/**
- * 退出
- */
+//退出
 export async function loginOut() {
   return catchError(
     request('/logout', {
@@ -41,9 +39,7 @@ export async function loginOut() {
   );
 }
 
-/**
- * 分页查询用户
- */
+//分页查询用户
 export async function queryUsers(params) {
   return catchError(
     request('/user/queryUsers', {
@@ -55,9 +51,7 @@ export async function queryUsers(params) {
   );
 }
 
-/**
- * 新增用户
- */
+//新增用户
 export async function addUser(params) {
   return catchError(
     request('/user/add', {
