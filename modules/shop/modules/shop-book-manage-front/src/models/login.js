@@ -2,7 +2,7 @@ import { routerRedux } from 'dva/router';
 import get from 'lodash/get';
 import { getCaptcha, loginIn, loginOut, queryCities } from '../services/user';
 import { setAuthority } from '../utils/authority';
-import { getMenu } from '../routes/User/menu';
+import { getMenu } from '../utils/menu';
 
 export default {
   namespace: 'login',

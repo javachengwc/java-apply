@@ -13,10 +13,10 @@ class RegionPicker extends Component {
     this.setState({
       cascaderValue: [selectProvince, selectCity, selectDistrict],
       detailAddress,
-    });   
+    });
   }
 
-  onCascaderChange = (cascaderValue) => {
+  onCascaderChange = cascaderValue => {
     const { onChange } = this.props;
     const { detailAddress } = this.state;
     const newCascaderValue = cascaderValue.length ? cascaderValue : ['', '', ''];

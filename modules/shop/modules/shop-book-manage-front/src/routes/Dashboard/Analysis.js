@@ -136,7 +136,9 @@ export default class Analysis extends Component {
     const salesPieData =
       salesType === 'all'
         ? salesTypeData
-        : salesType === 'online' ? salesTypeDataOnline : salesTypeDataOffline;
+        : salesType === 'online'
+        ? salesTypeDataOnline
+        : salesTypeDataOffline;
 
     const menu = (
       <Menu>

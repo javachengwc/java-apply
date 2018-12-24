@@ -99,7 +99,9 @@ export default class Workplace extends PureComponent {
   }
 
   renderActivities() {
-    const { activities: { list } } = this.props;
+    const {
+      activities: { list },
+    } = this.props;
     return list.map(item => {
       const events = item.template.split(/@\{([^{}]*)\}/gi).map(key => {
         if (item[key]) {

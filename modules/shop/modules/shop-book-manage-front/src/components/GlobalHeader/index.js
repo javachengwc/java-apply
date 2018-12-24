@@ -16,7 +16,7 @@ export default class GlobalHeader extends PureComponent {
     if (notices.length === 0) {
       return {};
     }
-    const newNotices = notices.map((notice) => {
+    const newNotices = notices.map(notice => {
       const newNotice = { ...notice };
       if (newNotice.datetime) {
         newNotice.datetime = moment(notice.datetime).fromNow();
@@ -78,7 +78,8 @@ export default class GlobalHeader extends PureComponent {
         </Menu.Item> */}
         <Menu.Divider />
         <Menu.Item key="logout">
-          <Icon type="logout" />退出登录
+          <Icon type="logout" />
+          退出登录
         </Menu.Item>
       </Menu>
     );

@@ -56,7 +56,7 @@ export function getTimeDistance(type) {
 
 export function getPlainNode(nodeList, parentPath = '') {
   const arr = [];
-  nodeList.forEach((node) => {
+  nodeList.forEach(node => {
     const item = node;
     item.path = `${parentPath}/${item.path || ''}`.replace(/\/+/g, '/');
     item.exact = true;
@@ -162,7 +162,7 @@ export function getRoutes(path, routerData) {
   // Get the route to be rendered to remove the deep rendering
   const renderArr = getRenderArr(routes);
   // Conversion and stitching parameters
-  const renderRoutes = renderArr.map((item) => {
+  const renderRoutes = renderArr.map(item => {
     const exact = !routes.some(route => route !== item && getRelation(route, item) === 1);
     return {
       ...routerData[`${path}${item}`],
@@ -204,7 +204,7 @@ export const getContianer = () => {
   return document.querySelector('.ant-layout-content');
 };
 
-export const convertObj2Params = (obj) => {
+export const convertObj2Params = obj => {
   return Object.keys(obj)
     .filter(key => obj[key])
     .map(key => `${key}=${obj[key]}`)

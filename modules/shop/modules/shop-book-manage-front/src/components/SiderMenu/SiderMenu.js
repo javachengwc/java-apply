@@ -50,7 +50,9 @@ export default class SiderMenu extends PureComponent {
    * @param  props
    */
   getDefaultCollapsedSubMenus(props) {
-    const { location: { pathname } } = props || this.props;
+    const {
+      location: { pathname },
+    } = props || this.props;
     return urlToList(pathname)
       .map(item => {
         return getMeunMatchKeys(this.flatMenuKeys, item)[0];
@@ -158,7 +160,9 @@ export default class SiderMenu extends PureComponent {
   };
   // Get the currently selected menu
   getSelectedMenuKeys = () => {
-    const { location: { pathname } } = this.props;
+    const {
+      location: { pathname },
+    } = this.props;
     return urlToList(pathname).map(itemPath => getMeunMatchKeys(this.flatMenuKeys, itemPath).pop());
   };
   // conversion Path

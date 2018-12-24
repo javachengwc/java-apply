@@ -39,7 +39,11 @@ export default class SearchList extends Component {
   };
 
   render() {
-    const { form, list: { list }, loading } = this.props;
+    const {
+      form,
+      list: { list },
+      loading,
+    } = this.props;
     const { getFieldDecorator } = form;
 
     const owners = [
