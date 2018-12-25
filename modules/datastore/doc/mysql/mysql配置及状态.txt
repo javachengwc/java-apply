@@ -466,4 +466,14 @@ read 请求3215992991498次，其中有65634998次所请求的数据在buffer po
 也就是说有65634998次是通过读取物理磁盘来读取数据的，所以很容易也就得出
 Innodb Buffer Pool 的Read 命中率大概在为：(3215992991498- 65634998)/ 3215992991498* 100% = 99.998%。
 
+-----查看mysql数据库数据大小
+use information_schema;
+###查询所有数据的大小
+select concat(round(sum(data_length/1024/1024),2),'MB') as data from tables;
+
+###查询某数据库的大小
+select concat(round(sum(data_length/1024/1024),2),'MB') as data from tables where table_schema='user';
+
+###查询某表的大小
+select concat(round(sum(data_length/1024/1024),2),'MB') as data from tables where table_schema='user' and table_name='user';
 ---------------------------------------------------------------

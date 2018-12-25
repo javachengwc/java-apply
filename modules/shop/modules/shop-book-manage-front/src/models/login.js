@@ -83,6 +83,7 @@ export default {
       });
     },
     *loginOut(_, { call, put }) {
+      alert("models *loginOut invoked...")
       const response = yield call(loginOut);
       if (get(response, 'header.code') === 0) {
         localStorage.removeItem('token');

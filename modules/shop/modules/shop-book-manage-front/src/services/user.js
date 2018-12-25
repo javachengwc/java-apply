@@ -32,6 +32,7 @@ export async function loginIn(params) {
 
 //退出
 export async function loginOut() {
+alert("services user loginOut start");
   return catchError(
     request('/logout', {
       method: 'POST',
