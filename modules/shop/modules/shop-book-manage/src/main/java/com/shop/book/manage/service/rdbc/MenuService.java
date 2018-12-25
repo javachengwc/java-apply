@@ -28,4 +28,7 @@ public interface MenuService {
 
     //菜单树
     public List<MenuVo> queryMenuTree();
+
+    //查询用户可见的菜单
+    public List<MenuVo> queryUserMenu(Long userId);
 }

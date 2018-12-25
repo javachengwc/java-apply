@@ -104,7 +104,7 @@ public class RoleServiceImpl implements RoleService {
         return rt;
     }
 
-    public List<RoleVo> queryByUserId(Long userId) {
+    public List<RoleVo> queryUserRole(Long userId) {
         List<RoleVo> list = roleDao.queryByUserId(userId);
         return  list;
     }

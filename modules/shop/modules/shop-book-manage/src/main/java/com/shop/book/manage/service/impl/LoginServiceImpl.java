@@ -5,7 +5,11 @@ import com.shop.book.manage.enums.ApiCode;
 import com.shop.book.manage.model.pojo.User;
 import com.shop.book.manage.model.vo.LoginResultVo;
 import com.shop.book.manage.model.vo.LoginVo;
+import com.shop.book.manage.model.vo.MenuVo;
+import com.shop.book.manage.model.vo.RoleVo;
 import com.shop.book.manage.service.LoginService;
+import com.shop.book.manage.service.rdbc.MenuService;
+import com.shop.book.manage.service.rdbc.RoleService;
 import com.shop.book.manage.service.rdbc.UserService;
 import com.shop.book.manage.shiro.ShiroConstant;
 import com.shop.book.manage.shiro.ShiroManager;
@@ -14,6 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class LoginServiceImpl implements LoginService {
@@ -25,6 +31,12 @@ public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private MenuService menuService;
+
+    @Autowired
+    private RoleService roleService;
 
     //登录
     public Resp<LoginResultVo> login(LoginVo loginVo) {
@@ -42,8 +54,9 @@ public class LoginServiceImpl implements LoginService {
             return Resp.error(sessionResp);
         }
 
+        Long userId =user.getId();
         LoginResultVo loginResult = new LoginResultVo();
-        loginResult.setUserId(user.getId());
+        loginResult.setUserId(userId);
         loginResult.setMobile(mobile);
         loginResult.setName(user.getName());
 
@@ -52,6 +65,14 @@ public class LoginServiceImpl implements LoginService {
         session.setAttribute(ShiroConstant.SHIRO_SESSION_USER_ROLES_KEY, loginResult.getRoles());
         String token =session.getId().toString();
         loginResult.setToken(token);
+
+        //菜单
+        List<MenuVo> menuList= menuService.queryUserMenu(userId);
+        loginResult.setMenus(menuList);
+
+        //角色
+        List<RoleVo> roleList = roleService.queryUserRole(userId);
+        loginResult.setRoles(roleList);
 
         return Resp.success(loginResult);
     }

@@ -29,6 +29,6 @@ public interface RoleService {
 
     public boolean hasExistRoleCode(String code);
 
-    public List<RoleVo> queryByUserId(Long userId);
+    public List<RoleVo> queryUserRole(Long userId);
 
 }

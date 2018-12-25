@@ -87,31 +87,37 @@ public class MenuServiceImpl implements MenuService {
         MenuExample example = new MenuExample();
         example.setOrderByClause(" parent_id asc , sort asc ");
         List<Menu> list = menuMapper.selectByExample(example);
-        List<MenuVo> rtList = genTree(list);
+        List<MenuVo> midList =TransUtil.transList(list,MenuVo.class);
+        List<MenuVo> rtList = genTree(midList);
         return  rtList;
     }
 
-    public List<MenuVo> genTree(List<Menu> list) {
+    public List<MenuVo> genTree(List<MenuVo> list) {
         if(list==null || list.size()<=0) {
             return null;
         }
         List<MenuVo> rtList = new ArrayList<MenuVo>();
-        for (Menu menu : list) {
+        for (MenuVo menu : list) {
             if (menu.getParentId() == null || menu.getParentId() <= 0) {
-                MenuVo vo = TransUtil.transEntity(menu,MenuVo.class);
-                rtList.add(appendChildren(vo, list));
+                rtList.add(appendChildren(menu, list));
             }
         }
         return rtList;
     }
 
-    private MenuVo appendChildren(MenuVo parentMenu, List<Menu> list) {
-        for (Menu per : list) {
+    private MenuVo appendChildren(MenuVo parentMenu, List<MenuVo> list) {
+        for (MenuVo per : list) {
             if (per.getParentId() != null && per.getParentId().longValue() == parentMenu.getId()) {
-                MenuVo vo = TransUtil.transEntity(per,MenuVo.class);
-                parentMenu.getChildren().add(appendChildren(vo, list));
+                parentMenu.getChildren().add(appendChildren(per, list));
             }
         }
         return parentMenu;
+    }
+
+    //查询用户可见的菜单
+    public List<MenuVo> queryUserMenu(Long userId) {
+        List<MenuVo> list = menuDao.queryUserMenu(userId);
+        List<MenuVo> rtList = genTree(list);
+        return  rtList;
     }
 }

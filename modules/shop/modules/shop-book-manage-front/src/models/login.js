@@ -22,7 +22,7 @@ export default {
         localStorage.setItem('myuser', JSON.stringify(response.data));
         //token--当前登录用户的token
         const token =response.data.token;
-        //alert(token);
+        alert(token);
         localStorage.setItem('token',token);
 //        yield put.resolve({
 //          type: 'global/fetchCityTree',
@@ -31,9 +31,11 @@ export default {
 //        localStorage.setItem('gjCity', JSON.stringify(getNew(cityTree)));
         let path = '';
         //菜单列表
+        alert("yaya!!!!")
         const menuData = getMenu();
         if (menuData && menuData.length > 0) {
           path += `/${menuData[0].path}/`;
+          alert(path);
           if (menuData[0].children && menuData[0].children.length > 0) {
             path += menuData[0].children[0].path;
           }
@@ -82,7 +84,7 @@ export default {
     },
     *loginOut(_, { call, put }) {
       const response = yield call(loginOut);
-      if (get(response, 'header.ret') === 'S') {
+      if (get(response, 'header.code') === 0) {
         localStorage.removeItem('token');
         yield put(routerRedux.push('/user/login'));
       }
