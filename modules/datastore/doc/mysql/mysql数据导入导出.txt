@@ -10,7 +10,7 @@ mysqldump -hhostname -uusername -ppassword databasename | gzip > backupfile.sql.
 mysqldump -hhostname -uusername -ppassword --skip-lock-tables databasename table1 table2 > backupfile.sql
 
 -----同时备份多个MySQL数据库
-mysqldump -hhostname -uusername -ppassword –-databases databasename1 databasename2 databasename3 > multibackupfile.sql
+mysqldump -hhostname -uusername -ppassword --databases databasename1 databasename2 databasename3 > multibackupfile.sql
 
 -----备份数据库结构
 mysqldump -hhostname -uusername -ppassword --no-data --databases databasename1 databasename2 databasename3 > structurebackupfile.sql

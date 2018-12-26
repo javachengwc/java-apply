@@ -41,6 +41,7 @@ const getFileName = fileHeader => {
 };
 
 /**
+ * 调用后端接口的入口
  * Requests a URL, returning a promise.
  *
  * @param  {string} url       The URL we want to request
@@ -121,8 +122,8 @@ export default function request(link, options) {
 
 export function catchError(request) {
   return request.then(data => {
-    if (get(data, 'header.ret') === 'F') {
-      message.error(get(data, 'header.msg[0]') || '未知错误');
+    if (get(data, 'header.code') !=0 ) {
+      message.error(get(data, 'header.msg') || '未知错误');
 
       switch (+data.header.code) {
         // 登录过期
