@@ -1,12 +1,12 @@
 import { isUrl } from '../utils/utils';
 
-let menuData = [];
 function getMenu() {
-  let roleVos;
+  let menuData = [];
+  let roleList;
   try {
-    roleVos = JSON.parse(localStorage.getItem('myuser') || '{}').roleVos || [];
+    roleList = JSON.parse(localStorage.getItem('myuser') || '{}').roles || [];
   } catch (e) {}
-  if (roleVos && roleVos.length > 0) {
+  if (roleList && roleList.length > 0) {
     menuData = [
       {
         name: '账户管理',
