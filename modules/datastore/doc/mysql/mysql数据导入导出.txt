@@ -64,4 +64,13 @@ mysqldump -hhostname -uusername -ppassword databasename | mysql -hhostname -C da
 
 -----导入本地脚本
 source /tmp/import.sql
+
+在mysql导入中报错
+error1227（42000）at line 18: Acess denied; you need (at least one of) the SUPER privilege(s) for this operation
+定位到18行显示的是一个这样的语句： set @@session.sql_log_bin=0
+正常来说是不会出现这种情况的，此语句是控制当前session的写语句是否写入binlog
+解决方式，1是导入账号root权限，2是直接删除掉sql中的set @@session.sql_log_bin语句
+linux中，使用下面的语句去除
+sed '/SESSION.SQL_LOG_BIN/N;s/,\n/,/' backup.sql | grep -iv 'SET @@SESSION.SQL_LOG_BIN' > backup2.sql
+
 -------------------------------------------
