@@ -1,0 +1,10 @@
+此前端项目基于ant design pro 1.3.0版本上进行开发。
+项目结构中部分目录说明:
+    routes     每个路由对应的页面组件文件。主要定义具体页面的基本结构和内容。
+    services   用于与后台交互、发送请求等。
+    models     用于组件的数据存储，接收请求返回的数据等。
+    components 组件文件夹。每个页面可能是由一些组件组成的，
+               对于一些相对通用的组件，建议将该组件写入components文件夹中，并在routes文件夹中的文件引入来使用。
+ant design pro中，前端路由是通过react-router进行路由管理的
+路由的配置文件统一由src/common/router.js文件进行管理。
+

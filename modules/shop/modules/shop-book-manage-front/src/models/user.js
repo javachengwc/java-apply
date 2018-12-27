@@ -1,5 +1,7 @@
 import get from 'lodash/get';
 import { message } from 'antd';
+
+import { reqSuccess } from '../utils/utils';
 import {
   queryUsers,
   queryRoles,
@@ -46,7 +48,7 @@ export default {
     *queryUsers(_, { put, call, select }) {
       const data = yield select(state => state.user.getListParams);
       const response = yield call(queryUsers, data);
-      if (get(response, 'header.ret') === 'S') {
+      if (reqSuccess(response)) {
         yield put({
           type: 'saveUserList',
           payload: response,
@@ -56,7 +58,7 @@ export default {
     // 查询角色
     *queryRoles(_, { put, call }) {
       const response = yield call(queryRoles);
-      if (get(response, 'header.ret') === 'S') {
+      if (reqSuccess(response)) {
         yield put({
           type: 'saveRoles',
           payload: response,
@@ -65,11 +67,11 @@ export default {
     },
     // 查询单个用户详情
     *getOne({ data }, { put, call }) {
-      const res = yield call(queryUserById, data);
-      if (get(res, 'header.ret') === 'S') {
+      const response = yield call(queryUserById, data);
+      if (reqSuccess(response)) {
         yield put({
           type: 'itemDetail',
-          data: res.data,
+          data: response.data,
         });
         yield put({
           type: 'showForm',
@@ -79,8 +81,8 @@ export default {
     },
     // 更新用户
     *update({ data }, { put, call }) {
-      const res = yield call(updateUser, data);
-      if (get(res, 'header.ret') === 'S') {
+      const response = yield call(updateUser, data);
+      if (reqSuccess(response)) {
         message.success('操作成功！');
         yield put({
           type: 'showForm',
@@ -94,7 +96,7 @@ export default {
     // 添加用户
     *add({ data }, { put, call }) {
       const response = yield call(addUser, data);
-      if (get(response, 'header.ret') === 'S') {
+      if (reqSuccess(response)) {
         message.success('操作成功！');
         yield put({
           type: 'showForm',
@@ -105,10 +107,10 @@ export default {
         });
       }
     },
-    //禁用用户
+    //冻结用户
     *disableUser({ data }, { put, call }) {
       const response = yield call(disable, data);
-      if (get(response, 'header.ret') === 'S') {
+      if (reqSuccess(response)) {
         message.success('操作成功！');
         yield put({
           type: 'queryUsers',
@@ -118,7 +120,7 @@ export default {
     //启用用户
     *enableUser({ data }, { put, call }) {
       const response = yield call(enable, data);
-      if (get(response, 'header.ret') === 'S') {
+      if (reqSuccess(response)) {
         message.success('操作成功！');
         yield put({
           type: 'queryUsers',

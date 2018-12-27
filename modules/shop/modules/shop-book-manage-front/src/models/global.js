@@ -1,7 +1,7 @@
 //引入services目录下的组件，就会先加载它
 import { queryNotices } from '../services/api';
 import { queryCities } from '../services/user';
-import { requestIsSuccess } from '../utils/utils';
+import { reqSuccess } from '../utils/utils';
 
 //alert("me global is 3");
 
@@ -53,7 +53,7 @@ export default {
       } catch (e) {}
       if (!cityTree || !cityTree.length) {
         const res = yield call(queryCities);
-        if (requestIsSuccess(res)) {
+        if (reqSuccess(res)) {
           cityTree = res.data;
           localStorage.setItem('cityTree', JSON.stringify(cityTree));
         }

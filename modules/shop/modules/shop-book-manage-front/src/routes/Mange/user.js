@@ -35,6 +35,9 @@ export default class LoginPage extends Component {
   state = {
     visible: false,
   };
+
+  //在渲染后就调用的请求，具体调用的请求在dispatch中,
+  //它将根据dispatch中的type值找到对应的models中的函数来发送请求
   componentDidMount() {
     const { dispatch, getListParams, form } = this.props;
     dispatch({
