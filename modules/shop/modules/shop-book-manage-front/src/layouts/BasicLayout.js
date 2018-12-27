@@ -20,9 +20,7 @@ import logo from '../assets/logo.png';
 const { Content, Header, Footer } = Layout;
 const { AuthorizedRoute, check } = Authorized;
 
-/**
- * 根据菜单取得重定向地址.
- */
+//菜单取得重定向地址
 const redirectData = [];
 const getRedirect = item => {
   if (item && item.children) {

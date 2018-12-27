@@ -6,6 +6,8 @@ public class RandomUtil {
 	
 	private static String randamStr= "abcdefghijklmnopqrstuvwxyz0123456789";
 
+	private static String randamNumStr="0123456789";
+
     public static int nextRandomInt(int min, int max) {
         int value = max - min + 1;
         return  new Random().nextInt((value <= 0)?1:value) + min;
@@ -42,7 +44,7 @@ public class RandomUtil {
     }
 
 	/**
-	 * 生成length长度的字符串
+	 * 生成length长度的随机字符串
 	 * @param length
 	 * @return
 	 */
@@ -55,6 +57,20 @@ public class RandomUtil {
 	    }  
 	    return sb.toString();  
 	}
+
+    /**
+     * 生成length长度的随机数字字符串
+     */
+    public static String getRandomNumStr(int length) {
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+        int numStrLen = randamNumStr.length();
+        for (int i = 0; i < length; i++) {
+            int number = random.nextInt(numStrLen);
+            sb.append(randamNumStr.charAt(number));
+        }
+        return sb.toString();
+    }
 
     /**
      * 获得UUID

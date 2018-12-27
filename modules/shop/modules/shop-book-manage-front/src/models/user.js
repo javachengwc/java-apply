@@ -3,14 +3,15 @@ import { message } from 'antd';
 
 import { reqSuccess } from '../utils/utils';
 import {
-  queryUsers,
-  queryRoles,
+  queryUserPage,
   queryUserById,
   updateUser,
   addUser,
-  disable,
-  enable,
+  disableUser,
+  enableUser,
 } from '../services/user';
+
+import { queryAllRole } from '../services/role';
 
 export default {
   namespace: 'user',
@@ -19,7 +20,7 @@ export default {
     currentUser: {}, // 当前对象的信息存储
     userList: {
       // 用户列表
-      data: [],
+      list: [],
       totalCount: 0,
     },
     roles: {
@@ -29,7 +30,7 @@ export default {
     itemDetail: {}, // 用户详情
     getListParams: {
       // 查询参数
-      pageNo: 1,
+      pageNum: 1,
       pageSize: 10,
     },
     showAddForm: false,
@@ -45,20 +46,21 @@ export default {
       });
     },
     // 分页查询用户
-    *queryUsers(_, { put, call, select }) {
+    *queryPage(_, { put, call, select }) {
       const data = yield select(state => state.user.getListParams);
-      const response = yield call(queryUsers, data);
+      const response = yield call(queryUserPage, data);
       if (reqSuccess(response)) {
         yield put({
           type: 'saveUserList',
-          payload: response,
+          payload: response.data,
         });
       }
     },
     // 查询角色
-    *queryRoles(_, { put, call }) {
-      const response = yield call(queryRoles);
+    *queryAllRole(_, { put, call }) {
+      const response = yield call(queryAllRole);
       if (reqSuccess(response)) {
+       //把所有角色保存到本地
         yield put({
           type: 'saveRoles',
           payload: response,
@@ -89,7 +91,7 @@ export default {
           show: false,
         });
         yield put({
-          type: 'queryUsers',
+          type: 'queryPage',
         });
       }
     },
@@ -103,33 +105,33 @@ export default {
           show: false,
         });
         yield put({
-          type: 'queryUsers',
+          type: 'queryPage',
         });
       }
     },
     //冻结用户
     *disableUser({ data }, { put, call }) {
-      const response = yield call(disable, data);
+      const response = yield call(disableUser, data);
       if (reqSuccess(response)) {
         message.success('操作成功！');
         yield put({
-          type: 'queryUsers',
+          type: 'queryPage',
         });
       }
     },
     //启用用户
     *enableUser({ data }, { put, call }) {
-      const response = yield call(enable, data);
+      const response = yield call(enableUser, data);
       if (reqSuccess(response)) {
         message.success('操作成功！');
         yield put({
-          type: 'queryUsers',
+          type: 'queryPage',
         });
       }
     },
     *showAddForm(_, { put }) {
       yield put({
-        type: 'queryRoles',
+        type: 'queryAllRole',
       });
       yield put({
         type: 'showForm',

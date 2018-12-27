@@ -11,7 +11,7 @@ export async function queryCurrent() {
 //获取验证码
 export async function getCaptcha(params) {
   return catchError(
-    request('/getCaptcha', {
+    request('/sms/getCaptcha', {
       method: 'POST',
       body: params,
     })
@@ -40,9 +40,9 @@ alert("services user loginOut start");
 }
 
 //分页查询用户
-export async function queryUsers(params) {
+export async function queryUserPage(params) {
   return catchError(
-    request('/user/queryUsers', {
+    request('/user/queryPage', {
       method: 'POST',
       body: {
         ...params,
@@ -78,33 +78,15 @@ export async function updateUser(params) {
 //根据id查询用户
 export async function queryUserById(params) {
   return catchError(
-    request('/user/queryById', {
+    request('/user/getById', {
       method: 'POST',
       body: params,
     })
   );
 }
 
-//查询角色
-export async function queryRoles() {
-  return catchError(
-    request('/role/queryAll', {
-      method: 'POST',
-    })
-  );
-}
-
-//查询城市
-export async function queryCities() {
-  return catchError(
-    request('/city/queryTrees', {
-      method: 'POST',
-    })
-  );
-}
-
 //禁用用户
-export async function disable(params) {
+export async function disableUser(params) {
   return catchError(
     request('/user/disable', {
       method: 'POST',
@@ -114,7 +96,7 @@ export async function disable(params) {
 }
 
 //启用用户
-export async function enable(params) {
+export async function enableUser(params) {
   return catchError(
     request('/user/enable', {
       method: 'POST',

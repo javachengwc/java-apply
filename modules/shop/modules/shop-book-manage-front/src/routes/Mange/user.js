@@ -26,7 +26,7 @@ const { RangePicker } = DatePicker;
 
 @connect(({ user, loading }) => ({
   user,
-  loading: loading.effects['user/queryUsers'],
+  loading: loading.effects['user/queryPage'],
   getListParams: user.getListParams,
   itemDetail: user.itemDetail,
 }))
@@ -45,11 +45,11 @@ export default class LoginPage extends Component {
       data: { ...getListParams, ...form.getFieldsValue() },
     });
     dispatch({
-      type: 'user/queryUsers',
+      type: 'user/queryPage',
     });
     // 查询角色
     dispatch({
-      type: 'user/queryRoles',
+      type: 'user/queryAllRole',
     });
   }
   // 点击查询按钮
@@ -58,7 +58,7 @@ export default class LoginPage extends Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         const getListParams = Object.assign({}, this.props.getListParams, values);
-        getListParams.pageNo = 1;
+        getListParams.pageNum = 1;
         if (values.date && values.date.length) {
           getListParams.startDate = values.date[0].format('YYYY-MM-DD');
           getListParams.endDate = values.date[1].format('YYYY-MM-DD');
@@ -74,7 +74,7 @@ export default class LoginPage extends Component {
           data: getListParams,
         });
         this.props.dispatch({
-          type: 'user/queryUsers',
+          type: 'user/queryPage',
         });
       }
     });
@@ -118,13 +118,13 @@ export default class LoginPage extends Component {
   // 点击分页
   pageChangeHandle = page => {
     const getListParams = Object.assign({}, this.props.getListParams);
-    getListParams.pageNo = page;
+    getListParams.pageNum = page;
     this.props.dispatch({
       type: 'user/getListParams',
       data: getListParams,
     });
     this.props.dispatch({
-      type: 'user/queryUsers',
+      type: 'user/queryPage',
     });
   };
 
@@ -160,15 +160,15 @@ export default class LoginPage extends Component {
         key: 'mobile',
       },
       {
-        title: '创建时间',
-        key: 'tags',
-        dataIndex: 'tags',
+          title: '账户状态',
+          key: 'status',
+          dataIndex: 'status',
+          render: status => <span>{status == 0 ? '正常' : '冻结'}</span>,
       },
       {
-        title: '账户状态',
-        key: 'status',
-        dataIndex: 'status',
-        render: status => <span>{status == 0 ? '正常' : '冻结'}</span>,
+        title: '创建时间',
+        key: 'createTimeStr',
+        dataIndex: 'createTimeStr',
       },
       {
         title: '操作',
@@ -181,7 +181,7 @@ export default class LoginPage extends Component {
                 title="确定冻结该用户吗?"
                 onConfirm={() => this.confirm('disableUser', text)}
                 okText="确定"
-                cancelText="消失"
+                cancelText="取消"
               >
                 <a>冻结</a>
               </Popconfirm>
@@ -192,7 +192,7 @@ export default class LoginPage extends Component {
                 title="确定要解冻该用户吗?"
                 onConfirm={() => this.confirm('enableUser', text)}
                 okText="确定"
-                cancelText="消失"
+                cancelText="取消"
               >
                 <a>解冻</a>
               </Popconfirm>
@@ -217,11 +217,11 @@ export default class LoginPage extends Component {
     const { userList, roles, itemDetail, showAddForm } = this.props.user;
     const pagination = {
       pageSize: this.props.getListParams.pageSize,
-      current: this.props.getListParams.pageNo,
-      total: userList.data.totalCount,
+      current: this.props.getListParams.pageNum,
+      total: userList.totalCount,
       onChange: this.pageChangeHandle,
       showTotal: () => {
-        return `总数 ${userList.data.totalCount} 条`;
+        return `总数 ${userList.totalCount} 条`;
       },
     };
     return (
@@ -263,7 +263,7 @@ export default class LoginPage extends Component {
           </Col>
         </Row>
         <Divider />
-        <Table columns={columns} dataSource={userList.data.data || []} pagination={pagination} />
+        <Table columns={columns} dataSource={userList.list || []} pagination={pagination} />
         <UserForm
           showAddForm={showAddForm}
           handleCancel={() => this.props.dispatch({ type: 'user/showForm', show: false })}

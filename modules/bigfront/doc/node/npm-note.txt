@@ -50,4 +50,5 @@ rmdir /q/s node_modules
 rm package-lock.json
 npm install --chromedriver_cdnurl=https://npm.taobao.org/mirrors/chromedriver    ------编译,并指定chromedriver资源地址
 npm run start                                                                    ------启动项目
-
+npm run build                                                                    ------打包项目
+npm run analyze                                                                  ------分析依赖模块优化项目
