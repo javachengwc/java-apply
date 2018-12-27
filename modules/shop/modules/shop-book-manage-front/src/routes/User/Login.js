@@ -4,6 +4,7 @@ import { Alert, Form, Row, Col, Input, Button } from 'antd';
 import Login from 'components/Login';
 import styles from './Login.less';
 
+alert("me Login is 6");
 const { Tab, Submit } = Login;
 const FormItem = Form.Item;
 @connect(({ login, loading }) => ({
@@ -26,6 +27,7 @@ export default class LoginPage extends Component {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
+        //这里的type,对应login model 中 effects中的login方法
         this.props.dispatch({
           type: 'login/login',
           data: values,
@@ -54,6 +56,7 @@ export default class LoginPage extends Component {
     let count = 60;
     const { form } = this.props;
     let data = form.getFieldValue('mobile');
+    //这里的type,对应login model 中 effects中的getCode方法
     this.props.dispatch({
       type: 'login/getCode',
       data,

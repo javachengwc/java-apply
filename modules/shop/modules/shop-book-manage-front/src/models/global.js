@@ -1,6 +1,9 @@
+//引入services目录下的组件，就会先加载它
 import { queryNotices } from '../services/api';
 import { queryCities } from '../services/user';
 import { requestIsSuccess } from '../utils/utils';
+
+//alert("me global is 3");
 
 export default {
   namespace: 'global',
@@ -11,6 +14,7 @@ export default {
     cityTree: [],
   },
 
+  //effects中定义的函数method，外部就能通过yield put({type: 'namespace/method',...})调用它。
   effects: {
     *fetchNotices(_, { call, put }) {
       const data = yield call(queryNotices);

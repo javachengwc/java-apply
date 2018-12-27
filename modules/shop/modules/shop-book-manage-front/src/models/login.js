@@ -4,6 +4,8 @@ import { getCaptcha, loginIn, loginOut, queryCities } from '../services/user';
 import { setAuthority } from '../utils/authority';
 import { getMenu } from '../utils/menu';
 
+//alert("me model login is 5");
+
 export default {
   namespace: 'login',
 
@@ -41,6 +43,7 @@ export default {
           }
         }
         if (localStorage.getItem('myuser')) {
+          alert("login after will tiao to "+path);
           yield put(routerRedux.push(path));
         }
       }

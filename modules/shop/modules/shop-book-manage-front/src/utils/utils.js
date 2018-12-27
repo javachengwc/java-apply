@@ -211,7 +211,7 @@ export const convertObj2Params = obj => {
     .join('&');
 };
 
-export const requestIsSuccess = res => get(res, 'header.ret') === 'S';
+export const requestIsSuccess = res => get(res, 'header.code') === 0;
 
 export const simpleRequest = (url, data) =>
   catchError(

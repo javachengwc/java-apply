@@ -147,24 +147,14 @@ export default class LoginPage extends Component {
         dataIndex: 'id',
       },
       {
-        title: '账户名称',
+        title: '名称',
         dataIndex: 'name',
         key: 'name',
       },
       {
-        title: '手机号码',
+        title: '手机号',
         dataIndex: 'mobile',
         key: 'mobile',
-      },
-      {
-        title: '所在城市',
-        dataIndex: 'cityName',
-        key: 'cityName',
-      },
-      {
-        title: '账户角色',
-        key: 'roleName',
-        dataIndex: 'roleName',
       },
       {
         title: '创建时间',
@@ -175,28 +165,28 @@ export default class LoginPage extends Component {
         title: '账户状态',
         key: 'status',
         dataIndex: 'status',
-        render: status => <span>{status == 1 ? '启用' : '禁用'}</span>,
+        render: status => <span>{status == 0 ? '正常' : '冻结'}</span>,
       },
       {
         title: '操作',
         render: text => (
           <span>
             <a onClick={() => this.update(text)}>编辑</a>
-            {text.status == 1 && <Divider type="vertical" />}
-            {text.status == 1 && (
+            {text.status == 0 && <Divider type="vertical" />}
+            {text.status == 0 && (
               <Popconfirm
-                title="你确定要停用该用户吗?"
+                title="确定冻结该用户吗?"
                 onConfirm={() => this.confirm('disableUser', text)}
                 okText="确定"
                 cancelText="消失"
               >
-                <a>停用</a>
+                <a>冻结</a>
               </Popconfirm>
             )}
-            {text.status == 2 && <Divider type="vertical" />}
-            {text.status == 2 && (
+            {text.status == 1 && <Divider type="vertical" />}
+            {text.status == 1 && (
               <Popconfirm
-                title="你确定要解冻该用户吗?"
+                title="确定要解冻该用户吗?"
                 onConfirm={() => this.confirm('enableUser', text)}
                 okText="确定"
                 cancelText="消失"
@@ -222,7 +212,6 @@ export default class LoginPage extends Component {
     };
     const { getFieldDecorator } = this.props.form;
     const { userList, roles, itemDetail, showAddForm } = this.props.user;
-    const gjCity = JSON.parse(localStorage.getItem('gjCity'));
     const pagination = {
       pageSize: this.props.getListParams.pageSize,
       current: this.props.getListParams.pageNo,
@@ -237,20 +226,9 @@ export default class LoginPage extends Component {
         <Row>
           <Col span={24}>
             <Form layout="inline" onSubmit={this.searchHandle}>
-              <FormItem label="电话">
-                {getFieldDecorator('mobile')(<Input name="name" placeholder="请输入电话" />)}
+              <FormItem label="手机号">
+                {getFieldDecorator('mobile')(<Input name="name" placeholder="请输入手机号" />)}
               </FormItem>
-              {/* <FormItem label="账户角色">
-                {getFieldDecorator('roleId')(
-                  <Select
-                    showSearch
-                    style={{ width: 200 }}
-                    placeholder="选择状态"
-                  >
-                    {resolveTreeNode(roles.data || [])}
-                  </Select>,
-                )}
-              </FormItem> */}
               {/* <FormItem label="创建时间">
                 {getFieldDecorator('date')(
                   <RangePicker />
@@ -260,8 +238,8 @@ export default class LoginPage extends Component {
                 {getFieldDecorator('status')(
                   <Select showSearch style={{ width: 200 }} placeholder="选择状态">
                     <Option value="">全部</Option>
-                    <Option value="1">正常</Option>
-                    <Option value="2">冻结</Option>
+                    <Option value="0">正常</Option>
+                    <Option value="1">冻结</Option>
                   </Select>
                 )}
               </FormItem>
@@ -289,7 +267,6 @@ export default class LoginPage extends Component {
           saveHandle={this.saveHandle}
           itemDetail={itemDetail}
           roles={roles}
-          gjCity={gjCity}
         />
       </Card>
     );

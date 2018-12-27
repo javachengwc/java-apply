@@ -1,4 +1,5 @@
 import { isUrl } from '../utils/utils';
+//在router中引用了此menu
 
 function getMenu() {
   let menuData = [];

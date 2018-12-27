@@ -20,37 +20,6 @@ export default class UserForm extends Component {
       }
     });
   };
-  resolveParentIds = id => {
-    const tree = this.props.gjCity;
-    let result = [];
-    if (!id) {
-      return result;
-    }
-    const resolve = (tree, ids) => {
-      for (let i = 0; i < tree.length; i++) {
-        const item = tree[i];
-        if (item.value === id) {
-          result = ids;
-          return;
-        }
-        const idsTemp = [...ids, `${item.value}`];
-        if (item.children && item.children.length) {
-          resolve(item.children, [...idsTemp]);
-        }
-      }
-    };
-    resolve(tree, []);
-    if (id) {
-      result.push(id);
-    }
-    let ar = [];
-    if (result && result.length > 0) {
-      for (let i = 0; i < result.length; i++) {
-        ar.push(result[i] * 1);
-      }
-    }
-    return ar;
-  };
   render() {
     const { getFieldDecorator } = this.props.form;
     const resolveTreeNode = roles => {
@@ -73,11 +42,11 @@ export default class UserForm extends Component {
         onOk={this.submitHandle}
       >
         <Form>
-          <FormItem label="账户">
+          <FormItem label="名称">
             {getFieldDecorator('name', {
               initialValue: this.props.itemDetail.name,
-              rules: [{ required: true, message: '请输入客户姓名' }],
-            })(<Input name="name" placeholder="请输入客户姓名" />)}
+              rules: [{ required: true, message: '请输入名称' }],
+            })(<Input name="name" placeholder="请输入名称" />)}
           </FormItem>
           <FormItem label="手机号">
             {getFieldDecorator('mobile', {
@@ -87,18 +56,6 @@ export default class UserForm extends Component {
                 { pattern: /^1[0-9]{10}$/, message: '请输入正确的手机号码' },
               ],
             })(<Input name="cardNo" placeholder="请输入手机号" maxLength="11" />)}
-          </FormItem>
-          <FormItem label="所在城市">
-            {getFieldDecorator('cityId', {
-              initialValue: this.resolveParentIds(this.props.itemDetail.cityId),
-              rules: [{ required: true, message: '请选择城市' }],
-            })(
-              <Cascader
-                options={this.props.gjCity}
-                placeholder="选择所在地"
-                getPopupContainer={getContianer}
-              />
-            )}
           </FormItem>
           <FormItem label="账户角色">
             {getFieldDecorator('roleIds', {

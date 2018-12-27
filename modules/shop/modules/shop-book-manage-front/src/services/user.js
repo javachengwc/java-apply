@@ -7,9 +7,8 @@ export async function query() {
 export async function queryCurrent() {
   return request('/api/currentUser');
 }
-/**
- * 登录获取验证码
- */
+
+//获取验证码
 export async function getCaptcha(params) {
   return catchError(
     request('/getCaptcha', {
@@ -64,9 +63,7 @@ export async function addUser(params) {
   );
 }
 
-/**
- * 修改用户
- */
+//修改用户
 export async function updateUser(params) {
   return catchError(
     request('/user/update', {
@@ -77,9 +74,8 @@ export async function updateUser(params) {
     })
   );
 }
-/**
- * 根据id查询用户
- */
+
+//根据id查询用户
 export async function queryUserById(params) {
   return catchError(
     request('/user/queryById', {
@@ -88,9 +84,8 @@ export async function queryUserById(params) {
     })
   );
 }
-/**
- * 查询角色
- */
+
+//查询角色
 export async function queryRoles() {
   return catchError(
     request('/role/queryAll', {
@@ -99,9 +94,7 @@ export async function queryRoles() {
   );
 }
 
-/**
- * 查询城市
- */
+//查询城市
 export async function queryCities() {
   return catchError(
     request('/city/queryTrees', {
@@ -110,9 +103,7 @@ export async function queryCities() {
   );
 }
 
-/**
- * 禁用用户
- */
+//禁用用户
 export async function disable(params) {
   return catchError(
     request('/user/disable', {
@@ -122,9 +113,7 @@ export async function disable(params) {
   );
 }
 
-/**
- * 启用用户
- */
+//启用用户
 export async function enable(params) {
   return catchError(
     request('/user/enable', {

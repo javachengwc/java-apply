@@ -3,6 +3,7 @@ import dynamic from 'dva/dynamic';
 import pathToRegexp from 'path-to-regexp';
 import { getMenuData } from './menu';
 
+//本地路由缓存
 let routerDataCache;
 
 const modelNotExisted = (app, model) =>
@@ -19,6 +20,7 @@ const dynamicWrapper = (app, models, component) => {
     models.forEach(model => {
       if (modelNotExisted(app, model)) {
         // eslint-disable-next-line
+        //把路由相应的models加进来
         app.model(require(`../models/${model}`).default);
       }
     });
@@ -54,6 +56,7 @@ const dynamicWrapper = (app, models, component) => {
   });
 };
 
+//平台菜单
 function getFlatMenuData(menus) {
   let keys = {};
   menus.forEach(item => {
@@ -67,6 +70,7 @@ function getFlatMenuData(menus) {
   return keys;
 }
 
+//获取路由数据
 export const getRouterData = app => {
   const routerConfig = {
     '/': {
@@ -109,6 +113,7 @@ export const getRouterData = app => {
     // eg.  router /user/:id === /user/chen
     const pathRegexp = pathToRegexp(path);
     const menuKey = Object.keys(menuData).find(key => pathRegexp.test(`${key}`));
+    //配置的路由信息与菜单path匹配处理
     let menuItem = {};
     // If menuKey is not empty
     if (menuKey) {
