@@ -7,7 +7,6 @@ import { getRouterData } from './common/router';
 import Authorized from './utils/Authorized';
 import styles from './index.less';
 
-alert("me router is 4");
 const { ConnectedRouter } = routerRedux;
 const { AuthorizedRoute } = Authorized;
 dynamic.setDefaultLoadingComponent(() => {

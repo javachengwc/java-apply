@@ -4,7 +4,6 @@ import { Alert, Form, Row, Col, Input, Button } from 'antd';
 import Login from 'components/Login';
 import styles from './Login.less';
 
-alert("me Login is 6");
 const { Tab, Submit } = Login;
 const FormItem = Form.Item;
 @connect(({ login, loading }) => ({
