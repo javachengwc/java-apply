@@ -158,14 +158,14 @@ export default class DictPage extends Component {
     ];
 
     const { getFieldDecorator } = this.props.form;
-    const { dictList, itemDetail  } = this.props.dict;
+    const { pageList, itemDetail  } = this.props.dict;
     const pagination = {
       pageSize: this.props.queryParams.pageSize,
       current: this.props.queryParams.pageNum,
-      total: dictList.totalCount,
+      total: pageList.totalCount,
       onChange: this.pageChangeHandle,
       showTotal: () => {
-        return `总数 ${dictList.totalCount} 条`;
+        return `总数 ${pageList.totalCount} 条`;
       },
     };
     return (
@@ -192,7 +192,7 @@ export default class DictPage extends Component {
           </Col>
         </Row>
         <Divider />
-        <Table columns={columns} dataSource={dictList.list || []} pagination={pagination} />
+        <Table columns={columns} dataSource={pageList.list || []} pagination={pagination} />
       </Card>
     );
   }

@@ -15,7 +15,7 @@ export default {
   namespace: 'dict',
 
   state: {
-    dictList: {
+    pageList: {
       //字典列表
       list: [],
       totalCount: 0,
@@ -37,7 +37,7 @@ export default {
       const response = yield call(queryDictPage, data);
       if (reqSuccess(response)) {
         yield put({
-          type: 'localDictList',
+          type: 'localPageList',
           payload: response.data,
         });
       }
@@ -114,10 +114,10 @@ export default {
         queryParams: data,
       };
     },
-    localDictList(state, action) {
+    localPageList(state, action) {
       return {
         ...state,
-        dictList: action.payload,
+        pageList: action.payload,
       };
     },
     itemDetail(state, { data }) {

@@ -60,10 +60,10 @@ export default class LoginPage extends Component {
         const getListParams = Object.assign({}, this.props.getListParams, values);
         getListParams.pageNum = 1;
         if (values.date && values.date.length) {
-          getListParams.startDate = values.date[0].format('YYYY-MM-DD');
+          getListParams.beginDate = values.date[0].format('YYYY-MM-DD');
           getListParams.endDate = values.date[1].format('YYYY-MM-DD');
         } else {
-          delete getListParams.startDate;
+          delete getListParams.beginDate;
           delete getListParams.endDate;
         }
         if (!values.status) {
@@ -248,7 +248,7 @@ export default class LoginPage extends Component {
               </FormItem>
               <FormItem>
                 <Button htmlType="submit" icon="search" type="primary">
-                  搜索
+                  查询
                 </Button>
                 <Button
                   icon="plus"
