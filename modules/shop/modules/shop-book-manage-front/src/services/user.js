@@ -104,3 +104,11 @@ export async function enableUser(params) {
     })
   );
 }
+
+export async function queryCities() {
+  return catchError(
+    request('/city/queryTrees', {
+      method: 'POST',
+    })
+  );
+}

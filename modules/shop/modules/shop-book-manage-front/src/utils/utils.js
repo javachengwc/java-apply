@@ -234,3 +234,13 @@ export function getUrl(params, downUrl) {
   url = url.substr(0, url.length - 1);
   return url;
 }
+
+export function startWith(str,pre){
+  var reg=new RegExp("^"+pre);
+  return reg.test(str);
+}
+
+export function endWith(str,sub){
+  var reg=new RegExp(sub+"$");
+  return reg.test(str);
+}

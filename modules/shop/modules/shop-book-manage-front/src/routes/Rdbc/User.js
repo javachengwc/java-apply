@@ -31,7 +31,7 @@ const { RangePicker } = DatePicker;
   itemDetail: user.itemDetail,
 }))
 @Form.create()
-export default class LoginPage extends Component {
+export default class UserPage extends Component {
   state = {
     visible: false,
   };

@@ -3,7 +3,7 @@ import get from 'lodash/get';
 import { getCaptcha, loginIn, loginOut, queryCities } from '../services/user';
 import { setAuthority } from '../utils/authority';
 import { getMenu } from '../utils/menu';
-import { reqSuccess } from '../utils/utils';
+import { reqSuccess,startWith,endWith } from '../utils/utils';
 
 //alert("me model login is 5");
 
@@ -32,15 +32,25 @@ export default {
 //        });
 //        const cityTree = yield select(state => state.global.cityTree);
 //        localStorage.setItem('gjCity', JSON.stringify(getNew(cityTree)));
-        let path = '';
-        //菜单列表
+
         alert("login success.....")
+
+        //菜单列表
         const menuData = getMenu();
+        let path = '';
+
         if (menuData && menuData.length > 0) {
-          path += `/${menuData[0].path}`;
-          alert(path);
+          path += `${menuData[0].path}`;
+          if(endWith(path,'/')) {
+              path = path.substring(0,path.length-1);
+          }
           if (menuData[0].children && menuData[0].children.length > 0) {
-            path += '/'+menuData[0].children[0].path;
+              let childPath =menuData[0].children[0].path;
+              if(startWith(childPath,'/')) {
+                path +=childPath;
+              }else {
+                path += '/'+childPath;
+              }
           }
         }
         if (localStorage.getItem('myuser')) {

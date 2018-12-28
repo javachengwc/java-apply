@@ -82,20 +82,20 @@ export const getRouterData = app => {
     '/user/login': {
       component: dynamicWrapper(app, ['login'], () => import('../routes/User/Login')),
     },
-    '/dict/list': {
-      component: dynamicWrapper(app, [''], () => import('../routes/Dict/Dict')),
+    '/rdbc/user': {
+      component: dynamicWrapper(app, ['user'], () => import('../routes/Rdbc/User')),
     },
-    '/advert/list': {
-      component: dynamicWrapper(app, [], () => import('../routes/Advert/Advert')),
+    '/dict/list': {
+      component: dynamicWrapper(app, ['dict'], () => import('../routes/Dict/Dict')),
     },
     '/qa/list': {
-      component: dynamicWrapper(app, [], () => import('../routes/Qa/Qa')),
+      component: dynamicWrapper(app, ['qa'], () => import('../routes/Qa/Qa')),
+    },
+    '/advert/list': {
+      component: dynamicWrapper(app, ['advert'], () => import('../routes/Advert/Advert')),
     },
     '/book/list': {
-      component: dynamicWrapper(app, [], () => import('../routes/Book/Book')),
-    },
-    '/rdbc/user': {
-      component: dynamicWrapper(app, [], () => import('../routes/Rdbc/user')),
+      component: dynamicWrapper(app, ['book'], () => import('../routes/Book/Book')),
     },
     '/exception/403': {
       component: dynamicWrapper(app, [], () => import('../routes/Exception/403')),
