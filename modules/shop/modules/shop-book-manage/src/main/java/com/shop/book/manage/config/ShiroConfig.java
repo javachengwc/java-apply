@@ -110,6 +110,8 @@ public class ShiroConfig {
         filterMap.put("/mock/**", "anon");
         filterMap.put("/role/**", "anon");
         filterMap.put("/menu/**", "anon");
+        filterMap.put("/qa/**", "anon");
+        filterMap.put("/advert/**", "anon");
 
         filterMap.put("/**", "authc");//表示需要认证才可以访问
 
