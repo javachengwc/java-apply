@@ -4,7 +4,7 @@ import com.shop.base.model.Page;
 import com.shop.base.model.Req;
 import com.shop.base.model.Resp;
 import com.shop.base.util.TransUtil;
-import com.shop.book.manage.model.pojo.User;
+import com.shop.book.manage.model.pojo.manage.User;
 import com.shop.book.manage.model.vo.UserQueryVo;
 import com.shop.book.manage.model.vo.UserVo;
 import com.shop.book.manage.service.rdbc.UserService;
@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
-import java.util.List;
 
 @Api(value = "用户相关接口", description = "用户相关接口")
 @RestController

@@ -2,7 +2,7 @@ package com.shop.book.manage.service.impl;
 
 import com.shop.base.model.Resp;
 import com.shop.book.manage.enums.ApiCode;
-import com.shop.book.manage.model.pojo.User;
+import com.shop.book.manage.model.pojo.manage.User;
 import com.shop.book.manage.model.vo.LoginResultVo;
 import com.shop.book.manage.model.vo.LoginVo;
 import com.shop.book.manage.model.vo.MenuVo;

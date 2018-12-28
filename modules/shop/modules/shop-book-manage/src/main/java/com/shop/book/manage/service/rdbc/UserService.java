@@ -1,7 +1,7 @@
 package com.shop.book.manage.service.rdbc;
 
 import com.shop.base.model.Page;
-import com.shop.book.manage.model.pojo.User;
+import com.shop.book.manage.model.pojo.manage.User;
 import com.shop.book.manage.model.vo.UserQueryVo;
 import com.shop.book.manage.model.vo.UserVo;
 

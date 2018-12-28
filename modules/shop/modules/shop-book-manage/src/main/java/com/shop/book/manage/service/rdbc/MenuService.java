@@ -1,11 +1,9 @@
 package com.shop.book.manage.service.rdbc;
 
 import com.shop.base.model.Page;
-import com.shop.book.manage.model.pojo.Menu;
+import com.shop.book.manage.model.pojo.manage.Menu;
 import com.shop.book.manage.model.vo.MenuQueryVo;
 import com.shop.book.manage.model.vo.MenuVo;
-import com.shop.book.manage.model.vo.RoleQueryVo;
-import com.shop.book.manage.model.vo.RoleVo;
 
 import java.util.List;
 

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+
+    <classPathEntry location="D:\repo\mysql\mysql-connector-java\5.1.22\mysql-connector-java-5.1.22.jar"/>
+
+    <context id="shop-server" targetRuntime="MyBatis3" introspectedColumnImpl="org.mybatis.generator.api.IntrospectedColumn">
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/shop_book_manage?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=utf8"
+                        userId="root"
+                        password="root">
+        </jdbcConnection>
+
+        <javaModelGenerator targetPackage="com.shop.book.manage.model.pojo.manage" targetProject="src\main\java">
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
+            <property name="rootClass" value="com.shop.base.model.BasePojo"/>
+        </javaModelGenerator>
+
+        <!-- mybatis xml file path -->
+        <sqlMapGenerator targetPackage="sqlmap.manage" targetProject="src\main\resources">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+
+        <javaClientGenerator type="MIXEDMAPPER" targetPackage="com.shop.book.manage.dao.manage.mapper"
+                             targetProject="src\main\java">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+
+        <!-- 添加需要生成的表，以及生成方式 -->
+        <table tableName="user" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="user_role" >
+        </table>
+        <table tableName="role" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="menu" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="role_menu" >
+        </table>
+    </context>
+</generatorConfiguration>
+
+

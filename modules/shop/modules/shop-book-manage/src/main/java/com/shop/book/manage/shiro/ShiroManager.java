@@ -2,7 +2,7 @@ package com.shop.book.manage.shiro;
 
 import com.shop.base.model.Resp;
 import com.shop.book.manage.enums.ApiCode;
-import com.shop.book.manage.model.pojo.User;
+import com.shop.book.manage.model.pojo.manage.User;
 import com.shop.book.manage.service.rdbc.UserService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;

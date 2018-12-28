@@ -2,7 +2,7 @@ package com.shop.book.manage.shiro;
 
 import com.shop.book.manage.config.Config;
 import com.shop.book.manage.enums.UserStatuEnum;
-import com.shop.book.manage.model.pojo.User;
+import com.shop.book.manage.model.pojo.manage.User;
 import com.shop.book.manage.service.SmsService;
 import com.shop.book.manage.service.rdbc.UserService;
 import org.apache.shiro.SecurityUtils;
