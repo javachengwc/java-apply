@@ -110,6 +110,7 @@ public class ShiroConfig {
         filterMap.put("/mock/**", "anon");
         filterMap.put("/role/**", "anon");
         filterMap.put("/menu/**", "anon");
+        filterMap.put("/dict/**", "anon");
         filterMap.put("/qa/**", "anon");
         filterMap.put("/advert/**", "anon");
 

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.book.manage.dao.shop.DictDao">
+
+    <resultMap id="DictMap" type="com.shop.book.manage.model.vo.DictVo" >
+        <result column="id" property="id" jdbcType="BIGINT" />
+        <result column="dict_key" property="dictKey" jdbcType="VARCHAR" />
+        <result column="dict_label" property="dictLabel" jdbcType="VARCHAR" />
+        <result column="dict_value" property="dictValue" jdbcType="VARCHAR" />
+        <result column="dict_ext" property="dictExt" jdbcType="VARCHAR" />
+        <result column="dict_type" property="dictType" jdbcType="INTEGER" />
+        <result column="dict_type_name" property="dictTypeName" jdbcType="VARCHAR" />
+        <result column="is_use" property="isUse" jdbcType="INTEGER" />
+        <result column="sort" property="sort" jdbcType="INTEGER" />
+        <result column="create_time" property="createTimeStr" jdbcType="VARCHAR" />
+        <result column="modified_time" property="modifiedTimeStr" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <select id="queryPage" parameterType="com.shop.book.manage.model.vo.DictQueryVo" resultMap="DictMap">
+        select id,dict_key,dict_label,dict_value,dict_ext,dict_type,dict_type_name,is_use,sort,
+        date_format(create_time,'%Y-%m-%d %H:%i:%s') as create_time,
+        date_format(modified_time,'%Y-%m-%d %H:%i:%s') as modified_time
+        from dict
+        <where>
+            <if test="dictKey != null and dictKey != '' ">
+                dict_key like concat(#{dictKey}, '%')
+            </if>
+            <if test="dictType != null ">
+                and dict_type = #{dictType}
+            </if>
+        </where>
+        order by id desc
+    </select>
+
+</mapper>
