@@ -82,14 +82,20 @@ export const getRouterData = app => {
     '/user/login': {
       component: dynamicWrapper(app, ['login'], () => import('../routes/User/Login')),
     },
-    '/user/register': {
-      component: dynamicWrapper(app, ['register'], () => import('../routes/User/Register')),
+    '/dict/list': {
+      component: dynamicWrapper(app, [''], () => import('../routes/Dict/Dict')),
     },
-    '/user/register-result': {
-      component: dynamicWrapper(app, [], () => import('../routes/User/RegisterResult')),
+    '/advert/list': {
+      component: dynamicWrapper(app, [], () => import('../routes/Advert/Advert')),
     },
-    '/manage/user': {
-      component: dynamicWrapper(app, [], () => import('../routes/Mange/user')),
+    '/qa/list': {
+      component: dynamicWrapper(app, [], () => import('../routes/Qa/Qa')),
+    },
+    '/book/list': {
+      component: dynamicWrapper(app, [], () => import('../routes/Book/Book')),
+    },
+    '/rdbc/user': {
+      component: dynamicWrapper(app, [], () => import('../routes/Rdbc/user')),
     },
     '/exception/403': {
       component: dynamicWrapper(app, [], () => import('../routes/Exception/403')),
