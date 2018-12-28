@@ -11,7 +11,7 @@ function getMenu() {
     menuData = [
       {
       		name: '公共模块',
-      		icon: 'paper-clip',
+      		icon: 'home',
       		path: '',
       		children: [
       			{
