@@ -120,4 +120,11 @@ public class MenuServiceImpl implements MenuService {
         List<MenuVo> rtList = genTree(list);
         return  rtList;
     }
+
+    //查询用户拥有的菜单功能
+    public List<MenuVo> queryUserMenuFeature(Long userId) {
+        List<MenuVo> list = menuDao.queryUserMenuFeature(userId);
+        List<MenuVo> rtList = genTree(list);
+        return  rtList;
+    }
 }

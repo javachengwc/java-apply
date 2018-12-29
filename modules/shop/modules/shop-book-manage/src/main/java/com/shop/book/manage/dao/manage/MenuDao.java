@@ -11,4 +11,6 @@ public interface MenuDao {
     public List<MenuVo> queryPage(MenuQueryVo queryVo);
 
     public List<MenuVo> queryUserMenu(@Param("userId") Long userId);
+
+    public List<MenuVo> queryUserMenuFeature(@Param("userId") Long userId);
 }
