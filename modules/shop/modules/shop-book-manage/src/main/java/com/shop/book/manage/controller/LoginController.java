@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collections;
+
 @Api(value = "登录相关接口", description = "登录相关接口")
 @RestController
 public class LoginController {
@@ -37,7 +39,23 @@ public class LoginController {
             return Resp.error(ApiCode.PARAM_FAIL.getCode(),ApiCode.PARAM_FAIL.getMessage());
         }
         Resp<LoginResultVo> resp=loginService.login(loginVo);
+        if(resp.isSuccess()) {
+            LoginResultVo resultVo = resp.getData();
+            wrapNull(resultVo);
+        }
         return resp;
+    }
+
+    public void wrapNull(LoginResultVo loginResultVo) {
+        if(loginResultVo.getMenuFeatures()==null) {
+            loginResultVo.setMenuFeatures(Collections.EMPTY_LIST);
+        }
+        if(loginResultVo.getMenus()==null) {
+            loginResultVo.setMenus(Collections.EMPTY_LIST);
+        }
+        if(loginResultVo.getRoles()==null) {
+            loginResultVo.setRoles(Collections.EMPTY_LIST);
+        }
     }
 
     @ApiOperation(value = "登出", notes = "登出")

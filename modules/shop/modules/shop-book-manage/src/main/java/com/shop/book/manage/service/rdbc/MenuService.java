@@ -32,4 +32,7 @@ public interface MenuService {
 
     //查询用户拥有的菜单功能
     public List<MenuVo> queryUserMenuFeature(Long userId);
+
+    //查询类型是菜单的菜单列表
+    public List<MenuVo> queryOnlyMenuList();
 }

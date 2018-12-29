@@ -127,4 +127,11 @@ public class MenuServiceImpl implements MenuService {
         List<MenuVo> rtList = genTree(list);
         return  rtList;
     }
+
+    //查询类型是菜单的菜单列表
+    public List<MenuVo> queryOnlyMenuList() {
+        List<MenuVo> list = menuDao.queryOnlyMenuList();
+        List<MenuVo> rtList = genTree(list);
+        return  rtList;
+    }
 }

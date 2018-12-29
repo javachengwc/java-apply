@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
+import java.util.List;
 
 @Api(value = "菜单相关接口", description = "菜单相关接口")
 @RestController
@@ -38,6 +39,17 @@ public class MenuController {
         }
 
         Resp<Page<MenuVo>> resp = Resp.success(page,"成功");
+        return  resp;
+    }
+
+    @ApiOperation(value = "查询类型是菜单的菜单列表", notes = "查询类型是菜单的菜单列表")
+    @PostMapping("/queryOnlyMenuList")
+    public Resp<List<MenuVo>> queryOnlyMenuList(@RequestBody Req<Void> req) {
+        List<MenuVo> list = menuService.queryOnlyMenuList();
+        if(list==null) {
+            list = Collections.EMPTY_LIST;
+        }
+        Resp<List<MenuVo>> resp = Resp.success(list,"成功");
         return  resp;
     }
 }
