@@ -40,7 +40,12 @@ export default {
         let path = '';
 
         if (menuData && menuData.length > 0) {
-          path += `${menuData[0].path}`;
+          let curPath = menuData[0].path;
+          if(startWith(curPath,'/')) {
+              path += curPath;
+          }else {
+              path += '/'+curPath;
+          }
           if(endWith(path,'/')) {
               path = path.substring(0,path.length-1);
           }

@@ -12,41 +12,41 @@ function getMenu() {
       {
       		name: '公共模块',
       		icon: 'home',
-      		path: '',
+      		path: 'common',
       		children: [
       			{
       				name: '字典列表',
-      				path: '/dict/list',
+      				path: 'dict',
       			},
       			{
       				name: '广告列表',
-      				path: '/advert/list',
+      				path: 'advert',
       			},
             {
       				name: '问答列表',
-      				path: '/qa/list',
+      				path: 'qa',
       			}
       		],
       },
       {
       	name: '书籍管理',
       	icon: 'paper-clip',
-      	path: '',
+      	path: 'book',
       	children: [
           {
       			name: '书籍列表',
-      			path: '/book/list',
+      			path: 'booklist',
       		}
         ],
       },
       {
       	name: '权限管理',
       	icon: 'setting',
-      	path: '',
+      	path: 'rdbc',
       	children: [
           {
       			name: '账号管理',
-      			path: '/rdbc/user',
+      			path: 'user',
       		}
         ],
       }

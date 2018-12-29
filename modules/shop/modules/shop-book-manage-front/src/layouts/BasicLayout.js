@@ -37,11 +37,7 @@ const getRedirect = item => {
 };
 getMenuData().forEach(getRedirect);
 
-/**
- * 获取面包屑映射
- * @param {Object} menuData 菜单配置
- * @param {Object} routerData 路由配置
- */
+//获取面包屑映射 menuData 菜单配置,routerData 路由配置
 const getBreadcrumbNameMap = (menuData, routerData) => {
   const result = {};
   const childResult = {};
@@ -97,6 +93,8 @@ class BasicLayout extends React.PureComponent {
       breadcrumbNameMap: getBreadcrumbNameMap(getMenuData(), routerData),
     };
   }
+
+  //页面加载后初始化
   componentDidMount() {
     this.enquireHandler = enquireScreen(mobile => {
       this.setState({
@@ -104,7 +102,7 @@ class BasicLayout extends React.PureComponent {
       });
     });
     this.props.dispatch({
-      type: 'user/fetchCurrent',
+        type:'user/fetchCurrent',
     });
   }
   componentWillUnmount() {
