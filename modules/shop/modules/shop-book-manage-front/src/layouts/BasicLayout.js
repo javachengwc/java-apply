@@ -101,6 +101,7 @@ class BasicLayout extends React.PureComponent {
         isMobile: mobile,
       });
     });
+    //当前用户信息
     this.props.dispatch({
         type:'user/fetchCurrent',
     });
