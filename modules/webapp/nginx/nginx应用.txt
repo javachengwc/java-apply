@@ -3,6 +3,9 @@
 nginx是支持读取非nginx标准的用户自定义header的，但是需要在http或者server下开启header的下划线支持
 underscores_in_headers on;
 比如自定义header为Come_From,通过nginx获取header时是这样的 http_come_from; (一律采用小写，而且前面多了个http_)
+如果需要把自定义header传递到下一个nginx,如果是在nginx中自定义采用proxy_set_header CLIENT_VERSION $http_host;
+如果是在用户请求时自定义的header，例如curl -H "CLIENT_VERSION:1.2.3" http://domain.com/api/test，
+则需要通过proxy_pass_header CLIENT_VERSION来传递。
 
 2,nginx限制ip时间段内访问次数
 nginx可以通过ngx_http_limit_conn_module和ngx_http_limit_req_module配置来限制ip在同一时间段的访问次数.

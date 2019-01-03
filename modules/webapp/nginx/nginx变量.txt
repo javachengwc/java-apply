@@ -1,0 +1,48 @@
+nginx 同 apache 和 lighttpd 等其他 web 服务器的配置记法不太相同，nginx的配置文件使用语法的就是一门微型的编程语言。
+可以类似写程序一般编写配置文件。既然是编程语言，一般也就少不了“变量”。
+
+所有的nginx变量在nginx 配置文件中引用时都须带上 $ 前缀。
+在nginx配置中，变量只能存放一种类型的值，有且也只存在一种类型，那就是字符串类型。
+
+set $hello "hello world";             ##定义变量，
+    这里变量赋值，直接写在双引号内，perl将检查引号内的每个字符，看看是否有特殊定义，然后将它替换为其内容，这叫做变量插值
+    写在单引号内会则是原文不会改变。
+    当然有些语法中不加算引号，直接写内容也是可以的。
+
+set $hello "hello";
+print "this is ${hello}World .";
+    在“变量插值”的上下文中，还有一种特殊情况，即当引用的变量名之后紧跟着变量名的构成字符时,就需要使用特别的记法（${变量名}）来消除歧义。
+
+nginx 变量一旦创建，其变量名的可见范围就是整个nginx配置，甚至可以跨越不同虚拟主机的 server 配置块
+nginx变量名的可见范围虽然是整个配置，但每个请求都有所有变量的独立副本，或者说都有各变量用来存放值的容器的独立副本，彼此互不干扰。
+nginx变量值容器的生命期是与当前正在处理的请求绑定的，而与location无关。
+有一种方式叫内部跳转，意思是在处理请求的过程中，于服务器内部，从一个 location 跳转到另一个 location 的过程，
+这时候这些location是共用一套nginx量的容器副本的。
+
+
+nginx内置变量（ngx-http-core-module模块提供的变量）:
+$args                          ---获取请求参数串  比如:a=aa&b=bb
+$arg_xx                        ---获取url参数xx的值 比如 $arg_a的值就是aa
+$content_length
+$content_type
+$document_root
+$document_uri
+$host
+$http_user_agent
+$http_cookie
+$limit_rate
+$request_body_file
+$request_method
+$remote_addr
+$remote_port
+$remote_user
+$request_filename
+$request_uri
+$query_string
+$scheme
+$server_protocol
+$server_addr
+$server_name
+$server_port
+$uri
+

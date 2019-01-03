@@ -1,0 +1,41 @@
+upstream old_server {
+    server 127.0.0.1:8888;
+}
+
+upstream new_server {
+    server 127.0.0.2:8888;
+}
+
+server {
+    listen       80;
+    server_name  localhost;
+    root /data/www/;
+    index  index.html index.htm index.php;
+    access_log  logs/80.log  main;
+    underscores_in_headers on;                      ##打开读取非nginx标准的用户自定义header
+
+    location ^~ / {
+       try_files $uri $uri/ /index.html;
+    }
+
+    location /api/ {
+         set $cv "${http_client_version}";           ##从header中获取客户端版本
+         set $routeflag "apiold";                    ##定义路由参数
+         if ($cv ~ ^1.2.3$) {                        ##如果客户端版本是指定的1.2.3版本,指定对应的路由标记
+             set $routeflag "apinew";
+         }
+         rewrite ^/newapi/(.*) /$routeflag/$1 last;  ##重写请求,这里特别注意，如果rewrite 后是接break;相当于url改变，
+                                                     ##nginx自定义变量的作用域是绑定url的，也就是说rewrite break后，之前定义的局部变量将无值，因为url变了。
+    }
+
+    location /apiold/ {                              ##根据header版本号路由到老服务的请求就反向代理到老接口服务
+         rewrite ^/apiold/(.*) /$1 break;
+         proxy_pass http://old_server;
+    }
+
+    location /apinew/ {                              ##根据header版本号路由到新服务的请求就反向代理到新接口服务
+         rewrite ^/apinew/(.*) /$1 break;
+         proxy_pass http://new_server;
+    }
+
+}

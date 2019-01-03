@@ -52,29 +52,4 @@ break 终止匹配, 不再匹配后面的规则
 redirect 返回302重定向 地址栏会显示跳转后的地址
 permanent 返回301永久重定向 地址栏会显示跳转后的地址
 
-内置变量（ngx-http-core-module模块提供的变量）:
-$args                          ---获取请求参数串  比如:a=aa&b=bb
-$arg_xx                        ---获取url参数xx的值 比如 $arg_a的值就是aa
-$content_length
-$content_type
-$document_root
-$document_uri
-$host
-$http_user_agent
-$http_cookie
-$limit_rate
-$request_body_file
-$request_method
-$remote_addr
-$remote_port
-$remote_user
-$request_filename
-$request_uri
-$query_string
-$scheme
-$server_protocol
-$server_addr
-$server_name
-$server_port
-$uri
 ------------------------------------------------------------
