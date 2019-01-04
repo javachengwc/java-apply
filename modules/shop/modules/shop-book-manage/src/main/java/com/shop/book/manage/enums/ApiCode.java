@@ -10,6 +10,7 @@ public enum ApiCode {
     ACCOUNT_LOCKED(10005,"账号冻结"),
     LOGIN_OVER_LIMIT(10006,"登录超过次数"),
     UNAUTH(10007,"无权限操作"),
+    NO_DATA(10008, "信息不存在"),
     UNKOWN_FAIL(99999,"未知错误");
 
     private Integer code;

@@ -19,9 +19,15 @@ public interface RoleService {
 
     public Role addRole(Role role);
 
+    //添加角色，顺带添加角色菜单
+    public Role addRoleWithMenu(RoleVo roleVo);
+
     public Integer uptRole(Role role);
 
     public Integer delRoles(List<Long> roleIds);
+
+    //删除角色，顺带删除角色菜单
+    public Integer delRolesWithMenu(List<Long> roleIds);
 
     public Page<RoleVo> queryPage(RoleQueryVo queryVo);
 
@@ -30,5 +36,7 @@ public interface RoleService {
     public boolean hasExistRoleCode(String code);
 
     public List<RoleVo> queryUserRole(Long userId);
+
+    public boolean hasUser(Long roleId);
 
 }
