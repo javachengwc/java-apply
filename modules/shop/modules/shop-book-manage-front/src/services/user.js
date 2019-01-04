@@ -20,7 +20,6 @@ export async function getCaptcha(params) {
 
 //登录
 export async function loginIn(params) {
-  alert("services user loginIn start");
   return catchError(
     request('/login', {
       method: 'POST',
@@ -31,7 +30,6 @@ export async function loginIn(params) {
 
 //退出
 export async function loginOut() {
-alert("services user loginOut start");
   return catchError(
     request('/logout', {
       method: 'POST',

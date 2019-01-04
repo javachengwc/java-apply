@@ -1,7 +1,9 @@
 //引入services目录下的组件，就会先加载它
 import { queryNotices } from '../services/api';
 import { queryCities } from '../services/user';
+import { queryOnlyMenuList } from '../services/menu';
 import { reqSuccess } from '../utils/utils';
+import { transMenu,formatterMenu } from '../utils/menu';
 
 //alert("me global is 3");
 
@@ -12,6 +14,7 @@ export default {
     collapsed: false,
     notices: [],
     cityTree: [],
+    platMenus:[], //后台菜单
   },
 
   //effects中定义的函数method，外部就能通过yield put({type: 'namespace/method',...})调用它。
@@ -63,6 +66,25 @@ export default {
         data: cityTree,
       });
     },
+    *queryPlatMenu(_, { call, put }) {
+        //查询平台菜单
+        const response = yield call(queryOnlyMenuList);
+        let menuData = [];
+        let resultData = [];
+        if (reqSuccess(response)) {
+            resultData = response.data || [];
+         }
+        if (resultData && resultData.length > 0) {
+            let transData= [];
+            transData = transMenu(resultData);
+            resolve(transData, menuData);
+            menuData=formatterMenu(menuData);
+         }
+        yield put({
+          type: 'localPlatMenu',
+          payload: menuData,
+        });
+    },
   },
 
   reducers: {
@@ -88,6 +110,12 @@ export default {
       return {
         ...state,
         cityTree: data,
+      };
+    },
+    localPlatMenu(state, { payload }) {
+      return {
+        ...state,
+        platMenus: payload,
       };
     },
   },

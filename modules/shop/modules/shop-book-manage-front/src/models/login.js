@@ -2,7 +2,7 @@ import { routerRedux } from 'dva/router';
 import get from 'lodash/get';
 import { getCaptcha, loginIn, loginOut, queryCities } from '../services/user';
 import { setAuthority } from '../utils/authority';
-import { getMenu } from '../utils/menu';
+import { getUserMenu } from '../utils/menu';
 import { reqSuccess,startWith,endWith } from '../utils/utils';
 
 //alert("me model login is 5");
@@ -25,7 +25,6 @@ export default {
         localStorage.setItem('myuser', JSON.stringify(response.data));
         //token--当前登录用户的token
         const token =response.data.token;
-        alert(token);
         localStorage.setItem('token',token);
 //        yield put.resolve({
 //          type: 'global/fetchCityTree',
@@ -36,30 +35,22 @@ export default {
         alert("login success.....")
 
         //菜单列表
-        const menuData = getMenu();
+        const menuData = getUserMenu();
         let path = '';
 
         if (menuData && menuData.length > 0) {
-          let curPath = menuData[0].path;
-          if(startWith(curPath,'/')) {
-              path += curPath;
-          }else {
-              path += '/'+curPath;
+          path= menuData[0].path;
+          if (menuData[0].children && menuData[0].children.length > 0) {
+              path =menuData[0].children[0].path;
+          }
+          if(!startWith(path,'/')) {
+               path = '/'+path;
           }
           if(endWith(path,'/')) {
               path = path.substring(0,path.length-1);
           }
-          if (menuData[0].children && menuData[0].children.length > 0) {
-              let childPath =menuData[0].children[0].path;
-              if(startWith(childPath,'/')) {
-                path +=childPath;
-              }else {
-                path += '/'+childPath;
-              }
-          }
         }
         if (localStorage.getItem('myuser')) {
-          alert("login after will tiao to "+path);
           //这里routerRedux.push中的path,是在router中定义的路由路径
           yield put(routerRedux.push(path));
         }
@@ -73,7 +64,6 @@ export default {
       });
     },
     *loginOut(_, { call, put }) {
-      alert("models *loginOut invoked...")
       const response = yield call(loginOut);
       if (reqSuccess(response)) {
         localStorage.removeItem('token');

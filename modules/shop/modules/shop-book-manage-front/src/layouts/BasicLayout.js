@@ -14,7 +14,7 @@ import SiderMenu from '../components/SiderMenu';
 import NotFound from '../routes/Exception/404';
 import { getRoutes } from '../utils/utils';
 import Authorized from '../utils/Authorized';
-import { getMenuData } from '../common/menu';
+import { getUserMenu } from '../utils/menu';
 import logo from '../assets/logo.png';
 
 const { Content, Header, Footer } = Layout;
@@ -35,7 +35,7 @@ const getRedirect = item => {
     }
   }
 };
-getMenuData().forEach(getRedirect);
+getUserMenu().forEach(getRedirect);
 
 //获取面包屑映射 menuData 菜单配置,routerData 路由配置
 const getBreadcrumbNameMap = (menuData, routerData) => {
@@ -90,7 +90,7 @@ class BasicLayout extends React.PureComponent {
     const { location, routerData } = this.props;
     return {
       location,
-      breadcrumbNameMap: getBreadcrumbNameMap(getMenuData(), routerData),
+      breadcrumbNameMap: getBreadcrumbNameMap(getUserMenu(), routerData),
     };
   }
 
@@ -141,7 +141,7 @@ class BasicLayout extends React.PureComponent {
       //   item => check(routerData[item].authority, item) && item !== '/'
       // );
       // return authorizedPath;
-      return (getMenuData()[0] || {}).path;
+      return (getUserMenu()[0] || {}).path;
     }
     return redirect;
   };
@@ -199,7 +199,7 @@ class BasicLayout extends React.PureComponent {
           // If you do not have the Authorized parameter
           // you will be forced to jump to the 403 interface without permission
           Authorized={Authorized}
-          menuData={getMenuData()}
+          menuData={getUserMenu()}
           collapsed={collapsed}
           location={location}
           isMobile={this.state.isMobile}
