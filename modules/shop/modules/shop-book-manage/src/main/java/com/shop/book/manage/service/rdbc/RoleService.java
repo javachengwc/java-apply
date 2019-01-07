@@ -24,6 +24,8 @@ public interface RoleService {
 
     public Integer uptRole(Role role);
 
+    public Integer uptRoleWithMenu(RoleVo roleVo);
+
     public Integer delRoles(List<Long> roleIds);
 
     //删除角色，顺带删除角色菜单

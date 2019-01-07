@@ -99,8 +99,7 @@ public class RoleController {
             return Resp.error(null,"角色code已经存在");
         }
 
-        //..............
-
+        roleService.uptRoleWithMenu(roleVo);
         Resp<Void> resp = Resp.success(null,"成功");
         return  resp;
     }

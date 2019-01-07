@@ -99,6 +99,23 @@ public class RoleServiceImpl implements RoleService {
         return rt;
     }
 
+    //更新角色，顺带更新菜单
+    @Transactional(value = DbManageConfig.MANAGE_TRANSACTION_MANAGER_NAME)
+    public Integer uptRoleWithMenu(RoleVo roleVo) {
+        Date now = new Date();
+        Role role = TransUtil.transEntity(roleVo,Role.class);
+        role.setModifiedTime(now);
+        Integer rt =this.uptRole(role);
+        Long roleId = role.getId();
+
+        roleMenuDao.deleteByRole(roleId);
+        List<Long> menuIds = roleVo.getMenuIds();
+        if(menuIds!=null && menuIds.size()>0) {
+            roleMenuDao.addRoleMenus(roleId,menuIds.toArray(new Long [menuIds.size()]));
+        }
+        return rt;
+    }
+
     public Integer delRoles(List<Long> roleIds) {
         if(roleIds==null || roleIds.size()<=0) {
             return 0;
