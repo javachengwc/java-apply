@@ -24,9 +24,6 @@ public class LoginResultVo {
     @ApiModelProperty("拥有的菜单")
     private List<MenuVo> menus;
 
-    @ApiModelProperty("拥有的菜单模块中的功能")
-    private List<MenuVo> menuFeatures;
-
     @ApiModelProperty("拥有的角色")
     private List<RoleVo> roles;
 
@@ -76,14 +73,6 @@ public class LoginResultVo {
 
     public void setRoles(List<RoleVo> roles) {
         this.roles = roles;
-    }
-
-    public List<MenuVo> getMenuFeatures() {
-        return menuFeatures;
-    }
-
-    public void setMenuFeatures(List<MenuVo> menuFeatures) {
-        this.menuFeatures = menuFeatures;
     }
 
     public String toString() {

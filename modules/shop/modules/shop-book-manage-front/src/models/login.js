@@ -21,39 +21,48 @@ export default {
       const response = yield call(loginIn, param.data);
       //登录成功
        if (reqSuccess(response)) {
-        //myuser--当前登录用户
-        localStorage.setItem('myuser', JSON.stringify(response.data));
-        //token--当前登录用户的token
-        const token =response.data.token;
-        localStorage.setItem('token',token);
-//        yield put.resolve({
-//          type: 'global/fetchCityTree',
-//        });
-//        const cityTree = yield select(state => state.global.cityTree);
-//        localStorage.setItem('gjCity', JSON.stringify(getNew(cityTree)));
 
-        alert("login success.....")
+          //用户权限
+          const permissions = {};
+           const resolve = ((menus) => {
+             menus.forEach((menu) => {
+               permissions[menu.perms] = true;
+               if (menu.children) {
+                 resolve(menu.children);
+               }
+             });
+           });
+           resolve(response.data.menus);
+           response.data.permissions = permissions;
 
-        //菜单列表
-        const menuData = getUserMenu();
-        let path = '';
+          //myuser--当前登录用户
+          localStorage.setItem('myuser', JSON.stringify(response.data));
+          //token--当前登录用户的token
+          const token =response.data.token;
+          localStorage.setItem('token',token);
 
-        if (menuData && menuData.length > 0) {
-          path= menuData[0].path;
-          if (menuData[0].children && menuData[0].children.length > 0) {
-              path =menuData[0].children[0].path;
+          alert("login success.....")
+
+          //菜单列表
+          const menuData = getUserMenu();
+          let path = '';
+
+          if (menuData && menuData.length > 0) {
+            path= menuData[0].path;
+            if (menuData[0].children && menuData[0].children.length > 0) {
+                path =menuData[0].children[0].path;
+            }
+            if(!startWith(path,'/')) {
+                 path = '/'+path;
+            }
+            if(endWith(path,'/')) {
+                path = path.substring(0,path.length-1);
+            }
           }
-          if(!startWith(path,'/')) {
-               path = '/'+path;
+          if (localStorage.getItem('myuser')) {
+            //这里routerRedux.push中的path,是在router中定义的路由路径
+            yield put(routerRedux.push(path));
           }
-          if(endWith(path,'/')) {
-              path = path.substring(0,path.length-1);
-          }
-        }
-        if (localStorage.getItem('myuser')) {
-          //这里routerRedux.push中的path,是在router中定义的路由路径
-          yield put(routerRedux.push(path));
-        }
       }
     },
     *getCode(param, { put, call }) {

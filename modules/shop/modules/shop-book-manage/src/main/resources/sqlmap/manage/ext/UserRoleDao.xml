@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.shop.book.manage.dao.manage.UserRoleDao">
 
-    <select id="queryUserRoleCountByRole" >
+    <select id="queryUserRoleCountByRole" resultType="int" >
         select count(1) as cnt from user_role where role_id=#{roleId}
     </select>
 

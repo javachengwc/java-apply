@@ -121,17 +121,32 @@ public class MenuServiceImpl implements MenuService {
         return  rtList;
     }
 
-    //查询用户拥有的菜单功能
-    public List<MenuVo> queryUserMenuFeature(Long userId) {
-        List<MenuVo> list = menuDao.queryUserMenuFeature(userId);
-        List<MenuVo> rtList = genTree(list);
-        return  rtList;
-    }
-
     //查询类型是菜单的菜单列表
     public List<MenuVo> queryOnlyMenuList() {
         List<MenuVo> list = menuDao.queryOnlyMenuList();
         List<MenuVo> rtList = genTree(list);
         return  rtList;
+    }
+
+    //是否还有子菜单
+    public boolean hasChildren(Long pMenuId) {
+        MenuExample example = new MenuExample();
+        MenuExample.Criteria criteria = example.createCriteria();
+        criteria.andParentIdEqualTo(pMenuId);
+        int cnt = menuMapper.countByExample(example);
+        boolean has = (cnt>0);
+        return has;
+    }
+
+    //批量删除菜单
+    public Integer batchDel(List<Long> menuIds) {
+        if(menuIds==null || menuIds.size()<=0) {
+            return 0;
+        }
+        MenuExample example = new MenuExample();
+        MenuExample.Criteria criteria = example.createCriteria();
+        criteria.andIdIn(menuIds);
+        int cnt = menuMapper.deleteByExample(example);
+        return cnt;
     }
 }

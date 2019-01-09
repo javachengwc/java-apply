@@ -30,9 +30,12 @@ public interface MenuService {
     //查询用户可见的菜单
     public List<MenuVo> queryUserMenu(Long userId);
 
-    //查询用户拥有的菜单功能
-    public List<MenuVo> queryUserMenuFeature(Long userId);
-
     //查询类型是菜单的菜单列表
     public List<MenuVo> queryOnlyMenuList();
+
+    //是否还有子菜单
+    public boolean hasChildren(Long pMenuId);
+
+    //批量删除菜单
+    public Integer batchDel(List<Long> menuIds);
 }

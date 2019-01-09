@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -63,6 +64,11 @@ public class RoleController {
             return resp;
         }
         RoleVo roleVo =TransUtil.transEntity(role,RoleVo.class);
+        List<Long> menuIds = roleService.queryMenuIdsByRole(roleId);
+        if (menuIds == null) {
+            menuIds = Collections.EMPTY_LIST;
+        }
+        roleVo.setMenuIds(menuIds);
         Resp<RoleVo> resp = Resp.success(roleVo,"成功");
         return  resp;
     }
@@ -73,12 +79,12 @@ public class RoleController {
         RoleVo roleVo = req.getData();
         String roleName = roleVo.getName();
         if (roleService.hasExistRoleName(roleName)) {
-            return Resp.error(null,"角色名称已经存在");
+            return Resp.error("角色名称已经存在");
         }
 
         String roleCode =roleVo.getCode();
         if (roleService.hasExistRoleCode(roleCode)) {
-            return Resp.error(null,"角色code已经存在");
+            return Resp.error("角色code已经存在");
         }
         roleService.addRoleWithMenu(roleVo);
         Resp<Void> resp = Resp.success(null,"成功");
@@ -89,14 +95,16 @@ public class RoleController {
     @PostMapping("/update")
     public Resp<Void> update(@Validated @RequestBody Req<RoleVo> req) {
         RoleVo roleVo = req.getData();
-        String roleName = roleVo.getName();
-        if (roleService.hasExistRoleName(roleName)) {
-            return Resp.error(null,"角色名称已经存在");
+        Long roleId=roleVo.getId();
+        Role orglRole = roleService.getById(roleId);
+        String newName = roleVo.getName();
+        if (!orglRole.getName().equals(newName) &&  roleService.hasExistRoleName(newName)) {
+            return Resp.error("角色名称已经存在");
         }
 
-        String roleCode =roleVo.getCode();
-        if (roleService.hasExistRoleCode(roleCode)) {
-            return Resp.error(null,"角色code已经存在");
+        String newCode =roleVo.getCode();
+        if (!orglRole.getCode().equals(newCode) &&  roleService.hasExistRoleCode(newCode)) {
+            return Resp.error("角色code已经存在");
         }
 
         roleService.uptRoleWithMenu(roleVo);

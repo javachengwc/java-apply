@@ -24,7 +24,6 @@ public class RoleVo implements Serializable {
     @ApiModelProperty("备注")
     private String note;
 
-    @JsonIgnore
     @ApiModelProperty("角色拥有的菜单ID集合")
     private List<Long> menuIds;
 

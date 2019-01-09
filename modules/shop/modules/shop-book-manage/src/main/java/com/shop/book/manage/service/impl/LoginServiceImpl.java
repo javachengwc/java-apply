@@ -70,10 +70,6 @@ public class LoginServiceImpl implements LoginService {
         List<MenuVo> menuList= menuService.queryUserMenu(userId);
         loginResult.setMenus(menuList);
 
-        //菜单功能
-        List<MenuVo> menuFeatureList= menuService.queryUserMenuFeature(userId);
-        loginResult.setMenuFeatures(menuFeatureList);
-
         //角色
         List<RoleVo> roleList = roleService.queryUserRole(userId);
         loginResult.setRoles(roleList);

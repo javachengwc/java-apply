@@ -47,9 +47,6 @@ public class LoginController {
     }
 
     public void wrapNull(LoginResultVo loginResultVo) {
-        if(loginResultVo.getMenuFeatures()==null) {
-            loginResultVo.setMenuFeatures(Collections.EMPTY_LIST);
-        }
         if(loginResultVo.getMenus()==null) {
             loginResultVo.setMenus(Collections.EMPTY_LIST);
         }

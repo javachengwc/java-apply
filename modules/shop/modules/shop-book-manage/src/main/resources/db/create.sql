@@ -52,18 +52,28 @@ create table role_menu (
 INSERT INTO `user` (`id`, `name`, `mobile`, `status`, `create_time`, `modified_time`) VALUES ('1', 'admin', '11111111111', '0', '2018-11-30 15:16:30', '2018-11-30 15:16:32');
 
 INSERT INTO `role` (`id`, `name`, `code`, `note`, `create_time`, `modified_time`) VALUES ('1', '管理员', 'admin', '管理员', '2018-11-14 16:04:51', '2018-11-14 16:04:53');
+INSERT INTO `role` (`id`, `name`, `code`, `note`, `create_time`, `modified_time`) VALUES ('2', '运营员', 'practicer', '运营人员', '2018-11-14 16:04:51', '2018-11-14 16:04:53');
 
-INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('1', '公共模块', 'common', '', '0', '1', 'home', '1', '1', '2018-11-14 16:53:27', '2018-11-14 16:53:29');
+
+INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('1', '公共模块', 'common', '', '0', '0', 'home', '1', '1', '2018-11-14 16:53:27', '2018-11-14 16:53:29');
 INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('2', '字典列表', 'dict', '', '1', '1', '', '10', '1', '2018-11-14 16:53:27', '2018-11-14 16:53:29');
 INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('3', '广告列表', 'advert', '', '1', '1', '', '20', '1', '2018-11-14 16:53:27', '2018-11-14 16:53:29');
 INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('4', '问答列表', 'qa', '', '1', '1', '', '30', '1', '2018-11-14 16:53:27', '2018-11-14 16:53:29');
-INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('5', '权限管理', 'rdbc', '', '0', '1', 'setting', '2', '1', '2018-11-14 16:53:27', '2018-11-14 16:53:29');
+INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('5', '权限管理', 'rdbc', '', '0', '0', 'setting', '2', '1', '2018-11-14 16:53:27', '2018-11-14 16:53:29');
 INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('6', '账户管理', 'user', 'user:list,user:query', '5', '1', '', '10', '1', '2018-11-14 16:53:27', '2018-11-14 16:53:29');
 INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('7', '新增', '/user/add', 'user:add', '6', '2', '', '10', '0', '2018-11-14 16:54:04', '2018-11-14 16:54:06');
 INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('8', '修改', '/user/update', 'user:update', '6', '2', '', '20', '0', '2018-11-14 16:54:27', '2018-11-14 16:54:29');
 INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('9', '删除', '/user/deletes', 'user:delete', '6', '2', '', '30', '0', '2018-11-14 16:54:48', '2018-11-14 16:54:52');
 INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('10', '启用', '/user/enable', 'user:enable', '6', '2', '', '40', '0', '2018-11-19 08:53:02', '2018-11-19 08:53:04');
 INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('11', '冻结', '/user/disable', 'user:disable', '6', '2', '', '50', '0', '2018-11-19 08:53:25', '2018-11-19 08:53:27');
+INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('12', '角色管理', 'role', '', '5', '1', '', '10', '1', '2018-11-14 16:53:27', '2018-11-14 16:53:29');
+INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('13', '新增角色', '/role/add', 'role:add', '12', '2', '', '10', '0', '2018-11-14 16:54:04', '2018-11-14 16:54:06');
+INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('14', '修改角色', '/role/update', 'role:update', '12', '2', '', '20', '0', '2018-11-14 16:54:27', '2018-11-14 16:54:29');
+INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('15', '删除角色', '/role/batchDel', 'role:delete', '12', '2', '', '30', '0', '2018-11-14 16:54:48', '2018-11-14 16:54:52');
+INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('16', '菜单管理', 'menu', '', '5', '1', '', '10', '1', '2018-11-14 16:53:27', '2018-11-14 16:53:29');
+INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('17', '新增菜单', '/menu/add', 'menu:add', '16', '2', '', '10', '0', '2018-11-14 16:54:04', '2018-11-14 16:54:06');
+INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('18', '修改菜单', '/menu/update', 'menu:update', '16', '2', '', '20', '0', '2018-11-14 16:54:27', '2018-11-14 16:54:29');
+INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('19', '删除菜单', '/menu/batchDel', 'menu:delete', '16', '2', '', '30', '0', '2018-11-14 16:54:48', '2018-11-14 16:54:52');
 
 INSERT INTO `user_role` (`user_id`, `role_id`) VALUES ('1', '1');
 
@@ -78,4 +88,11 @@ INSERT INTO `role_menu` (`role_id`, `menu_id`) VALUES ('1', '8');
 INSERT INTO `role_menu` (`role_id`, `menu_id`) VALUES ('1', '9');
 INSERT INTO `role_menu` (`role_id`, `menu_id`) VALUES ('1', '10');
 INSERT INTO `role_menu` (`role_id`, `menu_id`) VALUES ('1', '11');
-
+INSERT INTO `role_menu` (`role_id`, `menu_id`) VALUES ('1', '12');
+INSERT INTO `role_menu` (`role_id`, `menu_id`) VALUES ('1', '13');
+INSERT INTO `role_menu` (`role_id`, `menu_id`) VALUES ('1', '14');
+INSERT INTO `role_menu` (`role_id`, `menu_id`) VALUES ('1', '15');
+INSERT INTO `role_menu` (`role_id`, `menu_id`) VALUES ('1', '16');
+INSERT INTO `role_menu` (`role_id`, `menu_id`) VALUES ('1', '17');
+INSERT INTO `role_menu` (`role_id`, `menu_id`) VALUES ('1', '18');
+INSERT INTO `role_menu` (`role_id`, `menu_id`) VALUES ('1', '19');

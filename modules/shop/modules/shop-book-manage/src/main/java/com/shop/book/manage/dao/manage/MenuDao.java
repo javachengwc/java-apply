@@ -12,8 +12,6 @@ public interface MenuDao {
 
     public List<MenuVo> queryUserMenu(@Param("userId") Long userId);
 
-    public List<MenuVo> queryUserMenuFeature(@Param("userId") Long userId);
-
-    //查询类型是菜单的菜单列表
+    //查询类型是目录或菜单的菜单列表
     public List<MenuVo> queryOnlyMenuList();
 }

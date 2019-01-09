@@ -39,15 +39,6 @@
         from menu m
         join role_menu rm on m.id=rm.menu_id
         join user_role ur on ur.role_id= rm.role_id
-        where ur.user_id=#{userId} and m.type=1
-        order by m.parent_id asc ,m.sort asc
-    </select>
-
-    <select id="queryUserMenuFeature" resultMap="MenuMap">
-        select m.id,m.name,m.url,m.perms,m.type,m.icon,m.sort,m.nav,m.parent_id
-        from menu m
-        join role_menu rm on m.id=rm.menu_id
-        join user_role ur on ur.role_id= rm.role_id
         where ur.user_id=#{userId}
         order by m.parent_id asc ,m.sort asc
     </select>
@@ -55,7 +46,7 @@
     <select id="queryOnlyMenuList" resultMap="MenuMap">
         select m.id,m.name,m.url,m.perms,m.type,m.icon,m.sort,m.nav,m.parent_id
         from menu m
-        where m.type=1
+        where m.type in (0,1)
         order by m.parent_id asc ,m.sort asc
     </select>
 </mapper>

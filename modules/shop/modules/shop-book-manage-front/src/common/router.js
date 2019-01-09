@@ -85,6 +85,12 @@ export const getRouterData = app => {
     '/rdbc/user': {
       component: dynamicWrapper(app, ['user'], () => import('../routes/Rdbc/User')),
     },
+    '/rdbc/menu': {
+      component: dynamicWrapper(app, ['menu'], () => import('../routes/Rdbc/Menu')),
+    },
+    '/rdbc/role': {
+      component: dynamicWrapper(app, ['role'], () => import('../routes/Rdbc/Role')),
+    },
     '/common/dict': {
       component: dynamicWrapper(app, ['dict'], () => import('../routes/Dict/Dict')),
     },

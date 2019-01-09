@@ -41,4 +41,7 @@ public interface RoleService {
 
     public boolean hasUser(Long roleId);
 
+    //获取角色下的菜单ID
+    public List<Long> queryMenuIdsByRole(Long roleId);
+
 }

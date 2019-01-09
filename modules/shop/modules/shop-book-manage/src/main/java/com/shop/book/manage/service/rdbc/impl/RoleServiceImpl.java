@@ -152,13 +152,13 @@ public class RoleServiceImpl implements RoleService {
 
     public boolean hasExistRoleName(String name) {
         Role role=queryByName(name);
-        boolean rt =role==null?true:false;
+        boolean rt =role==null?false:true;
         return rt;
     }
 
     public boolean hasExistRoleCode(String code) {
         Role role=queryByCode(code);
-        boolean rt =role==null?true:false;
+        boolean rt =role==null?false:true;
         return rt;
     }
 
@@ -173,5 +173,11 @@ public class RoleServiceImpl implements RoleService {
             return true;
         }
         return false;
+    }
+
+    //获取角色下的菜单ID
+    public List<Long> queryMenuIdsByRole(Long roleId) {
+        List<Long> list = roleMenuDao.queryMenuIdsByRole(roleId);
+        return list;
     }
 }
