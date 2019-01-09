@@ -65,6 +65,7 @@ export default class MenuForm extends React.Component {
     });
   };
 
+  //渲染页面
   render() {
     const { show, form, closeHandle, otherData } = this.props;
     const { getFieldDecorator } = form;
@@ -119,11 +120,15 @@ export default class MenuForm extends React.Component {
               })(<Input name="perms" />)}
             </FormItem>
             {menuType == 0 || menuType == 1 ? (
-              <FormItem {...formItemLayout} label="导航栏显示">
+              <FormItem label="导航栏显示" {...formItemLayout}>
                 {getFieldDecorator("nav", {
-                  valuePropName: "checked",
-                  initialValue: this.props.defaultVal.nav,
-                })(<Switch checkedChildren="是" unCheckedChildren="否" />)}
+                  initialValue: `${this.props.defaultVal.nav || "0"}`,
+                })(
+                  <Radio.Group>
+                    <Radio.Button value="0">否</Radio.Button>
+                    <Radio.Button value="1">是</Radio.Button>
+                  </Radio.Group>
+                )}
               </FormItem>
             ) : null}
             <FormItem

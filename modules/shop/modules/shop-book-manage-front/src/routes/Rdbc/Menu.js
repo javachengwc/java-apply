@@ -10,6 +10,7 @@ const FormItem = Form.Item;
 @Form.create()
 @connect(({ menu, loading }) => ({
   menu,
+  showAddForm: menu.showAddForm,
   loading: loading.effects['menu/queryTree'],
 }))
 export default class Menu extends Component {
@@ -19,28 +20,33 @@ export default class Menu extends Component {
       parentId: '0',
     },
   };
+
+  //页面加载后初始化
   componentDidMount() {
     this.props.dispatch({
       type: 'menu/queryTree',
     });
   }
 
+  //添加一级菜单
   showAddFormHandle = () => {
     const { dispatch } = this.props;
-    this.setState({
-      otherData: {
-        parentName: '顶级菜单',
-        parentId: '0',
-      },
-    });
-    dispatch({ type: 'menu/itemDetail', data: { nav: true } });
-    dispatch({ type: 'menu/showForm', data: true });
+//    this.setState({
+//      otherData: {
+//        parentName: '顶级菜单',
+//        parentId: '0',
+//      },
+//    });
+    dispatch({ type: 'menu/itemDetail', data: { } });
+    dispatch({ type: 'menu/showForm', show: true });
   };
 
+  //关闭增改页面
   menuFormCloseHandle = () => {
-    this.props.dispatch({ type: 'menu/showForm', data: false });
+    this.props.dispatch({ type: 'menu/showForm', show: false });
   };
 
+  //增改页面提交
   menuFormSubmitHandel = data => {
     const { dispatch } = this.props;
     if (data.id) {
@@ -56,12 +62,16 @@ export default class Menu extends Component {
       });
     }
   };
+
+  //删除菜单
   deleteConfirm = id => {
     this.props.dispatch({
       type: 'menu/del',
       data: [id],
     });
   };
+
+  //获取id作为父节点，对应的父节点名称信息
   getParentInfo(id) {
     let result = {};
     const { menu } = this.props;
@@ -88,6 +98,8 @@ export default class Menu extends Component {
     }
     return result;
   }
+
+  //修改菜单
   showModifyHandle = data => {
     this.setState({
       otherData: this.getParentInfo(data.parentId),
@@ -98,16 +110,20 @@ export default class Menu extends Component {
       data: data.id,
     });
   };
+
+  //添加子菜单
   addChildHandle = data => {
     const { dispatch } = this.props;
     this.setState({
       otherData: this.getParentInfo(data.id),
     });
-    this.props.dispatch({ type: 'menu/itemDetail', data: { nav: true }});
-    dispatch({ type: 'menu/showForm', data: true });
+    dispatch({ type: 'menu/itemDetail', data: { nav: 1 }});
+    dispatch({ type: 'menu/showForm', show: true });
   };
+
+  //页面渲染
   render() {
-    const { menu, loading } = this.props;
+    const { menu,showAddForm,loading } = this.props;
     const { treeListData } = menu;
     const columns = [
       {
@@ -196,7 +212,7 @@ export default class Menu extends Component {
           }}
         />
         <MenuForm
-          show={menu.showForm}
+          show={showAddForm}
           closeHandle={this.menuFormCloseHandle}
           submitHandel={this.menuFormSubmitHandel}
           defaultVal={menu.itemDetail}

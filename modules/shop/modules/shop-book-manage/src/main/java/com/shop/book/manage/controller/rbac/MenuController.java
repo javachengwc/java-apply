@@ -87,7 +87,7 @@ public class MenuController {
     @PostMapping("/add")
     public Resp<Long> add(@Validated @RequestBody Req<MenuVo> req) {
         MenuVo menuVo = req.getData();
-        if(menuVo==null || menuVo.getId()==null) {
+        if(menuVo==null) {
             Resp<Long> resp = Resp.error("参数验证失败");
             return  resp;
         }

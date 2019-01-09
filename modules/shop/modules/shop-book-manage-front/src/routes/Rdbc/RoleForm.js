@@ -4,7 +4,7 @@ import { Form, Input, Modal, Tree } from 'antd';
 const FormItem = Form.Item;
 
 @Form.create()
-export default class RolesForm extends Component {
+export default class RoleForm extends Component {
   state = {
     checkedKeys: [],
     halfCheckedKeys: [],

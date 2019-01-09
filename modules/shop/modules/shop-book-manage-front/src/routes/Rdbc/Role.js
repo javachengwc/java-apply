@@ -98,11 +98,15 @@ export default class Role extends Component {
       data: data.id,
     });
   };
+
+  //展示增加角色页面
   showAddHandle = () => {
     const { dispatch } = this.props;
     dispatch({ type: 'role/itemDetail', data: {} });
     dispatch({ type: 'role/showAddForm' });
   };
+
+  //渲染页面
   render() {
     const { getFieldDecorator } = this.props.form;
     const resolveTreeNode = (menus) => {

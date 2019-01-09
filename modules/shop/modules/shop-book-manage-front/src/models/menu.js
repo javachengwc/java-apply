@@ -77,7 +77,7 @@ export default {
         message.success('添加成功');
         yield put({
           type: 'showForm',
-          data: false,
+          show: false,
         });
         yield put({
           type: 'queryTree',
@@ -87,7 +87,7 @@ export default {
 
     //删除菜单
     *del({ data }, { call, put }) {
-      const res = yield call(batchDelMenu, data);
+      const response = yield call(batchDelMenu, data);
       if (reqSuccess(response)) {
         message.success('删除成功');
         yield put({
@@ -98,28 +98,17 @@ export default {
 
     //修改菜单
     *update({ data }, { call, put }) {
-      const res = yield call(updateMenu, data);
+      const response = yield call(updateMenu, data);
       if (reqSuccess(response)) {
         message.success('修改成功');
         yield put({
           type: 'showForm',
-          data: false,
+          show: false,
         });
         yield put({
           type: 'queryTree',
         });
       }
-    },
-
-    //更新查询条件
-    *updateQueryData({ data }, { put }) {
-      yield put({
-        type: 'localParams',
-        data,
-      });
-      yield put({
-        type: 'queryPage',
-      });
     },
 
   },
@@ -149,7 +138,6 @@ export default {
         itemDetail: data,
       };
     },
-
     showForm(state, { show }) {
       return {
         ...state,

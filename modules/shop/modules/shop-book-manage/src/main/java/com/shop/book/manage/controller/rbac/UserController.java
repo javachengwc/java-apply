@@ -81,7 +81,7 @@ public class UserController {
     @PostMapping("/add")
     public Resp<Long> add(@Validated @RequestBody Req<UserVo> req) {
         UserVo userVo = req.getData();
-        if(userVo==null || userVo.getId()==null) {
+        if(userVo==null) {
             Resp<Long> resp = Resp.error("参数验证失败");
             return  resp;
         }
