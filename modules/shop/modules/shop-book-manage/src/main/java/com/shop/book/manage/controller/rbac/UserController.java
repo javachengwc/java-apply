@@ -4,6 +4,7 @@ import com.shop.base.model.Page;
 import com.shop.base.model.Req;
 import com.shop.base.model.Resp;
 import com.shop.base.util.TransUtil;
+import com.shop.book.manage.model.pojo.manage.Role;
 import com.shop.book.manage.model.pojo.manage.User;
 import com.shop.book.manage.model.vo.UserQueryVo;
 import com.shop.book.manage.model.vo.UserVo;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
+import java.util.List;
 
 @Api(value = "用户相关接口", description = "用户相关接口")
 @RestController
@@ -71,7 +73,12 @@ public class UserController {
         UserVo userVo =TransUtil.transEntity(user,UserVo.class);
         userVo.setCreateTimeStr(DateUtil.formatDate(user.getCreateTime(),DateUtil.FMT_YMD_HMS));
         userVo.setModifiedTimeStr(DateUtil.formatDate(user.getModifiedTime(),DateUtil.FMT_YMD_HMS));
-
+        List<Role> roleList = userService.queryRoleByUser(userId);
+        if(roleList!=null) {
+            for(Role role:roleList) {
+                userVo.getRoleIds().add(role.getId());
+            }
+        }
         Resp<UserVo> resp = Resp.success(userVo,"成功");
         return  resp;
     }
@@ -85,13 +92,8 @@ public class UserController {
             Resp<Long> resp = Resp.error("参数验证失败");
             return  resp;
         }
-        Date now = new Date();
-        User user =TransUtil.transEntity(userVo,User.class);
-        user.setCreateTime(now);
-        user.setModifiedTime(now);
-
-        userService.addUser(user);
-        Long userId =user.getId();
+        User user = userService.addUserWithRole(userVo);
+        Long userId = user.getId();
         Resp<Long> resp = Resp.success(userId,"成功");
         return  resp;
     }
@@ -105,9 +107,7 @@ public class UserController {
             Resp<Void> resp = Resp.error("参数验证失败");
             return  resp;
         }
-        User uptUser =TransUtil.transEntity(userVo,User.class);
-        uptUser.setId(userVo.getId());
-        userService.uptUser(uptUser);
+        userService.uptUserWithRole(userVo);
 
         Resp<Void> resp = Resp.success(null,"成功");
         return  resp;

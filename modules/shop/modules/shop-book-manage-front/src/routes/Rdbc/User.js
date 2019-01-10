@@ -86,6 +86,8 @@ export default class UserPage extends Component {
     dispatch({ type: 'user/showAddForm' });
     dispatch({ type: 'user/itemDetail', data: {} });
   };
+
+  //点击修改
   update = data => {
     const { dispatch } = this.props;
     dispatch({
@@ -97,12 +99,9 @@ export default class UserPage extends Component {
       data: true,
     });
   };
+
   // 点击保存
   saveHandle = data => {
-    if (data.cityId && data.cityId.length > 0) {
-      console.log(data.cityId[data.cityId.length - 1]);
-      data.cityId = data.cityId[data.cityId.length - 1];
-    }
     if (data.id) {
       this.props.dispatch({
         type: 'user/update',
@@ -143,6 +142,7 @@ export default class UserPage extends Component {
     });
   }
 
+  //渲染页面
   render() {
     const columns = [
       {
@@ -164,6 +164,11 @@ export default class UserPage extends Component {
           key: 'status',
           dataIndex: 'status',
           render: status => <span>{status == 0 ? '正常' : '冻结'}</span>,
+      },
+      {
+        title: '角色',
+        width: '20%',
+        dataIndex: 'roleNames',
       },
       {
         title: '创建时间',
@@ -263,7 +268,7 @@ export default class UserPage extends Component {
           </Col>
         </Row>
         <Divider />
-        <Table columns={columns} dataSource={userList.list || []} pagination={pagination} />
+        <Table bordered columns={columns} dataSource={userList.list || []} pagination={pagination} />
         <UserForm
           showAddForm={showAddForm}
           handleCancel={() => this.props.dispatch({ type: 'user/showForm', show: false })}

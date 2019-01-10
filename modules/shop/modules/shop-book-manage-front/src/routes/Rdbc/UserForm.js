@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Input, Modal, Cascader, Select } from 'antd';
+import { Form, Input, Modal, Cascader, Select,Checkbox,Row,Col,Radio,Button,Table } from 'antd';
 import { getContianer } from '../../utils/utils';
 
 const FormItem = Form.Item;
@@ -22,18 +22,7 @@ export default class UserForm extends Component {
   };
   render() {
     const { getFieldDecorator } = this.props.form;
-    const resolveTreeNode = roles => {
-      if (roles && roles.length > 0) {
-        return roles.map(role => {
-          return (
-            <Option value={role.id} key={`${role.id}1111`} disabled={role.id == 2}>
-              {' '}
-              {role.name}{' '}
-            </Option>
-          );
-        });
-      }
-    };
+    const { roles } = this.props;
     return (
       <Modal
         title={this.props.itemDetail.name ? '修改' : '添加'}
@@ -57,16 +46,32 @@ export default class UserForm extends Component {
               ],
             })(<Input name="cardNo" placeholder="请输入手机号" maxLength="11" />)}
           </FormItem>
-          <FormItem label="账户角色">
+
+
+          <FormItem label="角色">
             {getFieldDecorator('roleIds', {
-              initialValue: this.props.itemDetail.roleIds,
-              rules: [{ required: true, message: '请选择角色' }],
+              initialValue: this.props.itemDetail.roleIds || [],
+              rules: [
+                {
+                  required: true,
+                  message: '请选择角色',
+                },
+              ],
             })(
-              <Select showSearch mode="multiple" placeholder="选择角色">
-                {resolveTreeNode(this.props.roles.data || [])}
-              </Select>
+              <Checkbox.Group style={{ width: '100%' }}>
+                <Row>
+                  {roles.map(role => (
+                    <Col key={role.id} span={8}>
+                      <Checkbox key={role.id} value={role.id}>
+                        {role.name}
+                      </Checkbox>
+                    </Col>
+                  ))}
+                </Row>
+              </Checkbox.Group>
             )}
           </FormItem>
+
         </Form>
       </Modal>
     );

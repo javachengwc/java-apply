@@ -1,6 +1,6 @@
 import { routerRedux } from 'dva/router';
 import get from 'lodash/get';
-import { getCaptcha, loginIn, loginOut, queryCities } from '../services/user';
+import { getCaptcha, login, logout, queryCities } from '../services/user';
 import { setAuthority } from '../utils/authority';
 import { getUserMenu } from '../utils/menu';
 import { reqSuccess,startWith,endWith } from '../utils/utils';
@@ -18,7 +18,7 @@ export default {
   effects: {
     *login(param, { call, put, select }) {
       //这里将会调用services中对应的loginIn方法
-      const response = yield call(loginIn, param.data);
+      const response = yield call(login, param.data);
       //登录成功
        if (reqSuccess(response)) {
 
@@ -72,8 +72,8 @@ export default {
         payload: response,
       });
     },
-    *loginOut(_, { call, put }) {
-      const response = yield call(loginOut);
+    *logout(_, { call, put }) {
+      const response = yield call(logout);
       if (reqSuccess(response)) {
         localStorage.removeItem('token');
         yield put(routerRedux.push('/user/login'));

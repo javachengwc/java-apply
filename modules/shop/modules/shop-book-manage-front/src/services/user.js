@@ -19,7 +19,7 @@ export async function getCaptcha(params) {
 }
 
 //登录
-export async function loginIn(params) {
+export async function login(params) {
   return catchError(
     request('/login', {
       method: 'POST',
@@ -29,7 +29,7 @@ export async function loginIn(params) {
 }
 
 //退出
-export async function loginOut() {
+export async function logout() {
   return catchError(
     request('/logout', {
       method: 'POST',

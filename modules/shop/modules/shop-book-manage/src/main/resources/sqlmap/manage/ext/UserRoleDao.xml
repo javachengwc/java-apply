@@ -6,4 +6,23 @@
         select count(1) as cnt from user_role where role_id=#{roleId}
     </select>
 
+    <select id="queryRoleByUser" resultType="com.shop.book.manage.model.pojo.manage.Role" >
+        select r.id,r.name,r.code,r.note,r.create_time,r.modified_time
+        from user_role ur
+        join role r on ur.role_id=r.id
+        where ur.user_id=#{userId}
+    </select>
+
+    <insert id="addUserRoles" >
+        insert into user_role (user_id,role_id)
+        values
+        <foreach collection="roleIds" item="roleId" separator=",">
+            (#{userId}, #{roleId})
+        </foreach>
+    </insert>
+
+    <delete id="deleteByUser" >
+        delete from user_role where user_id = #{userId}
+    </delete>
+
 </mapper>

@@ -23,10 +23,7 @@ export default {
       list: [],
       totalCount: 0,
     },
-    roles: {
-      // 全部角色
-      data: [],
-    },
+    roles: [], //全部角色
     itemDetail: {}, // 用户详情
     getListParams: {
       // 查询参数
@@ -63,7 +60,7 @@ export default {
        //把所有角色保存到本地
         yield put({
           type: 'saveRoles',
-          payload: response,
+          payload: response.data,
         });
       }
     },
@@ -85,7 +82,7 @@ export default {
     *update({ data }, { put, call }) {
       const response = yield call(updateUser, data);
       if (reqSuccess(response)) {
-        message.success('操作成功！');
+        message.success('操作成功');
         yield put({
           type: 'showForm',
           show: false,
@@ -99,7 +96,7 @@ export default {
     *add({ data }, { put, call }) {
       const response = yield call(addUser, data);
       if (reqSuccess(response)) {
-        message.success('操作成功！');
+        message.success('操作成功');
         yield put({
           type: 'showForm',
           show: false,
@@ -113,7 +110,7 @@ export default {
     *disableUser({ data }, { put, call }) {
       const response = yield call(disableUser, data);
       if (reqSuccess(response)) {
-        message.success('操作成功！');
+        message.success('操作成功');
         yield put({
           type: 'queryPage',
         });
@@ -123,7 +120,7 @@ export default {
     *enableUser({ data }, { put, call }) {
       const response = yield call(enableUser, data);
       if (reqSuccess(response)) {
-        message.success('操作成功！');
+        message.success('操作成功');
         yield put({
           type: 'queryPage',
         });

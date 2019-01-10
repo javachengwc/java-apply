@@ -1,6 +1,10 @@
 package com.shop.book.manage.model.vo;
 
+import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang.builder.ToStringBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserVo {
 
@@ -17,6 +21,9 @@ public class UserVo {
     private String modifiedTimeStr;
 
     private String roleNames;
+
+    @ApiModelProperty("拥有的角色Id集合")
+    private List<Long> roleIds = new ArrayList<Long>();
 
     public Long getId() {
         return id;
@@ -72,6 +79,14 @@ public class UserVo {
 
     public void setRoleNames(String roleNames) {
         this.roleNames = roleNames;
+    }
+
+    public List<Long> getRoleIds() {
+        return roleIds;
+    }
+
+    public void setRoleIds(List<Long> roleIds) {
+        this.roleIds = roleIds;
     }
 
     public String toString() {

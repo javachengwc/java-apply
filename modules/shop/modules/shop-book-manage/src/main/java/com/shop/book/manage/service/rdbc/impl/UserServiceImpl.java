@@ -3,9 +3,13 @@ package com.shop.book.manage.service.rdbc.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.shop.base.model.Page;
+import com.shop.base.util.TransUtil;
+import com.shop.book.manage.config.DbManageConfig;
 import com.shop.book.manage.dao.manage.UserDao;
+import com.shop.book.manage.dao.manage.UserRoleDao;
 import com.shop.book.manage.dao.manage.mapper.UserMapper;
 import com.shop.book.manage.enums.UserStatuEnum;
+import com.shop.book.manage.model.pojo.manage.Role;
 import com.shop.book.manage.model.pojo.manage.User;
 import com.shop.book.manage.model.pojo.manage.UserExample;
 import com.shop.book.manage.model.vo.UserQueryVo;
@@ -14,6 +18,7 @@ import com.shop.book.manage.service.rdbc.UserService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -25,6 +30,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private UserRoleDao userRoleDao;
 
     public User getById(Long userId) {
         User user = userMapper.selectByPrimaryKey(userId);
@@ -47,8 +55,44 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    //添加用户，附带加角色
+    @Transactional(value = DbManageConfig.MANAGE_TRANSACTION_MANAGER_NAME)
+    public User addUserWithRole(UserVo userVo) {
+        Date now = new Date();
+        User user = TransUtil.transEntity(userVo,User.class);
+        user.setCreateTime(now);
+        user.setModifiedTime(now);
+
+        this.addUser(user);
+        Long userId =user.getId();
+
+        List<Long> roleIds = userVo.getRoleIds();
+        if(roleIds!=null && roleIds.size()>0) {
+            userRoleDao.addUserRoles(userId,roleIds.toArray(new Long [roleIds.size()]));
+        }
+        return user;
+    }
+
     public Integer uptUser(User user) {
         int rt = userMapper.updateByPrimaryKeySelective(user);
+        return rt;
+    }
+
+    //修改用户，附带修改角色
+    @Transactional(value = DbManageConfig.MANAGE_TRANSACTION_MANAGER_NAME)
+    public Integer uptUserWithRole(UserVo userVo) {
+        Long userId = userVo.getId();
+        Date now = new Date();
+        User user = TransUtil.transEntity(userVo,User.class);
+        user.setModifiedTime(now);
+        user.setId(userId);
+        Integer rt =this.uptUser(user);
+
+        userRoleDao.deleteByUser(userId);
+        List<Long> roleIds = userVo.getRoleIds();
+        if(roleIds!=null && roleIds.size()>0) {
+            userRoleDao.addUserRoles(userId,roleIds.toArray(new Long [roleIds.size()]));
+        }
         return rt;
     }
 
@@ -102,5 +146,11 @@ public class UserServiceImpl implements UserService {
             }
         }
         return permSet;
+    }
+
+    //查询用户的角色列表
+    public List<Role> queryRoleByUser(Long userId) {
+        List<Role> list =userRoleDao.queryRoleByUser(userId);
+        return list;
     }
 }
