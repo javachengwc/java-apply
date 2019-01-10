@@ -11,41 +11,29 @@ export default class UploadIcon extends Component {
     visible: false
   };
 
+  //渲染图标
   renderIcon(url) {
-    if (isFilePath(url)) {
-      const link = config.isDev
-        ? `${config.DEV_IMG_PATH}${url}`
-        : `${config.PROD_IMG_PATH}${url}`;
-      return (
-        <img
-          onClick={() => this.setState({ visible: true })}
-          style={{ maxWidth: "32px", maxHeight: "32px", cursor: "pointer" }}
-          src={link}
-          alt=""
-        />
-      );
-    }
     return <Icon type={url} style={{ fontSize: "32px" }} />;
   }
+
+  //选择图标
   selectIconHandle = ({ target }) => {
     const url = target.dataset.iconName;
+    alert(url);
     const { onChange } = this.props;
     this.setState({
       showIcons: false
     });
     onChange(url);
   };
+
+  //清除图标
   iconClearHandle = () => {
     const { onChange } = this.props;
     onChange("");
   };
-  onUpload = url => {
-    const { onChange } = this.props;
-    onChange(
-      url.replace(config.DEV_IMG_PATH, "")
-        .replace(config.PROD_IMG_PATH, "")
-    );
-  };
+
+  //渲染
   render() {
     const { value, iconType = ["icon", "image"] } = this.props;
     const { showIcons, visible } = this.state;
@@ -65,9 +53,6 @@ export default class UploadIcon extends Component {
                 选择
               </Button>
             )}
-            {iconType.indexOf("image") !== -1 && (
-              <Upload onUpload={this.onUpload}>上传</Upload>
-            )}
           </React.Fragment>
         ) : null}
         {value ? (
@@ -79,7 +64,6 @@ export default class UploadIcon extends Component {
             删除
           </Button>
         ) : null}
-
         <Icons
           visible={showIcons}
           onSelect={this.selectIconHandle}
@@ -87,20 +71,6 @@ export default class UploadIcon extends Component {
             this.setState({ showIcons: false });
           }}
         />
-        <Modal
-          onCancel={() => this.setState({ visible: false })}
-          title="预览"
-          visible={visible}
-        >
-          <img
-            src={
-              config.isDev
-                ? `${config.DEV_IMG_PATH}${value}`
-                : `${config.PROD_IMG_PATH}${value}`
-            }
-            alt=""
-          />
-        </Modal>
       </div>
     );
   }
