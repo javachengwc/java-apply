@@ -18,8 +18,7 @@ export default class UploadIcon extends Component {
 
   //选择图标
   selectIconHandle = ({ target }) => {
-    const url = target.dataset.iconName;
-    alert(url);
+    const url = target.dataset.iconName || target.dataset.icon;
     const { onChange } = this.props;
     this.setState({
       showIcons: false
