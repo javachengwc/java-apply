@@ -58,6 +58,11 @@ git push origin --delete master    --->删除远程分支master
 git remote add origin master       --->创建远程分支master
 git push origin master:master      --->推送本地master分支到远程master分支
 
+方法4
+git reset --hard  aabbcc           ---本地代码回退到aabbcc版本
+git branch  tmp                    ---创建tmp分支
+git checkout tmp                   ---切换到tmp分支,tmp分支其实就是当时aabbcc版的内容
+git push origin tmp                ---推送到远程tmp分支，远程tmp分支就是master中的aabbcc版本的内容
 --------------------------------------------------------
 git config --list                       --->查看git配置， 配置文件一般是~/.gitconfig
 git config --global user.name  [username]  --->配置git账号
