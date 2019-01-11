@@ -142,13 +142,6 @@ export default class MenuForm extends React.Component {
             </FormItem>
           </Form>
         </Modal>
-        <Icons
-          visible={this.state.showIcons}
-          onSelect={this.selectIconHandle}
-          onCancel={() => {
-            this.setState({ showIcons: false });
-          }}
-        />
       </React.Fragment>
     );
   }
