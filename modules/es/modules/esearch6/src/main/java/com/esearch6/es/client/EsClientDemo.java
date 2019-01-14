@@ -26,6 +26,10 @@ import java.security.KeyStore;
  * Elasticsearch java client有TransportClient，JestClient，RestClient，2.3版本中还有NodeClient
  * springboot中集成es的是spring-data-elasticsearch
  * RestClient对象是线程安全的，理论上跟使用它的应用程序有相同的生命周期
+ * es官方客户端有两种：restclient和transprortclient，
+ * 前者是基于restful的，直接操作各种restful api和query dsl，比较简单，没有orm功能；
+ * 后者是基于java api封装的orm框架，封装比较死板，不太灵活，兼容性差，不能像调用restful那样直接操作query dsl，也不能直接针对query dsl，
+ * 在head插件或者kibana里面调试和调优query dsl，写出了query dsl还要想方设法转换成对应的java api的调用方式。
  */
 public class EsClientDemo {
 
