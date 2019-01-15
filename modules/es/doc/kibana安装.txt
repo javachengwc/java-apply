@@ -14,6 +14,22 @@ cd kibana-6.3.0-linux-x86_64
 解压后就完成安装了，对应的目录kibana-6.3.0-linux-x86_64就是KIBANA_HOME
 ./config/kibana.yml      ------kibana的配置文件，默认配置 localhost:5601
 ./bin/kibana &           ------启动kibana
+http://localhost:5601    ------访问kibana
+http://localhost:5601/status             ------查看kibana的状态
+
+默认情况下，kibana 会连接运行在 localhost 上的 elasticsearch 实例。
+如果需要连接不同的 elasticsearch实例，可以修改 kibana.yml 配置文件中的 elasticsearch URL 配置项并重启 kibana。
+
+kibana的标准升级是升级 kibana 最直接的方法，仅支持 4.2 及以上的版本。
+用tar.gz 压缩包进行kibana升级
+    将 zip 或 tar.gz 压缩包解压到一个新的文件夹，确保 config 或 data 文件夹没有被覆盖。
+    将原来安装的 config 文件夹下的所有文件拷贝到新安装目录中。确保您移动或者升级了重要变更文件中指明的配置项，否则 kibana 将无法启动。
+    将原来安装的 data 文件夹下的所有文件拷贝到新安装目录中。
+    使用 kibana-plugin 脚本重新安装相应的版本。
+    关闭原 kibana 进程。
+    开启新 kibana 进程。
+
+重建索引是从已有的索引升级语法、映射而创建一个新索引的过程。尽管这支持手动进行，仍然推荐使用elasticsearch 迁移插件。
 
 -------------------------
 kibana配置项
