@@ -5,15 +5,28 @@ import com.esearch6.es.EsService;
 import com.esearch6.model.AggResult;
 import com.esearch6.model.RangeValue;
 import com.esearch6.util.IndexKeyUtil;
+import com.esearch6.util.JsonUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.util.col.MapUtil;
 import com.util.page.Page;
 import org.apache.commons.lang.StringUtils;
+import org.elasticsearch.action.ActionListener;
+import org.elasticsearch.action.bulk.BulkItemResponse;
+import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.index.IndexRequestBuilder;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.index.reindex.BulkByScrollResponse;
+import org.elasticsearch.index.reindex.DeleteByQueryAction;
+import org.elasticsearch.index.reindex.DeleteByQueryRequestBuilder;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -234,5 +247,103 @@ public class EsServiceImpl implements EsService {
             }
         }
         curResult.setTotalCnt(totalCnt);
+    }
+
+    //增加索引
+    public boolean  addIndex(String collectName,String indexType,Map<String, Object> dataMap) throws Exception {
+        logger.info("EsServiceImpl addIndex start,collectName={},indexType={},dataMap={}",collectName,indexType,dataMap);
+        try {
+            IndexRequestBuilder requestBuilder =  this.esClient.prepareIndex(collectName, indexType)
+                    .setSource(JsonUtil.obj2Json(dataMap),XContentType.JSON);
+            IndexResponse response = requestBuilder.get();
+            boolean rt = (response.status() == RestStatus.CREATED);
+            return rt;
+        } catch (Exception e) {
+            logger.error("EsServiceImpl addIndex error,",e);
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    //修改索引
+    public boolean uptIndex(String collectName,String indexType,Map<String, Object> dataMap,String businessIdKey) throws Exception {
+        logger.info("EsServiceImpl uptIndex start,collectNam={},indexType={},businessIdKey={}",collectName,indexType,businessIdKey);
+        try {
+            IndexRequestBuilder requestBuilder =  this.esClient.prepareIndex(collectName, indexType)
+                    .setSource(JsonUtil.obj2Json(dataMap),XContentType.JSON);
+            IndexResponse response = requestBuilder.get();
+            boolean rt = (response.status() == RestStatus.CREATED);
+            return rt;
+        } catch (Exception e) {
+            logger.error("EsServiceImpl addIndex error,",e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    //删除索引
+    public long deleteIndex(String collectName,String indexType,String businessIdKey,String businessIdValue) throws Exception {
+        logger.info("EsServiceImpl deleteIndex start,collectName={},indexType={},businessId={}",collectName,indexType,businessIdValue);
+
+        DeleteByQueryRequestBuilder builder = DeleteByQueryAction.INSTANCE
+                .newRequestBuilder(esClient)
+                .filter(QueryBuilders.termQuery(businessIdKey, businessIdValue))
+                .source(indexType);
+
+        BulkByScrollResponse response = builder.get();
+        long delCnt = response.getDeleted();
+
+        //如果是一个长时间运行的操作，可以异步地完成它，这里调用execute而不是get并提供一个侦听器
+//        DeleteByQueryAction.INSTANCE.newRequestBuilder(esClient)
+//                .filter(QueryBuilders.matchQuery(businessIdKey, businessIdValue))
+//                .source(indexType)
+//                .execute(new ActionListener<BulkByScrollResponse>() {
+//                    public void onResponse(BulkByScrollResponse response) {
+//                        long deleted = response.getDeleted();
+//                    }
+//                    public void onFailure(Exception e) {
+//                        // Handle the exception
+//                    }
+//                });
+
+        return delCnt;
+    }
+
+    //根据索引文档id删除索引
+    private boolean deleteByHitId(String collectName,String indexType,String hitId) {
+        DeleteResponse response = esClient.prepareDelete(collectName, indexType, hitId).get();
+        boolean rt = response.status()==RestStatus.OK;
+        return rt;
+    }
+
+    //根据条件删除索引,谨慎使用
+    public boolean deleteIndexByCdn(String collectName,String indexType,String cdnKey,String cdnValue) throws Exception {
+        logger.info("EsServiceImpl deleteIndexByCdn start,collectName={},indexType={},cdnKey={},cdnValue={}",collectName,indexType,cdnKey,cdnValue);
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+        queryBuilder.must(QueryBuilders.termQuery(cdnKey, cdnValue));
+
+        SearchRequestBuilder searchRequestBuilder = esClient.prepareSearch(collectName).setTypes(indexType);
+        searchRequestBuilder.setQuery(queryBuilder);
+        SearchResponse response = searchRequestBuilder.execute().get();
+        SearchHits searchHits = response.getHits();
+        long totalCount = searchHits.totalHits;
+
+        BulkRequestBuilder bulkRequest = esClient.prepareBulk();
+
+        for(SearchHit hit : searchHits){
+            String id = hit.getId();
+            bulkRequest.add(esClient.prepareDelete(collectName, indexType, id).request());
+        }
+        BulkResponse bulkResponse = bulkRequest.get();
+        if (bulkResponse.hasFailures()) {
+            StringBuilder buf = new StringBuilder("");
+            for(BulkItemResponse item : bulkResponse.getItems()){
+                buf.append(item.getFailureMessage()).append(";");
+            }
+            logger.warn("EsServiceImpl deleteIndexByCdn fail,collectName={},indexType={},cdnKey={},cdnValue={},failInfo={}",
+                    collectName,indexType,cdnKey,cdnValue,buf.toString());
+            return false;
+        }
+        return true;
+
     }
 }

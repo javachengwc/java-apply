@@ -17,4 +17,16 @@ public interface EsService {
     //聚合查询(也就是分组查询)
     public AggResult queryAgg(String collectName, String indexType,
                               Map<String, String> queryMap, List<String> aggFieldList) throws Exception;
+
+    //增加索引
+    public boolean addIndex(String collectName,String indexType,Map<String, Object> dataMap) throws Exception;
+
+    //修改索引
+    public boolean uptIndex(String collectName,String indexType,Map<String, Object> dataMap) throws Exception;
+
+    //删除索引
+    public long deleteIndex(String collectName,String indexType,String businessIdKey,String businessIdValue) throws Exception;
+
+    //根据条件删除索引
+    public boolean deleteIndexByCdn(String collectName,String indexType,String cdnKey,String cdnValue) throws Exception;
 }

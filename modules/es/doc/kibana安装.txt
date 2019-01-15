@@ -1,0 +1,121 @@
+-----------------------------------------------kibana安装------------------------------------
+kibana是一款开源的数据分析和可视化平台，它是Elastic Stack成员之一，用于和Elasticsearch协作。
+可使用kibana对Elasticsearch索引中的数据进行搜索、查看、交互操作。
+
+kibana基于node.js运行，kibana的版本需要和Elasticsearch的版本一致。从6.0.0开始，kibana只支持64位操作系统。
+kibana与es若主版本号相同，kibana子版本号比es子版本号新的版本也是不支持的（例如 Kibana 5.1 和 Elasticsearch 5.0）。
+kibana与es若主版本号相同，es子版本号大于kibana子版本号基本不会有问题，这种情况一般是便于先将 Elasticsearch 升级（例如 Kibana 5.0 和 Elasticsearch 5.1）。
+kibana与es若主版本号，子版本号相同，运行不同的补丁版本一般是支持的（例如：Kibana 5.0.0 和 Elasticsearch 5.0.1）。
+
+kibana安装
+wget https://artifacts.elastic.co/downloads/kibana/kibana-6.3.0-linux-x86_64.tar.gz
+tar -zxvf kibana-6.3.0-linux-x86_64.tar.gz
+cd kibana-6.3.0-linux-x86_64
+解压后就完成安装了，对应的目录kibana-6.3.0-linux-x86_64就是KIBANA_HOME
+./config/kibana.yml      ------kibana的配置文件，默认配置 localhost:5601
+./bin/kibana &           ------启动kibana
+
+-------------------------
+kibana配置项
+    server.port:
+        默认值: 5601,指定使用的端口号。
+    server.host:
+        默认值: "localhost" ,指定后端服务器的主机地址。
+    server.basePath:
+        如果启用了代理，指定 kibana 的路径，该配置项只影响 Kibana 生成的 URLs，转发请求到 Kibana 时代理会移除基础路径值，该配置项不能以斜杠 (/)结尾。
+    server.maxPayloadBytes:
+        默认值: 1048576 ,服务器请求的最大负载，单位字节。
+    server.name:
+        默认值: "您的主机名" ,kibana实例对外展示的名称。
+    server.defaultRoute:
+        默认值: "/app/kibana",kibana的默认路径，该配置项可改变kibana的登录页面。
+    elasticsearch.url:
+        默认值: "http://localhost:9200", 用来处理所有查询的elasticsearch实例的URL 。
+    elasticsearch.preserveHost:
+        默认值: true,值为true时，kibana使用server.host设定的主机名，值为 false 时，kibana使用主机的主机名来连接kibana实例。
+    kibana.index:
+        默认值: ".kibana" ,kibana使用es中的索引来存储保存的检索，可视化控件以及仪表板。如果没有索引，kibana 会创建一个新的索引。
+    kibana.defaultAppId:
+        默认值: "discover" ,默认加载的应用。
+    elasticsearch.username:
+    elasticsearch.password:
+        es的基本的权限认证，该配置项提供了用户名和密码。
+    server.ssl.enabled
+        默认值: "false" ,对到浏览器端的请求启用 SSL，设为true时，server.ssl.certificate 和 server.ssl.key 也要设置。
+    server.ssl.certificate:
+    server.ssl.key:
+        PEM 格式 SSL 证书和 SSL 密钥文件的路径。
+    server.ssl.keyPassphrase
+        解密私钥的口令，该设置项可选，因为密钥可能没有加密。
+    server.ssl.certificateAuthorities
+        可信任 PEM 编码的证书文件路径列表。
+    server.ssl.supportedProtocols
+        默认值: TLSv1、TLSv1.1、TLSv1.2 版本支持的协议，有效的协议类型: TLSv1 、 TLSv1.1 、 TLSv1.2 。
+    server.ssl.cipherSuites
+        默认值: ECDHE-RSA-AES128-GCM-SHA256, ECDHE-ECDSA-AES128-GCM-SHA256, ECDHE-RSA-AES256-GCM-SHA384, ECDHE-ECDSA-AES256-GCM-SHA384,
+                DHE-RSA-AES128-GCM-SHA256, ECDHE-RSA-AES128-SHA256, DHE-RSA-AES128-SHA256, ECDHE-RSA-AES256-SHA384, DHE-RSA-AES256-SHA384,
+                ECDHE-RSA-AES256-SHA256, DHE-RSA-AES256-SHA256, HIGH,!aNULL, !eNULL, !EXPORT, !DES, !RC4, !MD5, !PSK, !SRP, !CAMELLIA.
+    elasticsearch.ssl.certificate:
+    elasticsearch.ssl.key:
+        可选配置项，提供 PEM格式 SSL 证书和密钥文件的路径。这些文件确保 Elasticsearch 后端使用同样的密钥文件。
+    elasticsearch.ssl.keyPassphrase
+        解密私钥的口令，该设置项可选，因为密钥可能没有加密。
+    elasticsearch.ssl.certificateAuthorities:
+        指定用于 Elasticsearch 实例的 PEM 证书文件路径。
+    elasticsearch.ssl.verificationMode:
+        默认值: full 控制证书的认证，可用的值有 none 、 certificate 、 full 。 full 执行主机名验证，certificate 不执行主机名验证。
+    elasticsearch.pingTimeout:
+        默认值: elasticsearch.requestTimeout setting 的值，ping elasticsearch的等待时间。
+    elasticsearch.requestTimeout:
+        默认值: 30000 ,等待elasticsearch 的响应时间，单位微秒，该值必须为正整数。
+    elasticsearch.requestHeadersWhitelist:
+        默认值: [ 'authorization' ] ,kibana客户端发送到es头体，发送 no 头体，设置该值为[]。
+    elasticsearch.customHeaders:
+        默认值: {} ,发往es的头体和值，不管 elasticsearch.requestHeadersWhitelist 如何配置，任何自定义的头体不会被客户端头体覆盖。
+    elasticsearch.shardTimeout:
+        默认值: 0 ,es等待分片响应时间，单位微秒，0即禁用。
+    elasticsearch.startupTimeout:
+        默认值: 5000 ,kibana启动时等待es的时间，单位微秒。
+    pid.file:
+        指定 kibana 的进程ID文件的路径。
+    logging.dest:
+        默认值: stdout ,指定 kibana 日志输出的文件。
+    logging.silent:
+        默认值: false ,该值设为 true 时，禁止所有日志输出。
+    logging.quiet:
+        默认值: false ,该值设为 true 时，禁止除错误信息除外的所有日志输出。
+    logging.verbose
+        默认值: false ,该值设为 true 时，记下所有事件包括系统使用信息和所有请求的日志。
+    ops.interval
+        默认值: 5000,设置系统和进程取样间隔，单位微妙，最小值100。
+    status.allowAnonymous
+        默认值: false, 该项设置为 true 即允许所有非授权用户访问 kibana 服务端 API 和状态页面。
+    cpu.cgroup.path.override
+        如果挂载点跟 /proc/self/cgroup 不一致，覆盖 cgroup cpu 路径。
+    cpuacct.cgroup.path.override
+        如果挂载点跟 /proc/self/cgroup 不一致，覆盖 cgroup cpuacct 路径。
+    console.enabled
+        默认值: true ,设为false 来禁用控制台，切换该值后服务端下次启动时会重新生成资源文件，因此会导致页面服务有点延迟。
+    elasticsearch.tribe.url:
+        elasticsearch tribe 实例的 URL，用于所有查询。
+    elasticsearch.tribe.username:
+    elasticsearch.tribe.password:
+        elasticsearch 设置了基本的权限认证，该配置项提供了用户名和密码。
+    elasticsearch.tribe.ssl.certificate:
+    elasticsearch.tribe.ssl.key:
+        可选配置项，提供 PEM 格式 SSL 证书和密钥文件的路径。这些文件确保 elasticsearch 后端使用同样的密钥文件。
+    elasticsearch.tribe.ssl.keyPassphrase
+        解密私钥的口令，该设置项可选，因为密钥可能没有加密。
+    elasticsearch.tribe.ssl.certificateAuthorities:
+        指定用于 elasticsearch tribe 实例的 PEM 证书文件路径。
+    elasticsearch.tribe.ssl.verificationMode:
+        默认值: full 控制证书的认证，可用的值有 none 、 certificate 、 full 。 full 执行主机名验证， certificate 不执行主机名验证。
+    elasticsearch.tribe.pingTimeout:
+        默认值: elasticsearch.tribe.requestTimeout setting 的值，ping elasticsearch的等待时间。
+    elasticsearch.tribe.requestTimeout:
+        Default: 30000 ,等待elasticsearch 的响应时间，单位微秒，该值必须为正整数。
+    elasticsearch.tribe.requestHeadersWhitelist:
+        默认值: [ 'authorization' ] ,kibana 发往 elasticsearch 的客户端头体，发送 no 头体，设置该值为[]。
+    elasticsearch.tribe.customHeaders:
+        默认值: {} 发往elasticsearch的头体和值，不管 elasticsearch.tribe.requestHeadersWhitelist 如何配置，任何自定义的头体不会被客户端头体覆盖。
+----------------------------------------------------------------------------------------------
