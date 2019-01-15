@@ -4,6 +4,7 @@ import com.esearch6.model.SearchVo;
 import com.esearch6.service.SearchService;
 import com.util.page.Page;
 import org.apache.commons.lang.StringUtils;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class SearchServiceImpl implements SearchService {
         logger.info("SearchServiceImpl queryPage start,page={},pageSize={}",page,pageSize);
         String collectName = "";
         //TODO....................
+        BoolQueryBuilder queryBuilder= new BoolQueryBuilder();
 
         Map<String,String> queryMap =tipQueryMap(searchVo);
         Map<String,String> sortMap = tipSortMap(searchVo);
