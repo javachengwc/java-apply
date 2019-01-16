@@ -1,4 +1,34 @@
 ------------------------es查询----------------------
+理解lucence filter工作原理对于写出高性能查询语句至关重要. 许多搜索性能优化都和filter的使用有关.
+filter使用bitsets进行布尔运算, query使用倒排索引进行计算, 这是filter比query快的原因. bitsets的优势主要体现在:
+1. bitsetcache在内存里面, 永不消失(除非被LRU).
+2. bitsets利用CPU原生支持的位运算操作, 比倒排索引快个数量级
+3. 多个bitsets的与运算也是非常的快(一个64位CPU可以同时计算64个DOC的与运算)
+4. bitsets 在内存的存储是独立于query的, 有很强的复用性
+5. 如果一个bitset片段全是0, 计算会自动跳过这些片段, 让bitsets在数据稀疏情况下同样表现优于倒排索引.
+
+比如:
+query:bool:
+    tag:'iphone'
+    region:'sichuan'
+    title: "apple"
+lucence处理这个query的方式是在倒排索引中寻找这三个term的倒排链 ,并使用跳指针技术求交, 在运算过程中需要对每个doc进行算分.
+实际上tag和region对于算分并没有作用, 它们充当是过滤器的作用.这就是过滤器使用场景, 它只存储存在和不存在两种状态.
+如果把tag和region使用bitsets进行存储, 这样这两个过滤器可以一直都被缓存在内存里面, 这样会快很多.
+另外tag和region之间的求交非常迅速, 因为64位机器可以时间一个CPU周期同时处理64个doc的位运算.
+正确的写法为:
+query:
+    filtered:
+        query:
+             title:"apple"
+         filter:
+             tag:"iphone"
+             region:"sichuan"
+
+lucence的filtered query会智能的先计算filter语句, 然后才计算query语句, 尽可能在进行复杂的倒排算法前减少计算空间。
+一个lucence金科玉律是: 能用filter就用filter, 除非必须使用query(当且仅当需要算分的时候)。
+
+------------------------------------------------
 词项查询(term查询)
 词项查询将按照存储在倒排索引中的词项进行精确查询。这些查询通常用于数字，日期和枚举等结构化数据，而不是全文本字段。
 GET book/book/_search                                       ------按词项条件分页排序查询出指定的列

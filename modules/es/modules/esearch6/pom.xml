@@ -9,6 +9,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<elasticsearch.version>6.3.0</elasticsearch.version>
 	</properties>
 
 	<dependencyManagement>
@@ -71,13 +72,19 @@
 		<dependency>
 			<groupId>org.elasticsearch</groupId>
 			<artifactId>elasticsearch</artifactId>
-			<version>6.3.0</version>
+			<version>${elasticsearch.version}</version>
 		</dependency>
 		<!-- es java rest客户端,Java Low Level REST Client,官方提供的低级客户端,兼容所有的Elasticsearch版本 -->
 		<dependency>
 			<groupId>org.elasticsearch.client</groupId>
 			<artifactId>elasticsearch-rest-client</artifactId>
-			<version>6.3.0</version>
+			<version>${elasticsearch.version}</version>
+		</dependency>
+		<!-- es java transport客户端 -->
+		<dependency>
+			<groupId>org.elasticsearch.client</groupId>
+			<artifactId>transport</artifactId>
+			<version>${elasticsearch.version}</version>
 		</dependency>
 		<!-- es客户端嗅探器 自动发现节点-->
 		<dependency>
