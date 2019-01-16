@@ -21,8 +21,8 @@ public interface EsService {
     //增加索引
     public boolean addIndex(String collectName,String indexType,Map<String, Object> dataMap) throws Exception;
 
-    //修改索引
-    public boolean uptIndex(String collectName,String indexType,Map<String, Object> dataMap) throws Exception;
+    //修改或增加索引
+    public boolean uptOrAddIndex(String collectName,String indexType,Map<String, Object> dataMap,String businessIdKey) throws Exception;
 
     //删除索引
     public long deleteIndex(String collectName,String indexType,String businessIdKey,String businessIdValue) throws Exception;

@@ -6,7 +6,6 @@ import com.esearch6.model.AggResult;
 import com.esearch6.model.RangeValue;
 import com.esearch6.util.IndexKeyUtil;
 import com.esearch6.util.JsonUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.util.col.MapUtil;
 import com.util.page.Page;
 import org.apache.commons.lang.StringUtils;
@@ -19,6 +18,7 @@ import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -264,18 +264,43 @@ public class EsServiceImpl implements EsService {
         }
     }
 
-
-    //修改索引
-    public boolean uptIndex(String collectName,String indexType,Map<String, Object> dataMap,String businessIdKey) throws Exception {
+    //修改或增加索引
+    public boolean uptOrAddIndex(String collectName,String indexType,Map<String, Object> dataMap,String businessIdKey) throws Exception {
         logger.info("EsServiceImpl uptIndex start,collectNam={},indexType={},businessIdKey={}",collectName,indexType,businessIdKey);
         try {
-            IndexRequestBuilder requestBuilder =  this.esClient.prepareIndex(collectName, indexType)
-                    .setSource(JsonUtil.obj2Json(dataMap),XContentType.JSON);
-            IndexResponse response = requestBuilder.get();
-            boolean rt = (response.status() == RestStatus.CREATED);
+            String businessIdValue = dataMap.get(businessIdKey)==null?"":dataMap.get(businessIdKey).toString();
+            SearchRequestBuilder requestBuilder = this.esClient.prepareSearch(collectName).setTypes(indexType)
+                    .setQuery(QueryBuilders.termQuery(businessIdKey, businessIdValue));
+            SearchResponse searchResponse = requestBuilder.get();
+            long totalHit = searchResponse.getHits().getTotalHits();
+            boolean rt=false;
+            if (totalHit == 0) {
+                rt =addIndex(collectName,indexType,dataMap);
+            } else if (totalHit == 1) {
+                String hitId = searchResponse.getHits().getAt(0).getId();
+                rt = uptByHitId(collectName,indexType,hitId,dataMap);
+            } else {
+                deleteIndex(collectName,indexType,businessIdKey,businessIdValue); //先删
+                rt=addIndex(collectName,indexType,dataMap); //后加
+            }
             return rt;
         } catch (Exception e) {
-            logger.error("EsServiceImpl addIndex error,",e);
+            logger.error("EsServiceImpl uptIndex error,",e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    //根据索引文档id更新索引
+    private boolean uptByHitId(String collectName,String indexType,String hitId,Map<String, Object> dataMap) {
+        logger.info("EsServiceImpl uptByHitId start,collectName={},indexType={},hitId={}", collectName,indexType,hitId);
+        try {
+            UpdateResponse response = this.esClient.prepareUpdate(collectName, indexType, hitId)
+                    .setDoc(JsonUtil.obj2Json(dataMap), XContentType.JSON)
+                    .get();
+            boolean rt = (response.status() == RestStatus.OK);
+            return rt;
+        } catch (Exception e) {
+            logger.error("EsServiceImpl uptByHitId error,", e);
             throw new RuntimeException(e);
         }
     }
