@@ -147,6 +147,25 @@ upper(str)
 mysql> select UCASE('quadratically');
 　　-> 'QUADRATICALLY'
 
+hex(n)
+   把n转为十六进制并以字串返回(n是bigint数字,等价于conv(n,10,16))
+mysql> select hex(255);
+　　-> 'ff'
+
+insert(str,pos,len,newstr)
+    把字符串str由位置pos起len个字符长的子串替换为字符串newstr并返回
+mysql> select insert('quadratic', 3, 4, 'what');
+　　-> 'quwhattic'
+
+elt(n,str1,str2,str3,...)
+    返回第n个字符串(n小于1或大于参数个数返回null)
+mysql> select elt(1, 'ej', 'heja', 'hej', 'foo');
+　　-> 'ej'
+
+load_file(file_name)
+    读入文件并且作为一个字符串返回文件内容(文件无法找到,路径不完整,没有权限,长度大于max_allowed_packet会返回null)
+mysql> update table_name set blob_column=load_file("/tmp/picture") where id=1;
+
 -------------------------------------
 
 数学函数
