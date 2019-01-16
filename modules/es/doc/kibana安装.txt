@@ -37,6 +37,8 @@ kibana插件是用bin/kibana-plugin 命令来管理这些插件模块。也可�
 bin/kibana-plugin install <package name or URL>                     ------安装插件
 bin/kibana-plugin install x-pack
 bin/kibana-plugin install https://artifacts.elastic.co/downloads/packs/x-pack/x-pack-6.0.0.zip
+bin/kibana-plugin remove x-pack                                     ------移出插件，也可以手动删除plugins/目录下的插件子目录来删除插件。
+bin/kibana --<plugin ID>.enabled=false                              ------关闭插件，在 package.json 文件中通过 name 属性查看插件的 ID。
 当指定的插件名没有带URL，插件工具将会尝试去下载 elastic 官方插件。
 在bin/kibana-plugin install 命令后面通过 -d 或者 --plugin-dir 选项指定插件安装目录
 如果插件使用了不同的用户安装且服务又没有运行起来，那就需要修改这些文件的所属用户
