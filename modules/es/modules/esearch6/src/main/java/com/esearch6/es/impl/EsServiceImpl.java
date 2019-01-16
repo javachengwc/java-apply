@@ -6,6 +6,7 @@ import com.esearch6.model.AggResult;
 import com.esearch6.model.RangeValue;
 import com.esearch6.util.IndexKeyUtil;
 import com.esearch6.util.JsonUtil;
+import com.google.common.collect.Lists;
 import com.util.col.MapUtil;
 import com.util.page.Page;
 import org.apache.commons.lang.StringUtils;
@@ -36,15 +37,17 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.max.MaxAggregationBuilder;
 import org.elasticsearch.search.sort.SortOrder;
+import org.elasticsearch.search.suggest.Suggest;
+import org.elasticsearch.search.suggest.SuggestBuilder;
+import org.elasticsearch.search.suggest.SuggestBuilders;
+import org.elasticsearch.search.suggest.completion.CompletionSuggestion;
+import org.elasticsearch.search.suggest.completion.CompletionSuggestionBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class EsServiceImpl implements EsService {
@@ -370,5 +373,50 @@ public class EsServiceImpl implements EsService {
         }
         return true;
 
+    }
+
+    //获取补全建议关键词
+    public List<String> suggest(String collectName,String indexType,String prefix) {
+        CompletionSuggestionBuilder suggestion = SuggestBuilders.completionSuggestion("suggest").prefix(prefix).size(5);
+        SuggestBuilder suggestBuilder = new SuggestBuilder();
+        suggestBuilder.addSuggestion("autocomplete", suggestion);
+
+        SearchRequestBuilder requestBuilder = this.esClient.prepareSearch(collectName)
+                .setTypes(indexType)
+                .suggest(suggestBuilder);
+        logger.info("EsServiceImpl suggest start,prefix={},request={}",prefix,requestBuilder.toString());
+
+        SearchResponse response = requestBuilder.get();
+        Suggest suggest = response.getSuggest();
+        if (suggest == null) {
+            return new ArrayList<String>();
+        }
+        Suggest.Suggestion result = suggest.getSuggestion("autocomplete");
+
+        int maxSuggest = 0;//最多取数
+        Set<String> suggestSet = new HashSet<String>();
+
+        for (Object term : result.getEntries()) {
+            if (term instanceof CompletionSuggestion.Entry) {
+                CompletionSuggestion.Entry item = (CompletionSuggestion.Entry) term;
+                if (item.getOptions()==null || item.getOptions().isEmpty()) {
+                    continue;
+                }
+                for (CompletionSuggestion.Entry.Option option : item.getOptions()) {
+                    String tip = option.getText().string();
+                    if (suggestSet.contains(tip)) {
+                        continue;
+                    }
+                    suggestSet.add(tip);
+                    maxSuggest++;
+                }
+            }
+            if (maxSuggest > 5) {
+                //最多取数超过5条就不取了
+                break;
+            }
+        }
+        List<String> rtList = new ArrayList<String>(suggestSet);
+        return  rtList;
     }
 }

@@ -29,4 +29,7 @@ public interface EsService {
 
     //根据条件删除索引
     public boolean deleteIndexByCdn(String collectName,String indexType,String cdnKey,String cdnValue) throws Exception;
+
+    //获取补全建议关键词
+    public List<String> suggest(String collectName,String indexType,String prefix);
 }
