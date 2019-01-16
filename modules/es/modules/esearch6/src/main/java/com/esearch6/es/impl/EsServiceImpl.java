@@ -11,6 +11,8 @@ import com.util.col.MapUtil;
 import com.util.page.Page;
 import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.action.ActionListener;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -21,6 +23,8 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -58,6 +62,36 @@ public class EsServiceImpl implements EsService {
 
     @Autowired
     private TransportClient esClient;
+
+    //创建索引映射
+    public void createMapping(String collectName,String indexType,Map<String,Map<String,String>> fieldSetting) throws Exception {
+        logger.info("EsServiceImpl createMapping start,collectName={},indexType={}",collectName,indexType);
+        CreateIndexRequestBuilder cib=esClient.admin().indices().prepareCreate(collectName);
+        XContentBuilder mapping = XContentFactory.jsonBuilder()
+            .startObject()
+                .startObject("properties"); //设置定义字段
+//                    .startObject("author")
+//                        .field("type","string") //设置数据类型
+//                    .endObject()
+//                    .startObject("date")
+//                        .field("type","date")  //设置Date类型
+//                        .field("format","yyyy-MM-dd HH:mm:ss") //设置Date的格式
+//                    .endObject()
+        for(String field: fieldSetting.keySet()) {
+            mapping.startObject(field);
+            Map<String,String> setting = fieldSetting.get(field);
+            for(Map.Entry<String,String> entry:setting.entrySet()) {
+                mapping.field(entry.getKey(),entry.getValue());
+            }
+            mapping.endObject();
+        }
+        mapping.endObject();
+        mapping.endObject();
+
+        cib.addMapping(indexType, mapping);
+        CreateIndexResponse response=cib.execute().get();
+        logger.info("EsServiceImpl createMapping end,collectName={},indexType={}",collectName,indexType);
+    }
 
     //分页查询
     public <T> Page<T> queryPageBean(String collectName,String indexType,
@@ -315,7 +349,7 @@ public class EsServiceImpl implements EsService {
         DeleteByQueryRequestBuilder builder = DeleteByQueryAction.INSTANCE
                 .newRequestBuilder(esClient)
                 .filter(QueryBuilders.termQuery(businessIdKey, businessIdValue))
-                .source(indexType);
+                .source(collectName);
 
         BulkByScrollResponse response = builder.get();
         long delCnt = response.getDeleted();

@@ -9,6 +9,9 @@ import java.util.Map;
 
 public interface EsService {
 
+    //创建索引映射
+    public void createMapping(String collectName,String indexType,Map<String,Map<String,String>> fieldSetting) throws Exception;
+
     //分页查询
     public <T> Page<T> queryPageBean(String collectName, String indexType,
                                      Map<String, String> queryMap, List<RangeValue> rangeList, Map<String, String> sortMap,
