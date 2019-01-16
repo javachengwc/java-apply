@@ -180,6 +180,9 @@ public final class NumberUtil {
 
     public static void main(String args[])
     {
+        BigDecimal bd = new BigDecimal("12312323.00012222");
+        System.out.println(parseMoney(bd,"0.00"));
+
         String aa = getDivide100(2500010);
         Double dd = Double.parseDouble(aa);
         System.out.println(parseMoney(dd,"###,###.00"));
