@@ -20,7 +20,7 @@ vim $ES_HOME/config/elasticssearch.yml       ###修改es配置
     http.cors.enabled: true
     http.cors.allow-origin: "*"
 $ES_HOME/bin/elasticsearch -d               ###启动es
-cd  ..../elasticsearch-head-master
+cd  ../../elasticsearch-head-master
 grunt server 或  npm run start              ###启动head
 
 http://127.0.0.1:9100/                          ###访问head
