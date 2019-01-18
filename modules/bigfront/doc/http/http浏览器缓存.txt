@@ -1,0 +1,62 @@
+--------------------------------------http浏览器缓存---------------------------------------
+用户通过浏览器发出请求处理过程参见http请求过程.jpg。
+判断缓存是否过期：
+查看是否有cache-control 的max-age / s-maxage , 如果有，则用当时获取此资源的服务器时间date值 + max-age/s-maxage 的秒数计算出新的过期时间，
+将当前时间与过期时间进行比较，判断是否过期；如果没有，则用expires作为过期时间比较
+如果判定为未过期，则使用客户端缓存。那么就是属于“强缓存”。
+如果浏览器缓存中缓存的资源过期了，并不意味着它和原始服务器上的资源有实际的差异，仅仅意味着到了要进行核对的时间了。这种情况被称为服务器再验证。
+如果资源发生变化，则需要取得新的资源，并在缓存中替换旧资源。
+如果资源没有发生变化，缓存只需要获取新的响应头，和一个新的过期时间，对缓存中的资源过期时间进行更新即可。这被称作协商缓存。
+跟服务器协商是否使用缓存，浏览器会向服务器发送请求，如果当时获取此资源的响应中或上一次的协商缓存中有Last-Modified 和 Etag 字段，
+浏览器将在request header 中加入If-Modified-Since（对应于Last-Modified）， 和If-None-Match（对应于Etag）。
+HTTP1.1推荐使用的验证方式是If-None-Match/Etag，在HTTP1.0中则使用If-Modified-Since/Last-Modified。
+通常情况下，如果同时发送 If-None-Match 、If-Modified-Since字段，服务器只要比较ETag的内容即可，当然具体处理方式，看服务器的约定规则。
+
+注:关于浏览器缓存资源的问题，都仅仅针对GET请求。而对于POST, DELETE, PUT这类行为性操作通常不做任何缓存。
+
+浏览器缓存相关的http请求header key
+    Cache-Control         ------Http1.1 中的标准，表示浏览器缓存控制
+    If-None-Match         ------Http1.1 中的标准，对应于第一次获取此资源时或上一次协商缓存时返回的header中的Etag,表示客户端保留的资源内容标识。
+    If-Modified-Since     ------Http1.0 中的标准，对应于第一次获取此资源时或上一次协商缓存时返回的header中的Last-Modified，表示客户端保留的资源上次的修改时间。
+
+浏览器缓存相关的http响应header key
+    Cache-Control         ------Http1.1 中的标准，表示浏览器缓存控制，值参见下面的缓存相关header key说明，默认为no-cache
+    ETag                  ------Http1.1 中的标准，资源的内容标识,(不唯一，通常为文件的md5或者一段hash值，只要保证写入和验证时的方法一致即可)
+    Last-Modified         ------Http1.0 中的标准，资源的最后修改时间
+    Expires               ------Http1.0 中的标准，表示浏览器缓存过期时间，注:此时间是服务器的时间。
+
+缓存相关header key说明
+    Cache-Control         ------Http1.1 中的标准，可参见cache-control.jpg图片,Cache-Control和Expires同时使用的话，Cache-Control会覆盖Expires
+        1）max-age: 设置缓存的最大的有效时间，单位为秒（s）。max-age会覆盖掉Expires
+        2) s-maxage: 只用于共享缓存，比如CDN缓存（s -> share）。与max-age 的区别是：max-age用于普通缓存，而s-maxage用于代理缓存。如果存在s-maxage,则会覆盖max-age 和 Expires.
+        3) public：响应会被缓存，并且在多用户间共享。默认是public。
+        4) private: 响应只作为私有的缓存，不能在用户间共享。如果要求HTTP认证，响应会自动设置为private。
+        5）no-cache: 指定不缓存响应，表明资源不进行缓存。但是设置了no-cache之后并不代表浏览器不缓存，而是在缓存前要向服务器确认资源是否被更改。
+           因此设置禁止缓存必须是，设置成no-cache，no-store。
+        6）no-store: 绝对禁止缓存。
+        7）must-revalidate: 如果页面过期，则去服务器进行获取。
+    Expires               ------Http1.0 中的标准, 指定的是具体的过期日期而不是秒数。
+    Etag                  ------Http1.1 中的标准，指根据实体内容生成一段hash字符串，资源的内容标识，由服务端产生。
+    If-None-Match         ------Http1.1 中的标准，表示客户端保留的资源内容标识。其值是上次请求响应中的ETag，浏览器拿这个值去服务端验证内容是否发生了变更。
+    Last-Modified         ------Http1.0 中的标准, 表示文档的最后修改时间
+    If-Modified-Since     ------Http1.0 中的标准, 其值是上次请求响应中的Last-Modified，浏览器拿这个时间去服务端验证内容是否发生了变更。
+    Last-Modified与Etag同时使用时，浏览器在验证时会同时发送If-Modified-Since和If-None-Match，
+    按照http/1.1规范，如果同时使用If-Modified-Since和If-None-Match则服务端必须两个都验证通过后才能返回304；
+    nginx就是这样做的。因此实际使用时应该根据实际情况选择。
+
+缓存相关的http返回码
+    304 not modified      ------协商缓存,用户发送的请求，发送到服务器后，由服务器判定是否从缓存中获取资源。
+    200 from cache        ------强缓存,用户发送的请求，直接从客户端缓存中获取，不发送请求到服务器，不与服务器发生交互行为。
+    两者共同点：客户端获得的数据最后都是从客户端缓存中获得。
+    两者的区别：强缓存不与服务器交互，而协商缓存则需要与服务器交互。
+
+用户行为与缓存行为
+用户操作                          Cache-Control/Expires                 Etag/Last-Modified
+地址栏回车                        有效                                  有效
+页面链接跳转                      有效                                  有效
+新开窗口                          有效                                  有效
+前进,后退                         有效                                  有效
+F5刷新                            无效                                  有效
+Ctrl+F5强刷                       无效                                  无效
+
+-------------------------------------------------------------------------------------------

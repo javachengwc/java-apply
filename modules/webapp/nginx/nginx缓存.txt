@@ -1,0 +1,29 @@
+-----------------------------------------nginx缓存---------------------------------------
+nginx中设置浏览器缓存(主要是设置几个缓存相关的响应header key)
+
+server {
+    listen       80;
+    server_name  localhost;
+    root /data/html/;
+    index  index.html index.htm index.php;
+    client_max_body_size    200m;
+
+    location  / {
+   #html资源设置成不允许浏览器缓存，这里注意，必须有Cache-Control no-store才会生效
+   #    add_header    Cache-Control no-cache;
+   #    add_header    Cache-Control no-store;
+   #    add_header    Cache-Conttrol must-revalidate;
+       try_files $uri $uri/ /index.html;
+    }
+
+   #静态资源设置浏览器缓存1个小时
+   # location ~.*\.(css|js|jpg|png)$ {
+   #    add_header  Cache-Control  max-age=3600;
+   #或  expires 10d;
+   # }
+
+}
+
+nginx端的资源缓存
+
+-----------------------------------------------------------------------------------------
