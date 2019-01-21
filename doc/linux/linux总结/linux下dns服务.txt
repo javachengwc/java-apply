@@ -1,0 +1,147 @@
+--------------------------------------dns服务----------------------------------------
+目前使用最为广泛的DNS服务器软件是BIND（Berkeley Internet Name Domain）。
+BIND支持先今绝大多数的操作系统（Linux，UNIX，Mac，Windows）
+BIND服务的名称称之为named
+DNS默认使用UDP、TCP协议，使用端口为53（domain），953（mdc，远程控制使用）
+
+根据所管理的区域，DNS系统可以分为不同的类型。在同一台DNS服务器中，相对不同的区域，也拥有不同的身份，有以下几种常见分类：
+缓存域名服务器：只提供域名解析结果的缓存功能，目的在于提高查询速度和效率，但没有自己控制区域的地址和数据，必须指定根域或其他DNS服务器作为解析来源。
+主域名服务器：维护某个特定的DNS区域的地址数据库，对其中的解析记录具有自主控制权，是指定区域中唯一的权威服务器、官方服务器，需要自行建立所负责区域的地址数据文件。
+从域名服务器：与主域名服务器提供完全相同的DNS解析服务，通常用于DNS服务器的热备份。
+
+BIND中各软件包的主要作用
+bind：提供了域名服务的主要程序及相关文件
+bind-utils：提供了对DNS服务器的测试工具，如nslookup等
+bind-libs：提供了bind、bind-utils需要使用的函数库
+bind-chroot：提供了一个伪装的根目录（将/var/named/chroot/文件夹作为BIND的根目录），提高安全性
+默认已安装bind-utils和bind-libs
+
+BIND的安装
+yum install -y bind bind-chroot bind-utils         ###安装bind相关服务，其中bind-chroot和bind-utils是bind的相关包。
+/etc/named.conf　　                                ###bind服务主配置文件
+/var/named/　　　　                                ###zone文件目录（域的dns信息）
+如果安装了bind-chroot（其中chroot是 change root 的缩写），bind会被封装到一个伪根目录内，配置文件的位置变为：
+/var/named/chroot/etc/named.conf 　　              ###bind服务主配置文件,此文件的修改会自动修改/etc/named.conf,也就是说这2个文件的内容是保持一致的
+/var/named/chroot/var/named/　　　　               ###zone文件目录
+bind安装好之后不会有预制的配置文件，但在bind的文档文件夹内（/usr/share/doc/bind-9.9.4），提供了配置文件模板，可直接拷贝：
+cp -r /usr/share/doc/bind-9.9.4/sample/etc/* /var/named/chroot/etc/
+cp -r /usr/share/doc/bind-9.9.4/sample/var/* /var/named/chroot/var/
+/usr/libexec/setup-named-chroot.sh /var/named/chroot on     ###禁用bind默认方式启动，改用bind-chroot方式启动
+systemctl disable named
+systemctl start named-chroot                                ###启用bind服务
+ps -ef|grep named                                           ###查看是否启用
+
+BIND服务的配置文件
+a,主配置文件,通常位于/var/named/chroot/etc/named.conf，主要包括全局配置、区域配置两部分
+  主配置文件用于设置named服务的全局选项、注册区域及访问控制等运行参数。
+  全局配置参数使用“options {   };”的格式
+vim /var/named/chroot/etc/named.conf
+  options {
+      directory "/var/named";
+      listen-on port 53 {any;};
+      listen-on-v6 port 53 {any;};
+  };
+  zone "ccc.com" {
+      type master;
+      file "ccc.com.zone";
+  };
+
+b,区域数据配置文件,通常位于/var/named/，每个区域数据文件对应一个DNS解析区域，文件名及内容有管理员自行配置
+  区域数据文件用于存放某个DNS区域的地址解析记录（正向或反向记录）
+vim /var/named/chroot/var/named/ccc.com.zone            ###可以以/var/named/chroot/var/named/named.localhost为模板
+    $TTL 1D
+    @       IN SOA  ccc.com. admin.ccc.com. (
+                                            0       ; serial
+                                            1D      ; refresh
+                                            1H      ; retry
+                                            1W      ; expire
+                                            3H )    ; minimum
+    @       IN      NS                 ns1.ccc.com.
+            IN      NS                 ns2.ccc.com.
+            IN      MX            10   mail.ccc.com.
+    ns1     IN      A                  172.18.10.100
+    ns2     IN      A                  172.18.10.101
+    mail    IN      A                  172.18.10.99
+    www     IN      A                  172.18.10.1
+------------------------------------------------------------------
+使用BIND构建域名服务器
+a,构建缓存域名服务器，局域网PC机首选DNS设为自建的缓存域名服务器，它能够访问Internet中其他DNS服务器，负责处理局域网PC机的DNS解析请求，并缓存查询结果。
+vim /var/named/chroot/etc/named.conf
+  options {
+      directory "/var/named";
+      listen-on port 53 {any;};
+      listen-on-v6 port 53 {any;};
+      dump-file "/var/named/data/cache_dump.db"                   //缓存数据库文件路径
+      statistics-file "/var/named/data/named_stats.txt"           //状态统计文件路径
+      query-source port 53;
+      allow-query {192.168.1.0/24;}
+      recursion yes;
+      //forwarders {202.106.0.20;};                               //直接将查询请求转发运营商的DNS服务器
+  };
+  zone "." IN {                                                   //正向"."区域
+      type hint;                                                  //类型为根区域
+      file "named.ca";                                            //区域数据文件
+  };
+为了提高解析效率，也可以不向根区域查询，而是将查询请求转发给国内电信等运营商的DNS服务器。
+只要去掉“zone“.” IN {……};”设置，在全局配置中添加forwarders参数即可实现此功能。
+默认位于/var/named/chroot/var/named/named.ca，该文件记录了Internet中13台根域服务器的域名和IP地址等相关信息。
+
+b,构建主从域名服务器
+主域名服务器  ns1.ccc.com  192.168.1.5
+从域名服务器  ns2.ccc.com  192.168.1.6
+两台服务器提供ccc.com区域的域名解析
+解析记录:
+    网站服务器 www.ccc.com  ip: 192.168.1.2
+    邮件服务器 mail.ccc.com ip: 192.168.1.3
+  主域名服务器 ns1.ccc.com  ip: 192.168.1.5
+  从域名服务器 ns2.ccc.com  ip: 192.168.1.6
+
+主域名服务器dns配置
+vim /var/named/chroot/etc/named.conf
+    options {
+        directory "/var/named";
+    };
+    zone "ccc.com" {                                //正向区域
+        type master;                                //类型为主区域
+        file "ccc.com.zone";                        //区域数据文件
+        allow-transfer {192.168.1.6;};              //允许从服务器下载正向区域文件
+    };
+    zone "1.168.192.in-addr.arpa" IN {              //反向区域
+        type master;
+        file "1.168.192.arpa";
+        allow-transfer {192.168.1.6;};              //允许从服务器下载反向区域文件
+    };
+
+vim /var/named/chroot/var/named/ccc.com.zone        //正向区域数据文件
+    $TTL 86400
+    @    SOA  ccc.com. admin.ccc.com. (
+                                            0       ; serial
+                                            1D      ; refresh
+                                            1H      ; retry
+                                            1W      ; expire
+                                            3H )    ; minimum
+    @       IN      NS                 ns1.ccc.com.
+            IN      NS                 ns2.ccc.com.
+            IN      MX            10   mail.ccc.com.
+    ns1     IN      A                  192.168.1.5
+    ns2     IN      A                  192.168.1.6
+    mail    IN      A                  192.168.1.3
+    www     IN      A                  192.168.1.2
+
+vim /var/named/chroot/var/named/1.168.192.arpa        //反向区域数据文件
+    $TTL 86400
+    @    SOA  ccc.com. admin.ccc.com. (
+                                            0       ; serial
+                                            1D      ; refresh
+                                            1H      ; retry
+                                            1W      ; expire
+                                            3H )    ; minimum
+            IN      NS                 ns1.ccc.com.
+            IN      NS                 ns2.ccc.com.
+    2       IN      PTR                www.ccc.com.
+    3       IN      PTR                mail.ccc.com.
+    5       IN      PTR                ns1.ccc.com.
+    6       IN      PTR                ns2.ccc.com.
+    
+---------------------------------------------------------------------------------------
+
