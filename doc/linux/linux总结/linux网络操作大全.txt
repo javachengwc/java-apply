@@ -15,21 +15,31 @@ GATEWAY=192.168.0.251 #网关 CentOS的网关配置在/etc/sysconfig/network里
 ONBOOT=yes            #开机时是否启动网卡。启动--yes 不启动--no
 
 主机网络名称配置:/etc/sysconfig/network
-
 NETWORKING=yes  #网络是否可用 可用--yes， 不可用--no
 NETWORKING_IPV6=no  #IPv6支持 yes,no
 HOSTNAME=site.meilele.com   #主机名称
 
 DNS配置:/etc/resolv.conf
- 
 search test.com #本机
 nameserver 192.168.3.2 #用户添加
-
 echo nameserver 192.168.0.1 /etc/resolv.conf #增加个dns
 
-host配置:/ect/hosts
+自建dns服务过程:
+yum install -y bind bind-chroot bind-utils         ###安装bind相关服务，其中bind-chroot和bind-utils是bind的相关包。
+/etc/named.conf　　                                ###bind服务主配置文件
+/var/named/　　　　                                ###zone文件（域的dns信息）
+如果安装了bind-chroot（其中chroot是 change root 的缩写），bind会被封装到一个伪根目录内，配置文件的位置变为：
+/var/named/chroot/etc/named.conf 　　              ###bind服务主配置文件
+/var/named/chroot/var/named/　　　　               ###zone文件
+bind安装好之后不会有预制的配置文件，但在bind的文档文件夹内（/usr/share/doc/bind-9.9.4），提供了配置文件模板，可直接拷贝：
+cp -r /usr/share/doc/bind-9.9.4/sample/etc/* /var/named/chroot/etc/
+cp -r /usr/share/doc/bind-9.9.4/sample/var/* /var/named/chroot/var/
+/usr/libexec/setup-named-chroot.sh /var/named/chroot on     ###禁用bind默认方式启动，改用bind-chroot方式启动
+systemctl start named-chroot                                ###启用bind服务
+ps -ef|grep named                                           ###查看是否启用
 
-127.0.0.1   local.meilele.com
+host配置:/ect/hosts
+127.0.0.1   local.cc.com
 
 系统服务端口配置:/etc/services
 

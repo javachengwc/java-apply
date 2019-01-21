@@ -19,6 +19,7 @@ chkconfig iptables --list #查看防火墙开机启动状态
 chkconfig iptables off（关闭防火墙开机启动,重启后生效）
 修改 vim /etc/selinux/config 下的
     SELINUX=disabled （重启后永久生效 ）
+setenforce 0       也可以关闭selinux
 
 2,网络配置修改
 如果是虚拟机上的linux系统,vm提供的联网方式有
