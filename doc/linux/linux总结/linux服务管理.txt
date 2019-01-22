@@ -118,4 +118,5 @@ journalctl -u nginx.service                        ---查看nginx服务的日志
 journalctl --disk-usage                            ---显示日志占据的硬盘空间
 journalctl --vacuum-size=1G                        ---指定日志文件占据的最大空间,如果设置小，就能清理journal日志
 journalctl --vacuum-time=1years                    ---指定日志文件保存多久
+journalctl -xe                                     ---查看最近的日志
 -------------------------------------------------------------------------------
