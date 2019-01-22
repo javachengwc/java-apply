@@ -108,7 +108,7 @@ vim /var/named/chroot/etc/named.conf
     };
     zone "1.168.192.in-addr.arpa" IN {              //反向区域
         type master;
-        file "1.168.192.arpa";
+        file "192.168.1.arpa";
         allow-transfer {192.168.1.6;};              //允许从服务器下载反向区域文件
     };
 
@@ -128,7 +128,7 @@ vim /var/named/chroot/var/named/ccc.com.zone        //正向区域数据文件
     mail    IN      A                  192.168.1.3
     www     IN      A                  192.168.1.2
 
-vim /var/named/chroot/var/named/1.168.192.arpa        //反向区域数据文件
+vim /var/named/chroot/var/named/192.168.1.arpa        //反向区域数据文件
     $TTL 86400
     @    SOA  ccc.com. admin.ccc.com. (
                                             0       ; serial
@@ -142,6 +142,24 @@ vim /var/named/chroot/var/named/1.168.192.arpa        //反向区域数据文件
     3       IN      PTR                mail.ccc.com.
     5       IN      PTR                ns1.ccc.com.
     6       IN      PTR                ns2.ccc.com.
-    
+
+从域名服务器dns配置
+vim /var/named/chroot/etc/named.conf
+    options {
+        directory "/var/named";
+    };
+    zone "ccc.com" {                                //正向区域
+        type slave;                                 //类型为从区域
+        masters {192.168.1.5;};                     //主服务器ip地址
+        file "slaves/ccc.com.zone";                 //下载区域文件保存位置
+    };
+    zone "1.168.192.in-addr.arpa" IN {              //反向区域
+        type slave;
+        masters {192.168.1.5;};
+        file "slaves/192.168.1.arpa";
+    };
+启动主从服务器上的named服务，查看从服务器上/var/named/slaves区域数据文件是否下载成功。
+客户端，把首选DNS服务器设置为192.168.1.5；备用DNS服务器设置为192.168.1.6，使用nslookup命令验证查询。
+
 ---------------------------------------------------------------------------------------
 
