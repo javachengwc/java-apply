@@ -50,7 +50,7 @@ b,区域数据配置文件,通常位于/var/named/，每个区域数据文件对
   区域数据文件用于存放某个DNS区域的地址解析记录（正向或反向记录）
 vim /var/named/chroot/var/named/ccc.com.zone            ###可以以/var/named/chroot/var/named/named.localhost为模板
     $TTL 1D
-    @       IN SOA  ccc.com. admin.ccc.com. (
+    @       IN     SOA  ccc.com. admin.ccc.com. (
                                             0       ; serial
                                             1D      ; refresh
                                             1H      ; retry
@@ -63,6 +63,8 @@ vim /var/named/chroot/var/named/ccc.com.zone            ###可以以/var/named/c
     ns2     IN      A                  172.18.10.101
     mail    IN      A                  172.18.10.99
     www     IN      A                  172.18.10.1
+
+named-checkconf ./named.conf                            ###检查配置文件语法是否正确
 ------------------------------------------------------------------
 使用BIND构建域名服务器
 a,构建缓存域名服务器，局域网PC机首选DNS设为自建的缓存域名服务器，它能够访问Internet中其他DNS服务器，负责处理局域网PC机的DNS解析请求，并缓存查询结果。
@@ -71,16 +73,16 @@ vim /var/named/chroot/etc/named.conf
       directory "/var/named";
       listen-on port 53 {any;};
       listen-on-v6 port 53 {any;};
-      dump-file "/var/named/data/cache_dump.db"                   //缓存数据库文件路径
-      statistics-file "/var/named/data/named_stats.txt"           //状态统计文件路径
+      dump-file "/var/named/data/cache_dump.db"                   ###缓存数据库文件路径
+      statistics-file "/var/named/data/named_stats.txt"           ###状态统计文件路径
       query-source port 53;
       allow-query {192.168.1.0/24;}
       recursion yes;
-      //forwarders {202.106.0.20;};                               //直接将查询请求转发运营商的DNS服务器
+      //forwarders {202.106.0.20;};                               ###直接将查询请求转发运营商的DNS服务器
   };
-  zone "." IN {                                                   //正向"."区域
-      type hint;                                                  //类型为根区域
-      file "named.ca";                                            //区域数据文件
+  zone "." IN {                                                   ###正向"."区域
+      type hint;                                                  ###类型为根区域
+      file "named.ca";                                            ###区域数据文件
   };
 为了提高解析效率，也可以不向根区域查询，而是将查询请求转发给国内电信等运营商的DNS服务器。
 只要去掉“zone“.” IN {……};”设置，在全局配置中添加forwarders参数即可实现此功能。
@@ -101,20 +103,20 @@ vim /var/named/chroot/etc/named.conf
     options {
         directory "/var/named";
     };
-    zone "ccc.com" {                                //正向区域
-        type master;                                //类型为主区域
-        file "ccc.com.zone";                        //区域数据文件
-        allow-transfer {192.168.1.6;};              //允许从服务器下载正向区域文件
+    zone "ccc.com" {                                ###正向区域
+        type master;                                ###类型为主区域
+        file "ccc.com.zone";                        ###区域数据文件
+        allow-transfer {192.168.1.6;};              ###允许从服务器下载正向区域文件
     };
-    zone "1.168.192.in-addr.arpa" IN {              //反向区域
+    zone "1.168.192.in-addr.arpa" IN {              ###反向区域
         type master;
         file "192.168.1.arpa";
-        allow-transfer {192.168.1.6;};              //允许从服务器下载反向区域文件
+        allow-transfer {192.168.1.6;};              ###允许从服务器下载反向区域文件
     };
 
-vim /var/named/chroot/var/named/ccc.com.zone        //正向区域数据文件
+vim /var/named/chroot/var/named/ccc.com.zone        ###正向区域数据文件
     $TTL 86400
-    @    SOA  ccc.com. admin.ccc.com. (
+    @       IN      SOA  ccc.com. admin.ccc.com. (
                                             0       ; serial
                                             1D      ; refresh
                                             1H      ; retry
@@ -128,7 +130,7 @@ vim /var/named/chroot/var/named/ccc.com.zone        //正向区域数据文件
     mail    IN      A                  192.168.1.3
     www     IN      A                  192.168.1.2
 
-vim /var/named/chroot/var/named/192.168.1.arpa        //反向区域数据文件
+vim /var/named/chroot/var/named/192.168.1.arpa        ###反向区域数据文件
     $TTL 86400
     @    SOA  ccc.com. admin.ccc.com. (
                                             0       ; serial
@@ -148,18 +150,19 @@ vim /var/named/chroot/etc/named.conf
     options {
         directory "/var/named";
     };
-    zone "ccc.com" {                                //正向区域
-        type slave;                                 //类型为从区域
-        masters {192.168.1.5;};                     //主服务器ip地址
-        file "slaves/ccc.com.zone";                 //下载区域文件保存位置
+    zone "ccc.com" {                                ###正向区域
+        type slave;                                 ###类型为从区域
+        masters {192.168.1.5;};                     ###主服务器ip地址
+        file "slaves/ccc.com.zone";                 ###下载区域文件保存位置
     };
-    zone "1.168.192.in-addr.arpa" IN {              //反向区域
+    zone "1.168.192.in-addr.arpa" IN {              ###反向区域
         type slave;
         masters {192.168.1.5;};
         file "slaves/192.168.1.arpa";
     };
 启动主从服务器上的named服务，查看从服务器上/var/named/slaves区域数据文件是否下载成功。
 客户端，把首选DNS服务器设置为192.168.1.5；备用DNS服务器设置为192.168.1.6，使用nslookup命令验证查询。
+dig -t NS ccc.com @192.168.1.5                     ###解析
 
 ---------------------------------------------------------------------------------------
 
