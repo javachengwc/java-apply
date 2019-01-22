@@ -23,6 +23,7 @@ yum list installed                       ---列出所有已安装的软件包
 yum info installed                       ---列出已经安装的所有的rpm包的信息
 yum clean all                            ---清理更新yum缓存
 yum makecache                            ---生成源数据缓存
+yum  provides  */nslookup                ---查找提供nslookup命令的软件包
 
 ----------yum自身的安装-----
 rpm -qa|grep yum                         ---查看yum包
