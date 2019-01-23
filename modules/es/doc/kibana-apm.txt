@@ -12,11 +12,11 @@ wget https://artifacts.elastic.co/downloads/apm-server/apm-server-6.3.0-linux-x8
 tar -zxvf apm-server-6.3.0-linux-x86_64.tar.gz
 cd apm-server-6.3.0-linux-x86_64
 ./apm-server setup                                   ------导入kibana apm定制的dashboard
-vim apm-server.yml                                   ------修改配置，主要是配置es地址,kibana地址,apm-server的端口，如果没个性设置，默认即可
+vim apm-server.yml                                   ------修改配置，主要是配置es地址,kibana地址,apm-server的端口
     output.elasticsearch:
       hosts: ["localhost:9200"]
     apm-server:
-      host: "localhost:8200"
+      host: "0.0.0.0:8200"
     setup.kibana:
       #host: "localhost:5601"
 ./apm-server -e  &                                   ------启动 apm-server,默认端口8200
@@ -61,6 +61,14 @@ http://127.0.0.1:3000                              ------访问此node服务
 在kibana页面apm模块下，就能看到此node服务的监控信息.
 ------------------------------------------------------------
 
+对于独立的java应用APM agent的集成
+在github/elastic/apm-agent-java上下载elastic-apm-agent-<version>.jar包，位于Download the latest snapshot from master here链接中。
+java -javaagent:elastic-apm-agent-<version>.jar\
+ -Delastic.apm.service_name=my-app\
+ -Delastic.apm.server_url=http://localhost:8200\
+ -Delastic.apm.application_packages=org.example\
+ -jar my-app.jar
+
 java tomcat应用APM agent的集成
 下载elastic-apm-agent-<version>.jar包并放到Tomcat库lib目录下
 vim catalina.sh
@@ -72,5 +80,4 @@ apm.service_name           ------自定义的应用名称
 apm.server_url             ------APM Server的服务地址
 javaagent                  ------APM agent库的路径
 启动访问tomcat,在kibana页面apm模块下即可查看到相关数据
-
 --------------------------------------------------------------------------------
