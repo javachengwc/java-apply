@@ -1,5 +1,6 @@
 -----------------------------------------------kibana安装------------------------------------
-kibana是一款开源的数据分析和可视化平台，它是Elastic Stack成员之一，用于和Elasticsearch协作。
+kibana是一款开源的数据分析和可视化平台，它是Elastic Stack成员之一，用于和es协作。
+kibana可以为 logstash 和 es 提供的日志分析友好的 Web 界面，可以帮助汇总、分析和搜索重要数据日志。
 可使用kibana对Elasticsearch索引中的数据进行搜索、查看、交互操作。
 
 kibana基于node.js运行，kibana的版本需要和Elasticsearch的版本一致。从6.0.0开始，kibana只支持64位操作系统。

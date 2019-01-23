@@ -1,0 +1,35 @@
+------------------------------------logstash安装配置---------------------------------
+logstash 主要是用来日志的搜集、分析、过滤日志的工具，支持大量的数据获取方式。
+一般工作方式为c/s架构，client端安装在需要收集日志的主机上，server端负责将收到的各节点日志进行过滤、修改等操作在一并发往elasticsearch上。
+logstash可以同时作为agent和server来从指定的位置（如file，mysql, redis）抽取数据，并进行文档化，然后发送给es，也可以只作为服务端，配合轻量化的filebeat抽取数据。
+logstash事件处理有三个阶段：inputs → filters → outputs。是一个接收，处理，转发日志的工具。
+支持系统日志，webserver日志，错误日志，应用日志，总之包括所有可以抛出来的日志类型。
+inputs中一些常用的输入:
+    file：从文件系统的文件中读取，类似于tial -f命令
+    syslog：在514端口上监听系统日志消息，并根据RFC3164标准进行解析
+    redis：从redis service中读取
+    beats：从filebeat中读取
+filters中一些常用的过滤器为：
+    grok：解析任意文本数据，Grok 是 Logstash 最重要的插件。
+    它的主要作用就是将文本格式的字符串，转换成为具体的结构化的数据，配合正则表达式使用。
+    官方提供的grok表达式：https://github.com/logstash-plugins/logstash-patterns-core/tree/master/patterns
+    grok在线调试：https://grokdebug.herokuapp.com/
+
+    mutate：对字段进行转换。例如对字段进行删除、替换、修改、重命名等。
+    drop：丢弃一部分events不进行处理。
+    clone：拷贝 event，这个过程中也可以添加或移除字段。
+    geoip：添加地理信息(为前台kibana图形化展示使用)
+outputs是logstash处理管道的最末端组件。一个event可以在处理过程中经过多重输出，但是一旦所有的outputs都执行结束，这个event也就完成生命周期。
+一些常见的outputs为：
+    elasticsearch：可以高效的保存数据，并且能够方便和简单的进行查询。
+    file：将event数据保存到文件中。
+    graphite：将event数据发送到图形化组件中，一个很流行的开源存储图形化展示的组件。
+    codecs：codecs 是基于数据流的过滤器，它可以作为input，output的一部分配置。codecs可以轻松的分割发送过来已经被序列化的数据。
+一些常见的codecs：
+    json：使用json格式对数据进行编码/解码。
+    multiline：将汇多个事件中数据汇总为一个单一的行。比如：java异常信息和堆栈信息
+
+wget https://artifacts.elastic.co/downloads/logstash/logstash-6.3.0.tar.gz
+
+
+-------------------------------------------------------------------------------------
