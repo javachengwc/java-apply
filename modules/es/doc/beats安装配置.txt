@@ -1,10 +1,36 @@
 --------------------------------------beats安装配置-------------------------------------------
+Beats是elastic公司开源的一款采集系统监控数据的代理agent，是在被监控服务器上以客户端形式运行的数据收集器的统称，
+可以直接把数据发送给Elasticsearch或者通过Logstash发送给Elasticsearch，然后进行后续的数据分析活动。
 
-Beats包含以下工具
-FileBeat         搜集文件数据,它是一个轻量级的日志收集处理工具(Agent)，Filebeat占用资源少，适合于在各个服务器上搜集日志后传输给Logstash
-Packetbeat       搜集网络流量数据
-Winlogbeat       搜集 Windows 事件日志数据
-Topbeat          集系统、进程和文件系统级别的 CPU 和内存使用情况等数据
+Beats由如下组成:
+    Filebeat    用于监控、收集服务器日志文件，其已取代 logstash forwarder；
+                它是一个轻量级的日志收集处理工具(Agent)，Filebeat占用资源少，适合于在各个服务器上搜集日志后传输给Logstash
+    Packetbeat  是一个网络数据包分析器，用于监控、收集网络流量信息，Packetbeat嗅探服务器之间的流量，解析应用层协议，并关联到消息的处理，
+                其支持ICMP (v4 and v6)、DNS、HTTP、Mysql、PostgreSQL、Redis、MongoDB、Memcache等协议；
+    Metricbeat  可定期获取系统的监控指标信息，其可以监控、收集 Apache、HAProxy、MongoDB、MySQL、Nginx、PostgreSQL、Redis、System、Zookeeper等服务；
+    Heartbeat   健康检查
+    Winlogbeat  用于监控、收集Windows系统的日志信息；
+
+Filebeat的安装配置
+wget https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-6.3.0-linux-x86_64.tar.gz
+sha512sum filebeat-6.3.0-linux-x86_64.tar.gz                            ###校验资源,也可能是其他校验方式，依下载源提供的校验方式为准.
+tar -zxvf filebeat-6.3.0-linux-x86_64.tar.gz
+cd filebeat-6.3.0-linux-x86_64
+
+Packetbeat的安装配置
+wget https://artifacts.elastic.co/downloads/beats/packetbeat/packetbeat-6.3.0-linux-x86_64.tar.gz
+tar -zxvf packetbeat-6.3.0-linux-x86_64.tar.gz
+cd packetbeat-6.3.0-linux-x86_64
+
+Metricbeat的安装配置
+wget https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-6.3.0-linux-x86_64.tar.gz
+tar -zxvf metricbeat-6.3.0-linux-x86_64.tar.gz
+cd metricbeat-6.3.0-linux-x86_64
+
+Heartbeat的安装配置
+wget https://artifacts.elastic.co/downloads/beats/heartbeat/heartbeat-6.3.0-linux-x86_64.tar.gz
+tar -zxvf heartbeat-6.3.0-linux-x86_64.tar.gz
+cd heartbeat-6.3.0-linux-x86_64
 
 
 ----------------------------------------------------------------------------------------------

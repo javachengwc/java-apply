@@ -30,6 +30,36 @@ outputs是logstash处理管道的最末端组件。一个event可以在处理过
     multiline：将汇多个事件中数据汇总为一个单一的行。比如：java异常信息和堆栈信息
 
 wget https://artifacts.elastic.co/downloads/logstash/logstash-6.3.0.tar.gz
+tar -zxvf logstash-6.3.0.tar.gz
+cd logstash-6.3.0
+vim ./config/logstash.conf                                                    ---定义数据源
+    input {
+            file {
+                    path => "/data/web/logstash/logFile/*/*"
+                    start_position => "beginning"               ###从文件开始处读写
+            }
+    }
+    filter {                                                    ###定义数据的格式
+      grok {
+        match => { "message" => "%{DATA:invokeTime}\ [%{DATA:threadName}\] %{DATA:logLevel}\ %{DATA:invokeMethod}\ - %{DATA:content}"}
+      }
+      date {                                                    ####定义时间戳的格式
+        match => [ "invokeTime", "yyyy-MM-dd-HH:mm:ss" ]
+        locale => "cn"
+      }
+    }
+    output {                                                    ###将输出保存到elasticsearch，如果没有匹配到时间就不保存
+      if [timestamp] =~ /^\d{4}-\d{2}-\d{2}/ {
+            elasticsearch { host => localhost }
+      }
+    }
+
+
+DATA是logstash定义好的正则，其实就是(.*?)，并且定义字段名。
+
+./bin/lagstash -f ./config/logstash.conf --config.reload.automatic             ---启动并自动检测配置文件的变动和自动重新加载配置文件,
+默认,检测配置文件的间隔时间是3秒,可以通过参数--config.reload.interval <second> 来设置。
+注:stdin标准输入插件不支持自动重启,syslog作为输入源,当重载配置文件时,会崩溃
 
 
 -------------------------------------------------------------------------------------

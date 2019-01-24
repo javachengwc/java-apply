@@ -51,7 +51,7 @@ consistent read （一致性读），InnoDB用多版本来提供查询数据库�
 如果隔离级别是READ COMMITTED，那么一个事务中的每一个一致性读都会读到最新刷新的快照版本。
 Consistent read（一致性读）是READ COMMITTED和REPEATABLE READ隔离级别下普通SELECT语句默认的模式。
 一致性读不会给它所访问的表加任何形式的锁，因此其它事务可以同时并发的修改它们。
-一致性非锁定读操作是通过MVVC实现的，读取行的快照数据(即行之前版本的数据)，这是通过undo log段实现的。
+一致性非锁定读操作是通过MVCC实现的，读取行的快照数据(即行之前版本的数据)，这是通过undo log段实现的。
 undo log段是用来事务回滚的，所以快照数据并没有占用额外的开销;
 在事务隔离级别COMMITTED READ和REPEATABLE READ,都是使用一致性非锁定行读，但对于快照数据的定义却不同，
 COMMITTED READ的非锁定读是读取最新的一份快照数据;REPEATABLE READ的非锁定读是读取事务开始时的一份数据版本。
