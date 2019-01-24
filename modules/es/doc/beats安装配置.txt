@@ -16,21 +16,51 @@ wget https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-6.3.0-linux-
 sha512sum filebeat-6.3.0-linux-x86_64.tar.gz                            ###校验资源,也可能是其他校验方式，依下载源提供的校验方式为准.
 tar -zxvf filebeat-6.3.0-linux-x86_64.tar.gz
 cd filebeat-6.3.0-linux-x86_64
-
-Packetbeat的安装配置
-wget https://artifacts.elastic.co/downloads/beats/packetbeat/packetbeat-6.3.0-linux-x86_64.tar.gz
-tar -zxvf packetbeat-6.3.0-linux-x86_64.tar.gz
-cd packetbeat-6.3.0-linux-x86_64
+vim filebeat.yml                                                        ###修改filebeat配置文件
+    filebeat.inputs:
+      - type: log
+      enabled: true
+      paths:
+          - /var/log/app/*/spring.*.log
+    output.logstash:
+      hosts: ["172.0.0.1:5044"]
+./filebeat -e &                                                         ###启动filebeat
+在配置文件filebeat.yml中指定es和kibana地址 或则在es,kibana所在的服务器上也下载Filebeat组件，执行
+./filebeat setup -e                                                     ###在kibana中自动生成filebeat相关的index patterns,visualize,dashboard,
+                                                                           可直接用这些filebeat相关的图表，仪表盘配置来查看采集的信息
 
 Metricbeat的安装配置
 wget https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-6.3.0-linux-x86_64.tar.gz
 tar -zxvf metricbeat-6.3.0-linux-x86_64.tar.gz
 cd metricbeat-6.3.0-linux-x86_64
+vim metricbeat.yml
+    output.elasticsearch:                                               ###直接输出为es
+      hosts: ["172.0.0.1:9200"]
+./metricbeat -e &                                                       ###启动metricbeat
+在配置文件metricbeat.yml中指定es和kibana地址 或则在es,kibana所在的服务器上也下载Metricbeat组件，执行
+./metricbeat setup -e                                                   ###在kibana中自动生成metricbeat相关的index patterns,visualize,dashboard,
+                                                                           可直接用这些metricbeat相关的图表，仪表盘配置来查看采集的信息
+
+Packetbeat的安装配置
+wget https://artifacts.elastic.co/downloads/beats/packetbeat/packetbeat-6.3.0-linux-x86_64.tar.gz
+tar -zxvf packetbeat-6.3.0-linux-x86_64.tar.gz
+cd packetbeat-6.3.0-linux-x86_64
+vim packetbeat.yml
+    output.elasticsearch:                                               ###直接输出为es
+      hosts: ["172.0.0.1:9200"]
+./packetbeat -e &                                                       ###启动packetbeat
 
 Heartbeat的安装配置
 wget https://artifacts.elastic.co/downloads/beats/heartbeat/heartbeat-6.3.0-linux-x86_64.tar.gz
 tar -zxvf heartbeat-6.3.0-linux-x86_64.tar.gz
 cd heartbeat-6.3.0-linux-x86_64
-
+vim heartbeat.yml
+    heartbeat.monitors:                                                 ###心跳配置
+    - type: http
+      urls: ["http://172.0.0.1:9200"]
+      schedule: '@every 10s'
+    output.elasticsearch:                                               ###直接输出为es
+      hosts: ["172.0.0.1:9200"]
+./heartbeat -e &                                                        ###启动heartbeat
 
 ----------------------------------------------------------------------------------------------

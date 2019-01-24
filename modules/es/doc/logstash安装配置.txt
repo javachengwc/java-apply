@@ -32,12 +32,21 @@ outputs是logstash处理管道的最末端组件。一个event可以在处理过
 wget https://artifacts.elastic.co/downloads/logstash/logstash-6.3.0.tar.gz
 tar -zxvf logstash-6.3.0.tar.gz
 cd logstash-6.3.0
-vim ./config/logstash.conf                                                    ---定义数据源
+vim ./config/logstash.yml                                       ###设置logstash配置，一般默认设置即可
+    node.name: xxx                                              ###设置节点名称，默认为主机名
+    path.data: /data/setup/logstash-6.3.0/data                  ###指定logstash 和插件使用的持久化目录,默认即可
+    config.reload.automatic: true                               ###开启配置文件自动加载
+    config.reload.interval: 10                                  ###定义配置文件重载时间周期
+
+vim ./config/logstash.conf                                      ###定义数据源，这里配置logstash 从Filebeat 输入、过滤、输出至elasticsearch
     input {
-            file {
-                    path => "/data/web/logstash/logFile/*/*"
-                    start_position => "beginning"               ###从文件开始处读写
+            beats {
+                port => 5044
             }
+            //file {
+            //        path => "/data/log/logstash/*/*"
+            //        start_position => "beginning"               ###从文件开始处读写
+            //}
     }
     filter {                                                    ###定义数据的格式
       grok {
@@ -49,17 +58,21 @@ vim ./config/logstash.conf                                                    --
       }
     }
     output {                                                    ###将输出保存到elasticsearch，如果没有匹配到时间就不保存
-      if [timestamp] =~ /^\d{4}-\d{2}-\d{2}/ {
-            elasticsearch { host => localhost }
+      if [invokeTime] =~ /^\d{4}-\d{2}-\d{2}/ {
+            elasticsearch {
+                hosts => "localhost:9200"
+                index => "app_log"
+            }
       }
     }
 
-
 DATA是logstash定义好的正则，其实就是(.*?)，并且定义字段名。
 
-./bin/lagstash -f ./config/logstash.conf --config.reload.automatic             ---启动并自动检测配置文件的变动和自动重新加载配置文件,
+./bin/lagstash -f ../config/logstash.conf                       ###启动logstash
+./bin/lagstash -f ../config/logstash.conf --config.reload.automatic             ###启动并自动检测配置文件的变动和自动重新加载配置文件,
 默认,检测配置文件的间隔时间是3秒,可以通过参数--config.reload.interval <second> 来设置。
-注:stdin标准输入插件不支持自动重启,syslog作为输入源,当重载配置文件时,会崩溃
-
+注:stdin标准输入插件不支持自动重启,syslog作为输入源,当重载配置文件时,会崩溃。
+ps aux | grep logstash                                          ###查看logstash进程
+netstat -anp | grep LISTEN |grep 9600                           ###查看logstash对应的端口是否开启监听
 
 -------------------------------------------------------------------------------------
