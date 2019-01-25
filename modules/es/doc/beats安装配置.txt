@@ -28,7 +28,7 @@ vim filebeat.yml                                                        ###修�
 在配置文件filebeat.yml中指定es和kibana地址 或则在es,kibana所在的服务器上也下载Filebeat组件，执行
 ./filebeat setup -e                                                     ###在kibana中自动生成filebeat相关的index patterns,visualize,dashboard,
                                                                            可直接用这些filebeat相关的图表，仪表盘配置来查看采集的信息
-在filebeat采集数据中，当前采集的日志，以及采集的偏移量会记录在filebeat-6.3.0-linux-x86_64/data/registry中，
+在filebeat采集数据中，当前采集的目标文件，以及采集的偏移量会记录在filebeat-6.3.0-linux-x86_64/data/registry中，
 如果需要重新采集一遍数据，可以删除filebeat-6.3.0-linux-x86_64/data/registry文件，重启filebeat即可。
 
 Metricbeat的安装配置
