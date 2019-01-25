@@ -51,23 +51,20 @@ vim ./config/logstash.conf                                      ###定义数据�
     }
     filter {                                                    ###定义数据的格式
       grok {
-        match => { "message" => "%{DATA:invokeTime}\ [%{DATA:threadName}\] %{DATA:logLevel}\ %{DATA:invokeMethod}\ - %{DATA:content}"}
+        match => { "message" => "%{DATA:invokeTime} \[%{DATA:threadName}\] %{DATA:logLevel} %{DATA:invokeMethod} - %{GREEDYDATA:content}"}
       }
       date {                                                    ####定义时间戳的格式
-        match => [ "invokeTime", "yyyy-MM-dd-HH:mm:ss" ]
+        match => [ "invokeTime", "yyyy-MM-dd HH:mm:ss" ]
         locale => "cn"
+        target => "invokeTime"
       }
     }
-    output {                                                    ###将输出保存到elasticsearch，如果没有匹配到时间就不保存
-      if [invokeTime] =~ /^\d{4}-\d{2}-\d{2}/ {
-            elasticsearch {
-                hosts => "localhost:9200"
-                index => "app_log_%{+YYYY-MM}"
-            }
-      }
+    output {                                                    ###将输出保存到elasticsearch
+        elasticsearch {
+            hosts => "localhost:9200"
+            index => "app_log_%{+YYYY-MM}"
+        }
     }
-
-DATA是logstash定义好的正则，其实就是(.*?)，并且定义字段名。
 
 ./bin/logstash -f ../config/logstash.conf --config.test_and_exit       ###检查配置文件是否正确，--config.test_and_exit 表示检测后就退出
 ./bin/lagstash -f ../config/logstash.conf                              ###启动logstash

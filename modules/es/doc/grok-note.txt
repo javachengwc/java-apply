@@ -7,6 +7,7 @@ grok语法相对简单，判断需要的字段类型，选择是否有预置的�
 可依次判断类型为: IPORHOST、WORD、URIPATHPARAM、INT、NUMBER,
 形成的grok语句为: %{IPORHOST:client} %{WORD:method} %{URIPATHPARAM:requestPath} %{INT:size} %{NUMBER:time}
 在grok表达式中涉及正则语法的字符需要使用转义符'\'进行转移，需要转移的字符如'('， ')'， '[', ']'，'|'，'\'等
+grok表达式中如果DATA无法匹配，可以使用GREEDYDATA。
 
 grok默认内置120个预定义匹配字段，见grok预定义匹配字段.txt，
 logstash内置的预定义匹配字段可参考网址https://github.com/logstash-plugins/logstash-patterns-core/tree/master/patterns。
