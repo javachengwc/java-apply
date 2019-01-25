@@ -80,6 +80,10 @@ show status like 'slow_launch_threads';
 --查看查询时间超过long_query_time秒的查询的个数。
 show status like 'slow_queries';
 
+--查看mysql操作日志
+show global variables like '%general%';
+set global general_log=on;             ###打开操作日志记录，此日志记录所有执行的sql命令，默认关闭
+
 -------------设置mysql配置参数---------------------
 --设置mysql数据包大小
 set global max_allowed_packet = 10*1024*1024
