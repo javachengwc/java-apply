@@ -1,5 +1,8 @@
 ---------------------------------------elk-note-------------------------------------
-ELK是三个开源软件的缩写，分别表示：Elasticsearch , Logstash, Kibana 。
+ELK是三个开源软件的缩写，分别表示：Elasticsearch , Logstash, Kibana。
+目前新增了一个Beats，它是一个轻量级的日志收集处理工具(Agent)，Beats占用资源少，适合于在各个服务器上搜集日志后传输给Logstash，
+由于原本的ELK Stack成员中加入了 Beats 工具所以已改名为Elastic Stack。
+
 采用ELK在日志分析中的架构
 架构方案A:
     logstash+es+kibana

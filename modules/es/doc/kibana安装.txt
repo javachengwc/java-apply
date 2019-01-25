@@ -19,6 +19,7 @@ vim config/kibana.yml    ------修改配置
     server.port: 5601
     server.host: "0.0.0.0"
     elasticsearch.url: "http://localhost:9200"
+    logging.dest: /var/log/kibana.log    ------配置kibana的日志文件路径，不然默认是messages里记录日志
 ./bin/kibana &           ------启动kibana
 http://localhost:5601    ------访问kibana
 http://localhost:5601/status             ------查看kibana的状态

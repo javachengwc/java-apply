@@ -1,0 +1,24 @@
+------------------------------grok-note------------------------------
+grok是一种采用组合多个预定义的正则表达式，用来匹配分割文本并映射到关键字的工具。
+通常用来对日志数据进行预处理。logstash的filter模块中grok插件是其实现之一。
+
+grok语法相对简单，判断需要的字段类型，选择是否有预置的匹配模式字段，采用逐步匹配的方式。
+比如分割字段:     localhost GET /index.html 1024 0.01
+可依次判断类型为: IPORHOST、WORD、URIPATHPARAM、INT、NUMBER,
+形成的grok语句为: %{IPORHOST:client} %{WORD:method} %{URIPATHPARAM:requestPath} %{INT:size} %{NUMBER:time}
+在grok表达式中涉及正则语法的字符需要使用转义符'\'进行转移，需要转移的字符如'('， ')'， '[', ']'，'|'，'\'等
+
+grok默认内置120个预定义匹配字段，见grok预定义匹配字段.txt，
+logstash内置的预定义匹配字段可参考网址https://github.com/logstash-plugins/logstash-patterns-core/tree/master/patterns。
+grok支持自定义匹配字段规则，可以灵活满足扩展的需求。
+
+可通过调试器逐步匹配测试编写,
+grok的调试器有: http://grokdebug.herokuapp.com
+kibana 6.3版本提供grok调试器，位于Dev（开发工具）页面中最后一个选项 Grok Debugger(Grok调试器)。
+在grok调试中，由于采用是整个字段匹配，如果一处无法匹配，就会导致整个匹配失败。
+编写grok语句需要不断尝试，更有可能是同样的字段，出现调试器异常有时匹配不成功的现象（包括kibana 6.3自带的）。
+
+grok的处理性能目前存在很大的质疑
+业界有人针对grok做过性能分析，在实际生产环境中,使用grok采集日志，发现日志采集的速度为1000EPS，
+放弃grok功能，直接转发并写入es，可以达到30K EPS，相差30倍的性能。
+---------------------------------------------------------------------

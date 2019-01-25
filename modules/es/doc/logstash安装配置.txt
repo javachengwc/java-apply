@@ -36,7 +36,8 @@ vim ./config/logstash.yml                                       ###设置logstas
     node.name: xxx                                              ###设置节点名称，默认为主机名
     path.data: /data/setup/logstash-6.3.0/data                  ###指定logstash 和插件使用的持久化目录,默认即可
     config.reload.automatic: true                               ###开启配置文件自动加载
-    config.reload.interval: 10                                  ###定义配置文件重载时间周期
+    config.reload.interval: 3                                   ###定义配置文件重载时间周期
+    http.host: "0.0.0.0"                                        ###设置监听ip,默认值是127.0.0.1这个本地ip，本地ip无法远程通信
 
 vim ./config/logstash.conf                                      ###定义数据源，这里配置logstash 从Filebeat 输入、过滤、输出至elasticsearch
     input {
@@ -61,15 +62,16 @@ vim ./config/logstash.conf                                      ###定义数据�
       if [invokeTime] =~ /^\d{4}-\d{2}-\d{2}/ {
             elasticsearch {
                 hosts => "localhost:9200"
-                index => "app_log"
+                index => "app_log_%{+YYYY-MM}"
             }
       }
     }
 
 DATA是logstash定义好的正则，其实就是(.*?)，并且定义字段名。
 
-./bin/lagstash -f ../config/logstash.conf                       ###启动logstash
-./bin/lagstash -f ../config/logstash.conf --config.reload.automatic             ###启动并自动检测配置文件的变动和自动重新加载配置文件,
+./bin/logstash -f ../config/logstash.conf --config.test_and_exit       ###检查配置文件是否正确，--config.test_and_exit 表示检测后就退出
+./bin/lagstash -f ../config/logstash.conf                              ###启动logstash
+./bin/lagstash -f ../config/logstash.conf --config.reload.automatic    ###启动并自动检测配置文件的变动和自动重新加载配置文件,
 默认,检测配置文件的间隔时间是3秒,可以通过参数--config.reload.interval <second> 来设置。
 注:stdin标准输入插件不支持自动重启,syslog作为输入源,当重载配置文件时,会崩溃。
 ps aux | grep logstash                                          ###查看logstash进程
