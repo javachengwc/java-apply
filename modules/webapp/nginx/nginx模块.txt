@@ -78,5 +78,7 @@ XSLT 	        0.7.8 	          --with-http_xslt_module                        �
 比如:
 
 nginx_concat_module              --针对nginx 的文件合并模块，主要用于合并前端代码减少 http 请求数。
-
+ngx_http_subrange_module         --解决大文件下载占满带宽和iowait高的问题，它能分割HTTP requests。将大数据量的HTTP请求切分为多个子请求，
+                                   当下载一个1G的文件,subrange将从后端主机中下载文件块，比如先获取5M，再获取5M,直到客户端下载完整个文件。
+                                   下载地址:https://github.com/Qihoo360/ngx_http_subrange_module
 -----------------------------------------------------------------
