@@ -10,7 +10,7 @@ public class QuickSort {
 
 	public static void main(String[] args) {
 		
-		int[] a = { 49, 38, 65, 97, 76, 13, 27, 49, 78, 34, 12, 64, 1, 8 };
+		int[] a = { 49, 38, 65, 97, 76, 13, 27, 78, 34, 12, 64, 1, 8 };
 		System.out.println("排序之前：");
 		for (int i = 0; i < a.length; i++)
 		{
@@ -43,6 +43,8 @@ public class QuickSort {
 
 	private static int getMiddle(int[] a, int low, int high) {
 		int temp = a[low];// 基准元素
+		int inputLow = low;
+		int inputHigh= high;
 		while (low < high) {
 			// 找到比基准元素小的元素位置
 			while (low < high && a[high] >= temp) {
@@ -55,6 +57,12 @@ public class QuickSort {
 			a[high] = a[low];
 		}
 		a[low] = temp;
+		System.out.println("temp="+temp+",inputLow="+inputLow+",inputHigh="+inputHigh+",low="+low+",high="+high);
+		for (int i = 0; i < a.length; i++)
+		{
+			System.out.print(a[i] + " ");
+		}
+		System.out.println("-------");
 		return low;
 	}
 
