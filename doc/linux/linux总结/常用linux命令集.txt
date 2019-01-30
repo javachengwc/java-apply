@@ -86,8 +86,6 @@ netstat -su  ---查看网卡收包情况
 -----------------------------
 service iptables start/stop  ---开/关防火墙
 chkconfig iptables on/off
------------------
-tail –f /var/log/messages   ----linux net相关日志
 -----------------------------
 rm -fr xx  ---移除某个目录
 cp -r xx . ---复制某个目录

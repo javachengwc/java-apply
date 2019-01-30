@@ -42,6 +42,6 @@ linux下安装es6
 
 es配置信息
 /data/deploy/es/config/elasticsearch.yml     ---es主配置文件,ip,端口这些信息配置
-/data/deploy/es/config/jvm.options           ---配置jvm的配置文件，默认heap是1g
+/data/deploy/es/config/jvm.options           ---配置jvm的配置文件，默认heap是1g，es最高用32g,再多没啥用
 
 ---------------------------------------------------------------
