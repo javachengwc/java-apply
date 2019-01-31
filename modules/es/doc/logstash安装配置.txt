@@ -71,7 +71,10 @@ vim ./config/logstash.conf                                      ###定义数据�
 ./bin/lagstash -f ../config/logstash.conf --config.reload.automatic    ###启动并自动检测配置文件的变动和自动重新加载配置文件,
 默认,检测配置文件的间隔时间是3秒,可以通过参数--config.reload.interval <second> 来设置。
 注:stdin标准输入插件不支持自动重启,syslog作为输入源,当重载配置文件时,会崩溃。
-ps aux | grep logstash                                          ###查看logstash进程
-netstat -anp | grep LISTEN |grep 9600                           ###查看logstash对应的端口是否开启监听
-
+ps aux | grep logstash                                           ###查看logstash进程
+netstat -anp | grep LISTEN |grep 9600                            ###查看logstash对应的端口是否开启监听
+./bin/logstash-plugin list --verbose                             ###查询已安装的logstash插件
+./bin/logstash-plugin install logstash-input-jdbc                ###安装插件logstash-input-jdbc
+./bin/logstash-plugin remove logstash-input-jdbc                 ###移除插件logstash-input-jdbc
+./bin/logstash-plugin update logstash-input-jdbc                 ###升级插件logstash-input-jdbc
 -------------------------------------------------------------------------------------
