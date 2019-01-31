@@ -1,0 +1,62 @@
+--------------------------------------logstash-input---------------------------------
+input为file的输入demo
+input{
+    file{
+        ###path属性接受的参数是一个数组，其含义是标明需要读取的文件位置
+        path => ['pathA','pathB']
+        ###检查新文件产生的时间间隔。默认是15秒检查一次。
+        discover_interval => 15
+        ###排除的文件
+        exclude => ['file1','file2']
+        ###被监听的文件多久没更新后断开连接不在监听，默认1小时。
+        close_older => 3600
+        ###检查文件列表的时，如果文件的最后修改时间超过这个值，就忽略这个文件。 默认1天。
+        ignore_older => 86400
+        ###logstash 每隔多久检查一次被监听文件(是否有更新)，默认1秒。
+        stat_interval => 1
+        ###sincedb记录数据上一次的读取位置的index，如果需要每次都从新开始读取文件，只设置start_position => beginning是没有用的，需设置sincedb_path 为 /dev/null
+        sincedb_path => '$HOME/. sincedb'
+        ###logstash 从什么位置开始读取文件数据， 默认是结束位置, beginning 为从新开始
+        start_position => ‘beginning’
+    }
+}
+input{
+    jdbc{
+        jdbc_driver_library => "/data/m2/repository/mysql/mysql-connector-java/5.1.22/mysql-connector-java-5.1.22.jar"
+        jdbc_driver_class => "com.mysql.jdbc.Driver"
+        jdbc_connection_string => "jdbc:mysql://127.0.0.1/shop"
+        jdbc_user => "root"
+        jdbc_password => "root"
+        ###schedule定时器 多久执行一次SQL，默认是1分钟，格式:分 时 天 月 年
+        schedule => "  *"
+        ###是否清除 last_run_metadata_path 的记录,如果为真那么每次都相当于从头开始查询所有的数据库记录
+        clean_run => false
+        ###是否需要记录某个column 的值,此时该参数就要为 true. 否则默认 track 的是 timestamp 的值.
+        use_column_value => true
+        ###如果 use_column_value 为true,需配置此参数. 它是数据库表的一个字段名。该字段必须是递增的，可以是数据库的数据时间这类字段
+        tracking_column => create_time
+        ###是否记录上次执行结果, 如果为真,将会把上次执行到的 tracking_column 字段的值记录下来,保存到 last_run_metadata_path 指定的文件中
+        record_last_run => true
+        ###保存执行位置的文件路径，SQL 语句中 的条件where .. > :sql_last_value.其中:sql_last_value 取值就是该文件中的值
+        last_run_metadata_path => "/data/logstash/run_metadata.d/my_info"
+        ###是否将字段名称转小写,默认是true
+        lowercase_column_names => false
+        ###sql语句
+        #statement => select * from tb where creat_time > :sql_last_value
+        ###sql语句文件
+        statement_filepath => "/data/logstash/statement_file.d/my_info.sql"
+        ###数据类型，自定义标记
+        type => "my_info"
+    }
+}
+
+input为filebeat的输入demo
+input {
+  beats {
+    ###接受数据端口
+    port => 5044
+    ###数据类型
+    type => "logs"
+  }
+}
+-------------------------------------------------------------------------------------
