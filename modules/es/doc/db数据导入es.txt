@@ -19,11 +19,10 @@ vim ./config/logstash.conf                                      ###定义数据�
     input {
         jdbc {
             jdbc_driver_library => "/data/m2/repository/mysql/mysql-connector-java/5.1.22/mysql-connector-java-5.1.22.jar"
-            jdbc_driver_class => "Java::com.mysql.jdbc.Driver"
+            jdbc_driver_class => "com.mysql.jdbc.Driver"
             jdbc_connection_string => "jdbc:mysql://127.0.0.1/shop"
             jdbc_user => "root"
             jdbc_password => "root"
-            schedule => "* * * * *"
             statement => "select * from book"
             type => "jdbc"
             last_run_metadata_path => "/data/logstash-files/logstash-mysql-book.lastrun"
@@ -34,6 +33,7 @@ vim ./config/logstash.conf                                      ###定义数据�
         elasticsearch {
             hosts => ["localhost:9200"]
             index => "book"
+            document_id => "%{id}"                                     ###文档id与记录id对应
         }
     }
 ./bin/lagstash -f ../config/logstash.conf                              ###启动logstash

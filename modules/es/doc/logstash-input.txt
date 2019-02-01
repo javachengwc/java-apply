@@ -27,7 +27,7 @@ input{
         jdbc_connection_string => "jdbc:mysql://127.0.0.1/shop"
         jdbc_user => "root"
         jdbc_password => "root"
-        ###schedule定时器 多久执行一次SQL，默认是1分钟，格式:分 时 天 月 年
+        ###schedule定时器 多久执行一次SQL，默认是1分钟，格式:分 时 天 月 年,不设置此配置表示只执行一次
         schedule => "  *"
         ###是否清除 last_run_metadata_path 的记录,如果为真那么每次都相当于从头开始查询所有的数据库记录
         clean_run => false
@@ -35,6 +35,8 @@ input{
         use_column_value => true
         ###如果 use_column_value 为true,需配置此参数. 它是数据库表的一个字段名。该字段必须是递增的，可以是数据库的数据时间这类字段
         tracking_column => create_time
+        ###指定tracking_column的数据类型,默认值为numeric
+        traceing_column_type => "timestamp"
         ###是否记录上次执行结果, 如果为真,将会把上次执行到的 tracking_column 字段的值记录下来,保存到 last_run_metadata_path 指定的文件中
         record_last_run => true
         ###保存执行位置的文件路径，SQL 语句中 的条件where .. > :sql_last_value.其中:sql_last_value 取值就是该文件中的值
@@ -45,6 +47,8 @@ input{
         #statement => select * from tb where creat_time > :sql_last_value
         ###sql语句文件
         statement_filepath => "/data/logstash/statement_file.d/my_info.sql"
+        ###指定各个字段的编码，在某个字段是特殊编码的时候可特别指定一下，通常情况下不用配置
+        columns_charset => { "column0" => "ISO-8859-1" }
         ###数据类型，自定义标记
         type => "my_info"
     }
