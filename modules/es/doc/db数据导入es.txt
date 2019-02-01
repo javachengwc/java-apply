@@ -14,7 +14,7 @@ Oct 28 2015 	2.0.0.0 	            2.0.0
 logstash-input-jdbc 是 logstash的插件，安装logstash后一般自带安装了此插件，
 .bin/logstash-plugin list --verbose                             ###查询已安装的logstash插件
 .bin/logstash-plugin install logstash-input-jdbc                ###安装插件logstash-input-jdbc
-配置logstash
+从数据库全量导入数据的logstash配置
 vim ./config/logstash.conf                                      ###定义数据源为mysql中的查询结果集
     input {
         jdbc {
@@ -24,8 +24,10 @@ vim ./config/logstash.conf                                      ###定义数据�
             jdbc_user => "root"
             jdbc_password => "root"
             statement => "select * from book"
-            type => "jdbc"
             last_run_metadata_path => "/data/logstash-files/logstash-mysql-book.lastrun"
+            #jdbc_paging_enabled => "true"    ###如果表数据比较大，这里可以配置分页参数，实际导入中会按照分页分批导入
+            #jdbc_page_size => "50000"
+            type => "jdbc"
         }
     }
     filter { }
@@ -39,4 +41,48 @@ vim ./config/logstash.conf                                      ###定义数据�
 ./bin/lagstash -f ../config/logstash.conf                              ###启动logstash
 通过kibana查看es中是否有对应的索引生成。
 
+从数据库增量导入数据的logstash配置
+vim ./config/logstash.conf
+    input {
+        jdbc {
+            jdbc_driver_library => "/data/m2/repository/mysql/mysql-connector-java/5.1.22/mysql-connector-java-5.1.22.jar"
+            jdbc_driver_class => "com.mysql.jdbc.Driver"
+            jdbc_connection_string => "jdbc:mysql://127.0.0.1/shop"
+            jdbc_user => "root"
+            jdbc_password => "root"
+            statement => "select * from book where id> :sql_last_value "
+            #jdbc_paging_enabled => "true"    ###如果表数据比较大，这里可以配置分页参数，实际导入中会按照分页分批导入
+            #jdbc_page_size => "50000"
+            schedule => "*/10 * * * *"        ###类似crontab,可以定制定时操作，比如每10分钟执行一次同步(分 时 天 月 年)
+            record_last_run => "true"
+            use_column_value => "true"
+            tracking_column => "id"
+            clean_run => "false"
+            last_run_metadata_path => "/data/logstash-files/logstash-mysql-book.lastrun"
+            lowercase_column_names => "false"             ###是否将字段名称转小写
+            type => "jdbc"
+        }
+    }
+    filter { }
+    output {
+        elasticsearch {
+            hosts => ["localhost:9200"]
+            index => "book"
+            document_id => "%{id}"                                     ###文档id与记录id对应
+            template_overwrite => true
+        }
+    }
+
+在默认配置下，tracking_column这个值是@timestamp，对应的elasticsearch索引中的_id值，是logstash存入elasticsearch的时间，
+这个值的主要作用类似mysql的主键，是唯一的，但是时间戳其实是一直在变的，
+所以如果是定时做增量数据导入，每次使用select语句查询的数据都会存入elasticsearch中，导致数据重复。
+解决方法：在要查询的表中，找主键或者自增值的字段，将它设置为_id的值，因为_id值是唯一的，所以，当有重复的_id的时候，数据就不会重复
+这就是logstash.conf配置中 document_id => "%{id}" 的作用
+
+在定时做增量数据导入中，可能会出现即使没有新的数据写入到elasticsearch里面，但只要logstash定时每次运行，elasticsearch容量就不断上升
+这是因为：在elasticsearch/nodes/0/indices/xxx/{0,1,2,3,4}/下有个translog，这个是elasticsearch的事务日志。
+elasticsearch为了数据安全，接收到数据后，先将数据写入内存和translog，然后再建立索引写入到磁盘，
+这样即使突然断电，重启后，还可以通过translog恢复，
+不过如果每次查询都有很多重复的数据，而这些重复的数据又没有写入到elasticsearch的索引中，就会在translog中囤积下来
+es会定期refresh，会自动清理掉老的日志。
 --------------------------------------------------------------------------------
