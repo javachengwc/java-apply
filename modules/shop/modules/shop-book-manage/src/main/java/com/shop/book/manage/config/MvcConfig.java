@@ -6,6 +6,7 @@ import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import javax.servlet.Filter;
@@ -48,4 +49,13 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
         return factory.createMultipartConfig();
     }
 
+//    @Override
+//    public void addInterceptors(InterceptorRegistry registry) {
+//        registry.addInterceptor(LoginInterceptor)
+//                .addPathPatterns("/app/**");
+//        registry.addInterceptor(AuthInterceptor())
+//                .addPathPatterns("/app/**")
+//                .excludePathPatterns("/app/login", "/app/findPwd", "/app/getCaptcha");
+//        super.addInterceptors(registry);
+//    }
 }

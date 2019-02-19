@@ -56,6 +56,30 @@ endpoints.configprops.enabled=false      #禁用cvonfigprops端点
 endpoints.shutdown.enabled=false         #禁用shutdown端点
 endpoints.metrics.filter.enabled=false   #禁用metrics servlet filter
 spring.metrics.servo.enabled=false       #禁用metrics服务
+
+/metrics 展示了jvm的内存，cpu核数，线程数，gc情况。
+系统信息：
+    包括处理器数量processors、运行时间uptime和instance.uptime、系统平均负载systemload.average。
+mem.*：
+    内存概要信息，包括分配给应用的总内存数量以及当前空闲的内存数量。这些信息来自java.lang.Runtime。
+heap.*：
+    堆内存使用情况。这些信息来自java.lang.management.MemoryMXBean接口中getHeapMemoryUsage方法获取的java.lang.management.MemoryUsage。
+nonheap.*：
+    非堆内存使用情况。这些信息来自java.lang.management.MemoryMXBean接口中getNonHeapMemoryUsage方法获取的java.lang.management.MemoryUsage。
+threads.*：
+    线程使用情况，包括线程数、守护线程数（daemon）、线程峰值（peak）等，这些数据均来自java.lang.management.ThreadMXBean。
+classes.*：
+    应用加载和卸载的类统计。这些数据均来自java.lang.management.ClassLoadingMXBean。
+gc.*：
+    垃圾收集器的详细信息，包括垃圾回收次数gc.ps_scavenge.count、垃圾回收消耗时间gc.ps_scavenge.time、
+    标记-清除算法的次数gc.ps_marksweep.count、标记-清除算法的消耗时间gc.ps_marksweep.time。
+    这些数据均来自java.lang.management.GarbageCollectorMXBean。
+httpsessions.*：
+    Tomcat容器的会话使用情况。包括最大会话数httpsessions.max和活跃会话数httpsessions.active。
+    该度量指标仅在引入了嵌入式Tomcat作为应用容器的时候才会提供。
+gauge.*：
+    HTTP请求的性能指标之一，它主要用来反映一个绝对数值。
+    比如gauge.response.hello: 5，它表示上一次hello请求的延迟时间为5毫秒。
 -------------------------------
 自定义端点
 a,覆盖已有端点，比如/health端点

@@ -24,4 +24,10 @@ rc：用于加载正在开发的jar,也就是项目中自己编写的类。
 </plugin>
 
 如果想非classpath下的文件发生变化时应用得以重启，使用：spring.devtools.restart.additional-paths，这样devtools就会将该目录列入了监听范围。
+
+项目设置好后，还需要对ide进行配置，以便支持热部署
+首先 File--Settings--Compiler 打勾Build project automatically
+其次 File--Settings--Keymap--Other--Maintenance 查看它的快捷组合键
+按下这个快捷组合键，在1.Registry...中找到compiler.automake.allow.when.app.running 选项，将它打开
+
 -------------------------------------------------------------------------
