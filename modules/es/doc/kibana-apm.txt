@@ -8,9 +8,9 @@ Elastic APM的组件包括APM Server,APM Agent,Elasticsearch,Kibana APM UI,
 服务侧 需要Elasticsearch,Kibana,APM Server,接受agent的打点数据；
 需要监控的应用侧 需要部署APM Agent，负责应用性能和错误数据的采集，当前支持node、python、ruby、js，java和golang;
 
-wget https://artifacts.elastic.co/downloads/apm-server/apm-server-6.3.0-linux-x86_64.tar.gz         ------下载安装apm-server
-tar -zxvf apm-server-6.3.0-linux-x86_64.tar.gz
-cd apm-server-6.3.0-linux-x86_64
+wget https://artifacts.elastic.co/downloads/apm-server/apm-server-6.5.0-linux-x86_64.tar.gz         ------下载安装apm-server
+tar -zxvf apm-server-6.5.0-linux-x86_64.tar.gz
+cd apm-server-6.5.0-linux-x86_64
 ./apm-server setup                                   ------导入kibana apm定制的dashboard
 vim apm-server.yml                                   ------修改配置，主要是配置es地址,kibana地址,apm-server的端口
     output.elasticsearch:
