@@ -1,0 +1,35 @@
+--------------------------------hadoop版本支持关系------------------------------
+记录时间:2018-07-08
+
+Hadoop和HBase以及JDK支持版本关系
+Hbase是建立Hadoop基础上的数据库文件，因此Hbase是分布式的数据库。Hbase也提供了单机版的安装。
+备注:
+-  S = supported and tested,支持
+-  X = not supported,不支持
+-  NT = not tested enough.可以运行但测试不充分
+
+Hbase和JDK版本关系表：
+Hbase版本             JDK6                     JDK7                   JDK8
+1.2                   Not Supported            yes                    yes
+1.1                   Not Supported            yes                    Not Supported
+1                     Not Supported            yes                    Not Supported
+0.98                  yes                      yes                    Not Supported
+0.94                  yes                      yes                    N/A
+
+Hbase与Hadoop版本关系
+             HBase-1.2.x    HBase-1.3.x HBase-1.5.x HBase-2.0.x HBase-2.1.x
+Hadoop-2.4.x       S         S          X           X           X
+Hadoop-2.5.x       S         S          X           X           X
+Hadoop-2.6.0       X         X          X           X           X
+Hadoop-2.6.1+      S         S          X           S           X
+Hadoop-2.7.0       X         X          X           X           X
+Hadoop-2.7.1+      S         S          S           S           S
+Hadoop-2.8.[0-1]   X         X          X           X           X
+Hadoop-2.8.2       NT        NT         NT          NT          NT
+Hadoop-2.8.3+      NT        NT         NT          S           S
+Hadoop-2.9.0       X         X          X           X           X
+Hadoop-2.9.1+      NT        NT         NT          NT          NT
+Hadoop-3.0.x       X         X          X           X           X
+Hadoop-3.1.0       X         X          X           X           X
+
+--------------------------------------------------------------------------------
