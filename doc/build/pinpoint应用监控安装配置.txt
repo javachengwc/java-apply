@@ -1,0 +1,85 @@
+--------------------------------------pinpoint监控-----------------------------------------
+pinpoint是开源在github上的一款java应用APM监控工具，用于大规模分布式系统监控。
+需要安装的软件:
+hbase	                 1.2.7
+pinpoint-collector	     1.8.2
+pinpoint-agetn	         1.8.2
+pinpoint-web	         1.8.2
+tomcat	                 8.5.38
+软件各版本的兼容性，参看pinpoint github中此项目说明中的Compatibility部分
+1,安装hbase
+wget http://archive.apache.org/dist/hbase/1.2.7/hbase-1.2.7-bin.tar.gz
+tar -zxvf hbase-1.2.7-bin.tar.gz
+cd hbase-1.2.7
+vim ./conf/hbase-env.sh
+    export JAVA_HOME=/usr/local/jdk1.8.0_191/
+vim ./conf/hbase-site.xml                      ###指定hbase本地来存储数据
+    <configuration>
+        <property>
+            <name>hbase.rootdir</name>
+            <value>file:///data/hdata</value>
+        </property>
+    </configuration>
+../bin/start-hbase.sh &                        ###启动hbase
+http://127.0.0.1:16010                         ###访问hbase后台
+
+2,安装pinpoint-collector
+先安装此collector的web容器tomcat(略),路径/data/tomcat-pinpoint-collector
+修改tomcat的各端口配置
+cd /data/tomcat-pinpoint-collector
+sed -i 's/port="8005"/port="18005"/g' ./conf/server.xml
+sed -i 's/port="8080"/port="18080"/g' ./conf/server.xml
+sed -i 's/port="8443"/port="18443"/g' ./conf/server.xml
+sed -i 's/port="8009"/port="18009"/g' ./conf/server.xml
+sed -i 's/redirectPort="8443"/redirectPort="18443"/g' ./conf/server.xml
+
+在github中找到对应版本打包好的war包pinpoint-collector-1.8.2.war,见https://github.com/naver/pinpoint/releases
+解压此war包到tomcat中
+rm -rf /data/tomcat-pinpoint-collector/webapps/*
+unzip pinpoint-collector-1.8.2.war -d /data/tomcat-pinpoint-collector/webapps/ROOT
+/data/tomcat-pinpoint-collector/bin/startup.sh   ###启动tomcat
+
+3,安装pinpoint-web
+先安装此web的web容器tomcat(略),路径/data/tomcat-pinpoint-web
+修改tomcat的各端口配置
+cd /data/tomcat-pinpoint-web
+sed -i 's/port="8005"/port="28005"/g' ./conf/server.xml
+sed -i 's/port="8080"/port="28080"/g' ./conf/server.xml
+sed -i 's/port="8443"/port="28443"/g' ./conf/server.xml
+sed -i 's/port="8009"/port="28009"/g' ./conf/server.xml
+sed -i 's/redirectPort="8443"/redirectPort="28443"/g' ./conf/server.xml
+
+在github中找到对应版本打包好的war包pinpoint-web-1.8.2.war
+解压此war包到tomcat中
+rm -rf /data/tomcat-pinpoint-web/webapps/*
+unzip pinpoint-web-1.8.2.war -d /data/tomcat-pinpoint-web/webapps/ROOT
+/data/tomcat-pinpoint-web/bin/startup.sh       ###启动tomcat
+http://127.0.0.1:28080                         ###访问pinpoint监控UI
+
+4,将pinpoint相关的hbase表在hbase中生成
+在github pinpoint项目中找到/hbase/scripts/hbase-create.hbase文件，上传到服务器中,并在hbase中执行，创建相应的表
+/data/hbase-1.2.7/bin/hbase shell /data/hbase-create.hbase
+执行完成后，可在hbase 管理ui中看到对应创建的表
+tomcat-pinpoint-web应用重启一下，重连一下hbase
+
+5,在应用中加入pinpoint-agent探针
+在github中找到对应版本pinpoint-agent-1.8.2.tar.gz,
+上传此包到各个需要监控的java应用端
+tar -zxvf pinpoint-agent-1.8.2.tar.gz -C /data/pinpoint-agent
+vim /data/pinpoint-agent/pinpoint.config
+    profiler.collector.ip=127.0.0.1                      ###配置pinpoint-collector服务的ip
+在启动java的命令中加参
+    java -javaagent:/data/pp-agent/pinpoint-bootstrap-1.8.2.jar
+    -Dpinpoint.agentId=aa
+    -Dpinpoint.applicationName=my
+    -jar xxx.jar
+
+pinpoint.agentId是被监控项目agent的唯一ID，与其他被监控项目不能相同
+pinpoint.applicationName是被监控项目的名称
+
+6,启动被监控项目，然后查看pinpoint-web页面中,是否有此项目在监控中
+http://127.0.0.1:28080                         ###访问pinpoint监控UI
+
+注:因为pinpoint-collector,pinpoint-web与hbase部署在同一台机器，故没做额外的配置
+pinpoint-collector,pinpoint-web中可以针对实际部署情况进行配置，具体配置文件在项目中。
+-------------------------------------------------------------------------------------------
