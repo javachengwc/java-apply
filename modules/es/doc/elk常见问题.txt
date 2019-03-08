@@ -1,0 +1,34 @@
+1,日志中异常日志分行打印，elk默认按每行产生记录，使得收集的日志异常部分分行了，
+需要把异常的多行日志合成一行。
+
+首先安装多行合一行的插件logstash-filter-multiline
+    logstash-plugin install logstash-filter-multiline
+修改logstash配置文件
+vim  /data/logstash/config/logstash.conf
+    ......
+    filter {
+       multiline {
+            pattern => "^\d{4}-\d{1,2}-\d{1,2}\s\d{1,2}:\d{1,2}:\d{1,2}"
+            negate => true
+            what => "previous"
+       }
+    }
+    ......
+重启logstash即可。
+
+在filter-->multiline配置的使用
+multiline {
+     charset=>...          #可选                     字符编码
+     max_bytes=>...        #可选     bytes类型       设置最大的字节数
+     max_lines=>...        #可选     number类型      设置最大的行数,默认是500行
+     multiline_tag...      #可选     string类型      设置一个事件标签,默认是multiline
+     pattern=>...          #必选     string类型      设置匹配的正则表达式
+     patterns_dir=>...     #可选     array类型       可以设置多个正则表达式
+     negate=>...           #可选     boolean类型     默认false不显示，可设置ture
+                                                     如果设置为true，表示与正则表达式（pattern）不匹配的内容都需要整合，
+                                                     如果设置为false，即与pattern匹配的内容需要合并。
+     what=>...             #必选                     向前previous ， 向后 next
+                                                     前一行 或者后一行，指出上面对应的规则与前一行内容收集为一行，还是与后一行整合在一起
+ }
+negate默认是 false,不显示,与patten匹配的行由what决定向前或向后整合
+negate设置为true,则与patten不匹配的行由what决定向前或向后整合
