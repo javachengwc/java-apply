@@ -116,7 +116,7 @@ GET book/book/_search
         "range" : {
             "age" : {
                 "gte" : 10,
-                "lte" : 20,
+                "lte" : 20
             }
         }
     }
