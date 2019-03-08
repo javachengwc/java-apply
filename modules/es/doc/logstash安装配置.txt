@@ -4,11 +4,15 @@ logstash 主要是用来日志的搜集、分析、过滤日志的工具，支�
 logstash可以同时作为agent和server来从指定的位置（如file，mysql, redis）抽取数据，并进行文档化，然后发送给es，也可以只作为服务端，配合轻量化的filebeat抽取数据。
 logstash事件处理有三个阶段：inputs → filters → outputs。是一个接收，处理，转发日志的工具。
 支持系统日志，webserver日志，错误日志，应用日志，总之包括所有可以抛出来的日志类型。
+logstash的组件主要包括input、filter、output、codec四个部分。
+input用于读取内容，常用的有stdin(直接从控制台输入)、file(读取文件)等，另外还提供了对接redis、kafka等的插件
 inputs中一些常用的输入:
     file：从文件系统的文件中读取，类似于tial -f命令
     syslog：在514端口上监听系统日志消息，并根据RFC3164标准进行解析
     redis：从redis service中读取
     beats：从filebeat中读取
+filter 用于对输入的文本进行处理，常用的有grok(基于正则表达式提取字段)、kv(解析键值对形式的数据)、csv、xml等，
+另外还提供了了一个ruby插件，这个插件如果会用的话，几乎是万能的。
 filters中一些常用的过滤器为：
     grok：解析任意文本数据，Grok 是 Logstash 最重要的插件。
     它的主要作用就是将文本格式的字符串，转换成为具体的结构化的数据，配合正则表达式使用。
@@ -19,12 +23,14 @@ filters中一些常用的过滤器为：
     drop：丢弃一部分events不进行处理。
     clone：拷贝 event，这个过程中也可以添加或移除字段。
     geoip：添加地理信息(为前台kibana图形化展示使用)
+output用于把fitler得到的内容输出到指定的接收端，常用的自然是elasticsearch(对接ES)、file(输出到文件)、stdout(直接输出到控制台)
 outputs是logstash处理管道的最末端组件。一个event可以在处理过程中经过多重输出，但是一旦所有的outputs都执行结束，这个event也就完成生命周期。
 一些常见的outputs为：
     elasticsearch：可以高效的保存数据，并且能够方便和简单的进行查询。
     file：将event数据保存到文件中。
     graphite：将event数据发送到图形化组件中，一个很流行的开源存储图形化展示的组件。
     codecs：codecs 是基于数据流的过滤器，它可以作为input，output的一部分配置。codecs可以轻松的分割发送过来已经被序列化的数据。
+codec用于格式化对应的内容，可以在input和output插件中使用，比如在output的stdout中使用rubydebug以json的形式输出到控制台
 一些常见的codecs：
     json：使用json格式对数据进行编码/解码。
     multiline：将汇多个事件中数据汇总为一个单一的行。比如：java异常信息和堆栈信息
