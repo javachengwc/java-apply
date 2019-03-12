@@ -70,13 +70,15 @@ systemctl stop apache.service                      ---停止apache服务
 systemctl restart apache.service                   ---重启apache服务
 systemctl kill apache.service                      ---杀死apache服务以及所有子进程
 systemctl reload apache.service                    ---重新加载apache服务的配置文件
-systemctl daemon-reload                            ---重载所有修改过的配置文件
+systemctl daemon-reload                            ---重载服务配置
 systemctl show httpd.service                       ---显示httpd服务的所有底层参数
 systemctl show -p CPUShares httpd.service          ---显示httpd服务的指定属性值
 systemctl set-property httpd.service CPUShares=500 ---设置httpd服务的指定属性值
 systemctl list-dependencies nginx.service          ---列出nginx服务的所有依赖
 systemctl enable nginx.service                     ---开机启动nginx服务
 systemctl disable nginx.service                    ---取消开机启动nginx服务
+systemctl is-enabled ss.service                    ---查看服务是否开机启动
+systemctl list-unit-files|grep enabled             ---查看已启动的服务列表
 systemctl list-unit-files                          ---列出所有配置文件
 systemctl list-unit-files --type=service           ---列出指定类型的配置文件
 systemctl list-unit-files --type=target            ---查看当前系统的所有Target
@@ -119,4 +121,48 @@ journalctl --disk-usage                            ---显示日志占据的硬�
 journalctl --vacuum-size=1G                        ---指定日志文件占据的最大空间,如果设置小，就能清理journal日志
 journalctl --vacuum-time=1years                    ---指定日志文件保存多久
 journalctl -xe                                     ---查看最近的日志
+
+systemctl管理的各服务的配置文件位于/ec/systemd/system/xxx.service,
+服务的配置文件一般会分为3部分：[Unit]、[Service]和[Install]
+[Unit]部分主要是对这个服务的说明
+    Description   就是当使用 systemctl list-units 时，输出的简易说明。
+    Documentation 项目提供出的的文件查询的功能！
+    After         说明此 unit 是在哪个 daemon 启动之后才启动。仅是说明服务启动的顺序，并没有强制要求服务一定要启动后此 unit 才能启动。
+    Before        与 After 的意义相反。
+    Requires      明确的定义此 unit 依赖哪个 daemon 启动后才能启动。如果在此项设置的服务没有启动，那么此 unit 就不会被启动
+    Wants         与 Requires 相反，规范的是这个 unit 之后最好还要启动什么服务比较好。不过，并没有明确的规范.
+    Conflicts     代表冲突的服务。冲突服务如果有启动，那么此 unit 本身就不能启动。如果此 unit 有启动，则冲突服务就不能启动
+[Service]部分是服务的关键，是服务的一些具体运行参数的设置.
+    Type          说明这个 daemon 启动的方式，会影响到 ExecStart。有下面几种类型
+                  simple： 默认值，这个 daemon 主要由 ExecStart 接的指令串来启动，启动后常驻于内存中。
+                  forking：由 ExecStart 启动的程序通过 spawns 延伸出其他子程序来作为此 daemon 的主要服务。原生的父程序在启动结束后就会终止运行。
+                           传统的 unit 服务大多属于这种项目，例如 httpd 这个 WWW 服务，当 httpd 的程序因为运行过久因此即将终结了，则 systemd 会再重新生出另一个子程序持续运行后， 再将父程序删除。
+                  oneshot：与 simple 类似，不过这个程序在工作完毕后就结束了，不会常驻在内存中。
+                  dbus：   与 simple 类似，但这个 daemon 必须要在取得一个 D-Bus 的名称后，才会继续运行。因此设置这个项目时，通常也要设置 BusName= 才行。
+                  idle：   与 simple 类似，要执行这个 daemon 必须要所有的工作都顺利执行完毕后才会执行。
+    EnvironmentFile  指定启动脚本的环境配置文件。
+    ExecStart        实际执行此 daemon 的指令或脚本程序。可使用 ExecStartPre （之前） 以及 ExecStartPost （之后） 两个设置项目来在实际启动服务前，进行额外的指令行为。
+                     但指令串仅接受“指令 参数 参数...”的格式，不能接受 <, >, >>, |, & 等特殊字符，很多的 bash 语法也不支持喔！ 所以，要使用这些特殊的字符时，最好直接写入到指令脚本里面去。
+    ExecStop         关闭此服务时所进行的指令。
+    ExecReload       重启命令,与 systemctl reload 有关的指令行为
+    Restart          当设置 Restart=1 时，则当此 daemon 服务终止后，会再次的启动此服务。
+    RemainAfterExit  当设置为 RemainAfterExit=1 时，则当这个 daemon 所属的所有程序都终止之后，此服务会再尝试启动。这对于 Type=oneshot 的服务很有帮助。
+    TimeoutSec       若这个服务在启动或者是关闭时，因为某些缘故导致无法顺利“正常启动或正常结束”的情况下，要等多久才进入“强制结束”的状态。
+    PIDFile          存放PID的文件路径
+    User             设置服务运行的用户
+    Group            设置服务运行的用户组
+    PrivateTmp       值为true表示给服务分配独立的临时空间
+    KillMode         可以是process, control-group, none 的其中一种，
+                     如果是 process,则 daemon 终止时，只会终止主要的程序 （ExecStart 接的后面那串指令），
+                     如果是 control-group 时， 则由此 daemon 所产生的其他 control-group 的程序，也都会被关闭。
+                     如果是 none 的话，则没有程序会被关闭
+    RestartSec       与 Restart相关性，服务重启时，大概要 sleep 多少时间再启动。默认是 100ms （毫秒）。
+[Install]部分是服务安装的相关设置，可设置为多用户的
+    WantedBy         这个设置后面接的大部分是 *.target unit ！意思是，这个 unit 本身是附挂在哪一个 target unit 下面的。
+                     一般来说，大多的服务性质的 unit 都是附挂在 multi-user.target 下面。
+    Also             当目前这个 unit 本身被 enable 时，Also 后面接的 unit 也 to enable 。也就是具有相依性的服务可以写在这里
+    Alias            进行一个链接的别名。当 systemctl enable 相关的服务时，则此服务会进行链接文件的创建。
+                     以 multi-user.target 为例，它是用来作为默认操作环境 default.target 的规划，
+                     当设置用成 default.target 时，这个 /etc/systemd/system/default.target 就会链接到 /usr/lib/systemd/system/multi-user.target
+注意:[Service]部分的启动、重启、停止命令全部要求使用绝对路径，使用相对路径则会报错!
 -------------------------------------------------------------------------------
