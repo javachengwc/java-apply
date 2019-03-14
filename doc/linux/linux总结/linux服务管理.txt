@@ -159,6 +159,11 @@ systemctl管理的各服务的配置文件位于/ec/systemd/system/xxx.service,
                      如果是 control-group 时， 则由此 daemon 所产生的其他 control-group 的程序，也都会被关闭。
                      如果是 none 的话，则没有程序会被关闭
     RestartSec       与 Restart相关性，服务重启时，大概要 sleep 多少时间再启动。默认是 100ms （毫秒）。
+    WorkingDirectory 应用目录
+    Environment      设置环境变量,比如Environment=JAVA_HOME=/usr/lib/java/jdk1.8.0_191
+                     Environment='JAVA_OPTS=-Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom'
+    ExecStart=/opt/tomcat/bin/startup.sh
+    ExecStop=/opt/tomcat/bin/shutdown.sh
 [Install]部分是服务安装的相关设置，可设置为多用户的
     WantedBy         这个设置后面接的大部分是 *.target unit 。意思是，这个 unit 本身是附挂在哪一个 target unit 下面的。
                      一般来说，大多的服务性质的 unit 都是附挂在 multi-user.target 下面。
