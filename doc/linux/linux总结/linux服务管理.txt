@@ -135,11 +135,13 @@ systemctl管理的各服务的配置文件位于/ec/systemd/system/xxx.service,
 [Service]部分是服务的关键，是服务的一些具体运行参数的设置.
     Type          说明这个 daemon 启动的方式，会影响到 ExecStart。有下面几种类型
                   simple： 默认值，这个 daemon 主要由 ExecStart 接的指令串来启动，启动后常驻于内存中。
-                  forking：由 ExecStart 启动的程序通过 spawns 延伸出其他子程序来作为此 daemon 的主要服务。原生的父程序在启动结束后就会终止运行。
+                  forking：systemd认为当该服务进程fork，且父进程退出后服务启动成功。对于常规的守护进程（daemon），除非你确定此启动方式无法满足需求，使用此类型启动即可。
+                           使用此启动类型应同时指定 PIDFile=，以便 systemd 能够跟踪服务的主进程。
                            传统的 unit 服务大多属于这种项目，例如 httpd 这个 WWW 服务，当 httpd 的程序因为运行过久因此即将终结了，则 systemd 会再重新生出另一个子程序持续运行后， 再将父程序删除。
-                  oneshot：与 simple 类似，不过这个程序在工作完毕后就结束了，不会常驻在内存中。
-                  dbus：   与 simple 类似，但这个 daemon 必须要在取得一个 D-Bus 的名称后，才会继续运行。因此设置这个项目时，通常也要设置 BusName= 才行。
-                  idle：   与 simple 类似，要执行这个 daemon 必须要所有的工作都顺利执行完毕后才会执行。
+                  oneshot：这一选项适用于只执行一项任务、随后立即退出的服务。可能需要同时设置 RemainAfterExit=yes 使得 systemd 在服务进程退出之后仍然认为服务处于激活状态。
+                  notify ：与 simple 相同，但约定服务会在就绪后向 systemd 发送一个信号。这一通知的实现由 libsystemd-daemon.so 提供。
+                  dbus：   若以此方式启动，当指定的 BusName 出现在DBus系统总线上时，systemd认为服务就绪。
+                  idle：   systemd会等待所有任务处理完成后，才开始执行 idle 类型的单元。其他行为与 Type=simple 类似。
     EnvironmentFile  指定启动脚本的环境配置文件。
     ExecStart        实际执行此 daemon 的指令或脚本程序。可使用 ExecStartPre （之前） 以及 ExecStartPost （之后） 两个设置项目来在实际启动服务前，进行额外的指令行为。
                      但指令串仅接受“指令 参数 参数...”的格式，不能接受 <, >, >>, |, & 等特殊字符，很多的 bash 语法也不支持喔！ 所以，要使用这些特殊的字符时，最好直接写入到指令脚本里面去。
