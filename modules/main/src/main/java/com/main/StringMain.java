@@ -27,8 +27,32 @@ public class StringMain {
     //${}匹配
     private static String programTemplateStr="\\$\\{(.*?)\\}";
 
+    //去信息
+    public static String dropInfo(String value) {
+        if (StringUtils.isBlank(value) ) {
+            return value;
+        }
+        int tokenIndex = value.indexOf("\"token\":\"");
+        System.out.println(tokenIndex);
+        if(tokenIndex<0) {
+            return  value;
+        }
+        tokenIndex+="\"token\":\"".length();
+        int afterIndex =value.indexOf("\"",tokenIndex);
+        System.out.println(tokenIndex);
+        System.out.println(afterIndex);
+        System.out.println(value.substring(0,tokenIndex));
+        System.out.println(value.substring(afterIndex));
+        String rt = value.substring(0,tokenIndex)+value.substring(afterIndex);
+        return rt;
+    }
+
     public static void main(String args []) throws Exception
 	{
+
+	    String dataa="{\"head\":{\"os\":\" \",\"aaa\":\" \",\"ccc\":\" \",\"token\":\"aaaa\",\"yyy\":\" \"}}";
+	    String aftera = dropInfo(dataa);
+	    System.out.println(aftera);
 
 	    System.out.println("aa".equalsIgnoreCase(null));
         String abce="1y94932749237";
