@@ -133,15 +133,19 @@ systemctl管理的各服务的配置文件位于/ec/systemd/system/xxx.service,
     Wants         与 Requires 相反，规范的是这个 unit 之后最好还要启动什么服务比较好。不过，并没有明确的规范.
     Conflicts     代表冲突的服务。冲突服务如果有启动，那么此 unit 本身就不能启动。如果此 unit 有启动，则冲突服务就不能启动
 [Service]部分是服务的关键，是服务的一些具体运行参数的设置.
-    Type          说明这个 daemon 启动的方式，会影响到 ExecStart。有下面几种类型
-                  simple： 默认值，这个 daemon 主要由 ExecStart 接的指令串来启动，启动后常驻于内存中。
-                  forking：systemd认为当该服务进程fork，且父进程退出后服务启动成功。对于常规的守护进程（daemon），除非你确定此启动方式无法满足需求，使用此类型启动即可。
-                           使用此启动类型应同时指定 PIDFile=，以便 systemd 能够跟踪服务的主进程。
-                           传统的 unit 服务大多属于这种项目，例如 httpd 这个 WWW 服务，当 httpd 的程序因为运行过久因此即将终结了，则 systemd 会再重新生出另一个子程序持续运行后， 再将父程序删除。
-                  oneshot：这一选项适用于只执行一项任务、随后立即退出的服务。可能需要同时设置 RemainAfterExit=yes 使得 systemd 在服务进程退出之后仍然认为服务处于激活状态。
-                  notify ：与 simple 相同，但约定服务会在就绪后向 systemd 发送一个信号。这一通知的实现由 libsystemd-daemon.so 提供。
-                  dbus：   若以此方式启动，当指定的 BusName 出现在DBus系统总线上时，systemd认为服务就绪。
-                  idle：   systemd会等待所有任务处理完成后，才开始执行 idle 类型的单元。其他行为与 Type=simple 类似。
+    Type          设置进程的启动类型， 必须设为 simple, forking, oneshot, dbus, notify, idle 之一。
+                  simple： 默认值，表示 ExecStart= 进程就是该服务的主进程。 如果此进程需要为其他进程提供服务，那么必须在该进程启动之前先建立好通信渠道(例如套接字)， 以加快后继单元的启动速度。
+                  forking：表示 ExecStart= 进程将会在启动过程中使用 fork() 系统调用。 这是传统UNIX守护进程的做法。
+                           也就是当所有的通信渠道都已建好、启动亦已成功之后， 父进程将会退出，而子进程将作为该服务的主进程继续运行。
+                           对于此种进程， 建议同时设置 PIDFile= 选项， 以帮助 systemd 准确定位该服务的主进程， 加快后继单元的启动速度。
+                  oneshot：这一选项适用于只执行一项任务、随后立即退出的服务。
+                           它是(未设置 ExecStart= 时的默认值) 与 simple 类似， 不同之处在于该进程必须在 systemd 启动后继单元之前退出。 此种类型通常需要设置 RemainAfterExit= 选项。
+                  notify ：notify 与 simple 类似， 不同之处在于该进程将会在启动完成之后通过 sd_notify(3) 之类的接口发送一个通知消息。
+                           systemd 将会在启动后继单元之前， 首先确保该进程已经成功的发送了这个消息。 如果设为此类型， 那么下文的 NotifyAccess= 将只能设为非 none 值。
+                           如果 NotifyAccess= 未设置， 或者已经被明确设为 none ， 那么将会被自动强制修改为 main 。
+                  dbus：   (既设置了 ExecStart= 也设置了 BusName= 时的默认值) 与 simple 类似， 不同之处在于该进程需要在 D-Bus 上获得一个由 BusName= 指定的名称。
+                           systemd 将会在启动后继单元之前， 首先确保该进程已经成功的获取了指定的 D-Bus 名称。 设为此类型相当于隐含的依赖于 dbus.socket 单元。
+                  idle：   idle 与 simple 类似， 不同之处在于该进程将会被延迟到所有活动的任务都完成之后再执行。
     EnvironmentFile  指定启动脚本的环境配置文件。
     ExecStart        实际执行此 daemon 的指令或脚本程序。可使用 ExecStartPre （之前） 以及 ExecStartPost （之后） 两个设置项目来在实际启动服务前，进行额外的指令行为。
                      但指令串仅接受“指令 参数 参数...”的格式，不能接受 <, >, >>, |, & 等特殊字符，很多的 bash 语法也不支持喔！ 所以，要使用这些特殊的字符时，最好直接写入到指令脚本里面去。
@@ -159,9 +163,8 @@ systemctl管理的各服务的配置文件位于/ec/systemd/system/xxx.service,
                      如果是 control-group 时， 则由此 daemon 所产生的其他 control-group 的程序，也都会被关闭。
                      如果是 none 的话，则没有程序会被关闭
     RestartSec       与 Restart相关性，服务重启时，大概要 sleep 多少时间再启动。默认是 100ms （毫秒）。
-    WorkingDirectory 应用目录
-    Environment      设置环境变量,比如Environment=JAVA_HOME=/usr/lib/java/jdk1.8.0_191
-                     Environment='JAVA_OPTS=-Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom'
+    WorkingDirectory 应用目录，项目启动所在的目录，很重要，对项目一些文件处理，文件权限紧密相关
+    Environment      设置环境变量,比如Environment=JAVA_HOME=/usr/lib/java/jdk1.8.0_191,在启动ExecStart中可以用$JAVA_HOME来引用它
     ExecStart=/opt/tomcat/bin/startup.sh
     ExecStop=/opt/tomcat/bin/shutdown.sh
 [Install]部分是服务安装的相关设置，可设置为多用户的
