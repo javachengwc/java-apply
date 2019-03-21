@@ -146,7 +146,7 @@ systemctl管理的各服务的配置文件位于/ec/systemd/system/xxx.service,
                   dbus：   (既设置了 ExecStart= 也设置了 BusName= 时的默认值) 与 simple 类似， 不同之处在于该进程需要在 D-Bus 上获得一个由 BusName= 指定的名称。
                            systemd 将会在启动后继单元之前， 首先确保该进程已经成功的获取了指定的 D-Bus 名称。 设为此类型相当于隐含的依赖于 dbus.socket 单元。
                   idle：   idle 与 simple 类似， 不同之处在于该进程将会被延迟到所有活动的任务都完成之后再执行。
-    EnvironmentFile  指定启动脚本的环境配置文件。
+    WorkingDirectory 应用目录，项目启动所在的目录，很重要，对项目一些文件处理，文件权限紧密相关
     ExecStart        实际执行此 daemon 的指令或脚本程序。可使用 ExecStartPre （之前） 以及 ExecStartPost （之后） 两个设置项目来在实际启动服务前，进行额外的指令行为。
                      但指令串仅接受“指令 参数 参数...”的格式，不能接受 <, >, >>, |, & 等特殊字符，很多的 bash 语法也不支持喔！ 所以，要使用这些特殊的字符时，最好直接写入到指令脚本里面去。
     ExecStop         关闭此服务时所进行的指令。
@@ -163,10 +163,8 @@ systemctl管理的各服务的配置文件位于/ec/systemd/system/xxx.service,
                      如果是 control-group 时， 则由此 daemon 所产生的其他 control-group 的程序，也都会被关闭。
                      如果是 none 的话，则没有程序会被关闭
     RestartSec       与 Restart相关性，服务重启时，大概要 sleep 多少时间再启动。默认是 100ms （毫秒）。
-    WorkingDirectory 应用目录，项目启动所在的目录，很重要，对项目一些文件处理，文件权限紧密相关
     Environment      设置环境变量,比如Environment=JAVA_HOME=/usr/lib/java/jdk1.8.0_191,在启动ExecStart中可以用$JAVA_HOME来引用它
-    ExecStart=/opt/tomcat/bin/startup.sh
-    ExecStop=/opt/tomcat/bin/shutdown.sh
+    EnvironmentFile  指定启动脚本的环境配置文件。
 [Install]部分是服务安装的相关设置，可设置为多用户的
     WantedBy         这个设置后面接的大部分是 *.target unit 。意思是，这个 unit 本身是附挂在哪一个 target unit 下面的。
                      一般来说，大多的服务性质的 unit 都是附挂在 multi-user.target 下面。
