@@ -1,0 +1,12 @@
+[Unit]
+Description=xxx-app
+After=syslog.target
+
+[Service]
+User=ccc
+WorkingDirectory=/home/ccc
+ExecStart=/usr/bin/java -Xmx512m -jar /data/xxx-app.jar
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target
