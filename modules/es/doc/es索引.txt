@@ -78,5 +78,36 @@ es索引http操作
 curl -XPUT localhost:9200/test                                ------创建索引
 返回结果:{"acknowledged":true,"shards_acknowledged":true,"index":"test"}
 
+POST _analyze                                                ------standard分词解析结果
+{
+  "analyzer": "standard",
+  "text": "hello world how are you"
+}
+
+POST _analyze                                                ------simple分词解析结果
+{
+  "analyzer": "simple",
+  "text": "aa bb cc dd.ee ff gg"
+}
+
+PUT ext_standard_analyzer                                   ------自定义分词器ext_standard_analyzer
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "ext_standard_analyzer": {
+          "type": "standard",
+          "stopwords": "_english_"
+        }
+      }
+    }
+  }
+}
+
+POST ext_standard_analyzer/_analyze                        ------使用自定义分词器解析结果
+{
+  "analyzer": "ext_standard_analyzer",
+  "text": "aa bb cc dd.ee ff gg"
+}
 
 ---------------------------------------------------------------------------------------------

@@ -1,0 +1,50 @@
+put _template/app_log
+{
+    "template" : "app_log_*",
+    "order":1,
+    "settings" : { "index.refresh_interval" : "10s"},
+    "mappings" : {
+        "_default_": {
+            "_all": {
+                      "enabled": false,
+                       "norms": false
+                     },
+            "properties" : {
+                 "@timestamp": { "type": "date"},
+                 "@version": { "type": "text"},
+                 "beat": {
+                    "properties": {
+                        "hostname": { "type": "text"},
+                        "name": { "type": "text"},
+                        "version": { "type": "text" }
+                     }
+                 },
+                 "host": {
+                     "properties": {
+                         "name": {"type": "text"}
+                      }
+                 },
+                 "input": {
+                     "properties": {
+                          "type": {"type": "text" }
+                      }
+                 },
+                 "message": {
+                      "type": "text",
+                      "analyzer": "standard",
+                      "search_analyzer": "standard"
+                 },
+                 "offset": {
+                    "type": "long"
+                  },
+                 "prospector": {
+                      "properties": {
+                           "type": {"type": "text" }
+                       }
+                 },
+                 "source": { "type": "text" },
+                "tags": { "type": "text"}
+           }
+        }
+    }
+}
