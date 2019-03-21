@@ -44,7 +44,81 @@ put _template/app_log
                  },
                  "source": { "type": "text" },
                 "tags": { "type": "text"}
-           }
-        }
-    }
+           },
+           "dynamic_templates": [
+				{
+					"longs": {
+						"match_mapping_type": "string",
+						"match": "l_*",
+						"unmatch": "*_text",
+						"mapping": {
+							"type": "long"
+						}
+					}
+				},
+				{
+					"shorts": {
+						"match_mapping_type": "string",
+						"match": "s_*",
+						"unmatch": "*_text",
+						"mapping": {
+							"type": "short"
+						}
+					}
+				},
+				{
+					"ips": {
+						"match_mapping_type": "string",
+						"match": "*ip",
+						"unmatch": "*_text",
+						"mapping": {
+							"type": "ip"
+						}
+					}
+				},
+				{
+					"dates": {
+						"match_mapping_type": "string",
+						"match": "*date",
+						"unmatch": "*_text",
+						"mapping": {
+							"type": "date",
+							"format": "yyyy-MM-dd'T'HH:mm:ss.SSS"
+						}
+					}
+				},
+				{
+					"dates": {
+						"match_mapping_type": "string",
+						"match": "*time",
+						"unmatch": "*_text",
+						"mapping": {
+							"type": "date",
+							"format": "yyyy-MM-dd'T'HH:mm:ss.SSS"
+						}
+					}
+				},
+				{
+					"floats": {
+						"match_mapping_type": "string",
+						"match": "f_*",
+						"unmatch": "*_text",
+						"mapping": {
+							"type": "float"
+						}
+					}
+				},
+				{
+					"string_fields": {
+						"mapping": {
+							"norms": false,
+							"type": "keyword"
+						},
+						"match_mapping_type": "string",
+						"match": "*"
+					}
+				}
+			]
+         }
+     }
 }
