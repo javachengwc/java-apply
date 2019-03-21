@@ -31,8 +31,8 @@ put _template/app_log
                  },
                  "message": {
                       "type": "text",
-                      "analyzer": "standard",
-                      "search_analyzer": "standard"
+                      "analyzer": "simple",
+                      "search_analyzer": "simple"
                  },
                  "offset": {
                     "type": "long"
