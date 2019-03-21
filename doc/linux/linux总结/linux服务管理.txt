@@ -56,6 +56,7 @@ service <service> status       ---查看系统服务<service>的状态
 ------------systemd详解--------------
 systemd 并不是一个命令，而是一组命令，涉及到系统管理的方方面面。
 systemctl是systemd的主命令，用于管理系统。
+参考资料:http://www.jinbuguo.com/systemd/systemd.index.html
 
 systemctl --version                                ---查看版本
 systemctl reboot                                   ---重启系统
