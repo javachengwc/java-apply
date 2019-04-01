@@ -9,7 +9,7 @@ server {
     client_max_body_size    200m;
 
     location  / {
-   #html资源设置成不允许浏览器缓存，这里注意，必须有Cache-Control no-store才会生效
+   #html资源设置成不允许浏览器缓存，这里注意，必须有Cache-Control no-store才会生效,no-cache是协商缓存，no-store是强制不缓存
    #    add_header    Cache-Control no-cache;
    #    add_header    Cache-Control no-store;
    #    add_header    Cache-Conttrol must-revalidate;
