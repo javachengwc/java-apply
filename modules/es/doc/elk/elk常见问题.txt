@@ -32,3 +32,9 @@ multiline {
  }
 negate默认是 false,不显示,与patten匹配的行由what决定向前或向后整合
 negate设置为true,则与patten不匹配的行由what决定向前或向后整合
+
+2,在kibana创建index pattern时报错Could not locate that index-pattern (id: false)
+  或在kibana删除index pattern时报错 ElasticSearch ClusterBlockException[blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+  解决方式:
+  curl -XPUT -H "Content-Type: application/json" http://127.0.0.1:9200/_all/_settings -d '{"index.blocks.read_only_allow_delete": null}'
+  
