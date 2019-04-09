@@ -7,13 +7,31 @@ zabbix支持如下通讯方式:
     IPMI             -->通过IPMI接口进行监控，通过标准的IPMI硬件接口，监控被监控对象的物理状态，比如电压，温度，电源状态等
     JMX              -->通过JMX进行监控，监控JVM虚拟机时，可选择此方式
 zabbix的组件包括:
-    zabbix server    -->zabbix服务端，负责接收agent发送的采集数据，并负责组织配置信息，统计信息等
-    zabbix agent     -->zabbix采集器，部署在被监控机上，负责采样被监控机数据，并发送到zabbix server
-    zabbix web       -->zabbix的web UI,展示监控信息
-    zabbix proxy     -->可选组件，用于分布式监控环境中，zabbix proxy代表server端，完成局部区域的信息收集，最总统一发往server端
+    zabbix-server    -->zabbix服务端，负责接收agent发送的采集数据，并负责组织配置信息，统计信息等
+    zabbix-agent     -->zabbix采集器，部署在被监控机上，负责采样被监控机数据，并发送到zabbix-server
+    zabbix-web       -->zabbix的web UI,展示监控信息
+    zabbix-proxy     -->可选组件，用于分布式监控环境中，zabbix-proxy代表server端，完成局部区域的信息收集，最总统一发往server端
 
-zabbix agent会将采集的数据主动发送给server端，这种模式称为主动模式,agent端有个zabbix_sender工具，可测是否能发送数据
-zabbix agent不主动发送数据，而是等待server过来拉取数据，此中模式称为被动模式，server端有个zabbix_get工具，可测是否能从agent端拉取数据
+zabbix-agent会将采集的数据主动发送给server端，这种模式称为主动模式,agent端有个zabbix_sender工具，可测是否能发送数据
+zabbix-agent不主动发送数据，而是等待server过来拉取数据，此中模式称为被动模式，server端有个zabbix_get工具，可测是否能从agent端拉取数据
 
+zabbix安装配置(参见zabbix官网 https://www.zabbix.com)
+rpm -Uvh https://repo.zabbix.com/zabbix/4.2/rhel/7/x86_64/zabbix-release-4.2-1.el7.noarch.rpm
+yum clean all
+yum -y install zabbix-server-mysql zabbix-web-mysql zabbix-agent
+安装mysql(参见mysql安装)
+mysql -uroot -p                                                                          ###连接mysql
+mysql> create database zabbix character set utf8 collate utf8_bin;                       ###创建数据库zabbix
+mysql> create user 'zabbix'@'%';
+mysql> grant all privileges on zabbix.* to zabbix@'%' identified by 'zabbix' with grant option;            ###给zabbix授权
+mysql> flush privileges;
+zcat /usr/share/doc/zabbix-server-mysql*/create.sql.gz | mysql -uzabbix -p zabbix        ###引入zabbix-server数据库初始脚本
+vim /etc/zabbix/zabbix_server.conf                                                       ###修改zabbix-server连接数据库账号及密码
+    DBPassword=zabbix
+vim /etc/httpd/conf.d/zabbix.conf                                                        ###修改zabbix-web中的时区
+    php_value date.timezone Asia/Shanghai
+systemctl restart zabbix-server zabbix-agent httpd                                       ###启动zabbix-
+http://127.0.0.1/zabbix                                                                  ###访问zabbix，第一次会进行配置，参照官网Installing frontend即可
+zabbix-web账号初始密码Admin zabbix
 
 -----------------------------------------------------------------------------
