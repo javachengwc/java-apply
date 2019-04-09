@@ -1,2 +1,19 @@
 ------------------------------zabbix安装配置---------------------------------
+zabbix是一个基础监控工具，具备采集信息，存储信息，展示信息，报警通知等功能
+zabbix支持如下通讯方式:
+    agent            -->通过专用的agent程序进行监控，推荐首选方式
+    ssh/telnet       -->通过远程控制协议进行通信，如ssh或telnet
+    SNMP             -->通过SNMP(简单网络管理协议)协议与被监控对象进行通讯，一般来说，无法在路由器，交换机上安装agent,但这些硬件都支持SNMP协议
+    IPMI             -->通过IPMI接口进行监控，通过标准的IPMI硬件接口，监控被监控对象的物理状态，比如电压，温度，电源状态等
+    JMX              -->通过JMX进行监控，监控JVM虚拟机时，可选择此方式
+zabbix的组件包括:
+    zabbix server    -->zabbix服务端，负责接收agent发送的采集数据，并负责组织配置信息，统计信息等
+    zabbix agent     -->zabbix采集器，部署在被监控机上，负责采样被监控机数据，并发送到zabbix server
+    zabbix web       -->zabbix的web UI,展示监控信息
+    zabbix proxy     -->可选组件，用于分布式监控环境中，zabbix proxy代表server端，完成局部区域的信息收集，最总统一发往server端
+
+zabbix agent会将采集的数据主动发送给server端，这种模式称为主动模式,agent端有个zabbix_sender工具，可测是否能发送数据
+zabbix agent不主动发送数据，而是等待server过来拉取数据，此中模式称为被动模式，server端有个zabbix_get工具，可测是否能从agent端拉取数据
+
+
 -----------------------------------------------------------------------------
