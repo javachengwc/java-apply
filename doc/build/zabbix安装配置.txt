@@ -35,6 +35,7 @@ vim /etc/zabbix/zabbix_server.conf                                              
     DBPassword=zabbix
     DBPort=3306
     DBSocket=/usr/local/mysql/mysql.sock
+    AlertScriptsPath=/usr/lib/zabbix/alertscripts                                        ###默认的报警脚本目录
 vim /etc/zabbix/zabbix_agentd.conf
     Server=127.0.0.1                                                                     ###被动模式中用于指定哪台服务器可拉取当前服务器的数据
     ServerActive=172.0.0.1                                                               ###当agent端是主动模式时，将信息主动推送到哪台server上
@@ -61,5 +62,6 @@ zabbix_get -s 127.0.0.1 -k system.cpu.switches                                  
                                                                                             system.cpu.switches键表示上下文切换数
 zabbix资料:
 http://www.zsythink.net/archives/category/运维相关/zabbix
-https://www.zabbix.com/documentation/4.2/manual/config/items/itemtypes/zabbix_agent      ###zabbix中所有"键"的含义及用法
+https://www.zabbix.com/documentation/4.2/manual/config/items/itemtypes/zabbix_agent      ###zabbix监控项中"键"的含义及用法
+https://www.zabbix.com/documentation/4.2/manual/appendix/triggers/functions              ###zabbix触发器中函数的含义及用法
 -----------------------------------------------------------------------------
