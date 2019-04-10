@@ -64,4 +64,5 @@ zabbix资料:
 http://www.zsythink.net/archives/category/运维相关/zabbix
 https://www.zabbix.com/documentation/4.2/manual/config/items/itemtypes/zabbix_agent      ###zabbix监控项中"键"的含义及用法
 https://www.zabbix.com/documentation/4.2/manual/appendix/triggers/functions              ###zabbix触发器中函数的含义及用法
+https://www.zabbix.com/documentation/4.2/manual/appendix/macros/supported_by_location    ###zabbix宏(也就是内置变量)列表
 -----------------------------------------------------------------------------
