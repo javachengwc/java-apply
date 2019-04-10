@@ -42,7 +42,15 @@ systemctl start zabbix-server                                                   
 systemctl start zabbix-agent                                                             ###启动zabbix-agent,监听端口10050
 systemctl start httpd                                                                    ###启动zabbix-web,监听端口80
 ss -tnl                                                                                  ###查看应用程序监听端口
-http://127.0.0.1/zabbix                                                                  ###访问zabbix，第一次会进行配置，参照官网Installing frontend即可
+http://127.0.0.1/zabbix                                                                  ###访问zabbix
+第一次访问zabbix会进入zabbix初始化配置页面，需要进行一些列检查和配置，参照官网Installing frontend即可，
+这里的配置信息会保存到"/etc/zabbix/web/zabbix.conf.php"配置文件中，可通过修改此文件进行更改。
 zabbix-web账号初始密码Admin zabbix
-
+zabbix-web切换语言是在登陆后点击页面右上角的个人图标进入用户基本资料设置页面，在那里修改语言为对应语言即可。
+zabbix-web界面中的菜单:
+    管理             ------一般用户管理zabbix自身及zabbix相关设置
+    配置             ------一般用于配置监控相关设置
+    监测             ------一般用户查看被监控的相关数据
+    报表             ------生成一段时间内的监控统计信息
+    资产记录         ------查看被管控的主机有哪些，以及相关的资产信息
 -----------------------------------------------------------------------------
