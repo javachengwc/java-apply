@@ -23,77 +23,68 @@ echo 0 $(awk '/Shared/ {print "+", $2}' /proc/100876/smaps) | bc
 echo 0 $(awk '/Rss/ {print "+", $2}' /proc/100876/smaps) | bc
 (bc安装:yum install bc)
 ----------------------------
-uname -a          ---查看linux系统信息
-lsb_release -a    ---查询linux系统版本信息
+uname -a           ---查看linux系统信息
+lsb_release -a     ---查询linux系统版本信息
 ----------------------------
-df /df -h  --磁盘挂在及容量,使用量,信息	
+df /df -h          ---磁盘挂在及容量,使用量,信息
+du /du -sh         ---当前目录下个文件及文件夹大小信息
 ----------------------------
-du /du -sh --当前目录下个文件及文件夹大小信息
-----------------------------
-ps -aux    --查看进程
-----------------------------
+ps -aux            ---查看进程
 ps -mp pid -o THREAD,tid,time|sort -rn ---查看进程pid最耗cpu的线程   
 ---------------------------
 jstat -gcutil pid  ---查看java进程垃圾回收状况
 jstat -gc pid      ---查看java进程内存占用情况
--------------------
-jstack pid ---dump java进程的线程状态
------------------
-jmap -heap pid   ---查看java 堆（heap）使用情况
-jmap -histo pid  ---查看堆内存(histogram)中的对象数量，大小
-jmap -dump:format=b,file=m.dat pid   ----打印java进程内存快照
---------------------
-jhat -port 5000 m.dat   ----在浏览器中访问：http://localhost:5000/  查看进程内存详细信息
+jstack pid         ---dump java进程的线程状态
+jmap -heap pid     ---查看java 堆（heap）使用情况
+jmap -histo pid    ---查看堆内存(histogram)中的对象数量，大小
+jmap -dump:format=b,file=m.dat pid     ---打印java进程内存快照
+jhat -port 5000 m.dat                  ---在浏览器中访问：http://localhost:5000/  查看进程内存详细信息
 ---------------------
-strace -p pid   ---追踪进程pid系统调用或信号产生情况 
-strace -cf -p pid -o strace.log  ---dump系统调用统计信息
-strace -rtf -p pid -o strace1.log  ---dump系统调用详细信息
-truss  -p pid   ---追踪进程pid系统调用或信号产生情况
-ltrace -p pid   ---追踪进程pid调用库函数的情况
+strace -p pid                          ---追踪进程pid系统调用或信号产生情况
+strace -cf -p pid -o strace.log        ---dump系统调用统计信息
+strace -rtf -p pid -o strace1.log      ---dump系统调用详细信息
+truss  -p pid                          ---追踪进程pid系统调用或信号产生情况
+ltrace -p pid                          ---追踪进程pid调用库函数的情况
 -------------
-top -Hp pid  ----查看进程pid相关线程
+sar -x pid 2 2000                      ---查看进程状态
+top -Hp pid                            ---查看进程pid相关线程
 -----------------
-printf "%x\n" 30834   ----10进制转16进制
+printf "%x\n" 30834                    ---10进制转16进制
 ----------------
-vmstat 2 2000   ----查看服务器状态，cpu使用率，内存，swap,io读写情况
--------------------
-mpstat -P ALL 2 2000   ---判断I/O瓶颈.   %iowait列，CPU等待I/O操作所花费的时间,这个值持续很高通常可能是I/O瓶颈所导致的
---------------------
-iostat -m -x 2 2000   ---判断I/O瓶颈
+vmstat 2 2000                          ---查看服务器状态，cpu使用率，内存，swap,io读写情况
+mpstat -P ALL 2 2000                   ---判断I/O瓶颈.   %iowait列，CPU等待I/O操作所花费的时间,这个值持续很高通常可能是I/O瓶颈所导致的
+iostat -m -x 2 2000                    ---判断I/O瓶颈
 iostat -d -k 2 3
 iostat -d -x -k 2 3
 其中 %util 字段表示一秒中有百分之多少的时间用于 I/O 操作，即被io消耗的cpu百分比。
 ---------------------
-sar -x pid 2 2000   ----查看进程状态
----------------------
-lsof -p pid  ----查找对应pid的文件句柄
-lsof -i:80   ----查找对应端口被哪个进程占用
-lsof  /tmp/1.txt -----查找对应文件被哪个进程占用
+lsof -p pid                            ---查找对应pid的文件句柄
+lsof -i:80                             ---查找对应端口被哪个进程占用
+lsof  /tmp/1.txt                       ---查找对应文件被哪个进程占用
 -----------------------------
-netstat -anp ---查看端口
+netstat -anp                           ---查看端口
+ss -tnl                                ---查看应用程序监控的端口
+telnet 0 89                            ---判断89端口是否开启
 --------------------------------
 netstat -n | awk '/^tcp/ {++S[$NF]} END {for(a in S) print a, S[a]}'   ---查看tcp连接
 ----------------------
-telnet 0 89  ---判断89端口是否开启
------------
-ping ip      ---结果可查看到ip的发包丢包
-----------
-mtr ip      ------可路由追踪到ip的发包丢包
----------
-traceroute ip ----跟踪数据包到达网络主机所经过的路由,相当与window下的trancert
-----------------------------
-netstat -su  ---查看网卡收包情况
+ping ip                                ---结果可查看到ip的发包
+mtr ip                                 ---可路由追踪到ip的发包丢包
+traceroute ip                          ---跟踪数据包到达网络主机所经过的路由,相当与window下的trancert
+netstat -su                            ---查看网卡收包情况
 -----------------------------
-service iptables start/stop  ---开/关防火墙
+service iptables start/stop            ---开/关防火墙
 chkconfig iptables on/off
 -----------------------------
-rm -fr xx  ---移除某个目录
-cp -r xx . ---复制某个目录
-unzip xx.zip -d /home  ---解压xx.zip到/home目录下
-tar -zxvf  /aa.tar.gz  ---解压tar.gz文件
+alias ll="ls -al"                      ---别名
+-----------------------------
+rm -fr xx                              ---移除某个目录
+cp -r xx .                             ---复制某个目录
+unzip xx.zip -d /home                  ---解压xx.zip到/home目录下
+tar -zxvf  /aa.tar.gz                  ---解压tar.gz文件
 tar xzf xs.tar.gz --strip-components=1 -C /opt/aa
-                       ---解压tar.gz到/opt/aa,加压后的文件内容会跳过压缩中的一层目录
-ln -s /home/.../  aa   ---建软连接aa 连向/home/..
-unrar x xx.rar         ---解压rar文件
+                                       ---解压tar.gz到/opt/aa,加压后的文件内容会跳过压缩中的一层目录
+unrar x xx.rar                         ---解压rar文件
+ln -s /home/.../  aa                   ---建软连接aa 连向/home/..
 ----------------------------
 
