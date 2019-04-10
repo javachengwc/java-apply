@@ -11,6 +11,7 @@ zabbix的组件包括:
     zabbix-agent     -->zabbix采集器，部署在被监控机上，负责采样被监控机数据，并发送到zabbix-server
     zabbix-web       -->zabbix的web UI,展示监控信息
     zabbix-proxy     -->可选组件，用于分布式监控环境中，zabbix-proxy代表server端，完成局部区域的信息收集，最总统一发往server端
+    zabbix-get       -->zabbix_get工具，可从agent端拉取数据
 
 zabbix-agent会将采集的数据主动发送给server端，这种模式称为主动模式,agent端有个zabbix_sender工具，可测是否能发送数据
 zabbix-agent不主动发送数据，而是等待server过来拉取数据，此中模式称为被动模式，server端有个zabbix_get工具，可测是否能从agent端拉取数据
@@ -19,7 +20,7 @@ zabbix-agent不主动发送数据，而是等待server过来拉取数据，此�
 zabbix安装配置(参见zabbix官网 https://www.zabbix.com)
 rpm -Uvh https://repo.zabbix.com/zabbix/4.2/rhel/7/x86_64/zabbix-release-4.2-1.el7.noarch.rpm
 yum clean all
-yum -y install zabbix-server-mysql zabbix-web-mysql zabbix-agent
+yum -y install zabbix-server-mysql zabbix-web-mysql zabbix-agent zabbix-get
 安装mysql(参见mysql安装)
 mysql -uroot -p                                                                          ###连接mysql
 mysql> create database zabbix character set utf8 collate utf8_bin;                       ###创建数据库zabbix
@@ -56,4 +57,8 @@ zabbix-web界面中的菜单:
     监测             ------一般用户查看被监控的相关数据
     报表             ------生成一段时间内的监控统计信息
     资产记录         ------查看被管控的主机有哪些，以及相关的资产信息
+zabbix_get -s 127.0.0.1 -k system.cpu.switches                                           ###获取被监控机127.0.0.1的上下文切换信息
+                                                                                            system.cpu.switches键表示上下文切换数
+zabbix资料:
+http://www.zsythink.net/archives/category/运维相关/zabbix
 -----------------------------------------------------------------------------
