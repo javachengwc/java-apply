@@ -27,10 +27,21 @@ mysql> grant all privileges on zabbix.* to zabbix@'%' identified by 'zabbix' wit
 mysql> flush privileges;
 zcat /usr/share/doc/zabbix-server-mysql*/create.sql.gz | mysql -uzabbix -p zabbix        ###引入zabbix-server数据库初始脚本
 vim /etc/zabbix/zabbix_server.conf                                                       ###修改zabbix-server连接数据库账号及密码
+    DBHost=localhost
+    DBName=zabbix
+    DBUser=zabbix
     DBPassword=zabbix
+    DBPort=3306
+    DBSocket=/usr/local/mysql/mysql.sock
+vim /etc/zabbix/zabbix_agentd.conf
+    Server=127.0.0.1
+    ServerActive=172.0.0.1
 vim /etc/httpd/conf.d/zabbix.conf                                                        ###修改zabbix-web中的时区
     php_value date.timezone Asia/Shanghai
-systemctl restart zabbix-server zabbix-agent httpd                                       ###启动zabbix-
+systemctl start zabbix-server                                                            ###启动zabbix-server，监听端口10051
+systemctl start zabbix-agent                                                             ###启动zabbix-agent,监听端口10050
+systemctl start httpd                                                                    ###启动zabbix-web,监听端口80
+ss -tnl                                                                                  ###查看应用程序监听端口
 http://127.0.0.1/zabbix                                                                  ###访问zabbix，第一次会进行配置，参照官网Installing frontend即可
 zabbix-web账号初始密码Admin zabbix
 
