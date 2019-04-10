@@ -14,6 +14,7 @@ zabbix的组件包括:
 
 zabbix-agent会将采集的数据主动发送给server端，这种模式称为主动模式,agent端有个zabbix_sender工具，可测是否能发送数据
 zabbix-agent不主动发送数据，而是等待server过来拉取数据，此中模式称为被动模式，server端有个zabbix_get工具，可测是否能从agent端拉取数据
+"主动模式"和"被动模式"都是对于agent端来说的。而且可以同时存在，不冲突。
 
 zabbix安装配置(参见zabbix官网 https://www.zabbix.com)
 rpm -Uvh https://repo.zabbix.com/zabbix/4.2/rhel/7/x86_64/zabbix-release-4.2-1.el7.noarch.rpm
@@ -34,10 +35,12 @@ vim /etc/zabbix/zabbix_server.conf                                              
     DBPort=3306
     DBSocket=/usr/local/mysql/mysql.sock
 vim /etc/zabbix/zabbix_agentd.conf
-    Server=127.0.0.1
-    ServerActive=172.0.0.1
-vim /etc/httpd/conf.d/zabbix.conf                                                        ###修改zabbix-web中的时区
-    php_value date.timezone Asia/Shanghai
+    Server=127.0.0.1                                                                     ###被动模式中用于指定哪台服务器可拉取当前服务器的数据
+    ServerActive=172.0.0.1                                                               ###当agent端是主动模式时，将信息主动推送到哪台server上
+    #RefreshActiveChecks                                                                 ###指明agent端每多少秒主动将采集到的数据发往server端
+    #Hostname                                                                            ###指定当前主机的主机名
+vim /etc/httpd/conf.d/zabbix.conf
+    php_value date.timezone Asia/Shanghai                                                ###修改zabbix-web中的时区
 systemctl start zabbix-server                                                            ###启动zabbix-server，监听端口10051
 systemctl start zabbix-agent                                                             ###启动zabbix-agent,监听端口10050
 systemctl start httpd                                                                    ###启动zabbix-web,监听端口80
