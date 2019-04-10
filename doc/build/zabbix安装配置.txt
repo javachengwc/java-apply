@@ -61,4 +61,5 @@ zabbix_get -s 127.0.0.1 -k system.cpu.switches                                  
                                                                                             system.cpu.switches键表示上下文切换数
 zabbix资料:
 http://www.zsythink.net/archives/category/运维相关/zabbix
+https://www.zabbix.com/documentation/4.2/manual/config/items/itemtypes/zabbix_agent      ###zabbix中所有"键"的含义及用法
 -----------------------------------------------------------------------------
