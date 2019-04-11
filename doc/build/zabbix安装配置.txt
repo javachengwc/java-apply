@@ -52,6 +52,15 @@ http://127.0.0.1/zabbix                                                         
 这里的配置信息会保存到"/etc/zabbix/web/zabbix.conf.php"配置文件中，可通过修改此文件进行更改。
 zabbix-web账号初始密码Admin zabbix
 zabbix-web切换语言是在登陆后点击页面右上角的个人图标进入用户基本资料设置页面，在那里修改语言为对应语言即可。
+切换语言后，绝大部分都能中文展示，但仍有小部分涉及到中文展示的地方会乱码，比如自定义监控项是中文名，在图形模块中展示对应的名称可能是乱码，
+这里对语言的处理如下:
+  a,在windows系统或网上找到自己想要的中文字体文件，比如微软雅黑msyh.ttf文件，(win10的字体文件为.ttc文件，需要转换成ttf文件才能在zabbix中使用)。
+  b,上传msyh.ttf到/usr/share/zabbix/fonts目录中
+  c,修改/usr/share/zabbix/include/defines.inc.php配置文件
+    vim defines.inc.php
+      define('ZBX_GRAPH_FONT_NAME',           'msyh');
+      define('ZBX_FONT_NAME', 'msyh');
+  d,重启zabbix-web即可
 zabbix-web界面中的菜单:
     管理             ------一般用户管理zabbix自身及zabbix相关设置
     配置             ------一般用于配置监控相关设置
