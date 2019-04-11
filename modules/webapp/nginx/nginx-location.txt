@@ -52,4 +52,19 @@ break 终止匹配, 不再匹配后面的规则
 redirect 返回302重定向 地址栏会显示跳转后的地址
 permanent 返回301永久重定向 地址栏会显示跳转后的地址
 
+case1:
+location /demo {
+    root /data/html;
+}
+
+case2:
+location /demo {
+    alias /data/ccc;
+}
+
+当url为/demo/index.html是，case1中实际访问的服务器资源路径是:/data/html/demo/index.html
+而如果是case2，实际访问的服务器资源路径是:/data/ccc/index.html
+root与alias的区别就是:
+root指令会将url路径带入到"root指令路径"中,将带入后的路径作为最终资源路径。
+alias指令则把location的路径，用别名路径代替，带入到访问url路径，形成最终资源路径。
 ------------------------------------------------------------
