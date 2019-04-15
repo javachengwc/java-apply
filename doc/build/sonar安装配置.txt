@@ -45,7 +45,7 @@ vim /etc/sysctl.conf
 sysctl -p                                        ###使修改生效
 vim /etc/security/limits.conf
     * soft nofile 65536
-    * hard nofile 6553
+    * hard nofile 65536
 ulimit -n 65536
 ulimit -n                                        ###查看修改是否生效
 
