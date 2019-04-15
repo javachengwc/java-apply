@@ -1,3 +1,9 @@
 --------------------------------------sonar安装配置----------------------------------
+sonar 是一个用于代码质量管理的开放平台。通过插件机制，sonar 可以集成不同的测试工具，代码分析工具，以及持续集成工具,比如pmd-cpd、checkstyle、findbugs、Jenkins。
+通过不同的插件对这些结果进行再加工处理，通过量化的方式度量代码质量的变化，从而可以方便地对不同规模和种类的工程进行代码质量管理。
+
+wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-6.7.6.zip     ###下载sonar
+
+sonar中文包:http://docs.codehaus.org/display/SONAR/Chinese+Pack
 
 -------------------------------------------------------------------------------------
