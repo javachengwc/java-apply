@@ -11,7 +11,6 @@ vim ./conf/sonar.properties
     sonar.jdbc.password=sonar
     sonar.jdbc.url=jdbc:mysql://127.0.0.1:3306/sonar?useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useConfigs=maxPerformance&useSSL=false
     sonar.web.host=0.0.0.0
-    sonar.web.context=/sonar
     sonar.web.port=9000
 sonar的数据库驱动包默认已经提供了，除了oracle,如果需要添加oracle驱动包，将oracle驱动包复制到/usr/local/sonarqube-6.7.6/extensions/jdbc-driver/oracle目录下即可。
 
@@ -50,5 +49,5 @@ vim /etc/security/limits.conf
 ulimit -n 65536
 ulimit -n                                        ###查看修改是否生效
 
-
+http://127.0.0.1:9000                            ###访问sonar web服务
 -------------------------------------------------------------------------------------
