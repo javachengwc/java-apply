@@ -2,10 +2,10 @@
 sonar是一个用于代码质量管理的开放平台。通过插件机制，sonar 可以集成不同的测试工具，代码分析工具，以及持续集成工具,比如pmd-cpd、checkstyle、findbugs、Jenkins。
 通过不同的插件对这些结果进行再加工处理，通过量化的方式度量代码质量的变化，从而可以方便地对不同规模和种类的工程进行代码质量管理。
 
-wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-7.2.1.zip         ###下载sonar
-unzip sonarqube-7.2.1.zip
-cp -rf sonarqube-7.2.1 /usr/local/
-cd /usr/local/sonarqube-7.2.1
+wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-6.7.6.zip         ###下载sonar
+unzip sonarqube-6.7.6.zip
+cp -rf sonarqube-6.7.6 /usr/local/
+cd /usr/local/sonarqube-6.7.6
 vim ./conf/sonar.properties
     sonar.jdbc.username=sonar
     sonar.jdbc.password=sonar
@@ -13,7 +13,7 @@ vim ./conf/sonar.properties
     sonar.web.host=0.0.0.0
     sonar.web.context=/sonar
     sonar.web.port=9000
-sonar的数据库驱动包默认已经提供了，除了oracle,如果需要添加oracle驱动包，将oracle驱动包复制到/usr/local/sonarqube-7.2.1/extensions/jdbc-driver/oracle目录下即可。
+sonar的数据库驱动包默认已经提供了，除了oracle,如果需要添加oracle驱动包，将oracle驱动包复制到/usr/local/sonarqube-6.7.6/extensions/jdbc-driver/oracle目录下即可。
 
 安装mysql(参见mysql安装)
 mysql -uroot -p                                                                          ###连接mysql
@@ -24,14 +24,14 @@ mysql> flush privileges;
 
 sonar中文包:https://github.com/SonarQubeCommunity/sonar-l10n-zh,releases中找到对应版本的插件jar包
 将插件放置在${SONARHOME}/extensions/plugins下，重启sonar后生效。
-sonarqube-7.2.1对应的汉化包为sonar-l10n-zh-plugin-1.22.jar。
+sonarqube-6.7.6对应的汉化包为sonar-l10n-zh-plugin-1.19.jar。
 
 useradd sonar -s /sbin/nologin                                                           ###添加启动用户
-chown -R sonar:sonar /usr/local/sonarqube-7.2.1                                          ###sonar目录拥有者变成启动用户
+chown -R sonar:sonar /usr/local/sonarqube-6.7.6                                          ###sonar目录拥有者变成启动用户
 su sonar
-/usr/local/sonarqube-7.2.1/bin/linux-x86-64/sonar.sh start                               ###切换到启动用户,启动sonar服务
-/usr/local/sonarqube-7.2.1/bin/linux-x86-64/sonar.sh stop                                ###停止sonar服务
-/usr/local/sonarqube-7.2.1/bin/linux-x86-64/sonar.sh restart                             ###重启sonar服务
+/usr/local/sonarqube-6.7.6/bin/linux-x86-64/sonar.sh start                               ###切换到启动用户,启动sonar服务
+/usr/local/sonarqube-6.7.6/bin/linux-x86-64/sonar.sh stop                                ###停止sonar服务
+/usr/local/sonarqube-6.7.6/bin/linux-x86-64/sonar.sh restart                             ###重启sonar服务
 
 启动后进程会自动关闭，查看日志会发现
 Process exited with exit value [es]: 137
