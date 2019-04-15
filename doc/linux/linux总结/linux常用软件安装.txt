@@ -148,7 +148,7 @@ vim /etc/my.cnf
 bin/mysqld_safe --user=mysql &  #启动mysql
 bin/mysql -uroot -pf4(t0cvr*Dtq  #密码是之前生成的临时密码
     mysql>set password=password('root');
-    mysql>grant all privileges on *.* to root@'%' identified by 'root';  #改root密码
+    mysql>grant all privileges on *.* to root@'%' identified by 'root' with grant option;  #改root密码
     mysql>flush privileges;
     mysql>quit;
 bin/mysqladmin shutdown -uroot -proot  #关闭mysql

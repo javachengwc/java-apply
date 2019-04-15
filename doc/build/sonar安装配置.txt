@@ -4,6 +4,8 @@ sonar 是一个用于代码质量管理的开放平台。通过插件机制，so
 
 wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-6.7.6.zip     ###下载sonar
 
+
 sonar中文包:http://docs.codehaus.org/display/SONAR/Chinese+Pack
+将插件放置在${SONARHOME}/extensions/plugins下，重启sonar后生效。注意版本号要匹配。
 
 -------------------------------------------------------------------------------------
