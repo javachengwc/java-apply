@@ -1,6 +1,16 @@
 --------------------------------------sonar安装配置----------------------------------
 sonar是一个用于代码质量管理的开放平台。通过插件机制，sonar 可以集成不同的测试工具，代码分析工具，以及持续集成工具,比如pmd-cpd、checkstyle、findbugs、Jenkins。
 通过不同的插件对这些结果进行再加工处理，通过量化的方式度量代码质量的变化，从而可以方便地对不同规模和种类的工程进行代码质量管理。
+sonar客户端可以采用IDE插件、Sonar-Scanner插件、Ant插件和Maven插件方式，并通过各种不同的分析机制对项目源代码进行分析和扫描，
+并把分析扫描后的结果上传到sonar的数据库，通过sonar web界面对分析结果进行管理。
+sonar可以从七个维度检测代码质量:
+    1,复杂度分布(complexity):代码复杂度过高将难以理解
+    2,重复代码(duplications):程序中包含大量复制、粘贴的代码而导致代码臃肿，sonar可以展示源码中重复严重的地方
+    3,单元测试统计(unit tests):统计并展示单元测试覆盖率，开发或测试可以清楚测试代码的覆盖情况
+    4,代码规则检查(coding rules):通过Findbugs,PMD,CheckStyle等检查代码是否符合规范
+    5,注释率(comments):若代码注释过少，特别是人员变动后，其他人接手比较难接手；若过多，又不利于阅读
+    6,潜在的Bug(potential bugs):通过Findbugs,PMD,CheckStyle等检测潜在的bug
+    7,结构与设计(architecture & design):找出循环，展示包与包、类与类之间的依赖、检查程序之间耦合度
 
 wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-6.7.6.zip         ###下载sonar
 unzip sonarqube-6.7.6.zip
