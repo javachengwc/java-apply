@@ -72,12 +72,14 @@ public class HttpClientUtil {
                 get.abort();
                 throw new IOException("服务器响应状态异常 code="+rtCode);
             }
-            HttpEntity entity = response.getEntity();
+            HttpEntity entity = response==null?null:response.getEntity();
             if (entity != null) {
                 returnStr = EntityUtils.toString(entity, charset);
+                EntityUtils.consume(entity);
             }
-            EntityUtils.consume(entity);
-            response.close();
+            if(response!=null) {
+                response.close();
+            }
         } catch (Exception e) {
             logger.error("HttpClientUtil get error,thread name="+Thread.currentThread().getName(),e);
             get.abort();
@@ -123,12 +125,15 @@ public class HttpClientUtil {
                 postMethod.abort();
                 throw new IOException("服务器响应状态异常 code="+rtCode);
             }
-            HttpEntity entity = response.getEntity();
+            HttpEntity entity = response==null?null:response.getEntity();
             if (entity != null) {
                 returnStr = EntityUtils.toString(entity, charset);
+                EntityUtils.consume(entity);
             }
             EntityUtils.consume(entity);
-            response.close();
+            if(response!=null) {
+                response.close();
+            }
         } catch (Exception e) {
             logger.error("HttpClientUtil post error,thread name="+Thread.currentThread().getName(),e);
             postMethod.abort();
