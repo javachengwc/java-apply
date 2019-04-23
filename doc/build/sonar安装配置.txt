@@ -89,7 +89,7 @@ vim sonar-project.properties
 vim ./src/test.py
     print("hello world")
     print("hello world")
-sonar-scanner 或 sonar-scanner -X            ###通过sonar-scanner进行代码质量检查,-X表示执行过程中详细情况展示
+sonar-scanner 或 sonar-scanner -X            ###通过sonar-scanner进行代码质量检查,-X表示执行过程中详细打印
 sonar-scanner执行成功后，就可以访问sonar-web，查看这个demo项目的代码质量检查结果报告。
 
 -------------------------------------------------------------------------------------
