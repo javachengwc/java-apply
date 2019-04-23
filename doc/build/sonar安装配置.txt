@@ -62,4 +62,34 @@ ulimit -n                                        ###查看修改是否生效
 http://127.0.0.1:9000                            ###访问sonar web服务
 初始账号:admin  admin
 
+sonar客户端sonar-scanner安装
+wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.3.0.1492-linux.zip
+unzip sonar-scanner-cli-3.3.0.1492-linux.zip
+mv ./sonar-scanner-3.3.0.1492-linux /usr/local/sonar-scanner
+cd /usr/local/sonar-scanner
+vim ./conf/sonar-scanner.properties
+    sonar.host.url=http://localhost:9000
+    sonar.sourceEncoding=UTF-8
+vim /etc/profile
+    SCAN_HOME=/usr/local/sonar-scanner
+    PATH=$SCAN_HOME/bin:$PATH
+    export PATH SCAN_HOME
+source /etc/profile
+
+通过一个demo工程来试用一下sonar
+mkdir -p /data/deploy/test
+cd /data/deploy/test
+vim sonar-project.properties
+    sonar.projectKey=test
+    sonar.projectName=test
+    sonar.projectVersion=1.0
+    sonar.sources=src
+    sonar.language=py
+    sonar.sourceEncoding=UTF-8
+vim ./src/test.py
+    print("hello world")
+    print("hello world")
+sonar-scanner 或 sonar-scanner -X            ###通过sonar-scanner进行代码质量检查,-X表示执行过程中详细情况展示
+sonar-scanner执行成功后，就可以访问sonar-web，查看这个demo项目的代码质量检查结果报告。
+
 -------------------------------------------------------------------------------------
