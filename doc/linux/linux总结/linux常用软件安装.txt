@@ -140,7 +140,7 @@ vim /etc/my.cnf
    binlog_format=mixed
    log_bin=/usr/local/mysql/mysql-bin.log
    max_binlog_size=100M
-   max_allowed_packet=2000M
+   max_allowed_packet=1000M
    slow_query_log
    long_query_time=2
    slow_query_log_file=/usr/local/mysql/slow.log
