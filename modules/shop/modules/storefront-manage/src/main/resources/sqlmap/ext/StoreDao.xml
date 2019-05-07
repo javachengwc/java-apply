@@ -42,13 +42,13 @@
         from store
         <where>
             <if test="name != null and name != '' ">
-                name = #{name}
+                name like concat(#{name}, '%')
             </if>
             <if test="firstIdstryCode != null and firstIdstryCode != '' ">
-                first_idstry_code = #{firstIdstryCode}
+                and first_idstry_code = #{firstIdstryCode}
             </if>
             <if test="directIdstryCode != null and directIdstryCode != '' ">
-                direct_idstry_code = #{directIdstryCode}
+                and direct_idstry_code = #{directIdstryCode}
             </if>
             <if test="brandId != null ">
                 and brand_id = #{brandId}
