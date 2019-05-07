@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.storefront.manage.dao.rbac.MenuDao">
+
+    <resultMap id="MenuMap" type="com.storefront.manage.model.vo.MenuVo" >
+        <result column="id" property="id" jdbcType="BIGINT" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="url" property="url" jdbcType="VARCHAR" />
+        <result column="perms" property="perms" jdbcType="VARCHAR" />
+        <result column="type" property="type" jdbcType="INTEGER" />
+        <result column="icon" property="icon" jdbcType="VARCHAR" />
+        <result column="sort" property="sort" jdbcType="INTEGER" />
+        <result column="nav" property="nav" jdbcType="INTEGER" />
+        <result column="parent_id" property="parentId" jdbcType="BIGINT" />
+    </resultMap>
+
+    <select id="queryPage" resultMap="MenuMap">
+        select id,name,url,perms,type,icon,sort,nav,parent_id
+        from menu
+        <where>
+            <if test="name != null and name != ''">
+                name like concat(#{name}, '%')
+            </if>
+            <if test="url != null and url != ''">
+                and url = #{url}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="parentId != null">
+                and parent_id = #{parentId}
+            </if>
+        </where>
+        order by parent_id asc ,sort asc
+    </select>
+
+    <select id="queryUserMenu" resultMap="MenuMap">
+        select m.id,m.name,m.url,m.perms,m.type,m.icon,m.sort,m.nav,m.parent_id
+        from menu m
+        join role_menu rm on m.id=rm.menu_id
+        join user_role ur on ur.role_id= rm.role_id
+        where ur.user_id=#{userId}
+        order by m.parent_id asc ,m.sort asc
+    </select>
+
+    <select id="queryOnlyMenuList" resultMap="MenuMap">
+        select m.id,m.name,m.url,m.perms,m.type,m.icon,m.sort,m.nav,m.parent_id
+        from menu m
+        where m.type in (0,1)
+        order by m.parent_id asc ,m.sort asc
+    </select>
+</mapper>

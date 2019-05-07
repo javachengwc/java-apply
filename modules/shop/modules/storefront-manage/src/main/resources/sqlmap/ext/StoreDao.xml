@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.storefront.manage.dao.StoreDao">
+
+    <resultMap id="StoreMap" type="com.storefront.manage.model.vo.StoreVo" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="info" property="info" jdbcType="VARCHAR" />
+        <result column="is_business_mark" property="isBusinessMark" jdbcType="INTEGER" />
+        <result column="first_idstry_code" property="firstIdstryCode" jdbcType="VARCHAR" />
+        <result column="first_idstry_name" property="firstIdstryName" jdbcType="VARCHAR" />
+        <result column="direct_idstry_code" property="directIdstryCode" jdbcType="VARCHAR" />
+        <result column="direct_idstry_name" property="directIdstryName" jdbcType="VARCHAR" />
+        <result column="is_jingying" property="isJingying" jdbcType="INTEGER" />
+        <result column="is_jiameng" property="isJiameng" jdbcType="INTEGER" />
+        <result column="brand_id" property="brandId" jdbcType="BIGINT" />
+        <result column="brand_name" property="brandName" jdbcType="VARCHAR" />
+        <result column="start_time" property="startTimeStr" jdbcType="VARCHAR" />
+        <result column="end_time" property="endTimeStr" jdbcType="VARCHAR" />
+        <result column="province_code" property="provinceCode" jdbcType="VARCHAR" />
+        <result column="province_name" property="provinceName" jdbcType="VARCHAR" />
+        <result column="city_code" property="cityCode" jdbcType="VARCHAR" />
+        <result column="city_name" property="cityName" jdbcType="VARCHAR" />
+        <result column="area_code" property="areaCode" jdbcType="VARCHAR" />
+        <result column="area_name" property="areaName" jdbcType="VARCHAR" />
+        <result column="position_name" property="positionName" jdbcType="VARCHAR" />
+        <result column="position_type" property="positionType" jdbcType="INTEGER" />
+        <result column="street_name" property="streetName" jdbcType="VARCHAR" />
+        <result column="detail_address" property="detailAddress" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTimeStr" jdbcType="VARCHAR" />
+        <result column="modified_time" property="modifiedTimeStr" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <select id="queryPage" resultMap="StoreMap">
+        select id,name,info,is_business_mark,first_idstry_code,first_idstry_name,direct_idstry_code,direct_idstry_name,
+        is_jingying,is_jiameng,brand_id,brand_name,
+        date_format(start_time,'%Y-%m-%d') as start_time,
+        date_format(end_time,'%Y-%m-%d') as end_time,
+        province_code,province_name,city_code,city_name,area_code,area_name,position_name,position_type,street_name,detail_address,
+        date_format(create_time,'%Y-%m-%d %H:%i:%s') as create_time,
+        date_format(modified_time,'%Y-%m-%d %H:%i:%s') as modified_time
+        from store
+        <where>
+            <if test="name != null and name != '' ">
+                name = #{name}
+            </if>
+            <if test="firstIdstryCode != null and firstIdstryCode != '' ">
+                first_idstry_code = #{firstIdstryCode}
+            </if>
+            <if test="directIdstryCode != null and directIdstryCode != '' ">
+                direct_idstry_code = #{directIdstryCode}
+            </if>
+            <if test="brandId != null ">
+                and brand_id = #{brandId}
+            </if>
+            <if test="provinceCode != null and provinceCode != '' ">
+                and province_code = #{provinceCode}
+            </if>
+            <if test="cityCode != null and cityCode != '' ">
+                and city_code = #{cityCode}
+            </if>
+            <if test="areaCode != null and areaCode != '' ">
+                and area_code = #{areaCode}
+            </if>
+            <if test="positionName != null and positionName != '' ">
+                and position_name = #{positionName}
+            </if>
+            <if test="positionType != null ">
+                and position_type = #{positionType}
+            </if>
+            <if test="streetName != null and streetName != '' ">
+                and street_name = #{streetName}
+            </if>
+            <if test="startTimeFrom != null and startTimeFrom != '' ">
+                and start_time &gt;= #{startTimeFrom}
+            </if>
+            <if test="startTimeTo != null and startTimeTo != '' ">
+                and start_time &lt;= #{startTimeTo}
+            </if>
+        </where>
+        order by id desc
+    </select>
+
+</mapper>

@@ -32,6 +32,7 @@
 		<module>modules/shop-book-search</module>
 		<module>modules/shop-book-manage</module>
 		<module>modules/shop-book-manage-user-sdk</module>
+		<module>modules/storefront-manage</module>
 	</modules>
 
 </project>

@@ -55,10 +55,10 @@ INSERT INTO `role` (`id`, `name`, `code`, `note`, `create_time`, `modified_time`
 INSERT INTO `role` (`id`, `name`, `code`, `note`, `create_time`, `modified_time`) VALUES ('2', '运营员', 'practicer', '运营人员', '2018-11-14 16:04:51', '2018-11-14 16:04:53');
 
 
-INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('1', '公共模块', 'common', '', '0', '0', 'home', '1', '1', '2018-11-14 16:53:27', '2018-11-14 16:53:29');
-INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('2', '字典列表', 'dict', '', '1', '1', '', '10', '1', '2018-11-14 16:53:27', '2018-11-14 16:53:29');
-INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('3', '广告列表', 'advert', '', '1', '1', '', '20', '1', '2018-11-14 16:53:27', '2018-11-14 16:53:29');
-INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('4', '问答列表', 'qa', '', '1', '1', '', '30', '1', '2018-11-14 16:53:27', '2018-11-14 16:53:29');
+INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('1', '门店管理', 'storefront', '', '0', '0', 'home', '1', '1', '2018-11-14 16:53:27', '2018-11-14 16:53:29');
+INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('2', '门店列表', 'store', '', '1', '1', '', '10', '1', '2018-11-14 16:53:27', '2018-11-14 16:53:29');
+INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('3', '品牌管理', 'brand', '', '1', '1', '', '20', '1', '2018-11-14 16:53:27', '2018-11-14 16:53:29');
+INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('4', '行业管理', 'industry', '', '1', '1', '', '30', '1', '2018-11-14 16:53:27', '2018-11-14 16:53:29');
 INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('5', '权限管理', 'rdbc', '', '0', '0', 'setting', '2', '1', '2018-11-14 16:53:27', '2018-11-14 16:53:29');
 INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('6', '账户管理', 'user', 'user:list,user:query', '5', '1', '', '10', '1', '2018-11-14 16:53:27', '2018-11-14 16:53:29');
 INSERT INTO `menu` (`id`, `name`, `url`, `perms`, `parent_id`, `type`, `icon`, `sort`, `nav`, `create_time`, `modified_time`) VALUES ('7', '新增', '/user/add', 'user:add', '6', '2', '', '10', '0', '2018-11-14 16:54:04', '2018-11-14 16:54:06');
@@ -96,3 +96,110 @@ INSERT INTO `role_menu` (`role_id`, `menu_id`) VALUES ('1', '16');
 INSERT INTO `role_menu` (`role_id`, `menu_id`) VALUES ('1', '17');
 INSERT INTO `role_menu` (`role_id`, `menu_id`) VALUES ('1', '18');
 INSERT INTO `role_menu` (`role_id`, `menu_id`) VALUES ('1', '19');
+
+CREATE TABLE `industry` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `code` varchar(64) DEFAULT '' COMMENT '行业编码',
+  `name` varchar(64) DEFAULT '' COMMENT '行业名字',
+  `level` int(11) DEFAULT '1' COMMENT '层级,默认1',
+  `parent_code` varchar(64) DEFAULT '' COMMENT '上一级行业编码',
+  `parent_name` varchar(64) DEFAULT '' COMMENT '上一级行业名称',
+  `full_path` varchar(256) DEFAULT '' COMMENT '全code路径,|号分割',
+  `create_time` datetime DEFAULT NULL COMMENT '记录创建时间',
+  `modified_time` datetime DEFAULT NULL COMMENT '记录更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `udx_code` (`code`),
+  KEY `idx_parent` (`parent_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='行业表';
+
+CREATE TABLE `brand` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) DEFAULT '' COMMENT '品牌名字',
+  `first_idstry_code` varchar(64) DEFAULT '' COMMENT '大行业code',
+  `first_idstry_name` varchar(64) DEFAULT '' COMMENT '大行业名称',
+  `direct_idstry_code` varchar(64) DEFAULT '' COMMENT '细行业code',
+  `direct_idstry_name` varchar(64) DEFAULT '' COMMENT '细行业名称',
+  `is_idstry_mark` int(11) DEFAULT '0' COMMENT '是否行业标杆品牌，0--否，1--是',
+  `company_id` bigint(20) DEFAULT '0' COMMENT '所属公司',
+  `is_jingying` int(11) DEFAULT '1' COMMENT '是否在经营,0--否 1--是',
+  `create_time` datetime DEFAULT NULL COMMENT '记录创建时间',
+  `modified_time` datetime DEFAULT NULL COMMENT '记录更新时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_name` (`name`),
+  KEY `idx_company` (`company_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='品牌表';
+
+CREATE TABLE `company` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(128) DEFAULT '' COMMENT '公司名称',
+  `info` varchar(256) DEFAULT '' COMMENT '简介',
+  `uscc` varchar(32) DEFAULT '' COMMENT '统一社会信用代码,18位',
+  `is_jingying` int(11) DEFAULT '1' COMMENT '是否经营 0--否 1--是',
+  `start_time` date DEFAULT NULL COMMENT '成立时间',
+  `website` varchar(64) DEFAULT '' COMMENT '官网',
+  `province_code` varchar(32) DEFAULT '' COMMENT '省code',
+  `province_name` varchar(32) DEFAULT '' COMMENT '省名',
+  `city_code` varchar(32) DEFAULT '' COMMENT '市code',
+  `city_name` varchar(32) DEFAULT '' COMMENT '市名',
+  `area_code` varchar(32) DEFAULT '' COMMENT '区县code',
+  `area_name` varchar(32) DEFAULT '' COMMENT '区县名',
+  `detail_address` varchar(128) DEFAULT '' COMMENT '详细地址',
+  `create_time` datetime DEFAULT NULL COMMENT '记录创建时间',
+  `modified_time` datetime DEFAULT NULL COMMENT '记录更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `udx_name` (`name`),
+  KEY `idx_area` (`province_code`,`city_code`,`area_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='公司表';
+
+CREATE TABLE `project_jiameng` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) DEFAULT '' COMMENT '加盟项目',
+  `brand_name` varchar(64) DEFAULT '' COMMENT '加盟品牌',
+  `company_id` bigint(20) DEFAULT '0' COMMENT '加盟商id',
+  `company_name` varchar(128) DEFAULT '' COMMENT '加盟商名称',
+  `create_time` datetime DEFAULT NULL COMMENT '记录创建时间',
+  `modified_time` datetime DEFAULT NULL COMMENT '记录更新时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_name` (`name`),
+  KEY `idx_brand` (`brand_name`),
+  KEY `idx_company` (`company_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='加盟项目表';
+
+CREATE TABLE `store` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(128) DEFAULT '' COMMENT '门店名称',
+  `info` varchar(128) DEFAULT '' COMMENT '介绍',
+  `is_business_mark` int(11) DEFAULT '0' COMMENT '是否商圈标杆店铺，0--否，1--是',
+  `first_idstry_code` varchar(64) DEFAULT '' COMMENT '大行业code',
+  `first_idstry_name` varchar(64) DEFAULT '' COMMENT '大行业名称',
+  `direct_idstry_code` varchar(64) DEFAULT '' COMMENT '细行业code',
+  `direct_idstry_name` varchar(64) DEFAULT '' COMMENT '细行业名称',
+  `is_jingying` int(11) DEFAULT '1' COMMENT '是否经营',
+  `is_jiameng` int(11) DEFAULT '0' COMMENT '是否加盟',
+  `brand_id` bigint(20) DEFAULT NULL COMMENT '品牌id',
+  `brand_name` varchar(64) DEFAULT '' COMMENT '品牌名称',
+  `start_time` date DEFAULT NULL COMMENT '成立时间',
+  `end_time` date DEFAULT NULL COMMENT '结束时间',
+  `province_code` varchar(32) DEFAULT '' COMMENT '省code',
+  `province_name` varchar(32) DEFAULT '' COMMENT '省名',
+  `city_code` varchar(32) DEFAULT '' COMMENT '市code',
+  `city_name` varchar(32) DEFAULT '' COMMENT '市名',
+  `area_code` varchar(32) DEFAULT '' COMMENT '区县code',
+  `area_name` varchar(32) DEFAULT '' COMMENT '区县名',
+  `position_name` varchar(32) DEFAULT '' COMMENT '小区/楼盘/商场/大厦名称',
+  `position_type` int(11) DEFAULT '0' COMMENT '标识位置类型 0--小区,1--楼盘,2--商场,3--大厦,4--学校,5--步行街',
+  `street_name` varchar(32) DEFAULT '' COMMENT '街道名称',
+  `detail_address` varchar(32) DEFAULT '' COMMENT '详细地址',
+  `create_time` datetime DEFAULT NULL COMMENT '记录创建时间',
+  `modified_time` datetime DEFAULT NULL COMMENT '记录更新时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_name` (`name`),
+  KEY `idx_first_idstry` (`first_idstry_code`),
+  KEY `idx_direct_idstry` (`direct_idstry_code`),
+  KEY `idx_position` (`position_name`),
+  KEY `idx_street` (`street_name`),
+  KEY `idx_area` (`province_code`,`city_code`,`area_code`),
+  KEY `idx_brand` (`brand_id`,`brand_name`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='门店表';
+
+
