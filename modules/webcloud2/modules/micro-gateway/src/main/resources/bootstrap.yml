@@ -1,0 +1,20 @@
+#zuul 路由配置
+zuul:
+  sensitive-headers: "*"
+  routes:
+    userserv:
+      serviceId: userserv
+      path: /userserv/**
+    oauthserv:
+      serviceId: oauthserv
+      path: /oauthserv/**
+    demoserv:
+      serviceId: demoserv
+      path: /demoserv/**
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 30000

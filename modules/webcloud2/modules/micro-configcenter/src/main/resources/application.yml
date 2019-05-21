@@ -1,0 +1,26 @@
+server:
+  port: 8002
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8000/eureka
+  instance:
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 15
+
+spring:
+  application:
+    name: micro-configcenter
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/javachengwc/config-repo.git
+          search-paths: config
+          default-label: master
+          username: xxx
+          password: xxx
+      discovery:
+        enabled: true
+        service-id: micro-configcenter

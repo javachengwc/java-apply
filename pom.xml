@@ -52,6 +52,7 @@
 		<module>modules/websocket</module>
 		<module>modules/webrest</module>
 		<module>modules/webcloud</module>
+		<module>modules/webcloud2</module>
         <module>modules/bigdata</module>
 		<module>modules/sharding-dbtable</module>
     </modules>

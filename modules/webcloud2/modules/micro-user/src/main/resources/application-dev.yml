@@ -1,0 +1,62 @@
+server:
+  port: 8006
+
+#注册中心
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8000/eureka
+  instance:
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 15
+
+
+spring:
+  application:
+    name: micro-user
+#配置中心
+  cloud:
+    config:
+      name: micro-user
+      profile: dev
+      uri: http://localhost:8002/
+      label: master
+#数据库配置
+  datasource:
+      username: ${spring.datasource.username}
+      password: ${spring.datasource.password}
+      driver-class-name: ${spring.datasource.driver-class-name}
+      url: ${spring.datasource.url}
+      type: ${spring.datasource.type}
+      initialSize: ${spring.datasource.initialSize}
+      minIdle: ${spring.datasource.minIdle}
+      maxActive: ${spring.datasource.maxActive}
+      maxWait: ${spring.datasource.maxWait}
+      timeBetweenEvictionRunsMillis: ${spring.datasource.timeBetweenEvictionRunsMillis}
+      minEvictableIdleTimeMillis: ${spring.datasource.minEvictableIdleTimeMillis}
+      validationQuery: ${spring.datasource.validationQuery}
+      testWhileIdle: ${spring.datasource.testWhileIdle}
+      testOnBorrow: ${spring.datasource.testOnBorrow}
+      testOnReturn: ${spring.datasource.testOnReturn}
+
+#mybatisplus插件
+mybatis-plus:
+  typeAliasesPackage: com.micro.user.model
+  mapper-locations: classpath*:sqlmap/**/**.xml
+  global-config:
+    db-config:
+      id-type: auto
+      field-strategy: ignored
+      logic-delete-value: 0
+      logic-not-delete-value: 1
+      table-prefix:
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: true
+
+#pageHelper
+pagehelper:
+  helperDialect: mysql
+  reasonable: false
+  supportMethodsArguments: true
+  params: count=countSql
