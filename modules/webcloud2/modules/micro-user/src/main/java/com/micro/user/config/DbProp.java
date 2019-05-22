@@ -21,6 +21,8 @@ public class DbProp {
     //查询超时时间
     private int queryTimeout=60000;
 
+    private int timeBetweenEvictionRunsMillis=60000;
+
     private String driverClassName;
 
     private String url;
@@ -28,6 +30,8 @@ public class DbProp {
     private String username;
 
     private String password;
+
+    private String validationQuery;
 
     public String getDriverClassName() {
         return driverClassName;
@@ -92,6 +96,22 @@ public class DbProp {
 
     public void setQueryTimeout(int queryTimeout) {
         this.queryTimeout = queryTimeout;
+    }
+
+    public String getValidationQuery() {
+        return validationQuery;
+    }
+
+    public void setValidationQuery(String validationQuery) {
+        this.validationQuery = validationQuery;
+    }
+
+    public int getTimeBetweenEvictionRunsMillis() {
+        return timeBetweenEvictionRunsMillis;
+    }
+
+    public void setTimeBetweenEvictionRunsMillis(int timeBetweenEvictionRunsMillis) {
+        this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
     }
 
     public String toString() {

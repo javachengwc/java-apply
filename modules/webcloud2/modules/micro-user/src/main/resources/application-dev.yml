@@ -14,13 +14,6 @@ eureka:
 spring:
   application:
     name: micro-user
-#配置中心
-  cloud:
-    config:
-      name: micro-user
-      profile: dev
-      uri: http://localhost:8002/
-      label: master
 #数据库配置
   datasource:
       username: ${spring.datasource.username}

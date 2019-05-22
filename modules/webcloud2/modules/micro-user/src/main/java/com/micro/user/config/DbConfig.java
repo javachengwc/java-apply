@@ -30,8 +30,8 @@ public class DbConfig {
         ds.setMaxWait(dbConfig.getMaxWait());
         ds.setQueryTimeout(dbConfig.getQueryTimeout());
         ds.setTestWhileIdle(true);
-        ds.setValidationQuery("select 1");
-        ds.setTimeBetweenEvictionRunsMillis(30000);
+        ds.setValidationQuery(dbConfig.getValidationQuery());
+        ds.setTimeBetweenEvictionRunsMillis(dbConfig.getTimeBetweenEvictionRunsMillis());
         return ds;
     }
 

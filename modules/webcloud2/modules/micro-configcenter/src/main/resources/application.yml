@@ -17,7 +17,7 @@ spring:
       server:
         git:
           uri: https://github.com/javachengwc/config-repo.git
-          search-paths: config
+          search-paths: prop
           default-label: master
           username: xxx
           password: xxx

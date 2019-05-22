@@ -1,0 +1,7 @@
+spring:
+  cloud:
+    config:
+      name: microuser
+      profile: dev
+      uri: http://localhost:8002/
+      label: master
