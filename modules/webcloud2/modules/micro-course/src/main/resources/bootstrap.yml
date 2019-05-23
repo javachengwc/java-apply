@@ -1,0 +1,7 @@
+spring:
+  cloud:
+    config:
+      name: microcourse
+      profile: dev
+      uri: http://localhost:8002/
+      label: master

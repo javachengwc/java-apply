@@ -15,9 +15,6 @@
     <packaging>pom</packaging>
     <name>micro-parent</name>
 
-    <properties>
-        <spring-eureka.version>1.4.6.RELEASE</spring-eureka.version>
-    </properties>
 
     <dependencies>
         <dependency>
@@ -30,8 +27,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-eureka</artifactId>
-            <version>${spring-eureka.version}</version>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>

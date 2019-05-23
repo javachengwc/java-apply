@@ -13,8 +13,8 @@ create table user
    create_time datetime comment '创建时间',
    modified_time datetime comment '修改时间',
    PRIMARY KEY (id),
-   key name (name),
-   key mobile(mobile),
-   key reg_time(reg_time)
+   key idx_name (name),
+   key idx_mobile(mobile),
+   key idx_reg_time(reg_time)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 comment '用户表';
 

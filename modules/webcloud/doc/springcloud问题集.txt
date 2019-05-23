@@ -20,4 +20,8 @@ Eureka Server会将当前的实例注册信息保护起来，同时提示这个�
 解决方法:关闭自我保护,
 eureka.server.enable-self-preservation=false
 eureka.server.eviction-interval-timer-in-ms=20000
+
+3,项目中同时存在spring cloud Feign 与 swagger2 时，导致feign注入失败，报错:
+FactoryBean threw exception on object creation; nested exception is java.lang.NullPointerException
+原因是:swagger2的版本太低了，调整成2.5及之上版本就行
 -------------------------------------------------------------------------------
