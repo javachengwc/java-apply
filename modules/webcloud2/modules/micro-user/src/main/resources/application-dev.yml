@@ -10,6 +10,14 @@ eureka:
     lease-renewal-interval-in-seconds: 10
     lease-expiration-duration-in-seconds: 15
 
+#actuator
+management:
+  security:
+    enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: ["health","info","beans","configprops","env","heapdump","threaddump","mappings","loggers","refresh"]
 
 spring:
   application:

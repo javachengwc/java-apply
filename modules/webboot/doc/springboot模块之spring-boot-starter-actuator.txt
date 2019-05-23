@@ -120,4 +120,20 @@ public class ListEndpoint extends AbstractEndpoint<List<Endpoint>> {
         return this.endpoints;
     }
 }
+
+spring-boot-starter-actuator2.X的变化
+2.X 比1.X 多了一个根路径: /actuator 。当然可以通过management.endpoints.web.base-path 设置一个根节点。
+如设置management.server.servlet.context-path=/management和management.endpoints.web.base-path=/application，
+就可以在下面的路径到达终点健康：/management/application/health 。注意context-path只有在设置了 management.server.port 时才有效。
+
+2.X中一些端点发生了变化
+/autoconfig -> 更名为 /conditions
+/trace -> 更名为 /httptrace
+/dump -> 更名为 /threaddump
+
+2.X默认加载的API为/actuator/info,/actuator/health,/actuator,也就是默认的配置为management.endpoints.web.exposure.include= ["health","info"]
+需要修改加载的API,可自配置management.endpoints.web.exposure.include，比如:
+management.endpoints.web.exposure.include=["health","info","beans","configprops","env","heapdump","threaddump","mappings","loggers","refresh"]
+management.endpoint.health.show-details=always         ###表示health接口返回的内容包含详情
+
 ---------------------------------------------------------------
