@@ -1,8 +1,12 @@
 package com.micro.course.controller;
 
 import com.micro.course.model.pojo.Course;
+import com.micro.course.model.vo.CourseQueryVo;
 import com.micro.course.model.vo.CourseVo;
+import com.micro.course.model.vo.UserCourseQueryVo;
+import com.micro.course.model.vo.UserCourseVo;
 import com.micro.course.service.CourseService;
+import com.shop.base.model.Page;
 import com.shop.base.model.Req;
 import com.shop.base.model.Resp;
 import com.shop.base.model.RespHeader;
@@ -37,6 +41,17 @@ public class CourseController {
         Course course = courseService.getById(courseId);
         CourseVo courseVo = TransUtil.transEntity(course,CourseVo.class);
         resp.setData(courseVo);
+        return resp;
+    }
+
+    @ApiOperation(value = "分页查询课程", notes = "分页查询课程")
+    @RequestMapping(value = "/queryPage", method = RequestMethod.POST)
+    public Resp<Page<CourseVo>> queryPage(@RequestBody Req<CourseQueryVo> req) {
+        Resp<Page<CourseVo>> resp = new Resp<Page<CourseVo>>();
+        CourseQueryVo queryVo = req.getData();
+        queryVo.genPage();
+        Page<CourseVo> page = courseService.queryPage(queryVo);
+        resp.setData(page);
         return resp;
     }
 }

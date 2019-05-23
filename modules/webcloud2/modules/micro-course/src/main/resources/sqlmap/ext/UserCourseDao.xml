@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.course.dao.UserCourseDao">
+
+    <resultMap id="UserCourseMap" type="com.micro.course.model.vo.UserCourseVo" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="user_id" property="userId" jdbcType="BIGINT" />
+        <result column="user_name" property="userName" jdbcType="VARCHAR" />
+        <result column="course_id" property="courseId" jdbcType="BIGINT" />
+        <result column="course_name" property="courseName" jdbcType="VARCHAR" />
+        <result column="course_item_id" property="courseItemId" jdbcType="BIGINT" />
+        <result column="teacher_name" property="teacherName" jdbcType="VARCHAR" />
+        <result column="statu" property="statu" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <select id="queryPage" resultMap="UserCourseMap">
+        select uc.id,uc.user_id,uc.user_name,uc.course_id,uc.course_name,uc.course_item_id,uc.create_time,
+          c.teacher_name,c.statu
+        from user_course uc
+        join course c on uc.course_id= c.id
+        <where>
+            <if test="userId != null ">
+                uc.user_id = #{userId}
+            </if>
+            <if test="userName != null and userName != '' ">
+                uc.user_name = #{userName}
+            </if>
+            <if test="courseName != null and courseName != '' ">
+                and uc.course_name = #{courseName}
+            </if>
+            <if test="teacherName != null and teacherName != '' ">
+                and c.teacher_name = #{teacherName}
+            </if>
+            <if test="statu != null ">
+                and c.statu = #{statu}
+            </if>
+        </where>
+        order by uc.id desc
+    </select>
+
+</mapper>
