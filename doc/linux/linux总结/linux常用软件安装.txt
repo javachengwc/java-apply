@@ -49,6 +49,8 @@ wget --user-agent="Mozilla/5.0 Chrome..." http://www.cc.com/cc.zip
   source /etc/profile
   java -version
 
+或者直接下载rpm包，比如jdk-8u201-linux-x64.rpm
+然后 rpm -ivh jdk-8u201-linux-x64.rpm即可
 ---------------maven
 在http://maven.apache.org/download.cgi下载apache-maven-3.3.9-bin.tar.gz
 tar -zxvf apache-maven-3.3.9-bin.tar.gz

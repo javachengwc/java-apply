@@ -1,0 +1,57 @@
+-----------------------------------------linux下nfs服务安装配置---------------------------------------
+nfs就是Network File System的缩写，它最大的功能就是可以通过网络，让不同的机器、不同的操作系统可以共享彼此的文件。
+nfs依赖的程序，分别是：
+RPC 主程序：rpcbind
+    nfs可以被视为一个 RPC 服务，而要启动任何一个 RPC 服务之前，都需要做好 port 的对应 (mapping) 的工作才行，这个工作就是rpcbind服务所负责的。
+NFS 主程序：nfs-utils
+    nfs-utils就是提供 rpc.nfsd 及 rpc.mountd 这两个NFS daemons与其他相关documents与说明文件、执行文件等的软件，这个就是 NFS 服务所需要的主要软件。
+
+/etc/exports             ### NFS的主要配置文件
+/var/lib/nfs/*tab        ###分享资源的登录档
+/usr/sbin/exportfs       ###维护 NFS 分享资源的指令
+/usr/sbin/showmount      ###客户端查询服务器分享资源的指令
+
+nfs的安装:
+rpm -qa nfs-utils
+rpm -qa rpcbind          ###查看是否安装nfs,rpcbind
+yum -y install nfs-utils rpcbind          ###安装nfs
+
+nfs服务端设置(假设ip为192.168.1.6)
+vim /etc/exports         ###配置共享的文件
+    /data/upload 192.168.1.0/24(rw,no_root_squash,no_all_squash,sync)
+exportfs -r              ###配置生效
+service rpcbind start    ###启动rpcbind服务
+service nfs start        ###启动nfs服务
+
+rpcinfo -p localhost     ###查看RPC服务的注册状况
+选项与参数：
+-p:针对某 IP (未写则预设为本机) 显示出所有的 port 与 porgram 的信息；
+-t:针对某主机的某支程序检查其 TCP 封包所在的软件版本；
+-u:针对某主机的某支程序检查其 UDP 封包所在的软件版本；
+
+showmount -e localhost  ###自测是否可联机,-a:显示目前主机与客户端的NFS联机分享的状态；-e:显示某部主机的/etc/exports所分享的目录数据。
+
+nfs客户机只需安装nfs-utils即可
+nfs客户端设置(假设ip为192.168.1.5)
+mkdir -p /data/upload
+mount -t nfs 192.168.1.6:/data/upload /data/upload -o proto=tcp -o nolock        ###挂载nfs分享文件,就可访问了
+df -h                                                                            ###可看到挂在的共享文件
+umount /data/upload                                                              ###卸载已挂的nfs
+
+NFS启动时会随机启动多个端口并向RPC注册，如果使用iptables对NFS端口进行限制就会有点麻烦，可以更改配置文件固定NFS服务相关端口。
+vim /etc/sysconfig/nfs
+    RQUOTAD_PORT=30001
+    LOCKD_TCPPORT=30002
+    LOCKD_UDPPORT=30002
+    MOUNTD_PORT=30003
+    STATD_PORT=30004
+service nfs restart                  ###重启nfs
+rpcinfo -p localhost                 ###查看在rpc上注册的端口
+
+centos 7中设置静态的nlockmgr,无论是修改LOCKD_TCPPORT,还是修改/etc/modprobe.d/nfs 的option lockd都无效,
+需在sysctl中新增
+    fs.nfs.nlm_udpport=32768
+    fs.nfs.nlm_tcpport=32768
+    fs.nfs.nfs_callback_tcpport=32764
+重启nfs服务即可
+------------------------------------------------------------------------------------------------------
