@@ -5,8 +5,8 @@
   ssh -p 22 root@${vars.getValue("env")=="prod"?vars.getValue("host_prod"):vars.getValue(vars.getValue("ivt_machine"))} 'mkdir -p /opt/${vars.getValue("pname")}'
   scp -P 22 ${vars.getValue("service_name")}-${build.version}-assembly.tar.gz root@${vars.getValue("env")=="prod"?vars.getValue("host_prod"):vars.getValue(vars.getValue("ivt_machine"))}:/opt/${vars.getValue("pname")}/
   ssh -p 22 root@${vars.getValue("env")=="prod"?vars.getValue("host_prod"):vars.getValue(vars.getValue("ivt_machine"))} 'systemctl stop ${vars.getValue("service_name")}.service;rm -rf /opt/${vars.getValue("pname")}/${vars.getValue("service_name")};mkdir -p /opt/${vars.getValue("pname")}/${vars.getValue("service_name")};tar xzf /opt/${vars.getValue("pname")}/${vars.getValue("service_name")}-${build.version}-assembly.tar.gz --strip-components=1 -C /opt/${vars.getValue("pname")}/${vars.getValue("service_name")};chown -R ccc:ccc /opt/${vars.getValue("pname")}/${vars.getValue("service_name")};
- systemctl start ${vars.getValue("service_name")}.service
-或则
+  systemctl start ${vars.getValue("service_name")}.service
+  或则
   ssh -p 22 root@${vars.getValue("env")=="prod"?vars.getValue("host_prod"):vars.getValue(vars.getValue("ivt_machine"))} 'mkdir -p /opt/${vars.getValue("pname")}'
   scp -P 22 ${configuration.name}-${build.version}-assembly.tar.gz root@${vars.getValue("env")=="prod"?vars.getValue("host_prod"):vars.getValue(vars.getValue("ivt_machine"))}:/opt/${vars.getValue("pname")}/
   ssh -p 22 root@${vars.getValue("env")=="prod"?vars.getValue("host_prod"):vars.getValue(vars.getValue("ivt_machine"))} 'systemctl stop ${configuration.name}.service;rm -rf /opt/${vars.getValue("pname")}/${configuration.name};mkdir -p /opt/${vars.getValue("pname")}/${configuration.name};tar xzf /opt/${vars.getValue("pname")}/${configuration.name}-${build.version}-assembly.tar.gz --strip-components=1 -C /opt/${vars.getValue("pname")}/${configuration.name};chown -R ccc:ccc /opt/${vars.getValue("pname")}/${configuration.name};systemctl start ${configuration.name}.service'

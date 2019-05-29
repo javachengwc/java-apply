@@ -8,3 +8,7 @@
   ssh root@192.168.10.200 'mkdir -p /data/build/xxx;rm -rf /data/build/xxx/*'
   scp -rp ./target/*.jar root@192.168.10.200:/data/build/xxx
   ssh root@192.168.10.200 'nohup java -jar /data/build/xxx/xxx.jar &'
+  或者
+  ssh root@192.168.10.200 'systemctl stop xxx.service;mkdir -p /data/build/xxx;rm -rf /data/build/xxx/*'
+  scp -rp ./target/*.jar root@192.168.10.200:/data/build/xxx
+  ssh root@192.168.10.200 'systemctl start xxx.service'
