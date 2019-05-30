@@ -1,0 +1,7 @@
+#spring:
+#  cloud:
+#    config:
+#      name: microstore
+#      profile: dev
+#      uri: http://localhost:8002/
+#      label: master

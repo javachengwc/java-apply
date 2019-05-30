@@ -1,5 +1,5 @@
 server:
-  port: 8006
+  port: 8008
 
 #注册中心
 eureka:
@@ -7,8 +7,15 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:8000/eureka
   instance:
+    prefer-ip-address: true
     lease-renewal-interval-in-seconds: 10
     lease-expiration-duration-in-seconds: 15
+
+#负载均衡
+ribbon:
+  MaxAutoRetries: 0
+  MaxAutoRetriesNextServer: 0
+  OkToRetryOnAllOperations: false
 
 #actuator
 management:
@@ -21,28 +28,28 @@ management:
 
 spring:
   application:
-    name: micro-user
+    name: micro-order
 #数据库配置
   datasource:
-      username: ${spring.datasource.username}
-      password: ${spring.datasource.password}
-      driver-class-name: ${spring.datasource.driver-class-name}
-      url: ${spring.datasource.url}
-      type: ${spring.datasource.type}
-      initialSize: ${spring.datasource.initialSize}
-      minIdle: ${spring.datasource.minIdle}
-      maxActive: ${spring.datasource.maxActive}
-      maxWait: ${spring.datasource.maxWait}
-      timeBetweenEvictionRunsMillis: ${spring.datasource.timeBetweenEvictionRunsMillis}
-      minEvictableIdleTimeMillis: ${spring.datasource.minEvictableIdleTimeMillis}
-      validationQuery: ${spring.datasource.validationQuery}
-      testWhileIdle: ${spring.datasource.testWhileIdle}
-      testOnBorrow: ${spring.datasource.testOnBorrow}
-      testOnReturn: ${spring.datasource.testOnReturn}
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/micro_order?characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false
+      username: root
+      password: root
+      type: com.alibaba.druid.pool.DruidDataSource
+      initialSize: 5
+      minIdle: 5
+      maxActive: 20
+      maxWait: 60000
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 60000
+      validationQuery: select 1
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
 
 #mybatisplus插件
 mybatis-plus:
-  typeAliasesPackage: com.micro.user.model
+  typeAliasesPackage: com.micro.order.model
   mapper-locations: classpath*:sqlmap/**/**.xml
   global-config:
     db-config:

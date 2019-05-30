@@ -8,9 +8,9 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <groupId>com.micro</groupId>
-    <artifactId>micro-user</artifactId>
+    <artifactId>micro-order</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <name>micro-user</name>
+    <name>micro-order</name>
 
     <dependencies>
         <dependency>

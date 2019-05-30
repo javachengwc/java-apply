@@ -16,6 +16,8 @@
 		<module>modules/micro-gateway</module>
 		<module>modules/micro-configcenter</module>
 		<module>modules/micro-user</module>
+		<module>modules/micro-order</module>
+		<module>modules/micro-store</module>
 		<module>modules/micro-course</module>
 		<module>modules/micro-sidecar</module>
 	</modules>	
