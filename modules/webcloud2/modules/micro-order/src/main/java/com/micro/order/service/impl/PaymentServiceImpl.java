@@ -1,6 +1,5 @@
 package com.micro.order.service.impl;
 
-import com.micro.order.dao.mapper.ShopOrderMapper;
 import com.micro.order.enums.OrderStatuEnum;
 import com.micro.order.model.pojo.ShopOrder;
 import com.micro.order.model.third.GoodsStockReq;

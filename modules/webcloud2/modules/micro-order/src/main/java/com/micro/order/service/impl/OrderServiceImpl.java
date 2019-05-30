@@ -2,6 +2,7 @@ package com.micro.order.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.micro.order.dao.mapper.ShopOrderMapper;
+import com.micro.order.dao.plus.ShopOrderPlusMapper;
 import com.micro.order.enums.OrderStatuEnum;
 import com.micro.order.model.pojo.ShopOrder;
 import com.micro.order.model.pojo.ShopOrderExample;
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 
 @Service
-public class OrderServiceImpl extends ServiceImpl<ShopOrderMapper, ShopOrder> implements OrderService {
+public class OrderServiceImpl extends ServiceImpl<ShopOrderPlusMapper, ShopOrder> implements OrderService {
 
     private static Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 

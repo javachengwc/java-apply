@@ -57,7 +57,7 @@ public class GoodsController {
         GoodsStockReq goodsStockReq = req.getData();
         Long goodsId = goodsStockReq==null?null:goodsStockReq.getGoodsId();
         Integer count = goodsStockReq==null?null:goodsStockReq.getCount();
-        logger.info("UserWalletController decreaseStock start,goodsId={},count={}",goodsId,count);
+        logger.info("GoodsController decreaseStock start,goodsId={},count={}",goodsId,count);
         if(goodsId==null || count==null) {
             resp.getHeader().setCode(RespHeader.FAIL);
             resp.getHeader().setMsg("参数校验错误");

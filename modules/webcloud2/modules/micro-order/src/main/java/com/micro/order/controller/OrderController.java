@@ -15,8 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-
 
 @Api("订单接口")
 @RequestMapping("/order")
@@ -61,6 +59,7 @@ public class OrderController {
         }
         try {
             ShopOrder order = orderService.order(orderReq);
+            logger.info("OrderController order info ,orderId={}",order.getId());
             OrderVo orderVo = TransUtil.transEntity(order, OrderVo.class);
             resp.setData(orderVo);
             return resp;
