@@ -18,3 +18,17 @@ create table user
    key idx_reg_time(reg_time)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 comment '用户表';
 
+create table user_wallet
+(
+   id  bigint AUTO_INCREMENT comment '自增长id',
+   user_id bigint comment '用户id',
+   user_name varchar(20) comment '用户姓名',
+   user_mobile varchar(11) comment '用户手机号',
+   amount bigint default 0 comment '金额',
+   freeze_amount bigint default 0 comment '冻结金额',
+   create_time datetime comment '创建时间',
+   modified_time datetime comment '修改时间',
+   PRIMARY KEY (id),
+   key idx_user (user_id),
+   key idx_mobile(user_mobile)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 comment '用户钱包表';
