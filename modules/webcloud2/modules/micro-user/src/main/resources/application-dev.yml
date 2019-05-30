@@ -7,8 +7,15 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:8000/eureka
   instance:
+    prefer-ip-address: true
     lease-renewal-interval-in-seconds: 10
     lease-expiration-duration-in-seconds: 15
+
+#负载均衡
+ribbon:
+  MaxAutoRetries: 0
+  MaxAutoRetriesNextServer: 0
+  OkToRetryOnAllOperations: false
 
 #actuator
 management:
