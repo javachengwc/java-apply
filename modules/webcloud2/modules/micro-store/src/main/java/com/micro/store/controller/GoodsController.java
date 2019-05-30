@@ -1,6 +1,7 @@
 package com.micro.store.controller;
 
 import com.micro.store.model.pojo.Goods;
+import com.micro.store.model.req.GoodsStockReq;
 import com.micro.store.model.vo.GoodsVo;
 import com.micro.store.service.GoodsService;
 import com.shop.base.model.Req;
@@ -9,6 +10,8 @@ import com.shop.base.model.RespHeader;
 import com.shop.base.util.TransUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/goods")
 @RestController
 public class GoodsController {
+
+    private static Logger logger= LoggerFactory.getLogger(GoodsController.class);
 
     @Autowired
     private GoodsService goodsService;
@@ -42,6 +47,23 @@ public class GoodsController {
         }
         GoodsVo goodsVo = TransUtil.transEntity(goods,GoodsVo.class);
         resp.setData(goodsVo);
+        return resp;
+    }
+
+    @ApiOperation(value = "减少商品库存", notes = "减少商品库存")
+    @RequestMapping(value = "/decreaseStock", method = RequestMethod.POST)
+    public Resp<Void> decreaseStock(@RequestBody Req<GoodsStockReq> req) {
+        Resp<Void> resp = new Resp<Void>();
+        GoodsStockReq goodsStockReq = req.getData();
+        Long goodsId = goodsStockReq==null?null:goodsStockReq.getGoodsId();
+        Integer count = goodsStockReq==null?null:goodsStockReq.getCount();
+        logger.info("UserWalletController decreaseStock start,goodsId={},count={}",goodsId,count);
+        if(goodsId==null || count==null) {
+            resp.getHeader().setCode(RespHeader.FAIL);
+            resp.getHeader().setMsg("参数校验错误");
+            return resp;
+        }
+        goodsService.decreaseStock(goodsStockReq);
         return resp;
     }
 }
