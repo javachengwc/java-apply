@@ -26,7 +26,11 @@ management:
       exposure:
         include: ["health","info","beans","configprops","env","heapdump","threaddump","mappings","loggers","refresh"]
 
+#spring.jackson.format在springboot2.X中不生效，只有继承WebMvcConfigurationSupport进行扩展
 spring:
+  jackson:
+    date-format: "yyyy-MM-dd HH:mm:ss"
+    time-zone: GMT+8
   application:
     name: micro-user
 #数据库配置
