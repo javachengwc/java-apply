@@ -7,6 +7,5 @@ import org.dromara.hmily.annotation.Hmily;
 
 public interface UserWalletService extends IService<UserWallet> {
 
-    @Hmily
     public boolean decreaseAmount(UserWalletReq userWalletReq);
 }

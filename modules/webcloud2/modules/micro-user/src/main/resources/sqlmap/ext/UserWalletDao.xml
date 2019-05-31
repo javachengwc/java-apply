@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.micro.user.dao.ext.UserWalletDao" >
+
+    <update id="decreaseAmount" >
+        update user_wallet
+        set amount = amount-#{amount},freeze_amount = freeze_amount+#{amount}
+        where user_id=#{userId}
+    </update>
+
+    <update id="decLockAmount" >
+        update user_wallet
+        set freeze_amount = freeze_amount-#{amount}
+        where user_id=#{userId}
+    </update>
+
+    <update id="backAmount" >
+        update user_wallet
+        set amount = amount+#{amount},freeze_amount = freeze_amount-#{amount}
+        where user_id=#{userId}
+    </update>
+
+</mapper>

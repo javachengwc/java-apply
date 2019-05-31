@@ -7,6 +7,6 @@ import org.dromara.hmily.annotation.Hmily;
 
 public interface GoodsService extends IService<Goods> {
 
-    @Hmily
+    //@Hmily,这里不用加注解@Hmily,具体实现方法中加此注解即可
     public boolean decreaseStock(GoodsStockReq goodsStockReq);
 }
