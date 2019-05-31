@@ -8,12 +8,25 @@ mysql> show binlog events in 'mysql-bin.000002'
 mysqlbinlog mysql_bin.000001
 mysqlbinlog D:\mysqlquery\mysql-bin.000005 > D:\log.txt  报错的话，可用
 mysqlbinlog --no-defaults D:\mysqlquery\mysql-bin.000005 > D:\log.txt 试一下
+mysqlbinlog -v --base64-output=decode-rows mysql-bin.000689 > 689.log    ###阿里云rds中的二进制日志转换
 
 --根据二进制文件恢复误删除数据
 --根据操作点恢复
 mysqlbinlog --start-position=2568 --stop-position=2703 D:\mysqlquery\mysql-bin.000005 |mysql -uroot -proot
 --根据时间恢复
 mysqlbinlog --start-date="2015-01-01 00:00:00" --stop-date="2015-01-31 00:00:00" D:\mysqlquery\mysql-bin.000005|mysql -uroot -proot
+
+mysqlbinlog 命令格式：
+mysqlbinlog binlog_file1 binlog_file2 ... binlog_filen --start-position=xxxx  --stop-datetime="YY-mm-dd hh:mm:ss" | mysql -uroot -pyour_password -Pmysql_port -hyour_host_ip
+比如多二进制文件恢复:mysqlbinlog mysql-bin.000688 mysql-bin.000689 --start-position=531167  --stop-datetime="16-05-16 18:05:03" | mysql -uroot -pyour_password -P3306 -hyour_host_ip
+# -p 参数和 your_password 间不要有空格
+# --database db_name 指定仅增量恢复指定数据库 db_name 的数据
+# --start-position 指定开始恢复的 binlog 位点，该位点应存在于指定的第一个 binlog 文件。
+# --stop-position 指定恢复到的 binlog 位点，该位点应存在于指定的最后一个 binlog 文件。
+# --start-datetime 指定开始恢复的时间点（从第一个等于或大于该时间点的 binlog 事件开始）。
+# 以本地时间时区为准，格式为 MySQL 可以接受的时间格式，比如"2016-05-16 08:01:05" 或 "16-05-16 08:01:05"。
+# --stop-datetime 指定停止恢复的时间点（在第一个等于或大于该时间点的 binlog 事件停止）。
+# 以本地时间时区为准，格式为 MySQL 可以接受的时间格式，比如"2016-05-16 08:01:05" 或 "16-05-16 08:01:05"。
 
 二进制记录了对数据库执行更改的所有操作，但是不包括SELECT和SHOW操作，还包括了执行时间和更改操作时间。可用来恢复某些数据，同时也可以用来复制同步远程数据库。
 binlog-format：日志格式，有statement、row、mixed格式。将binlog_format设置成row，可以支持事务隔离级别为READ COMMITTED，以获得更好的并发性。
