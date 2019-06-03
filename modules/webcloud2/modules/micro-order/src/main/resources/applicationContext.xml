@@ -25,11 +25,11 @@
         <property name="started" value="true"/>
         <property name="hmilyDbConfig">
             <bean class="org.dromara.hmily.common.config.HmilyDbConfig">
-                <property name="url"
-                          value="jdbc:mysql://localhost:3306/tcc?useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false"/>
-                <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-                <property name="username" value="root"/>
-                <property name="password" value="root"/>
+                <!--<property name="url" value="jdbc:mysql://localhost:3306/tcc?useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false"/>-->
+                <property name="url" value="${org.dromara.hmily.hmilyDbConfig.url}"/>
+                <property name="driverClassName" value="${org.dromara.hmily.hmilyDbConfig.driverClassName}"/>
+                <property name="username" value="${org.dromara.hmily.hmilyDbConfig.username}"/>
+                <property name="password" value="${org.dromara.hmily.hmilyDbConfig.password}"/>
             </bean>
         </property>
     </bean>

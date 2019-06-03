@@ -8,4 +8,10 @@ spring中有三种注入方式，一种是set注入，一种是接口注入，�
 
 AOP模块：Aop是横切逻辑编程的思想。spring提供了满足Aop Alliance规范的实现，还整合了AspectJ这种AOP语言级的框架。
 
+spring的IOC依赖注入
+@Autowired按byType自动注入。
+@Resource默认按byName自动注入。
+但是@Resource有两个属性是比较重要的，分是name和type；
+如果使用name属性，则使用byName的自动注入策略，而使用type属性时则使用byType自动注入策略;
+@Autowired是spring自己定义的注解，@Resource是J2EE的，由JSR-250规范定义。
 -----------------------------------------------------------------------
