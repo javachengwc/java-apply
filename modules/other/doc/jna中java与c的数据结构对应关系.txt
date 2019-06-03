@@ -10,7 +10,8 @@ float                            float                                    32-bit
 double                           double                                   64-bit floating point
 Buffer Pointer                   pointer                                  platform-dependent (32- or 64-bit pointer to memory)
 <T>[] (array of primitive type)  pointer array                            32- or 64-bit pointer to memory (argument/return) ,contiguous memory (struct member)
-String                           char*                                    NUL-terminated array (native encoding or jna.encoding)
+String                           char*
+byte[]                           char*
 String[]                         char**                                   NULL-terminated array of C strings
 Structure                        struct*,struct                           pointer to struct (argument or return) (or explicitly) ,struct by value (member of struct) (or explicitly)
 Union                            union                                    same as Structure
