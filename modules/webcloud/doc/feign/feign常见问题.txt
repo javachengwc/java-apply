@@ -1,0 +1,27 @@
+------------------------------------feign常见问题-----------------------------------------
+1,远程接口方法参数是从请求路径获取，在feign中可能获取不到，抛异常，例子如下:
+    @GetMapping("/info/{id}")
+    public User findById(@PathVariable Long id);
+    异常信息:
+    Caused by: java.lang.IllegalStateException: PathVariable annotation was empty on param 0
+    需要调整成:
+    @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
+    public User findById(@PathVariable("id") Long id);
+@GetMapping与@RequestMapping...这两个注解的效果是等价的，但是在Feign使用中，只能用上面的那种方式，不能直接用@GetMapping。
+
+2,远程接口方法多参数情况下，feign可能报错，例子如下:
+    @RequestMapping(value="/user/name", method=RequestMethod.GET)
+    public User findUser(String userName,String address);
+    异常信息:
+    Caused by:java.lang.IllegalStateException: Method has too many Body parameters
+    需要调整成:
+    @RequestMapping(value="/user/name", method=RequestMethod.GET)
+    public User findUser(@RequestParam("userName") String userName, @RequestParam("address") String address);
+    通个注解@RequestParam来具体指定参数。
+    这里如果只用注解指定部分参数，而没有全部注解参数，比如:
+    @RequestMapping(value="/user/name", method=RequestMethod.GET)
+    public User findUser(String userName, @RequestParam("address") String address);
+    也会抛异常，异常信息:Request method 'POST' not supported
+    原因是当userName没有被@RequestParam注解修饰时，会自动被当做request body来处理。只要有body，就会被feign认为是post请求，
+    所以整个服务是被当作带有request parameter和body的post请求发送出去的。
+------------------------------------------------------------------------------------------
