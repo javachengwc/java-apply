@@ -1,0 +1,21 @@
+--------------------------------jna中java与c的数据结构对应关系-----------------------------------
+Java Type                        C Type                                   Native Representation
+boolean                          int                                      32-bit integer (customizable)
+byte                             char                                     8-bit integer
+char                             wchar_t                                  platform-dependent
+short                            short                                    16-bit integer
+int                              int                                      32-bit integer
+long                             long, __int64                            64-bit integer
+float                            float                                    32-bit floating point
+double                           double                                   64-bit floating point
+Buffer Pointer                   pointer                                  platform-dependent (32- or 64-bit pointer to memory)
+<T>[] (array of primitive type)  pointer array                            32- or 64-bit pointer to memory (argument/return) ,contiguous memory (struct member)
+String                           char*                                    NUL-terminated array (native encoding or jna.encoding)
+String[]                         char**                                   NULL-terminated array of C strings
+Structure                        struct*,struct                           pointer to struct (argument or return) (or explicitly) ,struct by value (member of struct) (or explicitly)
+Union                            union                                    same as Structure
+Structure[]                      struct[]                                 array of structs, contiguous in memory
+Callback                         <T> (*fp)()                              function pointer (Java or native)
+NativeMapped                     varies                                   depends on definition
+PointerType                      pointer                                  same as Pointer
+-------------------------------------------------------------------------------------------------
