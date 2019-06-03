@@ -79,7 +79,7 @@ org:
             scheduledDelay : 128
             scheduledThreadMax :  10
             repositorySupport : db
-            started: false
+            started: true
             hmilyDbConfig :
                  driverClassName  : com.mysql.jdbc.Driver
                  url :  jdbc:mysql://localhost:3306/tcc?useUnicode=true&characterEncoding=utf8&useSSL=false

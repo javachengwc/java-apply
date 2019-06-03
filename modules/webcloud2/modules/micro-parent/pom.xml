@@ -16,7 +16,7 @@
     <name>micro-parent</name>
 
     <properties>
-        <hmily.version>2.0.4-RELEASE</hmily.version>
+        <hmily.version>2.0.0-RELEASE</hmily.version>
         <swagger.version>2.7.0</swagger.version>
         <lombok.version>1.18.4</lombok.version>
     </properties>
