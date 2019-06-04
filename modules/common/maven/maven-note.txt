@@ -52,5 +52,18 @@ ${project.groupId}:项目的groupId
 ${project.artifactId}:项目的artifactId
 ${project.version}:项目的version,于${version}等价
 ${project.build.finalName}:项目打包输出文件的名称，默认为${project.artifactId}${project.version}
---------------------------------------------------
+
+------------------------------------------------------
+maven配置pom.xml或settings.xml中的元素说明
+1,元素标签optional的作用,不如项目A的pom依赖包含如下
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-devtools</artifactId>
+    <!-- 防止将devtools依赖传递到其他模块中 -->
+    <optional>true</optional>
+</dependency>
+当其他项目通过pom依赖项目A的时候，spring-boot-devtools不会被传递依赖进来
+当依赖某工程很庞大或很可能与自身或其他工程的jar包有冲突的时候建议加上该选项,减少依赖冲突
+
+------------------------------------------------------
 
