@@ -3,18 +3,43 @@ zuul:
   sensitive-headers: "*"
   routes:
     userserv:
-      serviceId: userserv
-      path: /userserv/**
+      serviceId: micro-user
+      path: /user/**
     oauthserv:
-      serviceId: oauthserv
-      path: /oauthserv/**
+      serviceId: micro-order
+      path: /order/**
     demoserv:
-      serviceId: demoserv
-      path: /demoserv/**
+      serviceId: micro-store
+      path: /store/**
+
+#网关超时，重试
+ribbon:
+  OkToRetryOnAllOperations: false
+  ReadTimeout: 10000
+  ConnectTimeout: 2000
+  MaxAutoRetries: 0
+  MaxAutoRetriesNextServer: 0
+#micro-user的网关超时单独设置
+micro-user:
+  ribbon:
+    ReadTimeout: 2000
+    ConnectTimeout: 1000
+    MaxTotalHttpConnections: 200
+    MaxConnectionsPerHost: 50
+
+#熔断超时(默认hystrix超时30000ms,micro-user服务hystrix超时2000ms)
 hystrix:
   command:
-    default:
+    micro-user:
       execution:
         isolation:
           thread:
+            timeoutInMilliseconds: 2000
+    default:
+      execution:
+        timeout:
+          enabled: true
+        isolation:
+          thread:
             timeoutInMilliseconds: 30000
+
