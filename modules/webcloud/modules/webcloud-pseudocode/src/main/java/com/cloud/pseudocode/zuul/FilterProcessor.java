@@ -1,14 +1,12 @@
 package com.cloud.pseudocode.zuul;
 
-import com.cloud.pseudocode.other.DynamicCounter;
 import com.cloud.pseudocode.zuul.context.Debug;
 import com.cloud.pseudocode.zuul.context.RequestContext;
 import com.cloud.pseudocode.zuul.exception.ZuulException;
+import com.netflix.servo.monitor.DynamicCounter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 public class FilterProcessor {
