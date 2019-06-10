@@ -8,7 +8,7 @@
     <transactionManager type="JDBC" commitRequired="true">
         <dataSource type="SIMPLE">
             <property name="JDBC.Driver" value="com.mysql.jdbc.Driver"/>
-            <property name="JDBC.ConnectionURL" value="jdbc:mysql://127.0.0.1:3306/rule?setUnicode=true&amp;characterEncoding=UTF-8"/>
+            <property name="JDBC.ConnectionURL" value="jdbc:mysql://127.0.0.1:3306/rule?setUnicode=true&amp;characterEncoding=UTF8"/>
             <property name="JDBC.Username" value="root"/>
             <property name="JDBC.Password" value="root"/>
             <property name="Pool.MaximumActiveConnections" value="5"/>

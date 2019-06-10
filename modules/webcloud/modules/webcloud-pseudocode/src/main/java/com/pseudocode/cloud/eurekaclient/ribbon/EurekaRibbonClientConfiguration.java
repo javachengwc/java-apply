@@ -1,5 +1,6 @@
 package com.pseudocode.cloud.eurekaclient.ribbon;
 
+import com.pseudocode.cloud.ribbon.RibbonUtils;
 import com.pseudocode.cloud.ribbon.ServerIntrospector;
 import com.pseudocode.netflix.ribbon.core.client.config.IClientConfig;
 import com.pseudocode.netflix.ribbon.loadbalancer.server.ServerList;

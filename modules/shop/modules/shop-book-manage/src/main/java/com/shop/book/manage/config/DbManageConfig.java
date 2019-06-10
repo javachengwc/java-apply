@@ -6,6 +6,8 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,10 +16,13 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
+import java.util.Properties;
 
 @Configuration
 @MapperScan(basePackages = {"com.shop.book.manage.dao.manage"}, sqlSessionFactoryRef = "manageSqlSessionFactory")
 public class DbManageConfig {
+
+    private static Logger logger= LoggerFactory.getLogger(DbManageConfig.class);
 
     public static final String MANAGE_TRANSACTION_MANAGER_NAME = "manageTransactionManager";
 
@@ -26,6 +31,7 @@ public class DbManageConfig {
     public DataSource manageDS(DbConfig dbConfig) {
         DruidDataSource ds = new DruidDataSource();
         ds.setDriverClassName(dbConfig.getManage().getDriverClassName());
+        logger.info("DbManageConfig manageDS url={}",dbConfig.getManage().getUrl());
         ds.setUrl(dbConfig.getManage().getUrl());
         ds.setUsername(dbConfig.getManage().getUsername());
         ds.setPassword(dbConfig.getManage().getPassword());
@@ -36,6 +42,10 @@ public class DbManageConfig {
         ds.setTestWhileIdle(true);
         ds.setValidationQuery("select 1");
         ds.setTimeBetweenEvictionRunsMillis(30000);
+//        Properties properties = new Properties();
+//        properties.put("useUnicode","true");
+//        properties.put("characterEncoding","utf8");
+//        ds.setConnectProperties(properties);
         return ds;
     }
 
