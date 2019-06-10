@@ -68,6 +68,11 @@
             <artifactId>commons-configuration</artifactId>
             <version>1.8</version>
         </dependency>
+        <dependency>
+            <groupId>com.netflix.eureka</groupId>
+            <artifactId>eureka-client</artifactId>
+            <version>RELEASE</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>

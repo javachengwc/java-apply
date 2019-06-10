@@ -25,12 +25,12 @@ ribbon负载均衡配置
 
 ribbon.ConnectionTimeout=500       #连接超时时间
 ribbon.ReadTimeout=500             #读取超时时间
-ribbon.OkToRetryOnAllOperatotions  #对所有操作请求都进行重试
+ribbon.OkToRetryOnAllOperations    #对所有操作请求都进行重试
 ribbon.MaxAutoRetriesNextServer    #切换服务器实例的重试次数
 ribbon.MaxAutoRetries              #对当前实例的重试次数
 ribbon.ServerListRefreshInterval   #刷新服务列表源的间隔时间,默认值30秒
                                     此默认值在PollingServerListUpdater.LISTOFSERVERS_CACHE_REPEAT_INTERVAL = 30 * 1000设置
-                                    PollingServerListUpdater是ribbon中updateListOfServers的定时任务,它执行会更新service list。
+                                    PollingServerListUpdater是ribbon中updateListOfServers的定时任务,它执行会更新ServerList。
 <client>.ribbon.<key>=<value>  #<client> 为使用 @FeignClient 注解的 name 属性或者 value属性指定的服务名，区分大小写
 
 
