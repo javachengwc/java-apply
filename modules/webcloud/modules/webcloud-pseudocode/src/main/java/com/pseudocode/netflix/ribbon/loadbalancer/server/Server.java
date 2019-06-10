@@ -1,6 +1,7 @@
 package com.pseudocode.netflix.ribbon.loadbalancer.server;
 
-import com.pseudocode.cloud.common.util.Pair;
+
+import com.netflix.util.Pair;
 
 //服务端节点
 public class Server {

@@ -1,6 +1,6 @@
 package com.pseudocode.cloud.zuul.context;
 
-import com.pseudocode.cloud.common.util.Pair;
+import com.pseudocode.cloud.commons.util.Pair;
 import com.pseudocode.cloud.zuul.constants.ZuulHeaders;
 import com.pseudocode.cloud.zuul.util.DeepCopy;
 import org.slf4j.Logger;

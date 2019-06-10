@@ -1,6 +1,6 @@
 package com.pseudocode.cloud.ribbon;
 
-import com.pseudocode.cloud.common.client.ServiceInstance;
+import com.pseudocode.cloud.commons.client.ServiceInstance;
 import com.pseudocode.netflix.ribbon.core.client.config.CommonClientConfigKey;
 import com.pseudocode.netflix.ribbon.core.client.config.IClientConfig;
 import com.pseudocode.netflix.ribbon.loadbalancer.server.Server;

@@ -1,9 +1,9 @@
 package com.pseudocode.cloud.ribbon;
 
-import com.pseudocode.cloud.common.client.DefaultServiceInstance;
-import com.pseudocode.cloud.common.client.ServiceInstance;
-import com.pseudocode.cloud.common.client.loadbalancer.LoadBalancerClient;
-import com.pseudocode.cloud.common.client.loadbalancer.LoadBalancerRequest;
+import com.pseudocode.cloud.commons.client.DefaultServiceInstance;
+import com.pseudocode.cloud.commons.client.ServiceInstance;
+import com.pseudocode.cloud.commons.client.loadbalancer.LoadBalancerClient;
+import com.pseudocode.cloud.commons.client.loadbalancer.LoadBalancerRequest;
 import com.pseudocode.netflix.ribbon.core.client.config.IClientConfig;
 import com.pseudocode.netflix.ribbon.loadbalancer.ILoadBalancer;
 import com.pseudocode.netflix.ribbon.loadbalancer.server.Server;

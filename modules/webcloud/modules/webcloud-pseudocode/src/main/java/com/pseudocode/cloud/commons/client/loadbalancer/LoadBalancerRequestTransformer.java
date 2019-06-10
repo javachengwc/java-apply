@@ -1,6 +1,6 @@
-package com.pseudocode.cloud.common.client.loadbalancer;
+package com.pseudocode.cloud.commons.client.loadbalancer;
 
-import com.pseudocode.cloud.common.client.ServiceInstance;
+import com.pseudocode.cloud.commons.client.ServiceInstance;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpRequest;
 

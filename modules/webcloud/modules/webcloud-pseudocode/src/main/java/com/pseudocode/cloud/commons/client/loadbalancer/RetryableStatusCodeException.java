@@ -1,4 +1,4 @@
-package com.pseudocode.cloud.common.client.loadbalancer;
+package com.pseudocode.cloud.commons.client.loadbalancer;
 
 import java.io.IOException;
 import java.net.URI;

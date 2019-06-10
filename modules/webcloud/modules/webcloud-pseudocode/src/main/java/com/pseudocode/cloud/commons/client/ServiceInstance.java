@@ -1,4 +1,4 @@
-package com.pseudocode.cloud.common.client;
+package com.pseudocode.cloud.commons.client;
 
 import java.net.URI;
 import java.util.Map;

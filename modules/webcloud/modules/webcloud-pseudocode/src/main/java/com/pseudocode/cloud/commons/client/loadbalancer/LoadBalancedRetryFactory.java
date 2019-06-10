@@ -1,4 +1,4 @@
-package com.pseudocode.cloud.common.client.loadbalancer;
+package com.pseudocode.cloud.commons.client.loadbalancer;
 
 import org.springframework.retry.RetryListener;
 import org.springframework.retry.backoff.BackOffPolicy;

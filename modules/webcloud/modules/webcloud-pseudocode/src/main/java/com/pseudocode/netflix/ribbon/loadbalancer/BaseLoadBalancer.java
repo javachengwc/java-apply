@@ -6,6 +6,7 @@ import com.pseudocode.netflix.ribbon.core.client.config.DefaultClientConfigImpl;
 import com.pseudocode.netflix.ribbon.core.client.config.IClientConfig;
 import com.pseudocode.netflix.ribbon.loadbalancer.client.ClientFactory;
 import com.pseudocode.netflix.ribbon.loadbalancer.client.PrimeConnections;
+import com.pseudocode.netflix.ribbon.loadbalancer.rule.RoundRobinRule;
 import com.pseudocode.netflix.ribbon.loadbalancer.server.Server;
 import com.pseudocode.netflix.ribbon.loadbalancer.server.ServerStatusChangeListener;
 import com.google.common.collect.ImmutableList;

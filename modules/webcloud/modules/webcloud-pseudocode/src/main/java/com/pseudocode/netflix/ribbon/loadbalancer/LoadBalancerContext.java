@@ -1,7 +1,7 @@
 package com.pseudocode.netflix.ribbon.loadbalancer;
 
-import com.pseudocode.cloud.common.util.Pair;
-import com.cloud.pseudocode.ribbon.core.client.*;
+import com.netflix.util.Pair;
+import com.pseudocode.netflix.ribbon.core.client.*;
 import com.pseudocode.netflix.ribbon.core.client.config.CommonClientConfigKey;
 import com.pseudocode.netflix.ribbon.core.client.config.DefaultClientConfigImpl;
 import com.pseudocode.netflix.ribbon.core.client.config.IClientConfig;

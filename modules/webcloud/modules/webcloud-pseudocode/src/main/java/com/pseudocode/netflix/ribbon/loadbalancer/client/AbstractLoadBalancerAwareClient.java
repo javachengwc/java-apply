@@ -1,12 +1,13 @@
 package com.pseudocode.netflix.ribbon.loadbalancer.client;
 
-import com.cloud.pseudocode.ribbon.core.client.*;
+import com.pseudocode.netflix.ribbon.core.client.*;
 import com.pseudocode.netflix.ribbon.core.client.config.CommonClientConfigKey;
 import com.pseudocode.netflix.ribbon.core.client.config.IClientConfig;
 import com.pseudocode.netflix.ribbon.loadbalancer.ILoadBalancer;
 import com.pseudocode.netflix.ribbon.loadbalancer.LoadBalancerContext;
 
-public abstract class AbstractLoadBalancerAwareClient<S extends ClientRequest, T extends IResponse> extends LoadBalancerContext implements IClient<S, T>, IClientConfigAware {
+public abstract class AbstractLoadBalancerAwareClient<S extends ClientRequest, T extends IResponse>
+        extends LoadBalancerContext implements IClient<S, T>, IClientConfigAware {
 
     public AbstractLoadBalancerAwareClient(ILoadBalancer lb) {
         super(lb);

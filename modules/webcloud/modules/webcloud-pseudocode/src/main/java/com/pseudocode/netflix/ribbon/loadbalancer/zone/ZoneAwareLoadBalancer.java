@@ -1,10 +1,10 @@
 package com.pseudocode.netflix.ribbon.loadbalancer.zone;
 
 import com.pseudocode.netflix.ribbon.core.client.config.IClientConfig;
-import com.cloud.pseudocode.ribbon.loadbalancer.*;
 import com.pseudocode.netflix.ribbon.loadbalancer.*;
 import com.pseudocode.netflix.ribbon.loadbalancer.client.ClientFactory;
 import com.pseudocode.netflix.ribbon.loadbalancer.rule.AvailabilityFilteringRule;
+import com.pseudocode.netflix.ribbon.loadbalancer.rule.ZoneAvoidanceRule;
 import com.pseudocode.netflix.ribbon.loadbalancer.server.Server;
 import com.pseudocode.netflix.ribbon.loadbalancer.server.ServerList;
 import com.pseudocode.netflix.ribbon.loadbalancer.server.ServerListFilter;

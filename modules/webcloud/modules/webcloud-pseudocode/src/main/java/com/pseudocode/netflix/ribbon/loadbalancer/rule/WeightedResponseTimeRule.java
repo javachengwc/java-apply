@@ -2,7 +2,6 @@ package com.pseudocode.netflix.ribbon.loadbalancer.rule;
 
 import com.pseudocode.netflix.ribbon.core.client.config.IClientConfig;
 import com.pseudocode.netflix.ribbon.core.client.config.IClientConfigKey;
-import com.cloud.pseudocode.ribbon.loadbalancer.*;
 import com.pseudocode.netflix.ribbon.loadbalancer.BaseLoadBalancer;
 import com.pseudocode.netflix.ribbon.loadbalancer.ILoadBalancer;
 import com.pseudocode.netflix.ribbon.loadbalancer.server.Server;
