@@ -49,6 +49,7 @@
 		<module>modules/shop</module>
 		<module>modules/mountain</module>
 		<module>modules/webboot</module>
+		<module>modules/webbootmp</module>
 		<module>modules/websocket</module>
 		<module>modules/webrest</module>
 		<module>modules/webcloud</module>
