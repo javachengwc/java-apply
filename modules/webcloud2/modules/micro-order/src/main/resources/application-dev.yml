@@ -53,7 +53,7 @@ mybatis-plus:
   mapper-locations: classpath*:sqlmap/**/**.xml
   global-config:
     db-config:
-      id-type: auto
+      id-type: 0  #0:数据库ID自增   1:用户输入id  2:全局唯一id(IdWorker)  3:全局唯一ID(uuid)
       field-strategy: ignored
       logic-delete-value: 0
       logic-not-delete-value: 1

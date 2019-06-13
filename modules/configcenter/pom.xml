@@ -19,6 +19,7 @@
 	<modules>
         <module>modules/configcenter-manage</module>
 		<module>modules/configcenter-client</module>
+		<module>modules/configcenter-springboot-manage</module>
 	</modules>
 
 </project>
