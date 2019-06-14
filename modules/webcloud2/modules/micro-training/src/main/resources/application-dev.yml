@@ -1,0 +1,54 @@
+server:
+  port: 8012
+#注册中心
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8080/eureka
+  instance:
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 15
+
+
+spring:
+  application:
+    name: micro-training
+#数据库配置
+  datasource:
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/micro_training?characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false&useSSL=false
+      username: root
+      password: root
+      type: com.alibaba.druid.pool.DruidDataSource
+      initialSize: 5
+      minIdle: 5
+      maxActive: 20
+      maxWait: 60000
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 60000
+      validationQuery: select 1
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+
+#mybatisplus插件
+mybatis-plus:
+  typeAliasesPackage: com.micro.course.model
+  mapper-locations: classpath*:sqlmap/**/**.xml
+  global-config:
+    db-config:
+      id-type: auto
+      field-strategy: ignored
+      logic-delete-value: 0
+      logic-not-delete-value: 1
+      table-prefix:
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: true
+
+#pageHelper
+pagehelper:
+  helperDialect: mysql
+  reasonable: false
+  supportMethodsArguments: true
+  params: count=countSql

@@ -20,5 +20,6 @@
 		<module>modules/micro-store</module>
 		<module>modules/micro-course</module>
 		<module>modules/micro-sidecar</module>
+		<module>modules/micro-training</module>
 	</modules>	
 </project>
