@@ -5,7 +5,7 @@ server:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://localhost:8000/eureka
+      defaultZone: http://localhost:8080/eureka
   instance:
     prefer-ip-address: true
     lease-renewal-interval-in-seconds: 10

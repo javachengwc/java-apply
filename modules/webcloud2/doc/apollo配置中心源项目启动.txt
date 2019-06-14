@@ -1,0 +1,45 @@
+------------------------------apollo配置中心源项目启动------------------------------
+apollo配置中心服务默认是通过脚本启动，并且里面的apollo-configservice服务默认内嵌eureka注册中心，
+业务项目可能已有自己的注册中心，此情况下项目整合，就需要对apollo-configservice服务去掉内嵌的注册中心，改用
+业务项目的注册中心，同时为了定制开发apollo配置中心，都有必要本地直接启动apollo的源代码项目服务。
+但它不能直接源代码项目启动，需要做一定的调整:
+
+1,修改apollo项目pom.xml,把ide报错的<plugin>,<build>,<dependency>,<reporting>去掉
+2,修改子项目apollo-configservice的配置application.yml,加入数据库相关信息
+    spring:
+      datasource:
+        url: jdbc:mysql://localhost:3306/ApolloConfigDB?characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false&useSSL=false
+        username: root
+        password: root
+如果需要把apollo-configservice内嵌的eureka注册中心去掉,用其他的注册中心,
+需要修改ConfigServiceApplication类，将@EnableEurekaServer改成@EnableEurekaClient
+同时修改数据库ApolloConfigDB中的表serverconfig的eureka.service.url此项配置值为eureka注册中心地址
+
+3,修改子项目apollo-adminservice的配置application.yml,加入数据库相关信息
+    spring:
+      datasource:
+        url: jdbc:mysql://localhost:3306/ApolloConfigDB?characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false&useSSL=false
+        username: root
+        password: root
+4,修改子项目apollo-portal的配置文件
+vim application.yml
+   spring:
+     application:
+       name: apollo-portal
+     profiles:
+       active: auth              #这里的active修改成auth,后台权限这块才能实施rbac这套，默认如果不修改它，是采用单用户apollo来使用后台。
+     datasource:
+       url: jdbc:mysql://localhost:3306/ApolloPortalDB?characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false&useSSL=false
+       username: root
+       password: root
+   server:
+     port: 8081                  #修改服务的端口,避免与注册中心的端口冲突
+vim apollo-env.properties
+    dev.meta=http://localhost:8082        #这里的值是各个环境的apollo-configservice服务的地址
+    fat.meta=${fat_meta}
+    uat.meta=${uat_meta}
+    lpt.meta=${lpt_meta}
+    pro.meta=${pro_meta}
+
+依次启动apollo-configservice,apollo-adminservice,apollo-portal即可
+------------------------------------------------------------------------------------
