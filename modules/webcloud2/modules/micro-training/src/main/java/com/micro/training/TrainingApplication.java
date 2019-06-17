@@ -8,6 +8,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableApolloConfig
+//@EnableApolloConfig("application") 这样是指定具体命名空间，一般在配置中指定
 public class TrainingApplication {
 
     public static void main(String[] args) {

@@ -8,10 +8,14 @@ rpm -ivh jenkins-2.164.3-1.1.noarch.rpm    #安装jenkins
     /etc/sysconfig/jenkins       #jenkins服务配置文件，服务端口，jvm配置都在这里
     /var/lib/jenkins/config.xml  #jenkins具体配置文件
     /var/lib/jenkins/users       #jenkins的所有用户配置目录
+    /var/lib/jenkins/plugins/    #jenkins插件所在目录,如果下载慢，可以用现成的直接覆盖
+    /var/lib/jenkins/updates/default.json
+    /var/lib/jenkins/hudson.model.UpdateCenter.xml          ###jenkins插件下载源地址
+    如果官网下载太慢，可改成镜像站，比如:https://mirrors.tuna.tsinghua.edu.cn/jenkins/updates/update-center.json
 service jenkins start            #启动jenkins
 #启动中如果报错,根据提示查看报错信息，比如报错Jenkins bash: /usr/bin/java: No such file or directory
 表示在/usr/bin下没找到java命令，可能没装java或者java命令没在此目录下，安装java或建立对应的软连接即可
-http://localhost:8080            #web访问jenkins，默认端口8080
+http://localhost:8080            #web访问jenkins，默认端口8080，这里最好用chrome浏览器来打开
 #根据提示输入密码，然后选择安装插件，设置一个admin账号，jenkins的安装就完成.
 
 ##debian系统下安装jenkins
@@ -61,6 +65,16 @@ Assign Roles中为用户赋予角色
 
 系统管理-->系统日志-->日志级别
 设置javax.jmdns	为OFF，避免jenkins产生海量日志
+
+jenkins打通免密登录
+vim /etc/passwd         ###修改jenkins账号可shell
+    jenkins:x:997:995:Jenkins Automation Server:/var/lib/jenkins:/bin/bash
+su jenkins
+cd
+ssh-keygen -t rsa
+ssh-copy-id -i .ssh/id_rsa.pub root@192.168.1.2
+ssh root@192.168.1.2
+exit
 
 至此jenkins的基本设置完成。
 ---------------------------------------
