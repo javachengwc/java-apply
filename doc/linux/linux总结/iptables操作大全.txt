@@ -5,6 +5,12 @@ netfilter 组件也称为内核空间（kernelspace），是内核的一部分�
 iptables 组件是一种工具，也称为用户空间（userspace），它使插入、修改和除去信息包过滤表中的规则变得容易。iptables就是用来设置、维护和检查Linux内核的IP包过滤规则的。
 iptables命令规则：iptables [-t table] command CHAIN [NUM ]   match criteria -j TARGET
 
+yum install iptables-services           ----安装防火墙
+systemctl restart iptables.service      ----启动防火墙
+修改/etc/sysconfig/iptables 使其生效的办法是修改好后先service iptables restart，然后才调用iptables save
+service iptables save                   ----保存配置到/etc/sysconfig/iptables
+iptables -L -n                          ----查看配置
+
 -----------iptables配置------------
 /etc/sysconfig/iptables                 ----iptables的配置文件
 

@@ -76,6 +76,18 @@ ssh-copy-id -i .ssh/id_rsa.pub root@192.168.1.2
 ssh root@192.168.1.2
 exit
 
+由于jenkins的漏洞太多，配置防火墙进行访问控制
+iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+iptables -A OUTPUT -p tcp --sport 22 -j ACCEPT
+iptables -A INPUT -s 允许访问的ip -p tcp --dport 8080 -j ACCEPT
+iptables -A OUTPUT -p tcp --sport 8080 -j ACCEPT
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+iptables -P OUTPUT DROP
+service iptables save
+iptables -L -n                           ###查看防火墙配置
+service iptables start                   ###启动防火墙
+
 至此jenkins的基本设置完成。
 ---------------------------------------
 jenkins创建配置并构建项目
