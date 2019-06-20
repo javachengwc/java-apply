@@ -48,6 +48,8 @@ crontab  -r                    ---删除当前用户的crontab定时任务，谨
 “,”分开几个离散的数字
 
 -----------crontab例子-----------
+*/1 * * * * /data/shell/xxx.sh
+         ---每分钟执行一次
 50 7 * * * root run-parts /etc/cron.daily
          ---每天7:50以root身份执行/etc/cron.daily目录中的所有可执行文件
 0 */1 * * * root run-parts /etc/cron.hourly 

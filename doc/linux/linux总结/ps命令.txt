@@ -20,6 +20,7 @@ ps命令用于报告当前系统的进程状态。使用该命令可以确定有
 14）ps -l            ---较长较详细的显示该进程的信息
 15) ps aux           ---组合使用，通常这样查
 16) ps ef            ---组合使用
+17) ps -h            ---不显示标题
 ---------------------------------
 # ps aux |more
 USER       PID        %CPU %MEM      VSZ  RSS       TTY                      STAT      START   TIME     COMMAND

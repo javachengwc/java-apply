@@ -1,0 +1,12 @@
+------------------------------linux中病毒处理-----------------------------
+ps -hp  $(< /tmp/.X11-lock) | awk '{ print $1 }'              ###病毒程序进程
+
+杀病毒脚本:
+#!/bin/sh
+PID=$(ps -hp  $(< /tmp/.X11-lock) | awk '{ print $1 }')
+if [[ ! -z $PID ]] ; then
+        echo "病毒 PID is:$PID"
+        kill -9 $PID
+fi
+
+

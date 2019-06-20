@@ -9,7 +9,6 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 /**
  * 启动入口
  */
-@EnableAutoConfiguration
 @SpringBootApplication
 public class ShopManageApplication {
 
