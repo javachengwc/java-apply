@@ -7,7 +7,7 @@ iptables命令规则：iptables [-t table] command CHAIN [NUM ]   match criteria
 
 yum install iptables-services           ----安装防火墙
 systemctl restart iptables.service      ----启动防火墙
-修改/etc/sysconfig/iptables 使其生效的办法是修改好后先service iptables restart，然后才调用iptables save
+修改/etc/sysconfig/iptables 使其生效的办法是修改好后直接service iptables restart，然后才调用service iptables save
 service iptables save                   ----保存配置到/etc/sysconfig/iptables
 iptables -L -n                          ----查看配置
 
@@ -314,6 +314,9 @@ iptables -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
 iptables -A INPUT -p tcp -m tcp --dport 21 -j ACCEPT
 iptables -A INPUT -p tcp -m tcp --dport 873 -j ACCEPT
     ##设置外部客户端连接服务器端口80,22,21,873
+    
+iptables -A INPUT -p tcp -m tcp --dport 700:800 -j ACCEPT
+700:800 表示700到800之间的所有端口,:800 表示800及以下所有端口,700: 表示700以及以上所有端口
 
 iptables -A INPUT -i lo -j ACCEPT
     ##允许内部数据循回
