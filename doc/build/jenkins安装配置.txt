@@ -81,12 +81,26 @@ iptables -A INPUT -p tcp --dport 22 -j ACCEPT
 iptables -A OUTPUT -p tcp --sport 22 -j ACCEPT
 iptables -A INPUT -s 允许访问的ip -p tcp --dport 8080 -j ACCEPT
 iptables -A OUTPUT -p tcp --sport 8080 -j ACCEPT
+iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 iptables -P INPUT DROP
 iptables -P FORWARD DROP
-iptables -P OUTPUT DROP
+#iptables -P OUTPUT DROP
 service iptables save
 iptables -L -n                           ###查看防火墙配置
 service iptables start                   ###启动防火墙
+
+vim /etc/sysconfig/iptables 的结果如下:
+*filter
+:INPUT DROP [3:1280]
+:FORWARD DROP [0:0]
+#:OUTPUT DROP [7:532]
+:OUTPUT ACCEPT [0:18416]
+-A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
+-A INPUT -s xxx.xxx.xxx.xxx -p tcp -m tcp --dport 8080 -j ACCEPT
+-A OUTPUT -p tcp -m tcp --sport 22 -j ACCEPT
+-A OUTPUT -p tcp -m tcp --sport 8080 -j ACCEPT
+-A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+COMMIT
 
 至此jenkins的基本设置完成。
 ---------------------------------------
