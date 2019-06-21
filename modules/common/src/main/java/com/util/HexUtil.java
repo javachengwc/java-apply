@@ -85,7 +85,7 @@ public class HexUtil {
         String aaa="BD";
         System.out.println(strToBinstr(aaa));
 
-        int a22=0b1011;
+        int a22=0b1011;//0b开头表示二进制,0开头是八进制，默认是十进制，0x或0X开头是十六进制
         System.out.println(a22);
 
         byte[] arr = new byte[256];

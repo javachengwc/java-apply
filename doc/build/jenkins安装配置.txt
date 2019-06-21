@@ -124,4 +124,7 @@ c,Git--Repositories中配置项目对应的git地址，并在Credentials中配�
     cp -rp ./test/target/*.jar /data/deploy/test
 配置完后，进入项目，点击立即构建，在build history中就能查看到最新的构建列表
 点进此次构建列表项，点击Console Output就能查看此次构建过程详细日志信息了
+
+jenkins在执行sh脚本的时候，如果脚本中有启动后台进程的情况，例如tomcat的关闭和启动，jenkins在job构建结束之后，会kill所有的脚本里面衍生出的子进程。
+修改环境变量BUILD_ID的值，这样，衍生出来的子进程就不会被kill了，就是在sh脚本的最前面加上export BUILD_ID=tomcat_mobile_build_id 类似这样的语句就行。
 --------------------------------------------------------------------------------------
