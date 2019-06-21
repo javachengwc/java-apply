@@ -70,12 +70,27 @@ public class HexUtil {
         printBytes(arr,0,arr.length);
     }
 
+    //字符串转二进制
+    public static String strToBinstr(String str) {
+        char[] strChar = str.toCharArray();
+        String result = "";
+        for (int i = 0; i < strChar.length; i++) {
+            result += Integer.toBinaryString(strChar[i]) + " ";
+        }
+        return result;
+    }
+
     public static void main(String[] args) {
+
+        String aaa="BD";
+        System.out.println(strToBinstr(aaa));
+
+        int a22=0b1011;
+        System.out.println(a22);
+
         byte[] arr = new byte[256];
         for (int i = 0; i < 256; ++i) {
-
             arr[i] = (byte) i;
-
         }
 
         printBytes(arr, 0, 256);
