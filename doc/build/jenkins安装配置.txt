@@ -63,8 +63,14 @@ Manage Roles中创建全局角色、项目角色，并可以为角色分配权�
 “(?i)roger-.*”表示以roger-开头的项目并且不区分大小写，也可以使用“abc|bcd|efg”直接匹配多个项目。
 Assign Roles中为用户赋予角色
 
+配置jenkins日志，避免jenkins产生海量日志
 系统管理-->系统日志-->日志级别
-设置javax.jmdns	为OFF，避免jenkins产生海量日志
+设置javax.jmdns	为OFF，但此设置重启jenkins后会丢失，彻底解决办法是:
+vim /etc/sysconfig/jenkins
+   JENKINS_JAVA_OPTIONS="-Djava.awt.headless=true -Djava.util.logging.config.file=/etc/sysconfig/jenkins.logging.properties"
+vim /etc/sysconfig/jenkins.logging.properties
+   .level = INFO
+   javax.jmdns.level = OFF
 
 jenkins打通免密登录
 vim /etc/passwd         ###修改jenkins账号可shell
