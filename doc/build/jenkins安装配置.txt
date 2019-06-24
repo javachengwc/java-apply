@@ -8,6 +8,7 @@ rpm -ivh jenkins-2.164.3-1.1.noarch.rpm    #安装jenkins
     /etc/sysconfig/jenkins       #jenkins服务配置文件，服务端口，jvm配置都在这里
     /var/lib/jenkins/config.xml  #jenkins具体配置文件
     /var/lib/jenkins/users       #jenkins的所有用户配置目录
+    /var/lib/jenkins//secrets/initialAdminPassword       ###保存admin用户的初始密码
     /var/lib/jenkins/plugins/    #jenkins插件所在目录,如果下载慢，可以用现成的直接覆盖
     /var/lib/jenkins/updates/default.json
     /var/lib/jenkins/hudson.model.UpdateCenter.xml          ###jenkins插件下载源地址
