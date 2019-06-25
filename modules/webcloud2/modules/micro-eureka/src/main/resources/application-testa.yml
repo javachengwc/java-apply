@@ -1,0 +1,16 @@
+server:
+    port: 8080
+spring:
+    jmx:
+      default-domain: micro-eureka
+    application:
+      name: micro-eureka
+eureka:
+    client:
+      register-with-eureka: true
+      fetch-registry: true
+      serviceUrl:
+        defaultZone: http://192.168.1.2:${server.port}/eureka
+    instance:
+      prefer-ip-address: true
+# 这里的defaultZone值是另一个注册中心的地址，2个注册中心相互注册

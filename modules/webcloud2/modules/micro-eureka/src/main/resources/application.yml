@@ -1,17 +1,3 @@
-server:
-    port: 8080
-
 spring:
-    jmx:
-      default-domain: micro-eureka
-    application:
-      name: micro-eureka
-
-eureka:
-     instance:
-        hostname: localhost        
-     client:
-        register-with-eureka: false
-        fetch-registry: false
-        serviceUrl: 
-          defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+  profiles:
+    active: local
