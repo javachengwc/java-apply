@@ -32,6 +32,7 @@ public class HexUtil {
         }
     }
 
+    //十进制转十六进制
     public static StringBuffer toHex(int val) {
         StringBuffer buf = toHex((byte) (val >> 24 & 0xff)).append(
                 toHex((byte) (val >> 16 & 0xff)));
@@ -39,13 +40,63 @@ public class HexUtil {
                 toHex((byte) (val & 0xff)));
     }
 
-    /**
-     * 打印二进制数组
-     *
-     * @param arr
-     * @param off
-     * @param len
-     */
+    //二进制转十六进制
+    public static String binary2Hex(String bString) {
+        if (bString == null || bString.equals("")) {
+            return null;
+        }
+        StringBuffer tmp = new StringBuffer();
+        int iTmp = 0;
+        for (int i = 0; i < bString.length(); i += 4) {
+            iTmp = 0;
+            for (int j = 0; j < 4; j++) {
+                iTmp += Integer.parseInt(bString.substring(i + j, i + j + 1)) << (4 - j - 1);
+            }
+            tmp.append(Integer.toHexString(iTmp));
+        }
+        return tmp.toString();
+    }
+
+    //二进制转十六进制
+    public static String binary2Hex(byte buf[]) {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < buf.length; i++) {
+            String hex = Integer.toHexString(buf[i] & 0xFF);
+            if (hex.length() == 1) {
+                hex = '0' + hex;
+            }
+            sb.append(hex.toUpperCase());
+        }
+        return sb.toString();
+    }
+
+    //十六进制转二进制
+    public static String hex2Binary(String hexString) {
+        if (hexString == null ) {
+            return null;
+        }
+        String bString = "", tmp;
+        for (int i = 0; i < hexString.length(); i++) {
+            tmp = "0000" + Integer.toBinaryString(Integer.parseInt(hexString.substring(i, i + 1), 16));
+            bString += tmp.substring(tmp.length() - 4);
+        }
+        return bString;
+    }
+
+    //十六进制转二进制
+    public static byte[] hex2Byte(String hexStr) {
+        if (hexStr.length() < 1)
+            return null;
+        byte[] result = new byte[hexStr.length() / 2];
+        for (int i = 0; i < hexStr.length() / 2; i++) {
+            int high = Integer.parseInt(hexStr.substring(i * 2, i * 2 + 1), 16);
+            int low = Integer.parseInt(hexStr.substring(i * 2 + 1, i * 2 + 2), 16);
+            result[i] = (byte) (high * 16 + low);
+        }
+        return result;
+    }
+
+    //打印二进制数组
     public static void printBytes(byte[] arr, int off, int len) {
         if (arr == null || len <= 0 || off < 0 || off + len > arr.length) {
             return;
@@ -84,6 +135,9 @@ public class HexUtil {
 
         String aaa="BD";
         System.out.println(strToBinstr(aaa));
+
+        System.out.println("十六进制转二进制"+hex2Binary("B"));
+        System.out.println("二进制转十六进制"+binary2Hex("1010"));
 
         int a22=0b1011;//0b开头表示二进制,0开头是八进制，默认是十进制，0x或0X开头是十六进制
         System.out.println(a22);
