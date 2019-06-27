@@ -5,4 +5,6 @@ import com.bootmp.model.pojo.User;
 
 public interface UserService extends IService<User>  {
 
+    public User queryByMobile(String mobile);
+
 }

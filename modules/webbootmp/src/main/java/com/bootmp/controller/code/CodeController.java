@@ -18,9 +18,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/code")
 public class CodeController {
 
-    @Autowired
-    private TableService tableService;
-
     @Value("${spring.datasource.url}")
     private String dbUrl;
 
@@ -46,4 +43,18 @@ public class CodeController {
         webGeneratorConfig.doGunsGeneration();
         return Resp.success(null);
     }
+//    样例参
+//    {
+//        "data": {
+//            "author": "cwc",
+//            "daoSwitch": true,
+//            "entitySwitch": true,
+//            "ignoreTabelPrefix": "",
+//            "moduleName": "tmodule",
+//            "projectPackage": "com.test",
+//            "projectPath": "E:\\\\tmp",
+//            "serviceSwitch": true,
+//            "tableName": "user"
+//        }
+//    }
 }
