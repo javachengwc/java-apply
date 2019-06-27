@@ -6,10 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -759,6 +756,118 @@ public class StringUtil {
             }
         }
         return sb.toString();
+    }
+
+    //去掉指定前缀
+    public static String removePrefix(String str, String prefix) {
+        if (str==null || StringUtils.isBlank(str) || prefix==null || StringUtils.isBlank(prefix)) {
+            return str;
+        }
+        if (str.startsWith(prefix)) {
+            return str.substring(prefix.length());
+        }
+        return str;
+    }
+
+    //去掉指定后缀
+    public static String removeSuffix(String str, String suffix) {
+        if (str==null || StringUtils.isBlank(str) || suffix==null || StringUtils.isBlank(suffix)) {
+            return str;
+        }
+        if (str.endsWith(suffix)) {
+            return str.substring(0, str.length() - suffix.length());
+        }
+        return str;
+    }
+
+    /**
+     * @param str    String
+     * @param fromIndex 开始的index（包括）
+     * @param toIndex   结束的index（不包括）
+     * @return 字串
+     */
+    public static String subStr(String str, int fromIndex, int toIndex) {
+        int len = str.length();
+        if (fromIndex < 0) {
+            fromIndex = len + fromIndex;
+            if (fromIndex < 0) {
+                fromIndex = 0;
+            }
+        } else if (fromIndex >= len) {
+            fromIndex = len - 1;
+        }
+        if (toIndex < 0) {
+            toIndex = len + toIndex;
+            if (toIndex < 0) {
+                toIndex = len;
+            }
+        } else if (toIndex > len) {
+            toIndex = len;
+        }
+        if (toIndex < fromIndex) {
+            int tmp = fromIndex;
+            fromIndex = toIndex;
+            toIndex = tmp;
+        }
+        if (fromIndex == toIndex) {
+            return "";
+        }
+        char[] strArray = str.toCharArray();
+        char[] newStrArray = Arrays.copyOfRange(strArray, fromIndex, toIndex);
+        return new String(newStrArray);
+    }
+
+    /**
+     * 格式化文本, {} 表示占位符<br>
+     * 例如：format("aaa {} ccc", "bbb")   ---->    aaa bbb ccc
+     */
+    public static String format(String template, Object... values) {
+        if (values==null || values.length<=0 || StringUtils.isBlank(template)) {
+            return template;
+        }
+
+        final StringBuilder sb = new StringBuilder();
+        final int length = template.length();
+
+        int valueIndex = 0;
+        char currentChar;
+        for (int i = 0; i < length; i++) {
+            if (valueIndex >= values.length) {
+                sb.append(subStr(template, i, length));
+                break;
+            }
+
+            currentChar = template.charAt(i);
+            if (currentChar == '{') {
+                final char nextChar = template.charAt(++i);
+                if (nextChar == '}') {
+                    sb.append(values[valueIndex++]);
+                } else {
+                    sb.append('{').append(nextChar);
+                }
+            } else {
+                sb.append(currentChar);
+            }
+
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * 格式化文本，使用 {varName} 占位<br>
+     * map = {a: "aa", b: "bb"}
+     * format("{a} and {b}", map)    ---->    aa and bb
+     */
+    public static String format(String template, Map<?, ?> map) {
+        if (null == map || map.isEmpty()) {
+            return template;
+        }
+
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            template = template.replace("{" + entry.getKey() + "}", entry.getValue().toString());
+        }
+        return template;
     }
 
     public static void main(String args [])
