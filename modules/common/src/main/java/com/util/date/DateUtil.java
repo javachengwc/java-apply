@@ -2,6 +2,7 @@ package com.util.date;
 
 import com.util.base.NumberUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -112,8 +113,17 @@ public class DateUtil {
         return (int)((new Date()).getTime() / 1000);
     }
 
+    public static String formatDate2(Date date, String pattern) {
+        String str = DateFormatUtils.format(date, pattern);
+        return str;
+    }
+
     public static void main(String args[])
     {
+        Date date = new Date();
+        System.out.println(formatDate(date,FMT_YMD_HMS));
+        System.out.println(formatDate2(date,FMT_YMD_HMS));
+
         System.out.println(dateLongTransReadAble("200",0));
         System.out.println(dateLongTransReadAble("12800",1));
         System.out.println(dateLongTransReadAble("haha",0));
