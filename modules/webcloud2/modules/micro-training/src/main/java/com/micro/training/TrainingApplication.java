@@ -12,7 +12,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 public class TrainingApplication {
 
     public static void main(String[] args) {
-        System.setProperty("env","dev");
+        //System.setProperty("env","dev");
         SpringApplication.run(TrainingApplication.class, args);
     }
 

@@ -16,6 +16,8 @@ eureka:
 
 #负载均衡
 ribbon:
+  ReadTimeout: 10000
+  ConnectTimeout: 5000
   MaxAutoRetries: 0
   MaxAutoRetriesNextServer: 0
   OkToRetryOnAllOperations: false

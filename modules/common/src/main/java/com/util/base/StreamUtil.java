@@ -1,6 +1,7 @@
 package com.util.base;
 
 import java.io.*;
+import java.nio.CharBuffer;
 
 /**
  * 数据流工具类
@@ -135,5 +136,32 @@ public class StreamUtil {
         Writer writer =  new OutputStreamWriter(out, encoding);
         copy(reader, writer);
         return out.toByteArray();
+    }
+
+    public static String reader2Str(Reader reader) throws IOException {
+        if (reader == null) {
+            return null;
+        }
+        try {
+            StringBuilder to = new StringBuilder();
+            CharBuffer buf = CharBuffer.allocate(BUFFER_SIZE);
+            while (reader.read(buf) != -1) {
+                buf.flip();
+                to.append(buf);
+                buf.clear();
+            }
+            return to.toString();
+        } finally {
+            ensureClosed(reader);
+        }
+    }
+
+    public static void ensureClosed(Closeable closeable) {
+        if (closeable != null) {
+            try {
+                closeable.close();
+            } catch (IOException ignored) { // NOPMD
+            }
+        }
     }
 }
