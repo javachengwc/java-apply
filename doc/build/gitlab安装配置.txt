@@ -17,7 +17,8 @@ gitlab是用ruby on rails开发的一个开源的版本管理系统，实现git�
     gitlab目录为/opt/gitlab
     gitlab各组件目录为/var/opt/gitlab
     gitlab代码数据默认目录为/var/opt/gitlab/git-data/repositories
-    vim  /etc/gitlab/gitlab.rb                                   -----gitlab配置文件修改
+    /etc/gitlab/gitlab.rb                                        -----gitlab配置文件
+    /opt/gitlab/embedded/conf/nginx.conf                         -----gitlab内置nginx配置文件
     gitlab-ctl reconfigure                                       -----重新编译gitlab
     gitlab-ctl restart                                           -----重启gitlab
     gitlab-ctl restart postgresql                                -----重启gitlab的postgresql
@@ -120,4 +121,5 @@ gitlab是用ruby on rails开发的一个开源的版本管理系统，实现git�
             user.password = ‘新密码‘
             user.password_confirmation = ‘新密码‘
             user.save!
+
 -------------------------------------------------------------------------------

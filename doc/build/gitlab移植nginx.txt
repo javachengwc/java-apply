@@ -1,0 +1,131 @@
+-------------------------------------------gitlab移植nginx-----------------------------------
+gitlab移植内置nginx到自建nginx,步骤如下:
+1,vim /etc/gitlab/gitlab.rb
+    nginx['enable'] = false                                   ------禁用gitlab的自带nginx启动
+gitlab-ctl reconfigure
+
+2,更改自建nginx的配置文件，因为gitlab里的nginx有自定义的参数配置，所以大部分继续沿用。
+但没有把gitlab的/opt/gitlab/embedded/conf/nginx.conf 完全拿来用，因为有的项会导致自建nginx卡在Starting nginx位置
+nginx.conf的配置如下:
+user gitlab-www gitlab-www;
+worker_processes auto;
+error_log /home/wwwlogs/nginx_error.log crit;
+pid /usr/local/nginx/logs/nginx.pid;
+worker_rlimit_nofile 51200;
+
+events
+{
+    use epoll;
+    worker_connections 51200;
+    multi_accept on;
+}
+
+http
+{
+    log_format gitlab_access '$remote_addr - $remote_user [$time_local] "$request_method $filtered_request_uri $server_protocol" $status $body_bytes_sent "$filtered_http_referer" "$http_user_agent"';
+    log_format gitlab_mattermost_access '$remote_addr - $remote_user [$time_local] "$request_method $filtered_request_uri $server_protocol" $status $body_bytes_sent "$filtered_http_referer" "$http_user_agent"';
+    proxy_cache_path proxy_cache keys_zone=gitlab:10m max_size=1g levels=1:2;
+    proxy_cache gitlab;
+    #include mime.types;
+    default_type application/octet-stream;
+    include /opt/gitlab/embedded/conf/mime.types;
+    server_names_hash_bucket_size 128;
+    client_header_buffer_size 32k;
+    large_client_header_buffers 4 32k;
+    client_max_body_size 50m;
+
+    sendfile on;
+    tcp_nopush on;
+
+    keepalive_timeout 60;
+
+    tcp_nodelay on;
+
+    fastcgi_connect_timeout 300;
+    fastcgi_send_timeout 300;
+    fastcgi_read_timeout 300;
+    fastcgi_buffer_size 64k;
+    fastcgi_buffers 4 64k;
+    fastcgi_busy_buffers_size 128k;
+    fastcgi_temp_file_write_size 256k;
+
+    gzip on;
+    gzip_min_length 1k;
+    gzip_buffers 4 16k;
+    gzip_http_version 1.1;
+    gzip_comp_level 2;
+    gzip_types text/plain application/javascript application/x-javascript text/javascript text/css application/xml application/xml+rss;
+    gzip_vary on;
+    gzip_proxied expired no-cache no-store private auth;
+    gzip_disable "MSIE [1-6]\.";
+
+    server_tokens off;
+    access_log off;
+    map $http_upgrade $connection_upgrade {
+        default upgrade;
+        '' close;
+    }
+
+    map $request_uri $temp_request_uri_1 {
+        default $request_uri;
+        ~(?i)^(?<start>.*)(?<temp>[\?&]private[\-_]token)=[^&]*(?<rest>.*)$ "$start$temp=[FILTERED]$rest";
+    }
+
+    map $temp_request_uri_1 $temp_request_uri_2 {
+        default $temp_request_uri_1;
+        ~(?i)^(?<start>.*)(?<temp>[\?&]authenticity[\-_]token)=[^&]*(?<rest>.*)$ "$start$temp=[FILTERED]$rest";
+    }
+
+    map $temp_request_uri_2 $filtered_request_uri {
+        default $temp_request_uri_2;
+        ~(?i)^(?<start>.*)(?<temp>[\?&]rss[\-_]token)=[^&]*(?<rest>.*)$ "$start$temp=[FILTERED]$rest";
+    }
+
+    map $http_referer $filtered_http_referer {
+        default $http_referer;
+        ~^(?<temp>.*)\? $temp;
+    }
+
+    server
+    {
+        listen 80 default_server;
+        server_name xxx.cn;
+        index index.html index.htm index.php;
+        root /home/wwwroot/default;
+
+        include enable-php.conf;
+
+        location /nginx_status
+        {
+            stub_status on;
+            access_log off;
+        }
+
+        location ~ .*\.(gif|jpg|jpeg|png|bmp|swf)$
+        {
+            expires 30d;
+        }
+
+        location ~ .*\.(js|css)?$
+        {
+            expires 12h;
+        }
+
+        location ~ /.well-known {
+            allow all;
+        }
+
+        location ~ /\.
+        {
+            deny all;
+        }
+    }
+    log_format access '$remote_addr - $remote_user [$time_local] "$request" '
+    '$status $body_bytes_sent "$http_referer" '
+    '"$http_user_agent" $http_x_forwarded_for "$upstream_addr" "$upstream_response_time" $request_time $content_length';
+    include vhost/*.conf;
+    include /var/opt/gitlab/nginx/conf/nginx-status.conf;
+}
+
+3,再直接把/var/opt/gitlab/nginx/conf/gitlab-http.conf，完整复制到自建nginx的conf/vhost目录即可。
+
