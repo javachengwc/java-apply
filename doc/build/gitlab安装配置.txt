@@ -61,7 +61,24 @@ gitlab是用ruby on rails开发的一个开源的版本管理系统，实现git�
     gitlab-rake gitlab:backup:create                      ------备份gitlab
     gitlab-rake gitlab:backup:restore BACKUP=1573198886   ------备份的仓库恢复
     注:恢复时，先停掉服务，以免双写导致数据错误。
-7.2,连接访问gitlab的postgresql数据库
+7.2,gitlab邮件配置
+    vim /etc/gitlab/gitlab.rb
+        gitlab_rails['smtp_enable'] = true
+        gitlab_rails['smtp_address'] = 'smtp.exmail.qq.com'
+        gitlab_rails['smtp_port'] = 465
+        gitlab_rails['smtp_user_name'] = 'xxx'
+        gitlab_rails['smtp_password'] = '******'
+        gitlab_rails['smtp_domain'] = 'smtp.qq.com'
+        gitlab_rails['smtp_authentication'] = 'login'
+        gitlab_rails['smtp_enable_starttls_auto'] = true
+        gitlab_rails['smtp_tls'] = true
+        gitlab_rails['smtp_openssl_verify_mode'] = 'peer'
+        gitlab_rails['gitlab_email_from'] = 'xxx'
+    gitlab-ctl reconfigure
+    gitlab-ctl restart                                 -----加载和重启gitlab
+    gitlab-rails console
+    Notify.test_email('destination_email@address.com', 'Message Subject', 'Message Body').deliver_now    -----测试发送邮件
+7.3,连接访问gitlab的postgresql数据库
     cd /var/opt/gitlab/postgresql/data
     vim pg_hba.conf
       host    all         all  192.168.1.0/24  trust   ------192.168.1.0/24这个段的ip地址不需要密码可以连接
@@ -121,5 +138,34 @@ gitlab是用ruby on rails开发的一个开源的版本管理系统，实现git�
             user.password = ‘新密码‘
             user.password_confirmation = ‘新密码‘
             user.save!
+9,gitlab各组件服务的替换
+9.1,gitlab内置nginx替换为自建nginx,参考gitlab移植nginx.txt
+9.2,gitlab内置redis替换为自建redis
+    vim /etc/gitlab/gitlab.rb                                 -----修改相关配置
+        redis['enable'] = false
+        gitlab_rails['redis_host'] = '127.0.0.1'
+        gitlab_rails['redis_port'] = 6379
+        gitlab_rails['redis_password'] = 'testtest'
+        gitlab_rails['redis_database'] = 10
+        ###一定要给redis密码,不然报500错误,并且redis密码越复杂越安全，简单的密码，容易被入侵攻破。
+    gitlab-ctl reconfigure
+    gitlab-ctl restart                                        -----加载和重启gitlab
+9.3,gitlab外置postgresql
+    vim  /opt/gitlab/embedded/service/gitlab-rails/config/database.yml  -----检查是否使用自定义配置
+    自建postgresql数据库，数据库及账号创建如下:
+    create user gitlab with password '12345678';
+    create database gitlabhq_production OWNER gitlab;
+    GRANT ALL PRIVILEGES ON DATABASE gitlabhq_production TO gitlab;
+    vim /etc/gitlab/gitlab.rb                                -----设置gitlab中postgresql相关
+        postgresql['enable'] = false
+        gitlab_rails['db_adapter'] = 'postgresql'
+        gitlab_rails['db_encoding'] = 'utf8'
+        gitlab_rails['db_database'] = "gitlabhq_production"
+        gitlab_rails['db_username'] = "gitlab"
+        gitlab_rails['db_password'] = "12345678"
+        gitlab_rails['db_host'] = "127.0.0.1"
+        gitlab_rails['db_port'] = 5432
 
+    gitlab-ctl reconfigure
+    gitlab-ctl restart                                        -----加载和重启gitlab
 -------------------------------------------------------------------------------
