@@ -3,6 +3,7 @@
 netfilter/iptables IP 信息包过滤系统是一款功能强大的工具，可用于添加、编辑和移除规则，虽然 netfilter/iptables IP 信息包过滤系统被称为单个实体，但它实际上由两个组件netfilter 和 iptables 组成。
 netfilter 组件也称为内核空间（kernelspace），是内核的一部分，由一些信息包过滤表组成，这些表包含内核用来控制信息包过滤处理的规则集。
 iptables 组件是一种工具，也称为用户空间（userspace），它使插入、修改和除去信息包过滤表中的规则变得容易。iptables就是用来设置、维护和检查Linux内核的IP包过滤规则的。
+centos7版本对防火墙进行加强,不再使用原来的iptables,启用firewalld,firewalld相关的操作参见firewalld操作大全.txt。
 iptables命令规则：iptables [-t table] command CHAIN [NUM ]   match criteria -j TARGET
 
 yum install iptables-services           ----安装防火墙
