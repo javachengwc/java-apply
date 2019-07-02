@@ -11,10 +11,13 @@ vim /etc/profile
     PATH=$JAVA_HOME/bin:$NEXUS_HOME/bin:$PATH
     export NEXUS_HOME PATH
 source /etc/profile
+
 useradd nexus
+chown -R nexus:nexus /usr/local/nexus
+chown -R nexus:nexus /usr/local/sonatype-work
 vim /usr/local/nexus/bin/nexus.rc                           ------设置程序运行用户为nexus
     run_as_user="nexus"
-vim /usr/local/nexus/bin/nexus.vmoptions                    ------可修改jvm设置,NEXUS3 数据以及相关日志的存储位置
+vim /usr/local/nexus/bin/nexus.vmoptions                    ------需要改才改，可修改jvm设置,NEXUS3 数据以及相关日志的存储位置
     -Xms1200M
     -Xmx1200M
     -XX:LogFile=../sonatype-work/nexus3/log/jvm.log
@@ -25,7 +28,7 @@ vim /usr/local/nexus/bin/nexus.vmoptions                    ------可修改jvm�
 vim /usr/local/nexus/etc/nexus-default.properties           ------可修改nexus的端口
     application-port=8081
     application-host=0.0.0.0
-vim /usr/lib/systemd/system/nexus.service                   -------nexus作为系统服务的配置
+vim /usr/lib/systemd/system/nexus.service                   -------nexus作为系统服务的配置,需要作为系统服务才配置
     [Unit]
     Description=nexus service
     After=syslog.target
@@ -44,14 +47,14 @@ vim /usr/lib/systemd/system/nexus.service                   -------nexus作为�
     WantedBy=multi-user.target
 systemctl daemon-reload                                    ------重载服务
 systemctl enable nexus.service                             ------开启开机自启动服务
-systemctl start nexus.service                              ------启动服务
 
 如果启动中报错，Please define INSTALL4J_JAVA_HOME to point to a suitable JVM.表示nexus所使用的jdk无效
 vim /usr/local/nexus/bin/nexus
     INSTALL4J_JAVA_HOME_OVERRIDE=/usr/java/jdk1.8.0_191-amd64
 nexus start                                                ------启动nexus
 nexus stop                                                 ------关闭nexus
-tail -100f /usr/local/nexus/logs/wrapper.log               ------查看日志
+tail -100f /usr/local/sonatype-work/nexus3/log/nexus.log   ------查看日志
+
 nexus的默认端口是8081,默认账户：admin 密码：admin123
 http://127.0.0.1:8081/nexus                                ------访问nexus私服网站
 
