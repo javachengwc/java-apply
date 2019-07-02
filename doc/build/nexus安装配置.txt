@@ -1,8 +1,9 @@
 ---------------------------------nexus安装配置---------------------------
 nexus可作为maven私服仓库,官网地址:https://www.sonatype.com/download-oss-sonatype
 wget https://sonatype-download.global.ssl.fastly.net/repository/repositoryManager/3/nexus-3.17.0-01-unix.tar.gz
-tar -zxvf nexus-3.17.0-01-unix.tar.gz
-cp -rf  nexus-3.17.0-01 /usr/local/nexus
+tar -zxvf nexus-3.17.0-01-unix.tar.gz                      ------解压后会有2个文件夹,nexus-3.17.0-01和sonatype-work
+cp -rf nexus-3.17.0-01 /usr/local/nexus
+cp -rf sonatype-work /usr/local
 vim /etc/profile
     JAVA_HOME=/usr/java/jdk1.8.0_191-amd64
     CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
@@ -11,21 +12,48 @@ vim /etc/profile
     export NEXUS_HOME PATH
 source /etc/profile
 useradd nexus
-vim /usr/local/nexus/bin/nexus.rc            ------设置程序运行用户为nexus
+vim /usr/local/nexus/bin/nexus.rc                           ------设置程序运行用户为nexus
     run_as_user="nexus"
+vim /usr/local/nexus/bin/nexus.vmoptions                    ------可修改jvm设置,NEXUS3 数据以及相关日志的存储位置
+    -Xms1200M
+    -Xmx1200M
+    -XX:LogFile=../sonatype-work/nexus3/log/jvm.log
+    -Djava.util.logging.config.file=etc/karaf/java.util.logging.properties
+    -Dkaraf.data=../sonatype-work/nexus3
+    -Djava.io.tmpdir=../sonatype-work/nexus3/tmp
+    -Dkaraf.startLocalConsole=false
+vim /usr/local/nexus/etc/nexus-default.properties           ------可修改nexus的端口
+    application-port=8081
+    application-host=0.0.0.0
+vim /usr/lib/systemd/system/nexus.service                   -------nexus作为系统服务的配置
+    [Unit]
+    Description=nexus service
+    After=syslog.target
+
+    [Service]
+    User=nexus
+    WorkingDirectory=/home/nexus
+    Type=forking
+    LimitNOFILE=65536
+    ExecStart=/usr/local/nexus/bin/nexus start
+    ExecReload=/usr/local/nexus/bin/nexus restart
+    ExecStop=/usr/local/nexus/bin/nexus stop
+    Restart=on-failure
+
+    [Install]
+    WantedBy=multi-user.target
+systemctl daemon-reload                                    ------重载服务
+systemctl enable nexus.service                             ------开启开机自启动服务
+systemctl start nexus.service                              ------启动服务
+
 如果启动中报错，Please define INSTALL4J_JAVA_HOME to point to a suitable JVM.表示nexus所使用的jdk无效
 vim /usr/local/nexus/bin/nexus
     INSTALL4J_JAVA_HOME_OVERRIDE=/usr/java/jdk1.8.0_191-amd64
-
-
-
-
-
-nexus start                                  ------启动nexus
-nexus stop                                   ------关闭nexus
-tail -100f /usr/local/nexus/logs/wrapper.log  ------查看日志
+nexus start                                                ------启动nexus
+nexus stop                                                 ------关闭nexus
+tail -100f /usr/local/nexus/logs/wrapper.log               ------查看日志
 nexus的默认端口是8081,默认账户：admin 密码：admin123
-http://127.0.0.1:8081/nexus                  ------访问nexus私服网站
+http://127.0.0.1:8081/nexus                                ------访问nexus私服网站
 
 Nexus Repository Manager 3 远程代码执行漏洞（CVE-2019-7238）是由于未授权访问的用户可以构造请求而造成任意代码执行。
 3.15.0+以上的版本增加了用户认证，不受此漏洞的影响。
