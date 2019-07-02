@@ -8,12 +8,14 @@ wget --spider http://www.cc.com/cc.zip              ---测试资源是否可下�
 wget --tries=40 http://www.cc.com/cc.zip            ---下载cc.zip文件,重试次数设为40
 wget --ftp-user=aa --ftp-password=bb ftp://ftp.cc.com/f/cc.zip         ---带账号的ftp下载文件
 wget --user-agent="Mozilla/5.0 Chrome..." http://www.cc.com/cc.zip     ---伪装代理下载
+wget --no-check-certificate https://xxx.com                            ---不需要https认证的访问
 wget --header="Content-Type: application/json;charset=utf-8" --post-data='{"mobile":"11111111111","captha":"666666"}' http://xxx.com
                                                                        ---post请求
 --------------------------curl
 curl http://xxx.com -d "a=1&b=2&c=cc"                                  ---普通请求
 curl -H "Content-Type: application/json;charset=utf-8" -X POST -d '{"mobile":"11111111111","captha":"666666"}' http://xxx.com
                                                                        ---post请求
+curl -O -L https://xxx.com                                            ---可看进度地访问资源
 
 
 
