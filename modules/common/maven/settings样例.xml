@@ -5,7 +5,7 @@
     <localRepository>/data/repo</localRepository>
     <servers>
         <server>
-            <id>nexus</id>
+            <id>public</id>
             <username>xxx</username>
             <password>xxx</password>
         </server>
