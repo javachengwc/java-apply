@@ -24,6 +24,7 @@ firewall-cmd --zone=public(作用域) --add-port=80/tcp(端口和访问类型) -
 firewall-cmd --zone=public --add-service=http --permanent
 firewall-cmd --zone=public --query-port=80/tcp                  ###查看
 firewall-cmd --zone=public --remove-port=80/tcp --permanent     ###删除
+firewall-cmd --reload                                           ###重新载入，更新防火墙规则
 
 firewall-cmd --list-services
 firewall-cmd --get-services

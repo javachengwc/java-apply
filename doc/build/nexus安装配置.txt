@@ -55,8 +55,8 @@ nexus start                                                ------启动nexus
 nexus stop                                                 ------关闭nexus
 tail -100f /usr/local/sonatype-work/nexus3/log/nexus.log   ------查看日志
 
-nexus的默认端口是8081,默认账户：admin 密码：admin123
-http://127.0.0.1:8081/nexus                                ------访问nexus私服网站
+nexus的默认端口是8081,以前的默认账户：admin 密码：admin123，现在密码动态提供，参考页面提示即可
+http://127.0.0.1:8081                                      ------访问nexus私服网站
 
 Nexus Repository Manager 3 远程代码执行漏洞（CVE-2019-7238）是由于未授权访问的用户可以构造请求而造成任意代码执行。
 3.15.0+以上的版本增加了用户认证，不受此漏洞的影响。
