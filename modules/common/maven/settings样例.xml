@@ -10,12 +10,12 @@
             <password>xxx</password>
         </server>
         <server>
-            <id>public</id>
+            <id>snapshots</id>
             <username>xxx</username>
             <password>xxx</password>
         </server>
         <server>
-            <id>snapshots</id>
+            <id>thirdparty</id>
             <username>xxx</username>
             <password>xxx</password>
         </server>
@@ -38,7 +38,7 @@
             <id>cur</id>
             <repositories>
                 <repository>
-                    <id>nexus</id>
+                    <id>releases</id>
                     <name>Nexus Repository</name>
                     <url>http://localhost:8080/content/repositories/releases/</url>
                     <releases>
@@ -53,10 +53,10 @@
                     <name>public</name>
                     <url>http://localhost:8080/content/groups/public/</url>
                     <releases>
-                        <enabled>true</enabled>
+                        <enabled>false</enabled>
                     </releases>
                     <snapshots>
-                        <enabled>true</enabled>
+                        <enabled>false</enabled>
                     </snapshots>
                 </repository>
                 <repository>
@@ -64,7 +64,7 @@
                     <name>thirdparty</name>
                     <url>http://localhost:8080/content/repositories/thirdparty/</url>
                     <releases>
-                        <enabled>true</enabled>
+                        <enabled>false</enabled>
                     </releases>
                     <snapshots>
                         <enabled>false</enabled>
