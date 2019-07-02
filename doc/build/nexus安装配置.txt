@@ -1,8 +1,8 @@
 ---------------------------------nexus安装配置---------------------------
-nexus可作为maven私服仓库
-wget https://sonatype-download.global.ssl.fastly.net/nexus/oss/nexus-2.12.0-01-bundle.tar.gz
-tar -zxvf nexus-2.12.0-01-bundle.tar.gz
-cp -rf  nexus-2.12.0-01 /usr/local/nexus
+nexus可作为maven私服仓库,官网地址:https://www.sonatype.com/download-oss-sonatype
+wget https://sonatype-download.global.ssl.fastly.net/repository/repositoryManager/3/nexus-3.17.0-01-unix.tar.gz
+tar -zxvf nexus-3.17.0-01-unix.tar.gz
+cp -rf  nexus-3.17.0-01-unix /usr/local/nexus
 vim /etc/profile
     NEXUS_HOME=/usr/local/nexus
     PATH=$NEXUS_HOME/bin:$PATH
@@ -13,4 +13,7 @@ nexus stop                                   ------关闭nexus
 tail -100f /usr/local/nexus/logs/wrapper.log  ------查看日志
 nexus的默认端口是8081,默认账户：admin 密码：admin123
 http://127.0.0.1:8081/nexus                  ------访问nexus私服网站
+
+Nexus Repository Manager 3 远程代码执行漏洞（CVE-2019-7238）是由于未授权访问的用户可以构造请求而造成任意代码执行。
+3.15.0+以上的版本增加了用户认证，不受此漏洞的影响。
 -------------------------------------------------------------------------
