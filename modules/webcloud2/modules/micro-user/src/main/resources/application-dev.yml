@@ -1,6 +1,10 @@
 server:
   port: 8006
 
+## swagger开关
+project:
+  swagger-open: true
+
 #注册中心
 eureka:
   client:

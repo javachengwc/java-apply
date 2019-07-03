@@ -1,5 +1,6 @@
 package com.micro.user.config;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -15,6 +16,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  */
 @Configuration
 @EnableSwagger2
+@ConditionalOnProperty(prefix = "project", name = "swagger-open", havingValue = "true")
 public class SwaggerConfig {
 
 	@Bean
