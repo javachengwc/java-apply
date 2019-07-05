@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-@Api("用户钱包接口")
+@Api(value="用户钱包接口",description="用户钱包接口")
 @RequestMapping("/user/wallet")
 @RestController
 public class UserWalletController {
