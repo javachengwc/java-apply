@@ -1,4 +1,4 @@
-package com.shop.base.model;
+package com.model.base;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 

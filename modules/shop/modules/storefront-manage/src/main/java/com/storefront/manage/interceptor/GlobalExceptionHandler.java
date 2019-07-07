@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
     public Resp<Object> argFailHandler(MethodArgumentNotValidException e) {
         Resp<Object> resp = Resp.error(ApiCode.PARAM_FAIL.getCode(),ApiCode.PARAM_FAIL.getMessage());
         BindingResult bindingResult = e.getBindingResult();
-        List<ObjectError> errors = bindingResult.getAllErrors();
+        List<ObjectError> errors = bindingResult==null?null:bindingResult.getAllErrors();
         if (errors != null && errors.size() > 0) {
             resp= Resp.error(ApiCode.PARAM_FAIL.getCode(), errors.get(0).getDefaultMessage());
         }

@@ -1,5 +1,6 @@
 package com.micro.user.controller;
 
+import com.micro.user.annotation.AppLogin;
 import com.micro.user.model.pojo.UserWallet;
 import com.micro.user.model.req.UserWalletReq;
 import com.micro.user.model.vo.UserWalletVo;
@@ -30,6 +31,7 @@ public class UserWalletController {
 
     @ApiOperation(value = "根据id查询用户钱包", notes = "根据id查询用户钱包")
     @RequestMapping(value = "/queryUserWalletById", method = RequestMethod.POST)
+    @AppLogin
     public Resp<UserWalletVo> queryUserWalletById(@RequestBody Req<Long> req) {
         Resp<UserWalletVo> resp = new Resp<UserWalletVo>();
         Long userWalletId = req.getData();
