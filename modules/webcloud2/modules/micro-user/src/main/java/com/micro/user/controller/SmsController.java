@@ -1,5 +1,6 @@
 package com.micro.user.controller;
 
+import com.micro.user.service.SmsService;
 import com.shop.base.model.Req;
 import com.shop.base.model.Resp;
 import com.util.regex.RegexUtil;
@@ -7,6 +8,7 @@ import io.swagger.annotations.Api;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,7 +24,8 @@ public class SmsController {
 
     private static Logger logger= LoggerFactory.getLogger(SmsController.class);
 
-    //private SmsService smsService;
+    @Autowired
+    private SmsService smsService;
 
     @PostMapping("sendCaptcha")
     public Resp<Void> sendCaptcha(@RequestBody Req<String> req) {
