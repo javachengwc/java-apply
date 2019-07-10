@@ -2,6 +2,11 @@
 #wc即本地工作空间
 
 svn checkout      ---检出
+svn co http://路径(目录或文件的全路径)　[本地目录全路径] --username 用户名 --password 密码
+svn co svn://路径(目录或文件的全路径)　 [本地目录全路径] --username 用户名 --password 密码
+svn checkout http://路径(目录或文件的全路径)　[本地目录全路径] --username　用户名
+svn checkout svn://路径(目录或文件的全路径)　 [本地目录全路径] --username　用户名
+注：如果不带--password 参数传输密码的话，会提示输入密码，建议不要用明文的--password 选项。不指定本地目录全路径，则检出到当前目录下。
 
 svn status path   ---输出WC中文件和目录的状态
 
