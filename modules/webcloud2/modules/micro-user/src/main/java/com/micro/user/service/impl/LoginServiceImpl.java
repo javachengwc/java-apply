@@ -10,6 +10,7 @@ import com.micro.user.service.UserService;
 import com.micro.user.util.JwtTokenUtil;
 import com.micro.user.util.RedisUtil;
 import com.util.base.RandomUtil;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,8 @@ public class LoginServiceImpl implements LoginService {
     @Resource(name = "redisTemplate")
     private RedisTemplate<String,Object> redisTemplate;
 
+    //登录
+    @Override
     public LoginVo login(User user, LoginReq loginReq) {
         Long userId = user.getId();
         String mobile = user.getMobile();
@@ -57,7 +60,53 @@ public class LoginServiceImpl implements LoginService {
         return loginVo;
     }
 
-    public boolean checkLoginByToken(String token) {
+    //登出
+    @Override
+    public boolean logout(Long userId) {
+        logger.info("LoginServiceImpl logout start, userId={}",userId);
+        String tokenKey = CommonConstant.LOGIN_TOKEN_PRE+userId;
+        RedisUtil.remove(redisTemplate,tokenKey);
         return true;
     }
+
+    //检查登录态
+    @Override
+    public boolean checkLogin(Long userId) {
+        String tokenKey = CommonConstant.LOGIN_TOKEN_PRE+userId;
+        Object cacheObj = RedisUtil.get(redisTemplate,tokenKey);
+        if(cacheObj!=null) {
+            return true;
+        }
+        return false;
+    }
+
+    //根据token检查用户登录状态
+    @Override
+    public boolean checkLoginByToken(Long userId,String token) {
+        String tokenKey = CommonConstant.LOGIN_TOKEN_PRE+userId;
+        Object cacheObj = RedisUtil.get(redisTemplate,tokenKey);
+        String cacheToken = cacheObj==null?null:cacheObj.toString();
+        if(StringUtils.isNotBlank(cacheToken) && cacheToken.equals(token)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean refreshToken(Long userId) {
+        User user = userService.getById(userId);
+        if(!userService.checkUserNormal(user)) {
+            return false;
+        }
+        String mobile =user.getMobile();
+        String randomStr = RandomUtil.getRandomString(6);
+        String token = JwtTokenUtil.generateToken(userId,mobile, randomStr);
+
+        String tokenKey = CommonConstant.LOGIN_TOKEN_PRE+userId;
+        RedisUtil.set(redisTemplate,tokenKey,token,JwtConstant.TOKEN_EEPIRATION);
+
+        HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
+        response.setHeader(JwtConstant.HEADER_TOKEN, token);
+        return true;
+    }
+
 }

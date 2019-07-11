@@ -56,6 +56,10 @@ public class Resp<T> {
         return resp;
     }
 
+    public static <T> Resp<T> success() {
+        return  success(null,null);
+    }
+
     public static <T> Resp<T> success(T data) {
         return  success(data,null);
     }

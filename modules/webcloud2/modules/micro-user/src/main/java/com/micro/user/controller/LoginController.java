@@ -1,22 +1,26 @@
 package com.micro.user.controller;
 
 import com.micro.user.annotation.AppLogin;
+import com.micro.user.context.LoginContext;
 import com.micro.user.enums.LoginTypeEnum;
 import com.micro.user.enums.UserStatuEnum;
+import com.micro.user.model.LoginUser;
 import com.micro.user.model.pojo.User;
 import com.micro.user.model.req.LoginReq;
 import com.micro.user.model.vo.LoginVo;
 import com.micro.user.service.LoginService;
 import com.micro.user.service.SmsService;
+import com.micro.user.service.UserAccountService;
 import com.micro.user.service.UserService;
-import com.micro.user.util.PasswdUtil;
 import com.shop.base.model.Req;
 import com.shop.base.model.Resp;
 import com.util.regex.RegexUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,7 +45,11 @@ public class LoginController {
     @Resource
     private SmsService smsService;
 
+    @Autowired
+    private UserAccountService userAccountService;
+
     @PostMapping("/login")
+    @ApiOperation("登录")
     public Resp<LoginVo> login(@Validated @RequestBody Req<LoginReq> req, Errors errors) {
         LoginReq loginReq = req.getData();
         String account = loginReq.getAccount();
@@ -88,10 +96,8 @@ public class LoginController {
             return Resp.error("用户禁用中");
         }
 
-        String orglPwd = user.getPasswd();
-        String salt = user.getSalt();
-        String inPwd = PasswdUtil.pwdEncrypt(passwd, salt);
-        if (StringUtils.isBlank(orglPwd) || !orglPwd.equals(inPwd)) {
+        boolean accountCheck =userAccountService.checkAccount(user,passwd);
+        if(!accountCheck) {
             return Resp.error("密码不正确");
         }
         LoginVo loginVo = loginService.login(user,loginReq);
@@ -145,23 +151,33 @@ public class LoginController {
     }
 
     @PostMapping("/logout")
+    @ApiOperation("登出")
     @AppLogin
     public Resp<Void> logout(@RequestBody Req<Void> req) {
         logger.info("LoginController logout start...............");
-        Resp<Void> resp = new Resp<>();
-        try {
-        } catch (Exception e) {
+        LoginUser loginUser = LoginContext.getLoginUser();
+        if(loginUser==null) {
+            return Resp.success();
         }
-        return  resp;
+        Long userId = loginUser.getUserId();
+        loginService.logout(userId);
+        return Resp.success();
     }
 
     @PostMapping("/checkLogin")
+    @ApiOperation("检查是否登录")
+    @AppLogin
     public Resp<Void> checkLogin(@RequestBody @Valid Req<Void> req) {
         logger.info("LoginController checkLogin start...............");
-        Resp<Void> resp = new Resp<>();
-        try {
-        } catch (Exception e) {
+        LoginUser loginUser = LoginContext.getLoginUser();
+        if(loginUser==null) {
+            return Resp.error("用户未登录");
         }
-        return  resp;
+        Long userId = loginUser.getUserId();
+        boolean rt =loginService.checkLogin(userId);
+        if(!rt) {
+            return Resp.error("用户未登录");
+        }
+        return Resp.success();
     }
 }

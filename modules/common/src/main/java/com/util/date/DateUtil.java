@@ -26,6 +26,9 @@ public class DateUtil {
 
     public static final String FMT_YYMMDD="yyyyMMdd";
 
+    //一天的毫秒数
+    public static long DAY_MILIS = 86400000L;
+
     public static Date getDate(String timeStr, String fmt) {
         SimpleDateFormat format = new SimpleDateFormat(fmt);
         Date date = null;
@@ -53,6 +56,14 @@ public class DateUtil {
             return false;
         }
         return false;
+    }
+
+    public static long getDayDiff(Date date1, Date date2) {
+        long timea = date1.getTime();
+        long timeend = date2.getTime();
+        long diff = (timeend - timea) / DAY_MILIS;
+        long day = Math.abs(diff);
+        return day;
     }
 
     /**将秒或分转成可读的数据 显示**/

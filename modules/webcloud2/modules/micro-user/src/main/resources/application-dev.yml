@@ -62,7 +62,7 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: 0
-      field-strategy: ignored
+      field-strategy: not_null
       logic-delete-value: 0
       logic-not-delete-value: 1
       table-prefix:

@@ -48,7 +48,8 @@ public class HttpRenderUtil {
 	
 	public static void renderJSON(String json, HttpServletResponse response){
 		try {
-			render(json, "text/x-json;charset=UTF-8", response);
+			//render(json, "text/x-json;charset=UTF-8", response);
+			render(json, "application/json;charset=UTF-8", response);
 		} catch (IOException e) {
 			logger.error(e);
 		}

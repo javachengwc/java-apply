@@ -27,7 +27,7 @@ public class SmsController {
     @Autowired
     private SmsService smsService;
 
-    @PostMapping("sendCaptcha")
+    @PostMapping("/sendCaptcha")
     public Resp<Void> sendCaptcha(@RequestBody Req<String> req) {
         logger.info("SmsController sendCaptcha start,req={}",req);
         Resp<Void> resp = new Resp<Void>();

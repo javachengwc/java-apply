@@ -10,4 +10,7 @@ public interface UserService extends IService<User> {
 
     //根据第三方账号查询用户
     public User queryByThirdAccount(String thirdAccount,Integer thirdType);
+
+    //检查用户是否正常(禁用的用户返回false)
+    public boolean checkUserNormal(User user);
 }
