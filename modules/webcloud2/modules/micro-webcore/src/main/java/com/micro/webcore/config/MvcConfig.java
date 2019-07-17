@@ -3,6 +3,7 @@ package com.micro.webcore.config;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.micro.webcore.interceptor.AppLoginInterceptor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -16,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 @Configuration
+@ConditionalOnProperty(prefix = "project.assemble", name = "mvc", havingValue = "true",matchIfMissing=true)
 public class MvcConfig extends WebMvcConfigurationSupport {
 
     @Bean

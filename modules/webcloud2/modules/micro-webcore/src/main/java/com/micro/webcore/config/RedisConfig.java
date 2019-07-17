@@ -1,5 +1,6 @@
 package com.micro.webcore.config;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +12,7 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
+@ConditionalOnProperty(prefix = "project.assemble", name = "redis", havingValue = "true",matchIfMissing=true)
 public class RedisConfig extends CachingConfigurerSupport {
 
     public KeyGenerator keyGenerator() {

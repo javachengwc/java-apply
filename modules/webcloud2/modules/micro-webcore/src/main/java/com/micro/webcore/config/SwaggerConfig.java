@@ -21,7 +21,7 @@ import java.util.List;
 
 @Configuration
 @EnableSwagger2
-@ConditionalOnProperty(prefix = "project", name = "swagger-open", havingValue = "true")
+@ConditionalOnProperty(prefix = "project.assemble", name = "swagger", havingValue = "true",matchIfMissing=true)
 public class SwaggerConfig {
 
     @Value("${spring.application.name}")
