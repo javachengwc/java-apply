@@ -1,0 +1,9 @@
+CREATE FUNCTION lgat_distance(lgn1 double,lat1 double,lgn2 double,lat2 double) RETURNS double
+BEGIN
+-- 传入两个经纬度，算出距离
+    declare distance double;
+    set distance = ROUND(6378.138 * 2 * ASIN(SQRT(POW(SIN((lat1 * PI() / 180 - lat2 * PI() / 180) / 2),2) +
+COS(lat1 * PI() / 180) * COS(lat2 * PI() / 180) * POW(SIN((lgn1 * PI() / 180 - lgn2 * PI() / 180) / 2),2))) * 1000
+);
+    return distance;
+end

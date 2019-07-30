@@ -32,8 +32,8 @@ public class NumberMain {
         bd = bd.setScale(2, BigDecimal.ROUND_HALF_UP);
 
         System.out.println("---percent="+percent +" "+new Double(bd.doubleValue()).toString() +" ---bd="+bd.doubleValue());
-
-
+        BigDecimal a31 = new BigDecimal(3).divide(new BigDecimal(3),6,BigDecimal.ROUND_HALF_UP);
+        System.out.println(a31);
         String commission="5.0";
 
         Float f = Float.parseFloat(commission);
