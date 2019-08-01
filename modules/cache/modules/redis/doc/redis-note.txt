@@ -103,6 +103,8 @@ config get requirepass            ---获取密码
 
 redis-cli -h 127.0.0.1 -n 1 keys "cat_20150901_2_*" | xargs redis-cli -h 127.0.0.1 -n 1  del
 ---批量删除host为127.0.0.1 数据库为1的redis里面以cat_20150901_2_开头的所有key
+redis-cli -p 6379 -a "password" -n 1 keys "aaa*" | xargs redis-cli -p 6379 -a "password" -n 1 del
+---批量删除数据库为1的redis里面以aaa开头的所有key, -a 密码，如果密码有特殊字符，整个密码加双引号即可
 
 redis-cli -h 127.0.0.1 -p 6381  -a redispass info replication
 ---查看redis主从情况
