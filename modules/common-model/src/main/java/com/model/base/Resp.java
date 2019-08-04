@@ -1,27 +1,21 @@
 package com.model.base;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
+@ApiModel(value = "resp", description = "响应")
+@Data
 public class Resp<T> {
 
+    @ApiModelProperty("响应头")
     private RespHeader header = new RespHeader();
 
+    @ApiModelProperty("响应数据")
     private T data;
 
     public RespHeader getHeader() {
         return header;
-    }
-
-    public void setHeader(RespHeader header) {
-        this.header = header;
-    }
-
-    public T getData() {
-        return data;
-    }
-
-    public void setData(T data) {
-        this.data = data;
     }
 
     public boolean isSuccess() {
@@ -31,22 +25,18 @@ public class Resp<T> {
         return false;
     }
 
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+    public static <T> Resp<T> error() {
+        return Resp.error("");
     }
 
     public static <T> Resp<T> error(String msg) {
-        Resp<T> resp = new Resp<T>();
-        resp.getHeader().setCode(RespHeader.FAIL);
-        resp.getHeader().setMsg(msg);
-        return resp;
+        return Resp.error(RespHeader.FAIL,msg);
     }
 
     public static <T> Resp<T> error(Resp<?> bizResp) {
-        Resp<T> resp = new Resp<T>();
-        resp.getHeader().setCode(bizResp.getHeader().getCode());
-        resp.getHeader().setMsg(bizResp.getHeader().getMsg());
-        return resp;
+        Integer code =bizResp.getHeader().getCode();
+        String msg =bizResp.getHeader().getMsg();
+        return Resp.error(code,msg);
     }
 
     public static <T> Resp<T> error(Integer code,String msg) {
@@ -56,7 +46,15 @@ public class Resp<T> {
         return resp;
     }
 
-    public static <T> Resp<T> success(T data) {
+    public static <T> Resp<T> success() {
+        return success("");
+    }
+
+    public static <T> Resp<T> success(String msg) {
+        return  success(null,msg);
+    }
+
+    public static <T> Resp<T> data(T data) {
         return  success(data,null);
     }
 
