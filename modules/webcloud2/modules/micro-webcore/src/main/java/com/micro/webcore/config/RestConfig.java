@@ -3,6 +3,7 @@ package com.micro.webcore.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -11,6 +12,7 @@ import org.springframework.core.env.Environment;
 
 @Configuration
 @ComponentScan(basePackages = { "com.micro.webcore" })
+@EnableFeignClients(basePackages={"com.micro.webcore"})
 public class RestConfig implements EnvironmentAware {
 
     private static Logger logger = LoggerFactory.getLogger(RestConfig.class);

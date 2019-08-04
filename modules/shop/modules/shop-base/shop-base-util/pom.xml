@@ -17,9 +17,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.app</groupId>
+            <groupId>com.common</groupId>
             <artifactId>common</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>log4j</groupId>
