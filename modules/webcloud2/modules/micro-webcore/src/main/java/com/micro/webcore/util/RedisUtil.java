@@ -1,4 +1,4 @@
-package com.micro.user.util;
+package com.micro.webcore.util;
 
 import org.springframework.data.redis.core.*;
 

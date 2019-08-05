@@ -1,10 +1,7 @@
 package com.micro.user.controller;
 
-import com.micro.user.annotation.AppLogin;
-import com.micro.user.context.LoginContext;
 import com.micro.user.enums.LoginTypeEnum;
 import com.micro.user.enums.UserStatuEnum;
-import com.micro.user.model.LoginUser;
 import com.micro.user.model.pojo.User;
 import com.micro.user.model.req.LoginReq;
 import com.micro.user.model.vo.LoginVo;
@@ -12,8 +9,11 @@ import com.micro.user.service.LoginService;
 import com.micro.user.service.SmsService;
 import com.micro.user.service.UserAccountService;
 import com.micro.user.service.UserService;
-import com.shop.base.model.Req;
-import com.shop.base.model.Resp;
+import com.micro.webcore.annotation.AppLogin;
+import com.micro.webcore.context.LoginContext;
+import com.micro.webcore.model.LoginUser;
+import com.model.base.Req;
+import com.model.base.Resp;
 import com.util.regex.RegexUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -101,8 +101,7 @@ public class LoginController {
             return Resp.error("密码不正确");
         }
         LoginVo loginVo = loginService.login(user,loginReq);
-        Resp<LoginVo> resp = Resp.success(loginVo);
-        return resp;
+        return Resp.data(loginVo);
     }
 
     //手机验证码登录
@@ -127,8 +126,7 @@ public class LoginController {
             return Resp.error("验证码不正确");
         }
         LoginVo loginVo = loginService.login(user,loginReq);
-        Resp<LoginVo> resp = Resp.success(loginVo);
-        return resp;
+        return Resp.data(loginVo);
     }
 
     //第三方账号登录
@@ -146,8 +144,7 @@ public class LoginController {
             return Resp.error("用户禁用中");
         }
         LoginVo loginVo = loginService.login(user,loginReq);
-        Resp<LoginVo> resp = Resp.success(loginVo);
-        return resp;
+        return Resp.data(loginVo);
     }
 
     @PostMapping("/logout")

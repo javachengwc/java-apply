@@ -1,11 +1,10 @@
 package com.micro.user.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.micro.user.dao.ext.UserWalletDao;
-import com.micro.user.dao.mapper.UserWalletMapper;
 import com.micro.user.dao.plus.UserWalletPlusMapper;
 import com.micro.user.model.pojo.UserWallet;
-import com.micro.user.model.pojo.UserWalletExample;
 import com.micro.user.model.req.UserWalletReq;
 import com.micro.user.service.UserWalletService;
 import org.dromara.hmily.annotation.Hmily;
@@ -13,8 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class UserWalletServiceImpl extends ServiceImpl<UserWalletPlusMapper, UserWallet> implements UserWalletService {
@@ -24,17 +21,9 @@ public class UserWalletServiceImpl extends ServiceImpl<UserWalletPlusMapper, Use
     @Autowired
     private UserWalletDao userWalletDao;
 
-    @Autowired
-    private UserWalletMapper userWalletMapper;
-
     public UserWallet queryByUser(Long userId) {
-        UserWalletExample example = new UserWalletExample();
-        example.createCriteria().andUserIdEqualTo(userId);
-        List<UserWallet> list = userWalletMapper.selectByExample(example);
-        if(list!=null && list.size()>0) {
-            return list.get(0);
-        }
-        return null;
+        UserWallet userWallet =baseMapper.selectOne(new QueryWrapper<UserWallet>().eq("user_id",userId));
+        return userWallet;
     }
 
     //confirmDec,cancelDec方法定义必须与decreaseAmount一致，不然tcc事务会报错

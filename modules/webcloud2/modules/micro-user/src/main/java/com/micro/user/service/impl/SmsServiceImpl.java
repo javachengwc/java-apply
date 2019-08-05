@@ -6,4 +6,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class SmsServiceImpl implements SmsService {
 
+    //验证验证码
+    public boolean checkCode(String mobile,String code) {
+         return true;
+    }
 }

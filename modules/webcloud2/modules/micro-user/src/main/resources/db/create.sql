@@ -5,6 +5,8 @@ create table user
    nick_name varchar(20) comment '用户昵称',
    sex int comment '性别 0--女 1--男',
    mobile varchar(11) comment '用户手机号',
+   passwd varchar(32) default '' comment '密码',
+   salt varchar(10) default '' comment '盐',
    statu int default 0 comment '用户状态 0--正常 1--禁用',
    reg_comefrom int comment '注册来源 1--pc 2--app',
    reg_time datetime comment '注册时间',

@@ -17,6 +17,8 @@ eureka:
 
 #负载均衡
 ribbon:
+  ReadTimeout: 10000
+  ConnectTimeout: 5000
   MaxAutoRetries: 0
   MaxAutoRetriesNextServer: 0
   OkToRetryOnAllOperations: false
@@ -54,6 +56,17 @@ spring:
       testWhileIdle: ${spring.datasource.testWhileIdle}
       testOnBorrow: ${spring.datasource.testOnBorrow}
       testOnReturn: ${spring.datasource.testOnReturn}
+  redis:
+      host: 127.0.0.1
+      port: 6379
+      password:
+      database: 0
+
+## 分布式锁 ##
+redisson:
+  address: redis://127.0.0.1:6379
+  password:
+  database: 0
 
 #mybatisplus插件
 mybatis-plus:
@@ -65,7 +78,7 @@ mybatis-plus:
       field-strategy: not_null
       logic-delete-value: 0
       logic-not-delete-value: 1
-      table-prefix:
+      table-prefix: tb_
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: true
@@ -93,3 +106,10 @@ org:
                  url :  jdbc:mysql://localhost:3306/tcc?useUnicode=true&characterEncoding=utf8&useSSL=false
                  username : root
                  password : root
+#日志
+logging:
+  level.root: info
+  level.com.micro.user.dao: debug
+  path: /data/logs
+  config:
+    classpath: logback-spring.xml

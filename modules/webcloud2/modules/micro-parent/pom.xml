@@ -16,9 +16,18 @@
     <name>micro-parent</name>
 
     <properties>
-        <hmily.version>2.0.0-RELEASE</hmily.version>
         <swagger.version>2.7.0</swagger.version>
         <lombok.version>1.18.4</lombok.version>
+        <jwt.version>0.9.0</jwt.version>
+        <mysql-connector.version>5.1.46</mysql-connector.version>
+        <druid.version>1.1.12</druid.version>
+        <mybatis-starter.version>2.0.1</mybatis-starter.version>
+        <mp-starter.version>3.1.0</mp-starter.version>
+        <pagehelper.version>5.1.2</pagehelper.version>
+        <pagehelper-auto.version>1.2.3</pagehelper-auto.version>
+        <redisson.version>3.5.4</redisson.version>
+        <jedis.version>2.9.0</jedis.version>
+        <hmily.version>2.0.0-RELEASE</hmily.version>
     </properties>
 
     <dependencies>
@@ -61,6 +70,61 @@
                 <version>${lombok.version}</version>
             </dependency>
             <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>${swagger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger-ui</artifactId>
+                <version>${swagger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-bean-validators</artifactId>
+                <version>${swagger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql-connector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid</artifactId>
+                <version>${druid.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper</artifactId>
+                <version>${pagehelper.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper-spring-boot-autoconfigure</artifactId>
+                <version>${pagehelper-auto.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>${mybatis-starter.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mp-starter.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jwt.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.dromara</groupId>
                 <artifactId>hmily-annotation</artifactId>
                 <version>${hmily.version}</version>
@@ -84,21 +148,6 @@
                 <groupId>org.dromara</groupId>
                 <artifactId>hmily-spring-boot-starter-springcloud</artifactId>
                 <version>${hmily.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.springfox</groupId>
-                <artifactId>springfox-swagger2</artifactId>
-                <version>${swagger.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.springfox</groupId>
-                <artifactId>springfox-swagger-ui</artifactId>
-                <version>${swagger.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.springfox</groupId>
-                <artifactId>springfox-bean-validators</artifactId>
-                <version>${swagger.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

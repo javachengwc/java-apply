@@ -1,6 +1,6 @@
 package com.micro.user.interceptor;
 
-import com.shop.base.model.Resp;
+import com.model.base.Resp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -23,8 +23,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public Resp<Object> errorHandler(Exception e) {
         logger.info("GlobalExceptionHandler errorHandler start ,param exception={}", e);
-        Resp<Object> resp = Resp.error("服务异常");
-        return resp;
+        return Resp.error("服务异常");
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

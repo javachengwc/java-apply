@@ -3,9 +3,8 @@ package com.micro.user.controller;
 import com.micro.user.model.pojo.User;
 import com.micro.user.model.vo.UserVo;
 import com.micro.user.service.UserService;
-import com.shop.base.model.Req;
-import com.shop.base.model.Resp;
-import com.shop.base.model.RespHeader;
+import com.model.base.Req;
+import com.model.base.Resp;
 import com.shop.base.util.TransUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -26,21 +25,15 @@ public class UserController {
     @ApiOperation(value = "根据id查询用户", notes = "根据id查询用户")
     @RequestMapping(value = "/queryUserById", method = RequestMethod.POST)
     public Resp<UserVo> queryUserById(@RequestBody Req<Long> req) {
-        Resp<UserVo> resp = new Resp<UserVo>();
         Long userId = req.getData();
         if(userId==null) {
-            resp.getHeader().setCode(RespHeader.FAIL);
-            resp.getHeader().setMsg("参数校验错误");
-            return resp;
+            return Resp.error("参数错误");
         }
         User user  = userService.getById(userId);
         if(user==null) {
-            resp.getHeader().setCode(RespHeader.FAIL);
-            resp.getHeader().setMsg("无数据");
-            return resp;
+            return Resp.error("无用户信息");
         }
         UserVo userVo = TransUtil.transEntity(user,UserVo.class);
-        resp.setData(userVo);
-        return resp;
+        return Resp.data(userVo);
     }
 }

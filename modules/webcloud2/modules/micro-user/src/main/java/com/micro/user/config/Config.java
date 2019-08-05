@@ -10,7 +10,6 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.core.env.Environment;
 
 @Configuration
-@ImportResource({"classpath:applicationContext.xml"})
 public class Config implements EnvironmentAware {
 
     private static Logger logger = LoggerFactory.getLogger(Config.class);
@@ -34,19 +33,4 @@ public class Config implements EnvironmentAware {
         return environment;
     }
 
-    @Bean
-    public BeanPostProcessor beanPostProcessor() {
-        return new BeanPostProcessor() {
-            @Override
-            public Object postProcessBeforeInitialization(Object o, String s) {
-                logger.info("BeanPostProcessor object:" + o.getClass().getSimpleName());
-                return o;
-            }
-
-            @Override
-            public Object postProcessAfterInitialization(Object o, String s) {
-                return o;
-            }
-        };
-    }
 }

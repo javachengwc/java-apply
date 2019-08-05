@@ -4,7 +4,6 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
@@ -36,18 +35,13 @@ public class DbConfig {
     }
 
     @Bean
-    public PaginationInterceptor paginationInterceptor() {
-        return new PaginationInterceptor();
-    }
-
-    @Bean
     public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception {
         MybatisSqlSessionFactoryBean factoryBean = new MybatisSqlSessionFactoryBean();
         factoryBean.setDataSource(dataSource);
         factoryBean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:/sqlmap/**/*.xml"));
         factoryBean.setTypeAliasesPackage("com.micro.user.model");
         SqlSessionFactory sqlSessionFactory = factoryBean.getObject();
-        sqlSessionFactory.getConfiguration().addInterceptor(paginationInterceptor());
+       // sqlSessionFactory.getConfiguration().addInterceptor(new PaginationInterceptor());
         sqlSessionFactory.getConfiguration().setMapUnderscoreToCamelCase(true);
         return sqlSessionFactory;
 

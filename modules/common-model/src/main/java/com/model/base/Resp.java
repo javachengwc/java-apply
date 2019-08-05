@@ -14,6 +14,14 @@ public class Resp<T> {
     @ApiModelProperty("响应数据")
     private T data;
 
+    public Resp() {
+
+    }
+
+    public Resp(T data) {
+        this.data=data;
+    }
+
     public RespHeader getHeader() {
         return header;
     }
