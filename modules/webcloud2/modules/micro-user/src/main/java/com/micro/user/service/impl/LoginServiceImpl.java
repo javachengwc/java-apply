@@ -80,9 +80,8 @@ public class LoginServiceImpl implements LoginService {
         return false;
     }
 
-    //根据token检查用户登录状态
-    @Override
-    public boolean checkLoginByToken(Long userId,String token) {
+    //检查token登录
+    public boolean checkTokenLogin(Long userId,String token) {
         String tokenKey = CommonConstant.LOGIN_TOKEN_PRE+userId;
         Object cacheObj = RedisUtil.get(redisTemplate,tokenKey);
         String cacheToken = cacheObj==null?null:cacheObj.toString();
@@ -92,21 +91,28 @@ public class LoginServiceImpl implements LoginService {
         return false;
     }
 
-    public boolean refreshToken(Long userId) {
-        User user = userService.getById(userId);
-        if(!userService.checkUserNormal(user)) {
-            return false;
+    //延期token
+    public boolean deferToken(Long userId,String token) {
+        String tokenKey = CommonConstant.LOGIN_TOKEN_PRE+userId;
+        Object cacheObj = RedisUtil.get(redisTemplate,tokenKey);
+        String cacheToken =cacheObj==null?null:cacheObj.toString();
+        if(cacheToken!=null && !cacheToken.equals(token)) {
+            logger.info("LoginServiceImpl deferToken 缓存token与入参token不一样,userId={}",userId);
         }
+        RedisUtil.set(redisTemplate,tokenKey,token,JwtConstant.TOKEN_EEPIRATION);
+        return true;
+    }
+
+    //刷新token
+    public String refreshToken(Long userId) {
+        User user = userService.getById(userId);
         String mobile =user.getMobile();
         String randomStr = RandomUtil.getRandomString(6);
         String token = JwtTokenUtil.generateToken(userId,mobile, randomStr);
 
         String tokenKey = CommonConstant.LOGIN_TOKEN_PRE+userId;
         RedisUtil.set(redisTemplate,tokenKey,token,JwtConstant.TOKEN_EEPIRATION);
-
-        HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
-        response.setHeader(JwtConstant.HEADER_TOKEN, token);
-        return true;
+        return token;
     }
 
 }
