@@ -49,6 +49,15 @@ public class StringMain {
 
     public static void main(String args []) throws Exception
 	{
+        String data ="28*30";
+        int index = data.lastIndexOf("*");
+        if(index>=0) {
+            String rateStr =data.substring(index+1);
+            System.out.println(data.substring(0,index));
+            if(NumberUtils.isNumber(rateStr)) {
+                System.out.println("haha"+rateStr);
+            }
+        }
 
 	    String dataa="{\"head\":{\"os\":\" \",\"aaa\":\" \",\"ccc\":\" \",\"token\":\"aaaa\",\"yyy\":\" \"}}";
 	    String aftera = dropInfo(dataa);

@@ -61,6 +61,10 @@ spring:
       port: 6379
       password:
       database: 0
+  servlet:
+      multipart:
+          max-file-size: 100MB
+          max-request-size: 500MB
 
 ## 分布式锁 ##
 redisson:
