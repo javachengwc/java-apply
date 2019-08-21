@@ -190,8 +190,8 @@ public final class NumberUtil {
         System.out.println(getDivide100(25));
         System.out.println(getDivide(25,3,2));
 
-        DecimalFormat format = new DecimalFormat( "#0.00");
-        System.out.println(formatToStr(500.2,format) );
+        DecimalFormat format = new DecimalFormat( "#.######");
+        System.out.println(formatToStr(500.20,format) );
 
         System.out.println(transKilobitData(-885000221003l,true));
 

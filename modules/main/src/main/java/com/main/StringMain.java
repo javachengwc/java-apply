@@ -23,6 +23,7 @@ public class StringMain {
 
     private static  Pattern pattern = Pattern.compile("C\\d{6}0*([1-9]\\d*)");
 
+    private static String  numZimu="^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,9}$";
 
     //${}匹配
     private static String programTemplateStr="\\$\\{(.*?)\\}";
@@ -49,6 +50,9 @@ public class StringMain {
 
     public static void main(String args []) throws Exception
 	{
+	    String ccca ="aabbcc123";
+	    System.out.println("----------"+ccca.matches(numZimu));
+
         String data ="28*30";
         int index = data.lastIndexOf("*");
         if(index>=0) {
