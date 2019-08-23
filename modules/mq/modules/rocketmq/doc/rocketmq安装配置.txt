@@ -19,7 +19,7 @@ export NAMESRV_ADDR=localhost:9876
 ./bin/mqadmin brokerStatus  -n localhost:9876                          ###查看mq状态
 ./bin/mqadmin topicList     -n localhost:9876                          ###列出topic
 ./bin/mqadmin topicStatus   -n localhost:9876 -t TopicTest             ###查看某topic队列分布的详细信息
-./bin/mqadmin updateTopic   -n localhost:9876 -t test                  ###创建一个名为test的topic
+./bin/mqadmin updateTopic   -b localhost:10911 -n localhost:9876 -t test   ###创建一个名为test的topic,默认读和写的队列数都是8个。
 ###如果这里报错NoSuchAlgorithmException: Algorithm HmacSHA1 not available，
 将$JAVA_HOME/jre/lib/ext/下的sunjce_provider.jar放到rocketmq的lib目录/data/soft/rocketmq/lib下即可。
 
