@@ -1,0 +1,26 @@
+server:
+  port: 8000
+
+#actuator
+management:
+  security:
+    enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: ["health","info","beans","configprops","env","heapdump","threaddump","mappings","loggers","refresh"]
+
+spring:
+  application:
+    name: rocketmq
+  servlet:
+      multipart:
+          max-file-size: 100MB
+          max-request-size: 500MB
+#日志
+logging:
+  level.root: info
+  level.com.rocketmq: debug
+  path: /data/logs
+  config:
+    classpath: logback-spring.xml

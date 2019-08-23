@@ -19,6 +19,7 @@
 	<modules>
         <module>modules/kafka</module>
         <module>modules/activemq</module>
+		<module>modules/rocketmq</module>
 	</modules>	
 	
 </project>
