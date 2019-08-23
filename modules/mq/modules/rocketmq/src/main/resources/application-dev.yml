@@ -12,11 +12,28 @@ management:
 
 spring:
   application:
-    name: rocketmq
+      name: rocketmq
   servlet:
       multipart:
           max-file-size: 100MB
           max-request-size: 500MB
+
+###producer 消息最大长度 默认1024*4(4M)，发送消息超时时间,默认3000
+rocketmq:
+  producer:
+    isOnOff: on
+    namesrvAddr: localhost:9876
+    maxMessageSize: 4096
+    sendMsgTimeout: 3000
+    retryTimesWhenSendFailed: 2
+  consumer:
+    isOnOff: on
+    namesrvAddr: localhost:9876
+    topics: DemoTopic~*
+    consumeThreadMin: 20
+    consumeThreadMax: 64
+    consumeMessageBatchMaxSize: 1
+
 #日志
 logging:
   level.root: info
