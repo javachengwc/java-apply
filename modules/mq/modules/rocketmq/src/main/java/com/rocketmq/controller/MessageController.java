@@ -24,7 +24,7 @@ public class MessageController {
     @RequestMapping(value = "/pushMsg", method = RequestMethod.POST)
     public Resp<Void> pushMsg(@RequestBody Req<MessageReq> req) {
         MessageReq reqData = req.getData();
-        messageService.pushMsg(reqData.getContent(),reqData.getType());
+        messageService.pushMsg(reqData);
         return Resp.success();
     }
 }
