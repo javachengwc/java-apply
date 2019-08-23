@@ -1,3 +1,53 @@
 -----------------------------------rocketmq安装配置------------------------------------
+rocketmq是一款分布式消息系统。官网地址:http://rocketmq.apache.org,项目地址在github上
 
+安装过程如下:
+wget http://mirror.bit.edu.cn/apache/rocketmq/4.4.0/rocketmq-all-4.4.0-bin-release.zip
+unzip rocketmq-all-4.4.0-bin-release.zip
+mv rocketmq-all-4.4.0-bin-release /data/soft/rocketmq
+cd rocketmq
+nohup ./bin/mqnamesrv &                                                ###启动nameserver
+nohup ./bin/mqbroker -n localhost:9876 autoCreateTopicEnable=true &    ###可自动创建topic模式下启动ma代理
+./bin/mqshutdown namesrv                                               ##停止nameserver
+./bin/mqshutdown broker                                                ##停止mqbroker
+
+export NAMESRV_ADDR=localhost:9876
+./bin/tools.sh org.apache.rocketmq.example.quickstart.Producer         ###跑生产者样例
+export NAMESRV_ADDR=localhost:9876
+./bin/tools.sh org.apache.rocketmq.example.quickstart.Consumer         ###跑消费者样例
+
+./bin/mqadmin brokerStatus  -n localhost:9876                          ###查看mq状态
+./bin/mqadmin topicList     -n localhost:9876                          ###列出topic
+./bin/mqadmin topicStatus   -n localhost:9876 -t TopicTest             ###查看某topic队列分布的详细信息
+./bin/mqadmin updateTopic   -n localhost:9876 -t test                  ###创建一个名为test的topic
+###如果这里报错NoSuchAlgorithmException: Algorithm HmacSHA1 not available，
+将$JAVA_HOME/jre/lib/ext/下的sunjce_provider.jar放到rocketmq的lib目录/data/soft/rocketmq/lib下即可。
+
+/data/soft/rocketmq/bin/runbroker.sh                                   ###可配置mqbroker的jvm内存
+/data/soft/rocketmq/conf/broker.conf                                   ###mqbroker的配置文件
+/data/soft/rocketmq/conf/logback_broker.xml                            ###mqbroker的日志配置文件
+/data/soft/rocketmq/conf/logback_namesrv.xml                           ###nameserver的日志配置文件
+/data/soft/rocketmq/conf/2m-2s-sync
+/data/soft/rocketmq/conf/2m-2s-async
+###rocketmq集群的样例配置，2m表示mqbroker有2个master，2s表示mqbroker有2个slave，sync表示同步刷盘，asyna表示异步刷盘和replication，
+默认情况下rocketmq是async模式的，这样性能会非常好，如果需要保证消息的可靠性，建议使用sync的方式。
+
+rocketmq集群安装配置:
+rocket1 > nohup ./bin/mqnamesrv &                                      ###启动两个nameserver
+rocket2 > nohup ./bin/mqnamesrv &
+./bin/mqbroker -c ./conf/2m-2s-sync/broker-a.properties   -n rocket1:9876,rocket2:9876
+./bin/mqbroker -c ./conf/2m-2s-sync/broker-a-s.properties -n rocket1:9876,rocket2:9876
+./bin/mqbroker -c ./conf/2m-2s-sync/broker-b.properties   -n rocket1:9876,rocket2:9876
+./bin/mqbroker -c ./conf/2m-2s-sync/broker-b-s.properties -n rocket1:9876,rocket2:9876
+                                                                       ###启动2个master和2个slave
+###如果单机启动多个broker,需要修改每个broker的端口，避免端口冲突,borker的默认端口是10911
+vim broker-b.properties
+    brokerClusterName = DefaultCluster
+    brokerName = broker-b
+    brokerId = 0
+    deleteWhen = 04
+    fileReservedTime = 48
+    brokerRole = ASYNC_MASTER
+    flushDiskType = ASYNC_FLUSH
+    listenPort = 11911
 ---------------------------------------------------------------------------------------
