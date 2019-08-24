@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration  scan="true" scanPeriod="60 seconds" debug="false">
+    <contextName>logback</contextName>
+
+    <springProperty name="LOG_PATH" source="logging.path" defaultValue="/data/logs/micro-basic" />
+
+    <!-- 配置日志的滚动时间 ，表示只保留最近 7天的日志-->
+    <property name="MAX_HISTORY" value="7"/>
+    <!-- 日志文件路径+日期-->
+    <property name="LOG_DIR" value="${LOG_PATH}/%d{yyyMMdd}" />
+    <!--对日志进行格式化-->
+    <property name="LOG_MSG" value="%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"/>
+    <!--文件大小，默认200MB-->
+    <property name="MAX_FILE_SIZE" value="200MB" />
+
+    <!--输出到控制台-->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--默认 按天生成日志-->
+    <appender name="logFile"  class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <Prudent>true</Prudent>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>
+                ${LOG_DIR}/micro-basic.%i.log
+            </FileNamePattern>
+            <!-- 配置日志的滚动时间 ，表示只保留最近 7 天的日志-->
+            <MaxHistory>${MAX_HISTORY}</MaxHistory>
+            <!--当天的日志大小超过 ${MAX_FILE_SIZE} 文件大小时候，新的内容写入新的文件， 默认10MB-->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                ${LOG_MSG}
+            </Pattern>
+        </layout>
+    </appender>
+
+    <logger level="info" name="com.micro.basic" additivity="false" >
+        <appender-ref ref="console"/>
+        <appender-ref ref="logFile" />
+    </logger>
+
+    <root level="info">
+        <appender-ref ref="console"/>
+        <appender-ref ref="logFile" />
+    </root>
+
+</configuration>

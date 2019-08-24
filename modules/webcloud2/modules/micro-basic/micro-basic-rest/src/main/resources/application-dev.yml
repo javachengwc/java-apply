@@ -1,0 +1,75 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8080/eureka
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 15
+server:
+  port: 8078
+
+#负载均衡
+ribbon:
+  ReadTimeout: 10000
+  ConnectTimeout: 5000
+  MaxAutoRetries: 0
+  MaxAutoRetriesNextServer: 0
+  OkToRetryOnAllOperations: false
+
+###################  spring配置  ###################
+spring:
+  application:
+    name: micro-basic
+  datasource:
+    url: jdbc:mysql://localhost:3306/micro_basic?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=UTC
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password:
+    database: 0
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 500MB
+
+## swagger开关
+project:
+  assemble:
+    swagger: true
+    redis: true
+
+## 分布式锁 ##
+redisson:
+  address: redis://localhost:6379
+  password:
+  database: 0
+
+mybatis-plus:
+  typeAliasesPackage: com.micro.basic.model,com.micro.basic.entity
+  mapper-locations: classpath*:sqlmap/**/**.xml
+  global-config:
+    db-config:
+      id-type: 0
+      field-strategy: not_null
+      logic-delete-value: 0
+      logic-not-delete-value: 1
+      table-prefix: tb_
+  configuration:
+    map-underscore-to-camel-case: true
+
+################### pageHelper ###################
+pagehelper:
+  helperDialect: mysql
+  reasonable: false
+  supportMethodsArguments: true
+  params: count=countSql
+
+logging:
+  level.root: info
+  level.com.micro.basic.dao: debug
+  path: /data/logs/micro-basic
