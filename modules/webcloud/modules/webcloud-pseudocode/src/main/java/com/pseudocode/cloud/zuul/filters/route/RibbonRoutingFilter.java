@@ -8,6 +8,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.pseudocode.netflix.zuul.ZuulFilter;
+import com.pseudocode.netflix.zuul.context.RequestContext;
+import com.pseudocode.netflix.zuul.exception.ZuulException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.cloud.netflix.ribbon.support.RibbonCommandContext;
@@ -20,25 +23,14 @@ import org.springframework.util.MultiValueMap;
 
 import com.netflix.client.ClientException;
 import com.netflix.hystrix.exception.HystrixRuntimeException;
-import com.netflix.zuul.ZuulFilter;
-import com.netflix.zuul.context.RequestContext;
-import com.netflix.zuul.exception.ZuulException;
 
-import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.REQUEST_ENTITY_KEY;
-import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.RETRYABLE_KEY;
-import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.RIBBON_ROUTING_FILTER_ORDER;
-import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.ROUTE_TYPE;
-import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.SERVICE_ID_KEY;
-import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.LOAD_BALANCER_KEY;
+import static com.pseudocode.cloud.zuul.filters.support.FilterConstants.REQUEST_ENTITY_KEY;
+import static com.pseudocode.cloud.zuul.filters.support.FilterConstants.RETRYABLE_KEY;
+import static com.pseudocode.cloud.zuul.filters.support.FilterConstants.RIBBON_ROUTING_FILTER_ORDER;
+import static com.pseudocode.cloud.zuul.filters.support.FilterConstants.ROUTE_TYPE;
+import static com.pseudocode.cloud.zuul.filters.support.FilterConstants.SERVICE_ID_KEY;
+import static com.pseudocode.cloud.zuul.filters.support.FilterConstants.LOAD_BALANCER_KEY;
 
-/**
- * Route {@link ZuulFilter} that uses Ribbon, Hystrix and pluggable http clients to send requests.
- * ServiceIds are found in the {@link RequestContext} attribute {@link org.springframework.cloud.netflix.zuul.filters.support.FilterConstants#SERVICE_ID_KEY}.
- *
- * @author Spencer Gibb
- * @author Dave Syer
- * @author Ryan Baxter
- */
 public class RibbonRoutingFilter extends ZuulFilter {
 
     private static final Log log = LogFactory.getLog(RibbonRoutingFilter.class);
@@ -207,11 +199,9 @@ public class RibbonRoutingFilter extends ZuulFilter {
         return method;
     }
 
-    protected void setResponse(ClientHttpResponse resp)
-            throws ClientException, IOException {
+    protected void setResponse(ClientHttpResponse resp) throws ClientException, IOException {
         RequestContext.getCurrentContext().set("zuulResponse", resp);
-        this.helper.setResponse(resp.getRawStatusCode(),
-                resp.getBody() == null ? null : resp.getBody(), resp.getHeaders());
+        this.helper.setResponse(resp.getRawStatusCode(), resp.getBody() == null ? null : resp.getBody(), resp.getHeaders());
     }
 
 }

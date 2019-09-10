@@ -13,6 +13,8 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletRequest;
 
+import com.pseudocode.netflix.zuul.ZuulFilter;
+import com.pseudocode.netflix.zuul.context.RequestContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.Header;
@@ -46,22 +48,11 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
-import com.netflix.zuul.ZuulFilter;
-import com.netflix.zuul.context.RequestContext;
 
-import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.REQUEST_ENTITY_KEY;
-import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.ROUTE_TYPE;
-import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.SIMPLE_HOST_ROUTING_FILTER_ORDER;
+import static com.pseudocode.cloud.zuul.filters.support.FilterConstants.REQUEST_ENTITY_KEY;
+import static com.pseudocode.cloud.zuul.filters.support.FilterConstants.ROUTE_TYPE;
+import static com.pseudocode.cloud.zuul.filters.support.FilterConstants.SIMPLE_HOST_ROUTING_FILTER_ORDER;
 
-/**
- * Route {@link ZuulFilter} that sends requests to predetermined URLs via apache
- * {@link HttpClient}. URLs are found in {@link RequestContext#getRouteHost()}.
- *
- * @author Spencer Gibb
- * @author Dave Syer
- * @author Bilal Alp
- * @author Gang Li
- */
 public class SimpleHostRoutingFilter extends ZuulFilter {
 
     private static final Log log = LogFactory.getLog(SimpleHostRoutingFilter.class);
@@ -176,10 +167,8 @@ public class SimpleHostRoutingFilter extends ZuulFilter {
     public Object run() {
         RequestContext context = RequestContext.getCurrentContext();
         HttpServletRequest request = context.getRequest();
-        MultiValueMap<String, String> headers = this.helper
-                .buildZuulRequestHeaders(request);
-        MultiValueMap<String, String> params = this.helper
-                .buildZuulRequestQueryParams(request);
+        MultiValueMap<String, String> headers = this.helper.buildZuulRequestHeaders(request);
+        MultiValueMap<String, String> params = this.helper.buildZuulRequestQueryParams(request);
         String verb = getVerb(request);
         InputStream requestEntity = getRequestBody(request);
         if (getContentLength(request) < 0) {
@@ -371,18 +360,10 @@ public class SimpleHostRoutingFilter extends ZuulFilter {
                 revertHeaders(response.getAllHeaders()));
     }
 
-    /**
-     * Add header names to exclude from proxied response in the current request.
-     * @param names
-     */
     protected void addIgnoredHeaders(String... names) {
         this.helper.addIgnoredHeaders(names);
     }
 
-    /**
-     * Determines whether the filter enables the validation for ssl hostnames.
-     * @return true if enabled
-     */
     boolean isSslHostnameValidationEnabled() {
         return this.sslHostnameValidationEnabled;
     }
