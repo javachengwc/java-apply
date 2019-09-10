@@ -2,9 +2,9 @@ package com.pseudocode.netflix.zuul;
 
 import com.pseudocode.netflix.zuul.context.RequestContext;
 import com.pseudocode.netflix.zuul.exception.ZuulException;
+import com.pseudocode.netflix.zuul.http.HttpServletRequestWrapper;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 

@@ -32,8 +32,6 @@ public class ZuulServlet extends HttpServlet {
         try {
             init((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse);
 
-            // Marks this request as having passed through the "Zuul engine", as opposed to servlets
-            // explicitly bound in web.xml, for which requests will not have the same data attached
             RequestContext context = RequestContext.getCurrentContext();
             context.setZuulEngineRan();
 

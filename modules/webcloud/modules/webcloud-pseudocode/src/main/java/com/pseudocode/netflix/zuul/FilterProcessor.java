@@ -21,9 +21,6 @@ public class FilterProcessor {
         usageNotifier = new BasicFilterUsageNotifier();
     }
 
-    /**
-     * @return the singleton FilterProcessor
-     */
     public static FilterProcessor getInstance() {
         return INSTANCE;
     }
