@@ -56,40 +56,31 @@ public class FeignClientsRegistrar implements ImportBeanDefinitionRegistrar,
 
     private void registerDefaultConfiguration(AnnotationMetadata metadata,
                                               BeanDefinitionRegistry registry) {
-        Map<String, Object> defaultAttrs = metadata
-                .getAnnotationAttributes(EnableFeignClients.class.getName(), true);
-
+        Map<String, Object> defaultAttrs = metadata.getAnnotationAttributes(EnableFeignClients.class.getName(), true);
         if (defaultAttrs != null && defaultAttrs.containsKey("defaultConfiguration")) {
             String name;
             if (metadata.hasEnclosingClass()) {
                 name = "default." + metadata.getEnclosingClassName();
-            }
-            else {
+            } else {
                 name = "default." + metadata.getClassName();
             }
-            registerClientConfiguration(registry, name,
-                    defaultAttrs.get("defaultConfiguration"));
+            registerClientConfiguration(registry, name, defaultAttrs.get("defaultConfiguration"));
         }
     }
 
-    public void registerFeignClients(AnnotationMetadata metadata,
-                                     BeanDefinitionRegistry registry) {
+    public void registerFeignClients(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
         ClassPathScanningCandidateComponentProvider scanner = getScanner();
         scanner.setResourceLoader(this.resourceLoader);
 
         Set<String> basePackages;
 
-        Map<String, Object> attrs = metadata
-                .getAnnotationAttributes(EnableFeignClients.class.getName());
-        AnnotationTypeFilter annotationTypeFilter = new AnnotationTypeFilter(
-                FeignClient.class);
-        final Class<?>[] clients = attrs == null ? null
-                : (Class<?>[]) attrs.get("clients");
+        Map<String, Object> attrs = metadata.getAnnotationAttributes(EnableFeignClients.class.getName());
+        AnnotationTypeFilter annotationTypeFilter = new AnnotationTypeFilter(FeignClient.class);
+        final Class<?>[] clients = attrs == null ? null : (Class<?>[]) attrs.get("clients");
         if (clients == null || clients.length == 0) {
             scanner.addIncludeFilter(annotationTypeFilter);
             basePackages = getBasePackages(metadata);
-        }
-        else {
+        } else {
             final Set<String> clientClasses = new HashSet<>();
             basePackages = new HashSet<>();
             for (Class<?> clazz : clients) {
@@ -103,29 +94,20 @@ public class FeignClientsRegistrar implements ImportBeanDefinitionRegistrar,
                     return clientClasses.contains(cleaned);
                 }
             };
-            scanner.addIncludeFilter(
-                    new AllTypeFilter(Arrays.asList(filter, annotationTypeFilter)));
+            scanner.addIncludeFilter(new AllTypeFilter(Arrays.asList(filter, annotationTypeFilter)));
         }
 
         for (String basePackage : basePackages) {
-            Set<BeanDefinition> candidateComponents = scanner
-                    .findCandidateComponents(basePackage);
+            Set<BeanDefinition> candidateComponents = scanner.findCandidateComponents(basePackage);
             for (BeanDefinition candidateComponent : candidateComponents) {
                 if (candidateComponent instanceof AnnotatedBeanDefinition) {
                     // verify annotated class is an interface
                     AnnotatedBeanDefinition beanDefinition = (AnnotatedBeanDefinition) candidateComponent;
                     AnnotationMetadata annotationMetadata = beanDefinition.getMetadata();
-                    Assert.isTrue(annotationMetadata.isInterface(),
-                            "@FeignClient can only be specified on an interface");
-
-                    Map<String, Object> attributes = annotationMetadata
-                            .getAnnotationAttributes(
-                                    FeignClient.class.getCanonicalName());
-
+                    Assert.isTrue(annotationMetadata.isInterface(),"@FeignClient can only be specified on an interface");
+                    Map<String, Object> attributes = annotationMetadata.getAnnotationAttributes(FeignClient.class.getCanonicalName());
                     String name = getClientName(attributes);
-                    registerClientConfiguration(registry, name,
-                            attributes.get("configuration"));
-
+                    registerClientConfiguration(registry, name, attributes.get("configuration"));
                     registerFeignClient(registry, annotationMetadata, attributes);
                 }
             }
@@ -159,8 +141,7 @@ public class FeignClientsRegistrar implements ImportBeanDefinitionRegistrar,
             alias = qualifier;
         }
 
-        BeanDefinitionHolder holder = new BeanDefinitionHolder(beanDefinition, className,
-                new String[] { alias });
+        BeanDefinitionHolder holder = new BeanDefinitionHolder(beanDefinition, className, new String[] { alias });
         BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
     }
 
@@ -178,7 +159,7 @@ public class FeignClientsRegistrar implements ImportBeanDefinitionRegistrar,
         );
     }
 
-    /* for testing */ String getName(Map<String, Object> attributes) {
+    String getName(Map<String, Object> attributes) {
         String name = (String) attributes.get("serviceId");
         if (!StringUtils.hasText(name)) {
             name = (String) attributes.get("name");
@@ -339,15 +320,12 @@ public class FeignClientsRegistrar implements ImportBeanDefinitionRegistrar,
         }
 
         @Override
-        public boolean match(MetadataReader metadataReader,
-                             MetadataReaderFactory metadataReaderFactory) throws IOException {
-
+        public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory) throws IOException {
             for (TypeFilter filter : this.delegates) {
                 if (!filter.match(metadataReader, metadataReaderFactory)) {
                     return false;
                 }
             }
-
             return true;
         }
     }

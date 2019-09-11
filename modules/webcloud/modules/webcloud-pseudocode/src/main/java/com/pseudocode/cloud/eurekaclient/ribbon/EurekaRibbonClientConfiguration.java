@@ -2,12 +2,14 @@ package com.pseudocode.cloud.eurekaclient.ribbon;
 
 import com.pseudocode.cloud.ribbon.RibbonUtils;
 import com.pseudocode.cloud.ribbon.ServerIntrospector;
+import com.pseudocode.netflix.eureka.client.appinfo.EurekaInstanceConfig;
+import com.pseudocode.netflix.eureka.client.discovery.EurekaClient;
+import com.pseudocode.netflix.eureka.client.discovery.EurekaClientConfig;
 import com.pseudocode.netflix.ribbon.core.client.config.IClientConfig;
 import com.pseudocode.netflix.ribbon.loadbalancer.server.ServerList;
 import com.pseudocode.netflix.ribbon.loadbalancer.IPing;
 import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DeploymentContext;
-import com.netflix.discovery.EurekaClientConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
+import javax.xml.ws.Provider;
 
 //ping：NIWSDiscoveryPing。
 //serverList：DomainExtractingServerList，内部是DiscoveryEnabledNIWSServerList，实际上是通过服务发现获取服务信息列表。
@@ -89,8 +92,7 @@ public class EurekaRibbonClientConfiguration {
                 .getValue(DeploymentContext.ContextKey.zone);
         if (this.clientConfig != null && StringUtils.isEmpty(zone)) {
             if (this.approximateZoneFromHostname && this.eurekaConfig != null) {
-                String approxZone = ZoneUtils
-                        .extractApproximateZone(this.eurekaConfig.getHostName(false));
+                String approxZone = ZoneUtils.extractApproximateZone(this.eurekaConfig.getHostName(false));
                 log.debug("Setting Zone To " + approxZone);
                 ConfigurationManager.getDeploymentContext().setValue(DeploymentContext.ContextKey.zone,
                         approxZone);

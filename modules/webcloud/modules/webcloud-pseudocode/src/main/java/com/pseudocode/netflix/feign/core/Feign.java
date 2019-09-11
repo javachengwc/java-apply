@@ -1,5 +1,9 @@
 package com.pseudocode.netflix.feign.core;
 
+import com.pseudocode.netflix.feign.core.codec.Decoder;
+import com.pseudocode.netflix.feign.core.codec.Encoder;
+import com.pseudocode.netflix.feign.core.codec.ErrorDecoder;
+
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -35,13 +39,12 @@ public abstract class Feign {
 
     public static class Builder {
 
-        private final List<RequestInterceptor> requestInterceptors =
-                new ArrayList<RequestInterceptor>();
+        private final List<RequestInterceptor> requestInterceptors = new ArrayList<RequestInterceptor>();
         private Logger.Level logLevel = Logger.Level.NONE;
         private Contract contract = new Contract.Default();
         private Client client = new Client.Default(null, null);
         private Retryer retryer = new Retryer.Default();
-        private Logger logger = new NoOpLogger();
+        private Logger logger = new Logger.NoOpLogger();
         private Encoder encoder = new Encoder.Default();
         private Decoder decoder = new Decoder.Default();
         private ErrorDecoder errorDecoder = new ErrorDecoder.Default();
@@ -135,9 +138,7 @@ public abstract class Feign {
             SynchronousMethodHandler.Factory synchronousMethodHandlerFactory =
                     new SynchronousMethodHandler.Factory(client, retryer, requestInterceptors, logger,
                             logLevel, decode404);
-            ParseHandlersByName handlersByName =
-                    new ParseHandlersByName(contract, options, encoder, decoder,
-                            errorDecoder, synchronousMethodHandlerFactory);
+            ParseHandlersByName handlersByName = new ParseHandlersByName(contract, options, encoder, decoder, errorDecoder, synchronousMethodHandlerFactory);
             return new ReflectiveFeign(handlersByName, invocationHandlerFactory);
         }
     }

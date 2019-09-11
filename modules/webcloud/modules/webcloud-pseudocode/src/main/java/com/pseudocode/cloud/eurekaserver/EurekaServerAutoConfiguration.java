@@ -11,6 +11,11 @@ import javax.servlet.Filter;
 import javax.ws.rs.Path;
 import javax.ws.rs.ext.Provider;
 
+import com.pseudocode.netflix.eureka.client.discovery.EurekaClient;
+import com.pseudocode.netflix.eureka.client.discovery.EurekaClientConfig;
+import com.pseudocode.netflix.eureka.core.EurekaServerConfig;
+import com.pseudocode.netflix.eureka.core.EurekaServerContext;
+import com.pseudocode.netflix.eureka.core.cluster.PeerEurekaNodes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -36,15 +41,10 @@ import org.springframework.util.ClassUtils;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.netflix.appinfo.ApplicationInfoManager;
-import com.netflix.discovery.EurekaClient;
-import com.netflix.discovery.EurekaClientConfig;
 import com.netflix.discovery.converters.EurekaJacksonCodec;
 import com.netflix.discovery.converters.wrappers.CodecWrapper;
 import com.netflix.discovery.converters.wrappers.CodecWrappers;
 import com.netflix.eureka.DefaultEurekaServerContext;
-import com.netflix.eureka.EurekaServerConfig;
-import com.netflix.eureka.EurekaServerContext;
-import com.netflix.eureka.cluster.PeerEurekaNodes;
 import com.netflix.eureka.registry.PeerAwareInstanceRegistry;
 import com.netflix.eureka.resources.DefaultServerCodecs;
 import com.netflix.eureka.resources.ServerCodecs;
@@ -151,8 +151,7 @@ public class EurekaServerAutoConfiguration extends WebMvcConfigurerAdapter {
                 this.eurekaClientConfig, serverCodecs, this.applicationInfoManager);
     }
 
-    static class RefreshablePeerEurekaNodes extends PeerEurekaNodes
-            implements ApplicationListener<EnvironmentChangeEvent> {
+    static class RefreshablePeerEurekaNodes extends PeerEurekaNodes implements ApplicationListener<EnvironmentChangeEvent> {
 
         public RefreshablePeerEurekaNodes(
                 final PeerAwareInstanceRegistry registry,
@@ -160,7 +159,7 @@ public class EurekaServerAutoConfiguration extends WebMvcConfigurerAdapter {
                 final EurekaClientConfig clientConfig,
                 final ServerCodecs serverCodecs,
                 final ApplicationInfoManager applicationInfoManager) {
-            super(registry, serverConfig, clientConfig, serverCodecs, applicationInfoManager);
+                super(registry, serverConfig, clientConfig, serverCodecs, applicationInfoManager);
         }
 
         @Override
@@ -210,9 +209,6 @@ public class EurekaServerAutoConfiguration extends WebMvcConfigurerAdapter {
                 serverContext);
     }
 
-    /**
-     * Register the Jersey filter
-     */
     @Bean
     public FilterRegistrationBean jerseyFilterRegistration(
             javax.ws.rs.core.Application eurekaJerseyApp) {
@@ -225,16 +221,11 @@ public class EurekaServerAutoConfiguration extends WebMvcConfigurerAdapter {
         return bean;
     }
 
-    /**
-     * Construct a Jersey {@link javax.ws.rs.core.Application} with all the resources
-     * required by the Eureka server.
-     */
     @Bean
     public javax.ws.rs.core.Application jerseyApplication(Environment environment,
                                                           ResourceLoader resourceLoader) {
 
-        ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(
-                false, environment);
+        ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false, environment);
 
         // Filter to include only classes that have a particular annotation.
         //

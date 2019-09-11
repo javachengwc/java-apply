@@ -1,0 +1,10 @@
+----------------------------------------eureka-note----------------------------------
+当客户端在服务列表中选择实例进行访问时，对于Zone和Region遵循这样的规则：
+优先访问同自己一个Zone中的实例，其次才访问其他Zone中的实例。
+通过Region和Zone的两层级别定义，配合实际部署的物理结构，可以有效的设计出区域性故障的容错集群。
+一个微服务应用只可以属于一个Region，如果不特别配置，就默认为default。可以通过eureka.client.region属性来定义。
+当没有特别为Region配置Zone的时候，将默认采用defaultZone，这也是配置参数eureka.client.serviceUrl.defaultZone的由来。
+若要为应用指定Zone，可以通过eureka.client.availability-zones属性来进行设置。
+Zone是可以有多个的，并且通过逗号分隔来配置。Region与Zone是一对多的关系。
+
+

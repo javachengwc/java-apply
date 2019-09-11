@@ -1,8 +1,8 @@
 package com.pseudocode.cloud.eurekaclient;
 
-import com.netflix.appinfo.EurekaAccept;
-import com.netflix.discovery.EurekaClientConfig;
-import com.netflix.discovery.shared.transport.EurekaTransportConfig;
+import com.pseudocode.netflix.eureka.client.appinfo.EurekaAccept;
+import com.pseudocode.netflix.eureka.client.discovery.EurekaClientConfig;
+import com.pseudocode.netflix.eureka.client.discovery.shared.transport.EurekaTransportConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
@@ -16,6 +16,8 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 
     public static final String PREFIX = "eureka.client";
 
+    public static final String DEFAULT_PREFIX = "/eureka";
+
     public static final String DEFAULT_URL = "http://localhost:8761" + DEFAULT_PREFIX+ "/";
 
     public static final String DEFAULT_ZONE = "defaultZone";
@@ -28,14 +30,19 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
     private boolean enabled = true;
 
     @NestedConfigurationProperty
-    private EurekaTransportConfig transport = new CloudEurekaTransportConfig();
+    //private EurekaTransportConfig transport = new CloudEurekaTransportConfig();
+    private EurekaTransportConfig transport = null;
 
+    //从 Eureka-Server 拉取注册信息频率，单位：秒。默认：30 秒
     private int registryFetchIntervalSeconds = 30;
 
+    //向 Eureka-Server 同步应用实例信息变化频率，单位：秒
     private int instanceInfoReplicationIntervalSeconds = 30;
 
+    //向 Eureka-Server 同步应用信息变化初始化延迟，单位：秒
     private int initialInstanceInfoReplicationIntervalSeconds = 40;
 
+    //轮询获取 Eureka-Server 地址变更频率，单位：秒。默认：300 秒
     private int eurekaServiceUrlPollIntervalSeconds = 5 * MINUTES;
 
     private String proxyPort;
@@ -50,14 +57,19 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 
     private int eurekaServerConnectTimeoutSeconds = 5;
 
+    //获取备份注册中心实现类
+    //当 Eureka-Client 启动时，无法从 Eureka-Server 读取注册信息（可能挂了），从备份注册中心读取注册信息。
+    // 目前 Eureka-Client 未提供合适的实现
     private String backupRegistryImpl;
 
     private int eurekaServerTotalConnections = 200;
 
     private int eurekaServerTotalConnectionsPerHost = 50;
 
+    //Eureka-Server 的 URL Context
     private String eurekaServerURLContext;
 
+    //Eureka-Server 的端口
     private String eurekaServerPort;
 
     private String eurekaServerDNSName;
@@ -68,10 +80,12 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 
     private String registryRefreshSingleVipAddress;
 
+    //心跳执行线程池大小
     private int heartbeatExecutorThreadPoolSize = 2;
 
     private int heartbeatExecutorExponentialBackOffBound = 10;
 
+    //注册信息缓存刷新线程池大小
     private int cacheRefreshExecutorThreadPoolSize = 2;
 
     private int cacheRefreshExecutorExponentialBackOffBound = 10;
@@ -86,8 +100,10 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 
     private boolean useDnsForFetchingServiceUrls = false;
 
+    //是否向 Eureka-Server 注册自身服务
     private boolean registerWithEureka = true;
 
+    //优先使用相同区( zone )的 Eureka-Server
     private boolean preferSameZoneEureka = true;
 
     private boolean logDeltaDiff;
@@ -98,8 +114,10 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 
     private Map<String, String> availabilityZones = new HashMap<>();
 
+    //是否过滤，只获取状态为开启( Up )的应用实例集合
     private boolean filterOnlyUpInstances = true;
 
+    //是否从 Eureka-Server 拉取注册信息
     private boolean fetchRegistry = true;
 
     private String dollarReplacement = "_-";
