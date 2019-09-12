@@ -24,12 +24,16 @@ public class EurekaInstanceConfigBean implements  EnvironmentAware {
 
     private String actuatorPrefix = "/actuator";
 
+    //获得在eureka服务上注册的应用程序的名字，默认为unknow
     private String appname = UNKNOWN;
 
+    //获得在eureka服务上注册的应用程序组的名字，默认为unknow
     private String appGroupName;
 
+    //实例注册到eureka服务器时，是否开启通讯，默认为false
     private boolean instanceEnabledOnit;
 
+    //获取该实例应该接收通信的非安全端口。默认为80
     private int nonSecurePort = 80;
 
     private int securePort = 443;
@@ -38,16 +42,20 @@ public class EurekaInstanceConfigBean implements  EnvironmentAware {
 
     private boolean securePortEnabled;
 
+    //eureka客户需要多长时间发送心跳给eureka服务器,默认为30 秒
     private int leaseRenewalIntervalInSeconds = 30;
 
+    //Eureka服务器在接收到实例的最后一次发出的心跳后，需要等待多久才可以将此实例删除，默认为90秒
     private int leaseExpirationDurationInSeconds = 90;
 
     private String virtualHostName = UNKNOWN;
 
+    //实例注册到eureka服务端的唯一的实例ID,其组成为${spring.application.name}:${spring.application.instance_id:${random.value}}
     private String instanceId;
 
     private String secureVirtualHostName = UNKNOWN;
 
+    //与此实例相关联 AWS自动缩放组名称。此项配置是在AWS环境专门使用的实例启动，它已被用于流量停用后自动把一个实例退出服务。
     private String aSGName;
 
     private Map<String, String> metadataMap = new HashMap<>();

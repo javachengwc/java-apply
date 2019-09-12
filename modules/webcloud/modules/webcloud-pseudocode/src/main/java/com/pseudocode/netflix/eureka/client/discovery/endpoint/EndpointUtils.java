@@ -189,9 +189,12 @@ public class EndpointUtils {
         return orderedUrls;
     }
 
+    //获得可用区与 serviceUrls 的映射
     public static Map<String, List<String>> getServiceUrlsMapFromConfig(EurekaClientConfig clientConfig, String instanceZone, boolean preferSameZone) {
         Map<String, List<String>> orderedUrls = new LinkedHashMap<>();
+        //获得应用实例的地区(region)
         String region = getRegion(clientConfig);
+        //获得应用实例的可用区
         String[] availZones = clientConfig.getAvailabilityZones(clientConfig.getRegion());
         if (availZones == null || availZones.length == 0) {
             availZones = new String[1];

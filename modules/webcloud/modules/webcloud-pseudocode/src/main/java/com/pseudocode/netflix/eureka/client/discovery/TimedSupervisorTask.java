@@ -17,8 +17,9 @@ import com.netflix.servo.monitor.Monitors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//从Eureka服务端获取注册信息定时任务
+//定时任务
 public class TimedSupervisorTask extends TimerTask {
+
     private static final Logger logger = LoggerFactory.getLogger(TimedSupervisorTask.class);
 
     private final Counter timeoutCounter;
@@ -26,12 +27,22 @@ public class TimedSupervisorTask extends TimerTask {
     private final Counter throwableCounter;
     private final LongGauge threadPoolLevelGauge;
 
+    //定时任务服务,用于定时发起子任务
     private final ScheduledExecutorService scheduler;
+
+    //执行子任务线程池,用于提交子任务执行
     private final ThreadPoolExecutor executor;
+
+    //子任务执行超时时间
     private final long timeoutMillis;
+
+    //子任务
     private final Runnable task;
 
+    //当前子任务执行频率，单位：毫秒
     private final AtomicLong delay;
+
+    //最大子任务执行频率，单位：毫秒
     private final long maxDelay;
 
     public TimedSupervisorTask(String name, ScheduledExecutorService scheduler, ThreadPoolExecutor executor,

@@ -6,6 +6,7 @@ import com.pseudocode.netflix.eureka.core.cluster.PeerEurekaNodes;
 
 import java.util.List;
 
+//PeerAware应用对象注册表接口，提供 Eureka-Server 集群内注册信息的同步服务
 public interface PeerAwareInstanceRegistry extends InstanceRegistry {
 
     void init(PeerEurekaNodes peerEurekaNodes) throws Exception;

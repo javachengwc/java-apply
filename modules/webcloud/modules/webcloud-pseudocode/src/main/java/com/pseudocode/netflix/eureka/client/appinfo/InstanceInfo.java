@@ -84,8 +84,13 @@ public class InstanceInfo {
     private volatile boolean isUnsecurePortEnabled = true;
     private volatile DataCenterInfo dataCenterInfo;
     private volatile String hostName;
+
+    //状态
     private volatile InstanceStatus status = InstanceStatus.UP;
+
+    //覆盖状态
     private volatile InstanceStatus overriddenStatus = InstanceStatus.UNKNOWN;
+
     private volatile boolean isInstanceInfoDirty = false;
     private volatile LeaseInfo leaseInfo;
     private volatile Boolean isCoordinatingDiscoveryServer = Boolean.FALSE;

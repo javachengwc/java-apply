@@ -98,6 +98,7 @@ public class ApplicationInfoManager {
         instanceInfo.registerRuntimeMetadata(appMetadata);
     }
 
+    //设置应用实例信息的状态
     public synchronized void setInstanceStatus(InstanceStatus status) {
         InstanceStatus next = instanceStatusMapper.map(status);
         if (next == null) {
@@ -108,7 +109,7 @@ public class ApplicationInfoManager {
         if (prev != null) {
             for (StatusChangeListener listener : listeners.values()) {
                 try {
-                    //listener.notify(new StatusChangeEvent(prev, next));
+                    listener.notify(new StatusChangeEvent(prev, next));
                 } catch (Exception e) {
                     logger.warn("failed to notify listener: {}", listener.getId(), e);
                 }
@@ -166,7 +167,7 @@ public class ApplicationInfoManager {
 
         String getId();
 
-        //void notify(StatusChangeEvent statusChangeEvent);
+        void notify(StatusChangeEvent statusChangeEvent);
     }
 
     public static interface InstanceStatusMapper {

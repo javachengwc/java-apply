@@ -16,6 +16,7 @@ import com.pseudocode.netflix.eureka.client.discovery.EurekaClient;
 import com.pseudocode.netflix.eureka.client.discovery.EurekaClientConfig;
 import com.pseudocode.netflix.eureka.core.cluster.PeerEurekaNodes;
 import com.pseudocode.netflix.eureka.core.registry.PeerAwareInstanceRegistry;
+import com.pseudocode.netflix.eureka.core.resources.ServerCodecs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

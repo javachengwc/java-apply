@@ -53,8 +53,10 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 
     private String proxyPassword;
 
+    //读取超时时间
     private int eurekaServerReadTimeoutSeconds = 8;
 
+    //连接超时时间
     private int eurekaServerConnectTimeoutSeconds = 5;
 
     //获取备份注册中心实现类
@@ -62,8 +64,10 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
     // 目前 Eureka-Client 未提供合适的实现
     private String backupRegistryImpl;
 
+    //eureka客户端允许所有eureka服务器连接的总数目
     private int eurekaServerTotalConnections = 200;
 
+    //eureka客户端允许eureka服务器主机连接的总数目
     private int eurekaServerTotalConnectionsPerHost = 50;
 
     //Eureka-Server 的 URL Context
@@ -76,8 +80,10 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 
     private String region = "us-east-1";
 
+    //Eureka服务的http请求连接的空闲超时时间，默认为30 秒
     private int eurekaConnectionIdleTimeoutSeconds = 30;
 
+    //此客户端只对一个单一的VIP注册表的信息感兴趣。默认为null
     private String registryRefreshSingleVipAddress;
 
     //心跳执行线程池大小
@@ -96,8 +102,10 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
         this.serviceUrl.put(DEFAULT_ZONE, DEFAULT_URL);
     }
 
+    //eureka注册表的内容是否被压缩，默认为true
     private boolean gZipContent = true;
 
+    //eureka客户端是否应该使用DNS机制来获取eureka服务器的地址列表，默认为false
     private boolean useDnsForFetchingServiceUrls = false;
 
     //是否向 Eureka-Server 注册自身服务
@@ -106,6 +114,7 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
     //优先使用相同区( zone )的 Eureka-Server
     private boolean preferSameZoneEureka = true;
 
+    //是否记录eureka服务器和客户端之间在注册表的信息方面的差异，默认为false
     private boolean logDeltaDiff;
 
     private boolean disableDelta;
@@ -120,22 +129,31 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
     //是否从 Eureka-Server 拉取注册信息
     private boolean fetchRegistry = true;
 
+    //eureka服务器序列化/反序列化的信息中获取“$”符号的的替换字符串。默认为“_-”
     private String dollarReplacement = "_-";
 
+    //eureka服务器序列化/反序列化的信息中获取“_”符号的的替换字符串。默认为“__”
     private String escapeCharReplacement = "__";
 
+    //服务器是否能够重定向客户端请求到备份服务器。
+    //如果设置为false，服务器将直接处理请求，如果设置为true，它可能发送HTTP重定向到客户端。默认为false
     private boolean allowRedirects = false;
 
+    //如果设置为true,客户端的状态更新将会点播更新到远程服务器上，默认为true
     private boolean onDemandUpdateStatusChange = true;
 
+    //短暂的编码器的配置，默认为null
     private String encoderName;
 
+    //短暂的解码器的配置，默认为null
     private String decoderName;
 
     private String clientDataAccept = EurekaAccept.full.name();
 
+    //应用实例开启关闭时下线开关。默认为 tru
     private boolean shouldUnregisterOnShutdown = true;
 
+    //应用实例开启注册开关。默认为 false,通过eureka.registration.enabled配置
     private boolean shouldEnforceRegistrationAtInit = false;
 
     @Override

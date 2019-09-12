@@ -42,11 +42,18 @@ public class Applications {
 
     private static final String STATUS_DELIMITER = "_";
 
+    //应用集合一致性哈希码
     private String appsHashCode;
+
     private Long versionDelta;
+
+    //应用集合
     private final AbstractQueue<Application> applications;
+
     private final Map<String, Application> appNameApplicationMap;
+
     private final Map<String, VipIndexSupport> virtualHostNameAppMap;
+
     private final Map<String, VipIndexSupport> secureVirtualHostNameAppMap;
 
     public Applications() {
@@ -122,10 +129,13 @@ public class Applications {
         return this.appsHashCode;
     }
 
+    //计算hashcode
     @JsonIgnore
     public String getReconcileHashCode() {
+        // 计数集合key,状态--数量
         TreeMap<String, AtomicInteger> instanceCountMap = new TreeMap<String, AtomicInteger>();
         populateInstanceCountMap(instanceCountMap);
+        //抓换成hashcode
         return getReconcileHashCode(instanceCountMap);
     }
 

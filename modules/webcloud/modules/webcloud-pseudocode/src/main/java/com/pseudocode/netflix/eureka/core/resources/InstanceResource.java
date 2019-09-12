@@ -56,6 +56,7 @@ public class InstanceResource {
         }
     }
 
+    //续租请求
     @PUT
     public Response renewLease(
             @HeaderParam(PeerEurekaNode.HEADER_REPLICATION) String isReplication,
@@ -63,6 +64,7 @@ public class InstanceResource {
             @QueryParam("status") String status,
             @QueryParam("lastDirtyTimestamp") String lastDirtyTimestamp) {
         boolean isFromReplicaNode = "true".equals(isReplication);
+        //续租
         boolean isSuccess = registry.renew(app.getName(), id, isFromReplicaNode);
 
         // Not found in the registry, immediately ask for a register
@@ -89,6 +91,7 @@ public class InstanceResource {
         return response;
     }
 
+    //应用实例覆盖状态变更接口
     @PUT
     @Path("status")
     public Response statusUpdate(
@@ -97,9 +100,11 @@ public class InstanceResource {
             @QueryParam("lastDirtyTimestamp") String lastDirtyTimestamp) {
         try {
             if (registry.getInstanceByAppAndId(app.getName(), id) == null) {
+                //应用实例不存在
                 logger.warn("Instance not found: {}/{}", app.getName(), id);
                 return Response.status(Status.NOT_FOUND).build();
             }
+            //覆盖状态更新
             boolean isSuccess = registry.statusUpdate(app.getName(), id,
                     InstanceStatus.valueOf(newStatus), lastDirtyTimestamp,
                     "true".equals(isReplication));
@@ -118,6 +123,7 @@ public class InstanceResource {
         }
     }
 
+    //应用实例覆盖状态删除接口
     @DELETE
     @Path("status")
     public Response deleteStatusUpdate(
@@ -130,6 +136,7 @@ public class InstanceResource {
                 return Response.status(Status.NOT_FOUND).build();
             }
 
+            // 覆盖状态删除
             InstanceStatus newStatus = newStatusValue == null ? InstanceStatus.UNKNOWN : InstanceStatus.valueOf(newStatusValue);
             boolean isSuccess = registry.deleteStatusOverride(app.getName(), id,
                     newStatus, lastDirtyTimestamp, "true".equals(isReplication));
@@ -180,13 +187,12 @@ public class InstanceResource {
 
     }
 
+    //下线请求
     @DELETE
-    public Response cancelLease(
-            @HeaderParam(PeerEurekaNode.HEADER_REPLICATION) String isReplication) {
+    public Response cancelLease(@HeaderParam(PeerEurekaNode.HEADER_REPLICATION) String isReplication) {
         try {
-            boolean isSuccess = registry.cancel(app.getName(), id,
-                    "true".equals(isReplication));
-
+            //下线
+            boolean isSuccess = registry.cancel(app.getName(), id, "true".equals(isReplication));
             if (isSuccess) {
                 logger.debug("Found (Cancel): {} - {}", app.getName(), id);
                 return Response.ok().build();

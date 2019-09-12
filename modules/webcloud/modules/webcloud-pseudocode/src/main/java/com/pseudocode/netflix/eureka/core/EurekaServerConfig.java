@@ -21,10 +21,10 @@ public interface EurekaServerConfig {
     //开启自我保护模式比例，超过该比例后开启自我保护模式
     double getRenewalPercentThreshold();
 
-    //自我保护模式比例更新定时任务执行频率，单位：毫秒
+    //自我保护模式比例更新定时任务执行频率，单位：毫秒，默认15分钟,通过eureka.renewalThresholdUpdateIntervalMs配置
     int getRenewalThresholdUpdateIntervalMs();
 
-    //Eureka-Server 集群节点更新频率，单位：毫秒
+    //Eureka-Server 集群节点变化信息更新的时间间隔，单位为毫秒，默认为10 * 60 * 1000
     int getPeerEurekaNodesUpdateIntervalMs();
 
     boolean shouldEnableReplicatedRequestCompression();
@@ -46,13 +46,14 @@ public interface EurekaServerConfig {
 
     int getPeerNodeConnectionIdleTimeoutSeconds();
 
-    //租约变更记录过期时长，单位：毫秒。默认值: 3601000 毫秒
+    //最近租约变更记录存活时长，单位：毫秒。默认值: 3601000 毫秒,通过eureka.retentionTimeInMSInDeltaQueue配置
     long getRetentionTimeInMSInDeltaQueue();
 
-    //移除队列里过期的租约变更记录的定时任务执行频率，单位：毫秒。默认值:30*1000 毫秒
+    //移除最近租约变更记录队列里过期的租约变更记录的定时任务执行频率，单位：毫秒。默认值:30*1000 毫秒
+    //通过eureka.deltaRetentionTimerIntervalInMs配置
     long getDeltaRetentionTimerIntervalInMs();
 
-    //租约过期定时任务执行频率，单位：毫秒
+    //租约过期定时任务执行频率，单位：毫秒,默认为60*1000毫秒,通过eureka.evictionIntervalTimerInMs配置
     long getEvictionIntervalTimerInMs();
 
     int getASGQueryTimeoutMs();
@@ -61,13 +62,13 @@ public interface EurekaServerConfig {
 
     long getASGCacheExpiryTimeoutMs();
 
-    //读写缓存写入后过期时间，单位：秒
+    //读写缓存写入后过期时间,默认值:180 秒,通过eureka.responseCacheAutoExpirationInSeconds设置
     long getResponseCacheAutoExpirationInSeconds();
 
-    //只读缓存更新频率，单位：毫秒
+    //只读缓存更新频率，单位：毫秒，默认值:30 * 1000 毫秒,通过eureka.responseCacheUpdateIntervalMs设置
     long getResponseCacheUpdateIntervalMs();
 
-    //是否开启只读请求响应缓存
+    //是否开启只读请求响应缓存，通过eureka.shouldUseReadOnlyResponseCache设置,默认值:true
     //响应缓存 ( ResponseCache ) 机制目前使用两层缓存策略。优先读取只读缓存，读取不到后读取固定过期的读写缓存
     boolean shouldUseReadOnlyResponseCache();
 
@@ -153,13 +154,13 @@ public interface EurekaServerConfig {
     //标准客户端名集合。默认包含"DefaultClient" 和 "DefaultServer"
     Set<String> getRateLimiterPrivilegedClients();
 
-    //速率限制的 burst size ，使用令牌桶算法
+    //速率限制的 burst size，默认为10,使用令牌桶算法
     int getRateLimiterBurstSize();
 
-    //增量拉取注册信息的速率限制
+    //增量拉取注册信息的速率限制,默认为500
     int getRateLimiterRegistryFetchAverageRate();
 
-    //全量拉取注册信息的速率限制
+    //全量拉取注册信息的速率限制，默认为100
     int getRateLimiterFullFetchAverageRate();
 
     String getListAutoScalingGroupsRoleName();

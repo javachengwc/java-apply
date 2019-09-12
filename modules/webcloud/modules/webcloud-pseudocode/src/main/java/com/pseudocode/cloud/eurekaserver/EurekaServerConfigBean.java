@@ -22,14 +22,19 @@ public class EurekaServerConfigBean implements EurekaServerConfig {
     @Autowired(required = false)
     PropertyResolver propertyResolver;
 
+    //获取aws访问的id，主要用于弹性ip绑定，此配置是用于aws上的，默认为null
     private String aWSAccessId;
 
+    //获取aws私有秘钥，主要用于弹性ip绑定，此配置是用于aws上的，默认为null
     private String aWSSecretKey;
 
+    //获取服务器尝试绑定到候选的EIP的次数，默认为3
     private int eIPBindRebindRetries = 3;
 
+    //稳定ip绑定状态检查，默认为5 * 60 * 1000
     private int eIPBindingRetryIntervalMs = 5 * MINUTES;
 
+    //服务器检查ip绑定的时间间隔，单位为毫秒，默认为1 * 60 * 1000
     private int eIPBindingRetryIntervalMsWhenUnbound = 1 * MINUTES;
 
     //是否开启自我保护机制
@@ -41,101 +46,149 @@ public class EurekaServerConfigBean implements EurekaServerConfig {
     //自我保护模式比例更新定时任务执行频率，单位：毫秒
     private int renewalThresholdUpdateIntervalMs = 15 * MINUTES;
 
+    //集群里eureka节点的变化信息更新的时间间隔，单位为毫秒，默认为10 * 60 * 1000
     private int peerEurekaNodesUpdateIntervalMs = 10 * MINUTES;
 
+    //集群里服务器尝试复制数据的次数，默认为5
     private int numberOfReplicationRetries = 5;
 
+    //服务器节点的状态信息被更新的时间间隔，单位为毫秒，默认为30 * 1000
     private int peerEurekaStatusRefreshTimeIntervalMs = 30 * 1000;
 
+    //在Eureka服务器获取不到集群里对等服务器上的实例时，需要等待的时间，单位为毫秒，默认为1000 * 60 * 5
     private int waitTimeInMsWhenSyncEmpty = 5 * MINUTES;
 
+    //连接对等节点服务器复制的超时的时间，单位为毫秒，默认为200
     private int peerNodeConnectTimeoutMs = 200;
 
+    //读取对等节点服务器复制的超时的时间，单位为毫秒，默认为200
     private int peerNodeReadTimeoutMs = 200;
 
+    //获取对等节点上http连接的总数，默认为1000
     private int peerNodeTotalConnections = 1000;
 
+    //获取每个路由下对等节点上http连接的总数，默认为500
     private int peerNodeTotalConnectionsPerHost = 500;
 
+    //对等节点http连接被清理之后服务器的空闲时间，默认为30秒
     private int peerNodeConnectionIdleTimeoutSeconds = 30;
 
+    //客户端保持增量信息缓存的时间，从而保证不会丢失这些信息，单位为毫秒，默认为3 * 60 * 1000
     private long retentionTimeInMSInDeltaQueue = 3 * MINUTES;
 
+    //清理任务程序被唤醒的时间间隔，清理过期的增量信息，单位为毫秒，默认为30 * 1000
     private long deltaRetentionTimerIntervalInMs = 30 * 1000;
 
+    //过期实例应该启动并运行的时间间隔，单位为毫秒，默认为60 * 1000
     private long evictionIntervalTimerInMs = 60 * 1000;
 
+    //查询AWS上ASG（自动缩放组）信息的超时值，单位为毫秒，默认为300
     private int aSGQueryTimeoutMs = 300;
 
+    //从AWS上更新ASG信息的时间间隔，单位为毫秒，默认为5 * 60 * 1000
     private long aSGUpdateIntervalMs = 5 * MINUTES;
 
+    //缓存ASG信息的到期时间，单位为毫秒，默认为10 * 60 * 1000
     private long aSGCacheExpiryTimeoutMs = 10 * MINUTES; // defaults to longer than the
     // asg update interval
 
+    //当注册表信息被改变时，则其被保存在缓存中不失效的时间，默认为180秒
     private long responseCacheAutoExpirationInSeconds = 180;
 
+    //响应缓存更新的时间间隔，默认为30 * 1000毫秒
     private long responseCacheUpdateIntervalMs = 30 * 1000;
 
+    //是否使用只读缓存
     private boolean useReadOnlyResponseCache = true;
 
+    //增量信息是否可以提供给客户端看，默认为false
     private boolean disableDelta;
 
+    //状态复制线程可以保持存活的空闲时间，默认为10分钟
     private long maxIdleThreadInMinutesAgeForStatusReplication = 10;
 
+    //被用于状态复制的线程的最小数目，默认为1
     private int minThreadsForStatusReplication = 1;
 
+    //被用于状态复制的线程的最大数目，默认为1
     private int maxThreadsForStatusReplication = 1;
 
+    //可允许的状态复制池备份复制事件的最大数量，默认为10000
     private int maxElementsInStatusReplicationPool = 10000;
 
+    //当时间变化实例是否跟着同步，默认为true
     private boolean syncWhenTimestampDiffers = true;
 
+    //当eureka服务器启动时尝试去获取集群里其他服务器上的注册信息的次数
     private int registrySyncRetries = 0;
 
+    //当eureka服务器启动时获取其他服务器的注册信息失败时，会再次尝试获取，期间需要等待的时间，默认为30 * 1000毫秒
     private long registrySyncRetryWaitMs = 30 * 1000;
 
+    //复制池备份复制事件的最大数量，默认为10000
     private int maxElementsInPeerReplicationPool = 10000;
 
+    //复制线程可以保持存活的空闲时间，默认为15分钟
     private long maxIdleThreadAgeInMinutesForPeerReplication = 15;
 
+    //用于复制线程的最小数目，默认为5
     private int minThreadsForPeerReplication = 5;
 
+    //用于复制线程的最大数目，默认为20
     private int maxThreadsForPeerReplication = 20;
 
+    //尝试在丢弃复制事件之前进行复制的时间，默认为30000毫秒
     private int maxTimeForReplication = 30000;
 
+    //对集群中服务器节点的连接是否应该准备，默认为true
     private boolean primeAwsReplicaConnections = true;
 
+    //增量信息是否可以提供给客户端或一些远程地区，默认为false
     private boolean disableDeltaForRemoteRegions;
 
+    //连接到对等远程地eureka节点的超时时间，默认为1000毫秒
     private int remoteRegionConnectTimeoutMs = 1000;
 
+    //获取从远程地区eureka节点读取信息的超时时间，默认为1000毫秒
     private int remoteRegionReadTimeoutMs = 1000;
 
+    //获取远程地区对等节点上http连接的总数，默认为1000
     private int remoteRegionTotalConnections = 1000;
 
+    //获取远程地区每个网关的对等节点上http连接的总数，默认为500
     private int remoteRegionTotalConnectionsPerHost = 500;
 
+    //http连接被清理之后远程地区服务器的空闲时间，默认为30秒
     private int remoteRegionConnectionIdleTimeoutSeconds = 30;
 
+    //eureka服务器中获取的内容是否在远程地区被压缩，默认为true
     private boolean gZipContentFromRemoteRegion = true;
 
+    //针对远程地区发现的网址域名的map
     private Map<String, String> remoteRegionUrlsWithName = new HashMap<>();
 
+    //远程地区的URL列表
     private String[] remoteRegionUrls;
 
+    //通过远程区域中检索的应用程序的列表
     private Map<String, Set<String>> remoteRegionAppWhitelist;
 
+    //从远程区域取出该注册表的信息的时间间隔，默认为30秒
     private int remoteRegionRegistryFetchInterval = 30;
 
+    //用于执行远程区域注册表请求的线程池的大小，默认为20
     private int remoteRegionFetchThreadPoolSize = 20;
 
+    //用来合格请求远程区域注册表的信任存储文件，默认为空
     private String remoteRegionTrustStore = "";
 
+    //获取偏远地区信任存储文件的密码，默认为“changeit”
     private String remoteRegionTrustStorePassword = "changeit";
 
+    //如果在远程区域本地没有实例运行，对于应用程序回退的旧行为是否被禁用， 默认为false
     private boolean disableTransparentFallbackToOtherRegion;
 
+    //表示集群节点之间的复制是否为了网络效率而进行批处理，默认为false
     private boolean batchReplication;
 
     //请求限流是否开启
@@ -153,20 +206,28 @@ public class EurekaServerConfigBean implements EurekaServerConfig {
 
     private boolean logIdentityHeaders = true;
 
+    //用来描述从AWS第三账户的自动缩放组中的角色名称，默认为“ListAutoScalingGroups”
     private String listAutoScalingGroupsRoleName = "ListAutoScalingGroups";
 
+    //复制的数据在发送请求时是否被压缩，默认为false
     private boolean enableReplicatedRequestCompression = false;
 
+    //如果没有设置默认的编解码器将使用全JSON编解码器，获取的是编码器的类名称
     private String jsonCodecName;
 
+    //如果没有设置默认的编解码器将使用xml编解码器，获取的是编码器的类名称
     private String xmlCodecName;
 
+    //服务器尝试绑定到候选Route53域的次数，默认为3
     private int route53BindRebindRetries = 3;
 
+    //服务器应该检查是否和Route53域绑定的时间间隔，默认为5 * 60 * 1000毫秒
     private int route53BindingRetryIntervalMs = 5 * MINUTES;
 
+    //用于建立route53域的tt
     private long route53DomainTTL = 30;
 
+    //获取配置绑定EIP或Route53的策略
     //private AwsBindingStrategy bindingStrategy = AwsBindingStrategy.EIP;
 
     private int minAvailableInstancesForPeerReplication = -1;

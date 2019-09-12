@@ -61,8 +61,11 @@ public interface EurekaClientConfig {
 
     boolean allowRedirects();
 
+    //是否打印增量和全量差异。默认值:false.通过eureka.client.printDeltaFullDiff设置
+    //开启该参数会导致每次增量获取后又发起全量获取，不要开启
     boolean shouldLogDeltaDiff();
 
+    //是否禁用增量获取注册信息,默认值：false,通过eureka.client.disableDelta设置
     boolean shouldDisableDelta();
 
     String fetchRegistryForRemoteRegions();
@@ -77,6 +80,7 @@ public interface EurekaClientConfig {
 
     List<String> getEurekaServerServiceUrls(String myZone);
 
+    //是否只保留状态为开启( UP )的应用实例，默认值:true,通过eureka.client.shouldFilterOnlyUpInstances设置
     boolean shouldFilterOnlyUpInstances();
 
     int getEurekaConnectionIdleTimeoutSeconds();
@@ -100,6 +104,7 @@ public interface EurekaClientConfig {
 
     String getEscapeCharReplacement();
 
+    //当eureka.client.shouldOnDemandUpdateStatusChange = true，InstanceInfo 的状态( status ) 属性发生变化时，会立即向 Eureka-Server 注册
     boolean shouldOnDemandUpdateStatusChange();
 
     default boolean shouldEnforceRegistrationAtInit() {

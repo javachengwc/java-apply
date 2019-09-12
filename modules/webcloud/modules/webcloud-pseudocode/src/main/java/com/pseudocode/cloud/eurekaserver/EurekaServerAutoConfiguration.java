@@ -11,11 +11,14 @@ import javax.servlet.Filter;
 import javax.ws.rs.Path;
 import javax.ws.rs.ext.Provider;
 
+import com.pseudocode.netflix.eureka.client.appinfo.ApplicationInfoManager;
 import com.pseudocode.netflix.eureka.client.discovery.EurekaClient;
 import com.pseudocode.netflix.eureka.client.discovery.EurekaClientConfig;
 import com.pseudocode.netflix.eureka.core.EurekaServerConfig;
 import com.pseudocode.netflix.eureka.core.EurekaServerContext;
 import com.pseudocode.netflix.eureka.core.cluster.PeerEurekaNodes;
+import com.pseudocode.netflix.eureka.core.registry.PeerAwareInstanceRegistry;
+import com.pseudocode.netflix.eureka.core.resources.ServerCodecs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -24,10 +27,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.cloud.client.actuator.HasFeatures;
-import org.springframework.cloud.context.environment.EnvironmentChangeEvent;
-import org.springframework.cloud.netflix.eureka.EurekaConstants;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.Configuration;
@@ -39,17 +38,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-
-import com.netflix.appinfo.ApplicationInfoManager;
-import com.netflix.discovery.converters.EurekaJacksonCodec;
-import com.netflix.discovery.converters.wrappers.CodecWrapper;
-import com.netflix.discovery.converters.wrappers.CodecWrappers;
-import com.netflix.eureka.DefaultEurekaServerContext;
-import com.netflix.eureka.registry.PeerAwareInstanceRegistry;
-import com.netflix.eureka.resources.DefaultServerCodecs;
-import com.netflix.eureka.resources.ServerCodecs;
-import com.sun.jersey.api.core.DefaultResourceConfig;
-import com.sun.jersey.spi.container.servlet.ServletContainer;
 
 @Configuration
 @Import(EurekaServerInitializerConfiguration.class)
@@ -134,8 +122,7 @@ public class EurekaServerAutoConfiguration extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public PeerAwareInstanceRegistry peerAwareInstanceRegistry(
-            ServerCodecs serverCodecs) {
+    public PeerAwareInstanceRegistry peerAwareInstanceRegistry(ServerCodecs serverCodecs) {
         this.eurekaClient.getApplications(); // force initialization
         return new InstanceRegistry(this.eurekaServerConfig, this.eurekaClientConfig,
                 serverCodecs, this.eurekaClient,
@@ -184,8 +171,7 @@ public class EurekaServerAutoConfiguration extends WebMvcConfigurerAdapter {
 
             for (final String key : changedKeys) {
                 // property keys are not expected to be null.
-                if (key.startsWith("eureka.client.service-url.") ||
-                        key.startsWith("eureka.client.availability-zones.")) {
+                if (key.startsWith("eureka.client.service-url.") || key.startsWith("eureka.client.availability-zones.")) {
                     return true;
                 }
             }
@@ -222,9 +208,7 @@ public class EurekaServerAutoConfiguration extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public javax.ws.rs.core.Application jerseyApplication(Environment environment,
-                                                          ResourceLoader resourceLoader) {
-
+    public javax.ws.rs.core.Application jerseyApplication(Environment environment, ResourceLoader resourceLoader) {
         ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false, environment);
 
         // Filter to include only classes that have a particular annotation.

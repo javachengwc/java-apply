@@ -15,9 +15,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.pseudocode.netflix.eureka.client.discovery.util.RateLimiter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+//限流过滤器
 public class RateLimitingFilter implements Filter {
 
     private static final Logger logger = LoggerFactory.getLogger(RateLimitingFilter.class);
@@ -29,10 +31,10 @@ public class RateLimitingFilter implements Filter {
     private static final Pattern TARGET_RE = Pattern.compile("^.*/apps(/[^/]*)?$");
 
     enum Target {FullFetch, DeltaFetch, Application, Other}
-//
-//    private static final RateLimiter registryFetchRateLimiter = new RateLimiter(TimeUnit.SECONDS);
-//
-//    private static final RateLimiter registryFullFetchRateLimiter = new RateLimiter(TimeUnit.SECONDS);
+
+    private static final RateLimiter registryFetchRateLimiter = new RateLimiter(TimeUnit.SECONDS);
+
+    private static final RateLimiter registryFullFetchRateLimiter = new RateLimiter(TimeUnit.SECONDS);
 
     private EurekaServerConfig serverConfig;
 
@@ -123,12 +125,11 @@ public class RateLimitingFilter implements Filter {
     private boolean isOverloaded(Target target) {
         int maxInWindow = serverConfig.getRateLimiterBurstSize();
         int fetchWindowSize = serverConfig.getRateLimiterRegistryFetchAverageRate();
-        boolean overloaded=false;
-        //boolean overloaded = !registryFetchRateLimiter.acquire(maxInWindow, fetchWindowSize);
+        boolean overloaded = !registryFetchRateLimiter.acquire(maxInWindow, fetchWindowSize);
 
         if (target == Target.FullFetch) {
             int fullFetchWindowSize = serverConfig.getRateLimiterFullFetchAverageRate();
-            //overloaded |= !registryFullFetchRateLimiter.acquire(maxInWindow, fullFetchWindowSize);
+            overloaded |= !registryFullFetchRateLimiter.acquire(maxInWindow, fullFetchWindowSize);
         }
         return overloaded;
     }

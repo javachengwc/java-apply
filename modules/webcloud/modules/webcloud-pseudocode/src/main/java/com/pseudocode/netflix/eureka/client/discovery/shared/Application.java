@@ -38,10 +38,12 @@ public class Application {
 
     private volatile boolean isDirty = false;
 
+    //应用实例集合
     private final Set<InstanceInfo> instances;
 
     private final AtomicReference<List<InstanceInfo>> shuffledInstances;
 
+    //应用实例Map
     private final Map<String, InstanceInfo> instancesMap;
 
     public Application() {

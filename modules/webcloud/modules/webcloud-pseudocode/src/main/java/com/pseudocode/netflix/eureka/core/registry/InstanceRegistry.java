@@ -13,6 +13,7 @@ import com.pseudocode.netflix.eureka.core.lease.LeaseManager;
 import java.util.List;
 import java.util.Map;
 
+//应用实例注册表接口
 public interface InstanceRegistry extends LeaseManager<InstanceInfo>, LookupService<String> {
 
     //void openForTraffic(ApplicationInfoManager applicationInfoManager, int count);

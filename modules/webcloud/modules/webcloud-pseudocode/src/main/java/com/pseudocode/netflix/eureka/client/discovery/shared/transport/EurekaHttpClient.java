@@ -21,6 +21,7 @@ public interface EurekaHttpClient {
 
     EurekaHttpResponse<Void> deleteStatusOverride(String appName, String id, InstanceInfo info);
 
+    //全量获取某区域下的注册应用
     EurekaHttpResponse<Applications> getApplications(String... regions);
 
     //从注册中心获取区域下的应用
