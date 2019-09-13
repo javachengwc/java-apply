@@ -1,16 +1,15 @@
 package com.pseudocode.cloud.ribbon;
 
+import com.pseudocode.cloud.commons.httpclient.HttpClientConfiguration;
 import com.pseudocode.netflix.ribbon.core.client.DefaultLoadBalancerRetryHandler;
 import com.pseudocode.netflix.ribbon.core.client.RetryHandler;
 import com.pseudocode.netflix.ribbon.core.client.config.CommonClientConfigKey;
 import com.pseudocode.netflix.ribbon.core.client.config.DefaultClientConfigImpl;
 import com.pseudocode.netflix.ribbon.core.client.config.IClientConfig;
-import com.cloud.pseudocode.ribbon.loadbalancer.*;
 import com.pseudocode.netflix.ribbon.loadbalancer.DummyPing;
 import com.pseudocode.netflix.ribbon.loadbalancer.ILoadBalancer;
 import com.pseudocode.netflix.ribbon.loadbalancer.IPing;
 import com.pseudocode.netflix.ribbon.loadbalancer.rule.ZoneAvoidanceRule;
-import com.cloud.pseudocode.ribbon.loadbalancer.server.*;
 import com.pseudocode.netflix.ribbon.loadbalancer.server.*;
 import com.pseudocode.netflix.ribbon.loadbalancer.zone.ZoneAwareLoadBalancer;
 import com.pseudocode.netflix.ribbon.loadbalancer.IRule;
@@ -47,7 +46,9 @@ public class RibbonClientConfiguration {
     public IClientConfig ribbonClientConfig() {
         DefaultClientConfigImpl config = new DefaultClientConfigImpl();
         config.loadProperties(this.name);
+        //连接超时时间，默认1秒
         config.set(CommonClientConfigKey.ConnectTimeout, DEFAULT_CONNECT_TIMEOUT);
+        //请求超时时间，默认1秒
         config.set(CommonClientConfigKey.ReadTimeout, DEFAULT_READ_TIMEOUT);
         return config;
     }

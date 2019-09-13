@@ -9,6 +9,7 @@ import org.springframework.util.Assert;
 import java.io.IOException;
 import java.net.URI;
 
+//负载均衡拦截器
 public class LoadBalancerInterceptor implements ClientHttpRequestInterceptor {
 
     private LoadBalancerClient loadBalancer;

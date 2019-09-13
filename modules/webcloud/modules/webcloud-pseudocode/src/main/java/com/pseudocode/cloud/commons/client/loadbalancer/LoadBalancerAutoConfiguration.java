@@ -26,6 +26,8 @@ import java.util.List;
 @EnableConfigurationProperties(LoadBalancerRetryProperties.class)
 public class LoadBalancerAutoConfiguration {
 
+    //维护了一个被@LoadBalanced注解修饰的RestTemplate对象列表，
+    //通过调用RestTemplateCustomizer的实例来给需要客户端负载均衡的RestTemplate增加LoadBalancerInterceptor拦截器
     @LoadBalanced
     @Autowired(required = false)
     private List<RestTemplate> restTemplates = Collections.emptyList();

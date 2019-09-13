@@ -498,6 +498,7 @@ public class LoadBalancerContext implements IClientConfigAware {
         return new Server(host, port);
     }
 
+    //将以逻辑服务名为host的URI转换成具的ip:port形式的URI
     public URI reconstructURIWithServer(Server server, URI original) {
         String host = server.getHost();
         int port = server.getPort();

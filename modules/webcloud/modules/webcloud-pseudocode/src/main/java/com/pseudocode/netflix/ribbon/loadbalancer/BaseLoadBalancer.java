@@ -42,12 +42,13 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
 
     protected IPing ping = null;
 
+    //所有注册的服务实例的列表
     @Monitor(name = PREFIX + "AllServerList", type = DataSourceType.INFORMATIONAL)
-    protected volatile List<Server> allServerList = Collections
-            .synchronizedList(new ArrayList<Server>());
+    protected volatile List<Server> allServerList = Collections.synchronizedList(new ArrayList<Server>());
+
+    //状态为正常的注册的服务实例的列表
     @Monitor(name = PREFIX + "UpServerList", type = DataSourceType.INFORMATIONAL)
-    protected volatile List<Server> upServerList = Collections
-            .synchronizedList(new ArrayList<Server>());
+    protected volatile List<Server> upServerList = Collections.synchronizedList(new ArrayList<Server>());
 
     //读写锁
     protected ReadWriteLock allServerLock = new ReentrantReadWriteLock();

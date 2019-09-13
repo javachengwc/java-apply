@@ -27,9 +27,7 @@ public class RibbonLoadBalancerClient implements LoadBalancerClient {
     public URI reconstructURI(ServiceInstance instance, URI original) {
         Assert.notNull(instance, "instance can not be null");
         String serviceId = instance.getServiceId();
-        RibbonLoadBalancerContext context = this.clientFactory
-                .getLoadBalancerContext(serviceId);
-
+        RibbonLoadBalancerContext context = this.clientFactory.getLoadBalancerContext(serviceId);
         URI uri;
         Server server;
         if (instance instanceof RibbonServer) {

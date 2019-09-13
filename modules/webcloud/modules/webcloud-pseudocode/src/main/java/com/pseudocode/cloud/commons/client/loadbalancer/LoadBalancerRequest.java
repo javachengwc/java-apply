@@ -4,5 +4,5 @@ import com.pseudocode.cloud.commons.client.ServiceInstance;
 
 public interface LoadBalancerRequest<T> {
 
-    T apply(ServiceInstance var1) throws Exception;
+    T apply(ServiceInstance instance) throws Exception;
 }
