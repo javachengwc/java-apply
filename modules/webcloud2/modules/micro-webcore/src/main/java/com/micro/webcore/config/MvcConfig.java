@@ -2,6 +2,8 @@ package com.micro.webcore.config;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.micro.webcore.interceptor.AppLoginInterceptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -44,10 +46,16 @@ public class MvcConfig extends WebMvcConfigurationSupport {
 
     @Bean
     public MappingJackson2HttpMessageConverter jackson2HttpMessageConverter() {
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+
+        //禁用对日期以时间戳方式输出
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        //增加jackson对jdk8中时间日期API:LocalDate、LocalTime、LocalDateTime的序列化及反序列化
+        mapper.registerModule(new JavaTimeModule());
+
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         converter.setObjectMapper(mapper);
         return converter;
     }

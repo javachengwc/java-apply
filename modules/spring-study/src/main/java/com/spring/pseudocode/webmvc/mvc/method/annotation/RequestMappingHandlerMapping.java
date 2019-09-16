@@ -4,6 +4,7 @@ package com.spring.pseudocode.webmvc.mvc.method.annotation;
 import com.spring.pseudocode.webmvc.mvc.method.RequestMappingInfo;
 import com.spring.pseudocode.webmvc.mvc.method.RequestMappingInfoHandlerMapping;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.StringValueResolver;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.condition.RequestCondition;
@@ -14,6 +15,7 @@ import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.Set;
 
+//Spring MVC处理请求映射
 public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMapping
 {
     private boolean useSuffixPatternMatch = true;
@@ -77,9 +79,10 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
         return resolvedPatterns;
     }
 
+    //判断是否要处理请求映射
     @Override
-    protected boolean isHandler(Class<?> paramClass) {
-        return false;
+    protected boolean isHandler(Class<?> beanType) {
+        return AnnotatedElementUtils.hasAnnotation(beanType, Controller.class) || AnnotatedElementUtils.hasAnnotation(beanType, RequestMapping.class);
     }
 
     @Override
