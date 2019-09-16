@@ -127,6 +127,7 @@ public class DiscoveryEnabledNIWSServerList extends AbstractServerList<Discovery
         return obtainServersViaDiscovery();
     }
 
+    //获取注册的服务列表
     private List<DiscoveryEnabledServer> obtainServersViaDiscovery() {
         List<DiscoveryEnabledServer> serverList = new ArrayList<DiscoveryEnabledServer>();
 
@@ -135,6 +136,7 @@ public class DiscoveryEnabledNIWSServerList extends AbstractServerList<Discovery
             return new ArrayList<DiscoveryEnabledServer>();
         }
 
+        //eurekaClient客户端
         EurekaClient eurekaClient = eurekaClientProvider.get();
         if (vipAddresses!=null){
             for (String vipAddress : vipAddresses.split(",")) {
