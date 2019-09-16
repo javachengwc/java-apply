@@ -1,5 +1,6 @@
 package com.pseudocode.cloud.ribbon;
 
+import com.netflix.config.ConfigurationManager;
 import com.pseudocode.cloud.commons.client.ServiceInstance;
 import com.pseudocode.netflix.ribbon.core.client.config.CommonClientConfigKey;
 import com.pseudocode.netflix.ribbon.core.client.config.IClientConfig;
@@ -27,8 +28,9 @@ public class RibbonUtils {
     }
 
     public static void initializeRibbonDefaults(String serviceId) {
-        setRibbonProperty(serviceId, CommonClientConfigKey.DeploymentContextBasedVipAddresses.key(),
-                serviceId);
+        //设置vipAddresses为serviceId
+        setRibbonProperty(serviceId, CommonClientConfigKey.DeploymentContextBasedVipAddresses.key(), serviceId);
+        //设置区域感知 true
         setRibbonProperty(serviceId, CommonClientConfigKey.EnableZoneAffinity.key(), "true");
     }
 
@@ -36,7 +38,7 @@ public class RibbonUtils {
         String key = getRibbonKey(serviceId, suffix);
         DynamicStringProperty property = getProperty(key);
         if (property.get().equals(VALUE_NOT_SET)) {
-           // ConfigurationManager.getConfigInstance().setProperty(key, value);
+           ConfigurationManager.getConfigInstance().setProperty(key, value);
         }
     }
 

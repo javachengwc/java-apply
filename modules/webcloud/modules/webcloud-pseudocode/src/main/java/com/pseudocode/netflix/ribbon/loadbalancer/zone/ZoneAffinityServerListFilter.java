@@ -21,9 +21,15 @@ import java.util.List;
 public class ZoneAffinityServerListFilter<T extends Server> extends
         AbstractServerListFilter<T> implements IClientConfigAware {
 
+    //区域感知的
     private volatile boolean zoneAffinity = DefaultClientConfigImpl.DEFAULT_ENABLE_ZONE_AFFINITY;
+
+    //区域专有的
     private volatile boolean zoneExclusive = DefaultClientConfigImpl.DEFAULT_ENABLE_ZONE_EXCLUSIVITY;
+
     private DynamicDoubleProperty activeReqeustsPerServerThreshold;
+
+    //故障实例百分比
     private DynamicDoubleProperty blackOutServerPercentageThreshold;
     private DynamicIntProperty availableServersThreshold;
     private Counter overrideCounter;
@@ -80,11 +86,14 @@ public class ZoneAffinityServerListFilter<T extends Server> extends
         } else {
             logger.debug("Determining if zone affinity should be enabled with given server list: {}", filtered);
             ZoneSnapshot snapshot = stats.getZoneSnapshot(filtered);
-            double loadPerServer = snapshot.getLoadPerServer();
-            int instanceCount = snapshot.getInstanceCount();
-            int circuitBreakerTrippedCount = snapshot.getCircuitTrippedCount();
+            double loadPerServer = snapshot.getLoadPerServer(); //实例平均负载
+            int instanceCount = snapshot.getInstanceCount();//实例数量
+            int circuitBreakerTrippedCount = snapshot.getCircuitTrippedCount();//断路器断开数
+            //故障实例百分比（断路器断开数 / 实例数量） >= 0.8
             if (((double) circuitBreakerTrippedCount) / instanceCount >= blackOutServerPercentageThreshold.get()
+                    //实例平均负载 >= 0.6
                     || loadPerServer >= activeReqeustsPerServerThreshold.get()
+                    //可用实例数（实例数量 - 断路器断开数） < 2
                     || (instanceCount - circuitBreakerTrippedCount) < availableServersThreshold.get()) {
                 logger.debug("zoneAffinity is overriden. blackOutServerPercentage: {}, activeReqeustsPerServer: {}, availableServers: {}",
                         new Object[] {(double) circuitBreakerTrippedCount / instanceCount,  loadPerServer, instanceCount - circuitBreakerTrippedCount});

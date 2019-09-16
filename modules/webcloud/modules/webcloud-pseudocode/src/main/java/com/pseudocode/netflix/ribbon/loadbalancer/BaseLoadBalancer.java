@@ -7,8 +7,10 @@ import com.pseudocode.netflix.ribbon.core.client.config.DefaultClientConfigImpl;
 import com.pseudocode.netflix.ribbon.core.client.config.IClientConfig;
 import com.pseudocode.netflix.ribbon.loadbalancer.client.ClientFactory;
 import com.pseudocode.netflix.ribbon.loadbalancer.client.PrimeConnections;
+import com.pseudocode.netflix.ribbon.loadbalancer.client.PrimeConnections.PrimeConnectionListener;
 import com.pseudocode.netflix.ribbon.loadbalancer.rule.RoundRobinRule;
 import com.pseudocode.netflix.ribbon.loadbalancer.server.Server;
+import com.pseudocode.netflix.ribbon.loadbalancer.server.ServerListChangeListener;
 import com.pseudocode.netflix.ribbon.loadbalancer.server.ServerStatusChangeListener;
 import com.google.common.collect.ImmutableList;
 import com.netflix.servo.annotations.DataSourceType;
@@ -27,8 +29,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static java.util.Collections.singleton;
 
-public class BaseLoadBalancer extends AbstractLoadBalancer implements
-        PrimeConnections.PrimeConnectionListener, IClientConfigAware {
+public class BaseLoadBalancer extends AbstractLoadBalancer implements PrimeConnectionListener, IClientConfigAware {
 
     private static Logger logger = LoggerFactory.getLogger(BaseLoadBalancer.class);
 
@@ -158,8 +159,7 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
 
         if (enablePrimeConnections) {
             this.setEnablePrimingConnections(true);
-            PrimeConnections primeConnections = new PrimeConnections(
-                    this.getName(), clientConfig);
+            PrimeConnections primeConnections = new PrimeConnections(this.getName(), clientConfig);
             this.setPrimeConnections(primeConnections);
         }
         init();
@@ -443,6 +443,7 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
                     }
                 }
                 if (primeConnections != null) {
+                    //对新加的服务进行异步连接测试
                     primeConnections.primeConnectionsAsync(newServers, this);
                 }
             }

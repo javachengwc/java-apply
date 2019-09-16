@@ -26,6 +26,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.PostConstruct;
 import javax.xml.ws.Provider;
 
+//eurekaclient整合ribbon
 //ping：NIWSDiscoveryPing。
 //serverList：DomainExtractingServerList，内部是DiscoveryEnabledNIWSServerList，实际上是通过服务发现获取服务信息列表。
 @Configuration
@@ -78,8 +79,7 @@ public class EurekaRibbonClientConfiguration {
         if (this.propertiesFactory.isSet(ServerList.class, serviceId)) {
             return this.propertiesFactory.get(ServerList.class, config, serviceId);
         }
-        DiscoveryEnabledNIWSServerList discoveryServerList = new DiscoveryEnabledNIWSServerList(
-                config, eurekaClientProvider);
+        DiscoveryEnabledNIWSServerList discoveryServerList = new DiscoveryEnabledNIWSServerList(config, eurekaClientProvider);
         DomainExtractingServerList serverList = new DomainExtractingServerList(
                 discoveryServerList, config, this.approximateZoneFromHostname);
         return serverList;
@@ -92,8 +92,7 @@ public class EurekaRibbonClientConfiguration {
 
     @PostConstruct
     public void preprocess() {
-        String zone = ConfigurationManager.getDeploymentContext()
-                .getValue(DeploymentContext.ContextKey.zone);
+        String zone = ConfigurationManager.getDeploymentContext().getValue(DeploymentContext.ContextKey.zone);
         if (this.clientConfig != null && StringUtils.isEmpty(zone)) {
             if (this.approximateZoneFromHostname && this.eurekaConfig != null) {
                 String approxZone = ZoneUtils.extractApproximateZone(this.eurekaConfig.getHostName(false));
@@ -119,6 +118,7 @@ public class EurekaRibbonClientConfiguration {
                 }
             }
         }
+        //初始化ribbon相关一些东西
         RibbonUtils.initializeRibbonDefaults(serviceId);
     }
 

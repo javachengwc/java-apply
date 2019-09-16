@@ -138,6 +138,7 @@ public class DiscoveryEnabledNIWSServerList extends AbstractServerList<Discovery
 
         //eurekaClient客户端
         EurekaClient eurekaClient = eurekaClientProvider.get();
+        //这里的vipAddresses可以理解为逻辑上的服务名
         if (vipAddresses!=null){
             for (String vipAddress : vipAddresses.split(",")) {
                 // if targetRegion is null, it will be interpreted as the same region of client

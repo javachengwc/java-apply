@@ -78,8 +78,7 @@ public abstract class NamedContextFactory<C extends NamedContextFactory.Specific
     protected AnnotationConfigApplicationContext createContext(String name) {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
         if (this.configurations.containsKey(name)) {
-            for (Class<?> configuration : this.configurations.get(name)
-                    .getConfiguration()) {
+            for (Class<?> configuration : this.configurations.get(name).getConfiguration()) {
                 context.register(configuration);
             }
         }
@@ -90,8 +89,7 @@ public abstract class NamedContextFactory<C extends NamedContextFactory.Specific
                 }
             }
         }
-        context.register(PropertyPlaceholderAutoConfiguration.class,
-                this.defaultConfigType);
+        context.register(PropertyPlaceholderAutoConfiguration.class, this.defaultConfigType);
         context.getEnvironment().getPropertySources().addFirst(new MapPropertySource(
                 this.propertySourceName,
                 Collections.<String, Object> singletonMap(this.propertyName, name)));
@@ -110,8 +108,7 @@ public abstract class NamedContextFactory<C extends NamedContextFactory.Specific
 
     public <T> T getInstance(String name, Class<T> type) {
         AnnotationConfigApplicationContext context = getContext(name);
-        if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors(context,
-                type).length > 0) {
+        if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors(context, type).length > 0) {
             return context.getBean(type);
         }
         return null;

@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 //PollingServerListUpdater是ribbon中updateListOfServers的定时任务,它执行会更新ServerList
+//动态服务列表更新的默认策略
 public class PollingServerListUpdater implements ServerListUpdater {
 
     private static final Logger logger = LoggerFactory.getLogger(PollingServerListUpdater.class);

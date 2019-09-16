@@ -229,11 +229,6 @@ public class LoadBalancerContext implements IClientConfigAware {
         noteRequestCompletion(stats, response, e, responseTime, null);
     }
 
-
-    /**
-     * This is called after a response is received or an exception is thrown from the client
-     * to update related stats.
-     */
     public void noteRequestCompletion(ServerStats stats, Object response, Throwable e, long responseTime, RetryHandler errorHandler) {
         if (stats == null) {
             return;
@@ -256,10 +251,6 @@ public class LoadBalancerContext implements IClientConfigAware {
         }
     }
 
-    /**
-     * This is called after an error is thrown from the client
-     * to update related stats.
-     */
     protected void noteError(ServerStats stats, ClientRequest request, Throwable e, long responseTime) {
         if (stats == null) {
             return;
@@ -280,10 +271,6 @@ public class LoadBalancerContext implements IClientConfigAware {
         }
     }
 
-    /**
-     * This is called after a response is received from the client
-     * to update related stats.
-     */
     protected void noteResponse(ServerStats stats, ClientRequest request, Object response, long responseTime) {
         if (stats == null) {
             return;
@@ -299,9 +286,6 @@ public class LoadBalancerContext implements IClientConfigAware {
         }
     }
 
-    /**
-     * This is usually called just before client execute a request.
-     */
     public void noteOpenConnection(ServerStats serverStats) {
         if (serverStats == null) {
             return;

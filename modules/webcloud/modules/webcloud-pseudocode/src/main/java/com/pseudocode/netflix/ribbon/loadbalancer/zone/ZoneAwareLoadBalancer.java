@@ -61,6 +61,7 @@ public class ZoneAwareLoadBalancer<T extends Server> extends DynamicServerListLo
         super(niwsClientConfig);
     }
 
+    //重写了此方法，按区域Zone分组实例列表
     @Override
     protected void setServerListForZones(Map<String, List<Server>> zoneServersMap) {
         super.setServerListForZones(zoneServersMap);
@@ -82,6 +83,9 @@ public class ZoneAwareLoadBalancer<T extends Server> extends DynamicServerListLo
     }
 
     //选择服务实例
+    //一般情况下就是同区域下的服务实例
+    //特殊情况下可能是多区域中选择一个服务实例
+    //这里的特殊情况就是指的ZoneAffinityServerListFilter.shouldEnableZoneAffinity()方法返回false的情况
     @Override
     public Server chooseServer(Object key) {
         if (!ENABLED.get() || getLoadBalancerStats().getAvailableZones().size() <= 1) {
@@ -91,6 +95,7 @@ public class ZoneAwareLoadBalancer<T extends Server> extends DynamicServerListLo
         Server server = null;
         try {
             LoadBalancerStats lbStats = getLoadBalancerStats();
+            //为当前负载均衡器中所有的Zone区域分别创建快照
             Map<String, ZoneSnapshot> zoneSnapshot = ZoneAvoidanceRule.createSnapshot(lbStats);
             logger.debug("Zone snapshots: {}", zoneSnapshot);
             if (triggeringLoad == null) {
@@ -102,10 +107,16 @@ public class ZoneAwareLoadBalancer<T extends Server> extends DynamicServerListLo
                 triggeringBlackoutPercentage = DynamicPropertyFactory.getInstance().getDoubleProperty(
                         "ZoneAwareNIWSDiscoveryLoadBalancer." + this.getName() + ".avoidZoneWithBlackoutPercetage", 0.99999d);
             }
+            //获取可用的Zone区域集合，在该函数中会通过Zone区域快照中的统计数据来实现可用区的挑选
+            //首先剔除符合这些规则的Zone区域：所属实例数为零的Zone区域；Zone区域内实例平均负载小于零，或者实例故障率（断路器断开次数/实例数）大于等于阈值（默认为0.99999）
+            //然后根据Zone区域的实例平均负载来计算出最差的Zone区域，这里的最差指的是实例平均负载最高的Zone区域。
+            //如果在上面的过程中没有符合剔除要求的区域，同时实例最大平均负载小于阈值（默认为20%），就直接返回所有Zone区域为可用区域。
+            //否则，从最坏Zone区域集合中随机的选择一个，将它从可用Zone区域集合中剔除
             Set<String> availableZones = ZoneAvoidanceRule.getAvailableZones(zoneSnapshot, triggeringLoad.get(), triggeringBlackoutPercentage.get());
             logger.debug("Available zones: {}", availableZones);
+            //当获得的可用Zone区域集合不为空，并且个数小于Zone区域总数，就随机的选择一个Zone区域
             if (availableZones != null &&  availableZones.size() < zoneSnapshot.keySet().size()) {
-                //只要指定了zone，而不是随机，就能通过getLoadBalancer获取到对应zone的loadbalancer从而返回对应zone的实例
+                //随机的选择一个Zone区域
                 String zone = ZoneAvoidanceRule.randomChooseZone(zoneSnapshot, availableZones);
                 logger.debug("Zone chosen: {}", zone);
                 if (zone != null) {

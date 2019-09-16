@@ -591,8 +591,7 @@ public class DiscoveryClient implements EurekaClient {
     @Override
     public List<InstanceInfo> getInstancesByVipAddress(String vipAddress, boolean secure,String region) {
         if (vipAddress == null) {
-            throw new IllegalArgumentException(
-                    "Supplied VIP Address cannot be null");
+            throw new IllegalArgumentException("Supplied VIP Address cannot be null");
         }
         Applications applications;
         if (instanceRegionChecker.isLocalRegion(region)) {
@@ -600,8 +599,7 @@ public class DiscoveryClient implements EurekaClient {
         } else {
             applications = remoteRegionVsApps.get(region);
             if (null == applications) {
-                logger.debug("No applications are defined for region {}, so returning an empty instance list for vip "
-                        + "address {}.", region, vipAddress);
+                logger.debug("No applications are defined for region {}, so returning an empty instance list for vip " + "address {}.", region, vipAddress);
                 return Collections.emptyList();
             }
         }

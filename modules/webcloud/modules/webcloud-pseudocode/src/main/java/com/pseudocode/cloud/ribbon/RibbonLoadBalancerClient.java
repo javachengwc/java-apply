@@ -41,6 +41,7 @@ public class RibbonLoadBalancerClient implements LoadBalancerClient {
             uri = RibbonUtils.updateToSecureConnectionIfNeeded(original, clientConfig,
                     serverIntrospector, server);
         }
+        //将以逻辑服务名为host的URI转换成具的ip:port形式的URI
         return context.reconstructURIWithServer(server, uri);
     }
 
@@ -63,8 +64,8 @@ public class RibbonLoadBalancerClient implements LoadBalancerClient {
         if (server == null) {
             throw new IllegalStateException("No instances available for " + serviceId);
         }
-        RibbonServer ribbonServer = new RibbonServer(serviceId, server, isSecure(server,
-                serviceId), serverIntrospector(serviceId).getMetadata(server));
+        RibbonServer ribbonServer = new RibbonServer(serviceId, server, isSecure(server, serviceId),
+                serverIntrospector(serviceId).getMetadata(server));
 
         return execute(serviceId, ribbonServer, request);
     }
@@ -102,8 +103,7 @@ public class RibbonLoadBalancerClient implements LoadBalancerClient {
     }
 
     private ServerIntrospector serverIntrospector(String serviceId) {
-        ServerIntrospector serverIntrospector = this.clientFactory.getInstance(serviceId,
-                ServerIntrospector.class);
+        ServerIntrospector serverIntrospector = this.clientFactory.getInstance(serviceId, ServerIntrospector.class);
         if (serverIntrospector == null) {
             serverIntrospector = new DefaultServerIntrospector();
         }

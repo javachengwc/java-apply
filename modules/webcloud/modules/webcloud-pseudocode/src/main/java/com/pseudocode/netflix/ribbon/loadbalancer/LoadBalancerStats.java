@@ -104,11 +104,6 @@ public class LoadBalancerStats {
         return maxCircuitTrippedTimeout;
     }
 
-    /**
-     * The caller o this class is tasked to call this method every so often if
-     * the servers participating in the LoadBalancer changes
-     * @param servers
-     */
     public void updateServerList(List<Server> servers){
         for (Server s: servers){
             addServer(s);
@@ -125,12 +120,6 @@ public class LoadBalancerStats {
         }
     }
 
-    /**
-     * Method that updates the internal stats of Response times maintained on a per Server
-     * basis
-     * @param server
-     * @param msecs
-     */
     public void noteResponseTime(Server server, double msecs){
         ServerStats ss = getServerStats(server);
         ss.noteResponseTime(msecs);
@@ -231,12 +220,6 @@ public class LoadBalancerStats {
         return getZoneSnapshot(currentList);
     }
 
-    /**
-     * This is the core function to get zone stats. All stats are reported to avoid
-     * going over the list again for a different stat.
-     *
-     * @param servers
-     */
     public ZoneSnapshot getZoneSnapshot(List<? extends Server> servers) {
         if (servers == null || servers.size() == 0) {
             return new ZoneSnapshot();
@@ -328,9 +311,6 @@ public class LoadBalancerStats {
         return getServerStats(server);
     }
 
-    /**
-     * returns map of Stats for all servers
-     */
     public Map<Server,ServerStats> getServerStats(){
         return serverStatsCache.asMap();
     }
