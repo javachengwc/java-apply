@@ -27,10 +27,13 @@ public class DynamicServerListLoadBalancer<T extends Server> extends BaseLoadBal
 
     protected AtomicBoolean serverListUpdateInProgress = new AtomicBoolean(false);
 
+    //服务列表
     volatile ServerList<T> serverListImpl;
 
+    //服务过滤器
     volatile ServerListFilter<T> filter;
 
+    //更新注册实例列表
     protected final ServerListUpdater.UpdateAction updateAction = new ServerListUpdater.UpdateAction() {
         @Override
         public void doUpdate() {
@@ -151,8 +154,7 @@ public class DynamicServerListLoadBalancer<T extends Server> extends BaseLoadBal
         setServerListForZones(serversInZones);
     }
 
-    protected void setServerListForZones(
-            Map<String, List<Server>> zoneServersMap) {
+    protected void setServerListForZones(Map<String, List<Server>> zoneServersMap) {
         LOGGER.debug("Setting server list for zones: {}", zoneServersMap);
         getLoadBalancerStats().updateZoneServerMapping(zoneServersMap);
     }
@@ -208,7 +210,7 @@ public class DynamicServerListLoadBalancer<T extends Server> extends BaseLoadBal
     public void updateListOfServers() {
         List<T> servers = new ArrayList<T>();
         if (serverListImpl != null) {
-            //动态的从erueka 获取注册服务器
+            //动态的从erueka 获取注册服务
             servers = serverListImpl.getUpdatedListOfServers();
             LOGGER.debug("List of Servers for {} obtained from Discovery client: {}", getIdentifier(), servers);
             if (filter != null) {

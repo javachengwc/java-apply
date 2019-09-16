@@ -6,6 +6,7 @@ import com.pseudocode.netflix.ribbon.loadbalancer.zone.ZoneSnapshot;
 
 import java.util.*;
 
+//根据server的zone区域和可用性来轮询选择
 public class ZoneAvoidanceRule extends PredicateBasedRule {
 
     private static final Random random = new Random();

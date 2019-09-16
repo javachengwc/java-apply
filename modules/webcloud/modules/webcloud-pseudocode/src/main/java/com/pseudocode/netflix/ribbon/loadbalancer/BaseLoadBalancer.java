@@ -1,5 +1,6 @@
 package com.pseudocode.netflix.ribbon.loadbalancer;
 
+import com.netflix.util.concurrent.ShutdownEnabledTimer;
 import com.pseudocode.netflix.ribbon.core.client.IClientConfigAware;
 import com.pseudocode.netflix.ribbon.core.client.config.CommonClientConfigKey;
 import com.pseudocode.netflix.ribbon.core.client.config.DefaultClientConfigImpl;
@@ -29,8 +30,8 @@ import static java.util.Collections.singleton;
 public class BaseLoadBalancer extends AbstractLoadBalancer implements
         PrimeConnections.PrimeConnectionListener, IClientConfigAware {
 
-    private static Logger logger = LoggerFactory
-            .getLogger(BaseLoadBalancer.class);
+    private static Logger logger = LoggerFactory.getLogger(BaseLoadBalancer.class);
+
     private final static IRule DEFAULT_RULE = new RoundRobinRule();
     private final static SerialPingStrategy DEFAULT_PING_STRATEGY = new SerialPingStrategy();
     private static final String DEFAULT_NAME = "default";
@@ -81,6 +82,7 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         this.name = DEFAULT_NAME;
         this.ping = null;
         setRule(DEFAULT_RULE);
+        //定时检查Server是否健康的任务
         setupPingTask();
         lbStats = new LoadBalancerStats(DEFAULT_NAME);
     }
@@ -214,6 +216,7 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         }
     }
 
+    //定时检查Server是否健康的任务,默认的执行间隔为：10秒
     void setupPingTask() {
         if (canSkipPing()) {
             return;
@@ -221,18 +224,11 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         if (lbTimer != null) {
             lbTimer.cancel();
         }
-        lbTimer = new ShutdownEnabledTimer("NFLoadBalancer-PingTimer-" + name,
-                true);
+        lbTimer = new ShutdownEnabledTimer("NFLoadBalancer-PingTimer-" + name, true);
         lbTimer.schedule(new PingTask(), 0, pingIntervalSeconds * 1000);
         forceQuickPing();
     }
 
-    /**
-     * Set the name for the load balancer. This should not be called since name
-     * should be immutable after initialization. Calling this method does not
-     * guarantee that all other data structures that depend on this name will be
-     * changed accordingly.
-     */
     void setName(String name) {
         // and register
         this.name = name;
@@ -287,9 +283,6 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         return pingIntervalSeconds;
     }
 
-    /*
-     * Maximum time allowed for the ping cycle
-     */
     public void setMaxTotalPingTime(int maxTotalPingTimeSeconds) {
         if (maxTotalPingTimeSeconds < 1) {
             return;
@@ -315,8 +308,6 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         return pingInProgress.get();
     }
 
-    /* Specify the object which is used to send pings. */
-
     public void setPing(IPing ping) {
         if (ping != null) {
             if (!ping.equals(this.ping)) {
@@ -330,8 +321,6 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         }
     }
 
-    /* Ignore null rules */
-
     public void setRule(IRule rule) {
         if (rule != null) {
             this.rule = rule;
@@ -344,12 +333,6 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         }
     }
 
-    /**
-     * get the count of servers.
-     *
-     * @param onlyAvailable
-     *            if true, return only up servers.
-     */
     public int getServerCount(boolean onlyAvailable) {
         if (onlyAvailable) {
             return upServerList.size();
@@ -358,10 +341,6 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         }
     }
 
-    /**
-     * Add a server to the 'allServer' list; does not verify uniqueness, so you
-     * could give a server a greater share by adding it more than once.
-     */
     public void addServer(Server newServer) {
         if (newServer != null) {
             try {
@@ -376,11 +355,6 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         }
     }
 
-    /**
-     * Add a list of servers to the 'allServer' list; does not verify
-     * uniqueness, so you could give a server a greater share by adding it more
-     * than once
-     */
     @Override
     public void addServers(List<Server> newServers) {
         if (newServers != null && newServers.size() > 0) {
@@ -395,11 +369,6 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         }
     }
 
-    /*
-     * Add a list of servers to the 'allServer' list; does not verify
-     * uniqueness, so you could give a server a greater share by adding it more
-     * than once USED by Test Cases only for legacy reason. DO NOT USE!!
-     */
     void addServers(Object[] newServers) {
         if ((newServers != null) && (newServers.length > 0)) {
 
@@ -424,10 +393,6 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         }
     }
 
-    /**
-     * Set the list of servers used as the server pool. This overrides existing
-     * server list.
-     */
     public void setServersList(List lsrv) {
         Lock writeLock = allServerLock.writeLock();
         logger.debug("LoadBalancer [{}]: clearing server list (SET op)", name);
@@ -481,9 +446,6 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
                     primeConnections.primeConnectionsAsync(newServers, this);
                 }
             }
-            // This will reset readyToServe flag to true on all servers
-            // regardless whether
-            // previous priming connections are success or not
             allServerList = allServers;
             if (canSkipPing()) {
                 for (Server s : allServerList) {
@@ -498,7 +460,6 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         }
     }
 
-    /* List in string form. SETS, does not add. */
     void setServers(String srvString) {
         if (srvString != null) {
 
@@ -522,12 +483,6 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         }
     }
 
-    /**
-     * return the server
-     *
-     * @param index
-     * @param availableOnly
-     */
     public Server getServerByIndex(int index, boolean availableOnly) {
         try {
             return (availableOnly ? upServerList.get(index) : allServerList
@@ -575,13 +530,7 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         }
     }
 
-    /**
-     * TimerTask that keeps runs every X seconds to check the status of each
-     * server/node in the Server List
-     *
-     * @author stonse
-     *
-     */
+    //检查Server是否健康的任务
     class PingTask extends TimerTask {
         public void run() {
             try {
@@ -592,12 +541,6 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         }
     }
 
-    /**
-     * Class that contains the mechanism to "ping" all the instances
-     *
-     * @author stonse
-     *
-     */
     class Pinger {
 
         private final IPingStrategy pingerStrategy;
@@ -680,11 +623,6 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         return Monitors.newCounter("LoadBalancer_ChooseServer");
     }
 
-    /*
-     * Get the alive server dedicated to key
-     *
-     * @return the dedicated server
-     */
     public Server chooseServer(Object key) {
         if (counter == null) {
             counter = createCounter();
@@ -702,7 +640,6 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         }
     }
 
-    /* Returns either null, or "server:port/servlet" */
     public String choose(Object key) {
         if (rule == null) {
             return null;
@@ -761,10 +698,6 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         }
     }
 
-    /*
-     * Force an immediate ping, if we're not currently pinging and don't have a
-     * quick-ping already scheduled.
-     */
     public void forceQuickPing() {
         if (canSkipPing()) {
             return;
@@ -787,9 +720,6 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         return sb.toString();
     }
 
-    /**
-     * Register with monitors and start priming connections if it is set.
-     */
     protected void init() {
         Monitors.registerObject("LoadBalancer_" + name, this);
         // register the rule as it contains metric for available servers count

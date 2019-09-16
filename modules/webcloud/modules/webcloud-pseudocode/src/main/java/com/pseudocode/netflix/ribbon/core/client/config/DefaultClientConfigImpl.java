@@ -313,18 +313,28 @@ public class DefaultClientConfigImpl implements IClientConfig {
         this.propertyNameSpace = nameSpace;
     }
 
+    //ribbon的默认配置
     public void loadDefaultValues() {
         putDefaultIntegerProperty(CommonClientConfigKey.MaxHttpConnectionsPerHost, getDefaultMaxHttpConnectionsPerHost());
         putDefaultIntegerProperty(CommonClientConfigKey.MaxTotalHttpConnections, getDefaultMaxTotalHttpConnections());
+        //http访问是否使用连接池，默认true
         putDefaultBooleanProperty(CommonClientConfigKey.EnableConnectionPool, getDefaultEnableConnectionPool());
+        //每个路由的最大连接数
         putDefaultIntegerProperty(CommonClientConfigKey.MaxConnectionsPerHost, getDefaultMaxConnectionsPerHost());
+        //连接池的最大连接数
         putDefaultIntegerProperty(CommonClientConfigKey.MaxTotalConnections, getDefaultMaxTotalConnections());
+        //连接超时时间
         putDefaultIntegerProperty(CommonClientConfigKey.ConnectTimeout, getDefaultConnectTimeout());
         putDefaultIntegerProperty(CommonClientConfigKey.ConnectionManagerTimeout, getDefaultConnectionManagerTimeout());
+        //访问超时时间
         putDefaultIntegerProperty(CommonClientConfigKey.ReadTimeout, getDefaultReadTimeout());
+        //对当前实例的重试次数,默认0
         putDefaultIntegerProperty(CommonClientConfigKey.MaxAutoRetries, getDefaultMaxAutoRetries());
+        //切换服务器实例的重试次数，默认1
         putDefaultIntegerProperty(CommonClientConfigKey.MaxAutoRetriesNextServer, getDefaultMaxAutoRetriesNextServer());
+        //是否对所有操作请求都进行重试，默认false
         putDefaultBooleanProperty(CommonClientConfigKey.OkToRetryOnAllOperations, getDefaultOkToRetryOnAllOperations());
+
         putDefaultBooleanProperty(CommonClientConfigKey.FollowRedirects, getDefaultFollowRedirects());
         putDefaultBooleanProperty(CommonClientConfigKey.ConnectionPoolCleanerTaskEnabled, getDefaultConnectionPoolCleanerTaskEnabled());
         putDefaultIntegerProperty(CommonClientConfigKey.ConnIdleEvictTimeMilliSeconds, getDefaultConnectionidleTimeInMsecs());
@@ -351,16 +361,27 @@ public class DefaultClientConfigImpl implements IClientConfig {
         putDefaultIntegerProperty(CommonClientConfigKey.PoolMaxThreads, getDefaultPoolMaxThreads());
         putDefaultLongProperty(CommonClientConfigKey.PoolKeepAliveTime, getDefaultPoolKeepAliveTime());
         putDefaultTimeUnitProperty(CommonClientConfigKey.PoolKeepAliveTimeUnits, getDefaultPoolKeepAliveTimeUnits());
+        //是否启动区域感知，默认false
         putDefaultBooleanProperty(CommonClientConfigKey.EnableZoneAffinity, getDefaultEnableZoneAffinity());
         putDefaultBooleanProperty(CommonClientConfigKey.EnableZoneExclusivity, getDefaultEnableZoneExclusivity());
         putDefaultStringProperty(CommonClientConfigKey.ClientClassName, getDefaultClientClassname());
+
+        //负载均衡器设置
         putDefaultStringProperty(CommonClientConfigKey.NFLoadBalancerClassName, getDefaultNfloadbalancerClassname());
+
+        //负载均衡规则
         putDefaultStringProperty(CommonClientConfigKey.NFLoadBalancerRuleClassName, getDefaultNfloadbalancerRuleClassname());
+
+        //负载均衡ping
         putDefaultStringProperty(CommonClientConfigKey.NFLoadBalancerPingClassName, getDefaultNfloadbalancerPingClassname());
+
         putDefaultBooleanProperty(CommonClientConfigKey.PrioritizeVipAddressBasedServers, getDefaultPrioritizeVipAddressBasedServers());
         putDefaultFloatProperty(CommonClientConfigKey.MinPrimeConnectionsRatio, getDefaultMinPrimeConnectionsRatio());
         putDefaultStringProperty(CommonClientConfigKey.PrimeConnectionsClassName, getDefaultPrimeConnectionsClass());
+
+        //默认的serverList
         putDefaultStringProperty(CommonClientConfigKey.NIWSServerListClassName, getDefaultSeverListClass());
+
         putDefaultStringProperty(CommonClientConfigKey.VipAddressResolverClassName, getDefaultVipaddressResolverClassname());
         putDefaultBooleanProperty(CommonClientConfigKey.IsClientAuthRequired, getDefaultIsClientAuthRequired());
         // putDefaultStringProperty(CommonClientConfigKey.RequestIdHeaderName, getDefaultRequestIdHeaderName());
@@ -376,6 +397,8 @@ public class DefaultClientConfigImpl implements IClientConfig {
         setPropertyInternal(propName.key(), value);
     }
 
+    //ribbon.<key>=<value>
+    //<key>代表了ribbon客户端配置的参数名，<value>则代表了对应参数的值
     private String getConfigKey(String propName) {
         return (clientName == null) ? getDefaultPropName(propName) : getInstancePropName(clientName, propName);
     }
@@ -398,9 +421,6 @@ public class DefaultClientConfigImpl implements IClientConfig {
                     properties.remove(propName);
                 }
             }
-
-            // equals and hashcode needed
-            // since this is anonymous object is later used as a set key
 
             @Override
             public boolean equals(Object other){
@@ -457,6 +477,8 @@ public class DefaultClientConfigImpl implements IClientConfig {
         setPropertyInternal(propName, value);
     }
 
+    //ribbon.<key>=<value>
+    //<key>代表了ribbon客户端配置的参数名，<value>则代表了对应参数的值
     String getDefaultPropName(String propName) {
         return getNameSpace() + "." + propName;
     }
@@ -482,9 +504,6 @@ public class DefaultClientConfigImpl implements IClientConfig {
         this.clientName  = clientName;
     }
 
-    /* (non-Javadoc)
-	 * @see com.netflix.niws.client.CliengConfig#getClientName()
-	 */
     @Override
     public String getClientName() {
         return clientName;
@@ -708,8 +727,7 @@ public class DefaultClientConfigImpl implements IClientConfig {
     }
 
     public String getInstancePropName(String restClientName, String key) {
-        return restClientName + "." + getNameSpace() + "."
-                + key;
+        return restClientName + "." + getNameSpace() + "." + key;
     }
 
 

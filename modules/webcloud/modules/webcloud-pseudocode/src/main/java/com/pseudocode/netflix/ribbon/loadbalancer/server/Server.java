@@ -19,11 +19,19 @@ public class Server {
 
     public static final String UNKNOWN_ZONE = "UNKNOWN";
     private String host;
+
     private int port = 80;
+
     private String scheme;
+
     private volatile String id;
+
+    //是否存活
     private volatile boolean isAliveFlag;
+
     private String zone = UNKNOWN_ZONE;
+
+    //是否准备服务
     private volatile boolean readyToServe = true;
 
     private MetaInfo simpleMetaInfo = new MetaInfo() {

@@ -1,15 +1,24 @@
 package com.pseudocode.netflix.ribbon.eureka;
 
 import com.netflix.config.ConfigurationManager;
+import com.pseudocode.netflix.eureka.client.appinfo.InstanceInfo;
+import com.pseudocode.netflix.eureka.client.appinfo.InstanceInfo.InstanceStatus;
+import com.pseudocode.netflix.eureka.client.discovery.DiscoveryClient;
+import com.pseudocode.netflix.eureka.client.discovery.EurekaClient;
+import com.pseudocode.netflix.ribbon.core.client.config.CommonClientConfigKey;
 import com.pseudocode.netflix.ribbon.core.client.config.DefaultClientConfigImpl;
 import com.pseudocode.netflix.ribbon.core.client.config.IClientConfig;
+import com.pseudocode.netflix.ribbon.core.client.config.IClientConfigKey;
+import com.pseudocode.netflix.ribbon.core.client.config.IClientConfigKey.Keys;
+import com.pseudocode.netflix.ribbon.loadbalancer.server.AbstractServerList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.ws.Provider;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DiscoveryEnabledNIWSServerList extends AbstractServerList<DiscoveryEnabledServer>{
+public class DiscoveryEnabledNIWSServerList extends AbstractServerList<DiscoveryEnabledServer> {
 
     private static final Logger logger = LoggerFactory.getLogger(DiscoveryEnabledNIWSServerList.class);
 
@@ -180,7 +189,6 @@ public class DiscoveryEnabledNIWSServerList extends AbstractServerList<Discovery
         sb.append("; datacenter:").append(datacenter);
         return sb.toString();
     }
-
 
     private static IClientConfig createClientConfig(String vipAddresses) {
         IClientConfig clientConfig = DefaultClientConfigImpl.getClientConfigWithDefaultValues();

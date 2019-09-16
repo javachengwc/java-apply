@@ -4,6 +4,7 @@ import com.pseudocode.netflix.ribbon.core.client.config.IClientConfig;
 import com.pseudocode.netflix.ribbon.loadbalancer.ILoadBalancer;
 import com.pseudocode.netflix.ribbon.loadbalancer.server.Server;
 
+//可配置的轮询rule
 public class ClientConfigEnabledRoundRobinRule extends AbstractLoadBalancerRule {
 
     RoundRobinRule roundRobinRule = new RoundRobinRule();

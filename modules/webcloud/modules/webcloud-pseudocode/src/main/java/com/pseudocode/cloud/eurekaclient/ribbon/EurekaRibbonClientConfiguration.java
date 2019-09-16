@@ -1,11 +1,15 @@
 package com.pseudocode.cloud.eurekaclient.ribbon;
 
+import com.pseudocode.cloud.ribbon.PropertiesFactory;
+import com.pseudocode.cloud.ribbon.RibbonClientName;
 import com.pseudocode.cloud.ribbon.RibbonUtils;
 import com.pseudocode.cloud.ribbon.ServerIntrospector;
 import com.pseudocode.netflix.eureka.client.appinfo.EurekaInstanceConfig;
 import com.pseudocode.netflix.eureka.client.discovery.EurekaClient;
 import com.pseudocode.netflix.eureka.client.discovery.EurekaClientConfig;
 import com.pseudocode.netflix.ribbon.core.client.config.IClientConfig;
+import com.pseudocode.netflix.ribbon.eureka.DiscoveryEnabledNIWSServerList;
+import com.pseudocode.netflix.ribbon.eureka.NIWSDiscoveryPing;
 import com.pseudocode.netflix.ribbon.loadbalancer.server.ServerList;
 import com.pseudocode.netflix.ribbon.loadbalancer.IPing;
 import com.netflix.config.ConfigurationManager;

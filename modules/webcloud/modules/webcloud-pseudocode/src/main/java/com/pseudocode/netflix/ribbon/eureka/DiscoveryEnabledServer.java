@@ -1,5 +1,7 @@
 package com.pseudocode.netflix.ribbon.eureka;
 
+import com.pseudocode.netflix.eureka.client.appinfo.InstanceInfo;
+import com.pseudocode.netflix.eureka.client.appinfo.InstanceInfo.PortType;
 import com.pseudocode.netflix.ribbon.loadbalancer.server.Server;
 
 @SuppressWarnings({"EQ_DOESNT_OVERRIDE_EQUALS"})

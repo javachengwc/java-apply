@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 //ZoneAwareLoadBalancer区域敏感的负载均衡器,是默认的负载均衡器
 public class ZoneAwareLoadBalancer<T extends Server> extends DynamicServerListLoadBalancer<T> {
 
+    //zone-loadbalancer
     private ConcurrentHashMap<String, BaseLoadBalancer> balancers = new ConcurrentHashMap<String, BaseLoadBalancer>();
 
     private static final Logger logger = LoggerFactory.getLogger(ZoneAwareLoadBalancer.class);
@@ -104,6 +105,7 @@ public class ZoneAwareLoadBalancer<T extends Server> extends DynamicServerListLo
             Set<String> availableZones = ZoneAvoidanceRule.getAvailableZones(zoneSnapshot, triggeringLoad.get(), triggeringBlackoutPercentage.get());
             logger.debug("Available zones: {}", availableZones);
             if (availableZones != null &&  availableZones.size() < zoneSnapshot.keySet().size()) {
+                //只要指定了zone，而不是随机，就能通过getLoadBalancer获取到对应zone的loadbalancer从而返回对应zone的实例
                 String zone = ZoneAvoidanceRule.randomChooseZone(zoneSnapshot, availableZones);
                 logger.debug("Zone chosen: {}", zone);
                 if (zone != null) {

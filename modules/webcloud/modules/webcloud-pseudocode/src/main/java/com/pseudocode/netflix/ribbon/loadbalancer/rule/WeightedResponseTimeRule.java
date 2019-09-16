@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+//根据响应时间去分配一个weight ，weight越低，被选择的可能性就越低
 public class WeightedResponseTimeRule extends RoundRobinRule {
 
     public static final IClientConfigKey<Integer> WEIGHT_TASK_TIMER_INTERVAL_CONFIG_KEY = new IClientConfigKey<Integer>() {
