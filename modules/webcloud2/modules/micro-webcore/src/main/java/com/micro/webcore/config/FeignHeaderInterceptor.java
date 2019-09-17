@@ -1,6 +1,7 @@
 package com.micro.webcore.config;
 
 
+import com.micro.webcore.constant.HeaderConstant;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import org.springframework.context.annotation.Configuration;
@@ -13,13 +14,9 @@ import java.util.Enumeration;
 @Configuration
 public class FeignHeaderInterceptor implements RequestInterceptor {
 
-    public static String ACCESS_COMEFROM_HEARDER="access_comefrom";
-
-    public static String ACCESS_COMEFROM_FEIGN="feign";
-
     @Override
     public void apply(RequestTemplate template) {
-        template.header(ACCESS_COMEFROM_HEARDER,ACCESS_COMEFROM_FEIGN);
+        template.header(HeaderConstant.ACCESS_COMEFROM_HEARDER,HeaderConstant.ACCESS_COMEFROM_FEIGN);
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         if(request==null) {
             return;

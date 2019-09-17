@@ -30,6 +30,7 @@ public interface Client {
 
     Response execute(Request request, Options options) throws IOException;
 
+    //默认实现feign.Client.Default，使用的是java.net包实现的
     public static class Default implements Client {
 
         private final SSLSocketFactory sslContextFactory;
@@ -46,6 +47,8 @@ public interface Client {
             return convertResponse(connection).toBuilder().request(request).build();
         }
 
+
+        //发送请求,调用feign.Client.Default#convertAndSend方法使用HttpURLConnection
         HttpURLConnection convertAndSend(Request request, Options options) throws IOException {
             final HttpURLConnection
                     connection =

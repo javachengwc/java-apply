@@ -51,6 +51,7 @@ public final class Request
         return this.body;
     }
 
+    //超时时间，默认连接超时10s，读超时60s
     public static class Options {
         private final int connectTimeoutMillis;
         private final int readTimeoutMillis;

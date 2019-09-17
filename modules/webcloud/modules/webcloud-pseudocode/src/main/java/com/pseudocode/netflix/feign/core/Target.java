@@ -5,10 +5,13 @@ import static com.pseudocode.netflix.feign.core.Util.emptyToNull;
 
 public interface Target<T> {
 
+    //feignclient 类名
     Class<T> type();
 
+    //feignclient服务名
     String name();
 
+    //feignclient url
     String url();
 
     public Request apply(RequestTemplate input);

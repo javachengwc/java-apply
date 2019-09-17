@@ -5,6 +5,11 @@ import com.pseudocode.netflix.ribbon.core.client.config.CommonClientConfigKey;
 import com.pseudocode.netflix.ribbon.core.client.config.IClientConfig;
 import com.pseudocode.netflix.ribbon.loadbalancer.ILoadBalancer;
 import com.pseudocode.netflix.ribbon.loadbalancer.LoadBalancerContext;
+import com.pseudocode.netflix.ribbon.loadbalancer.reactive.LoadBalancerCommand;
+import com.pseudocode.netflix.ribbon.loadbalancer.server.Server;
+import rx.Observable;
+
+import java.net.URI;
 
 public abstract class AbstractLoadBalancerAwareClient<S extends ClientRequest, T extends IResponse>
         extends LoadBalancerContext implements IClient<S, T>, IClientConfigAware {
@@ -37,9 +42,34 @@ public abstract class AbstractLoadBalancerAwareClient<S extends ClientRequest, T
         return executeWithLoadBalancer(request, null);
     }
 
+    //使用负载均衡的方式去执行请求
     public T executeWithLoadBalancer(final S request, final IClientConfig requestConfig) throws ClientException {
-        //..........
-        return null;
+        LoadBalancerCommand<T> command = buildLoadBalancerCommand(request, requestConfig);
+        try {
+            return command.submit(
+                    new ServerOperation<T>() {
+                        @Override
+                        public Observable<T> call(Server server) {
+                            URI finalUri = reconstructURIWithServer(server, request.getUri());
+                            S requestForServer = (S) request.replaceUri(finalUri);
+                            try {
+                                return Observable.just(AbstractLoadBalancerAwareClient.this.execute(requestForServer, requestConfig));
+                            }
+                            catch (Exception e) {
+                                return Observable.error(e);
+                            }
+                        }
+                    })
+                    .toBlocking()
+                    .single();
+        } catch (Exception e) {
+            Throwable t = e.getCause();
+            if (t instanceof ClientException) {
+                throw (ClientException) t;
+            } else {
+                throw new ClientException(e);
+            }
+        }
     }
 
     public abstract RequestSpecificRetryHandler getRequestSpecificRetryHandler(S request, IClientConfig requestConfig);

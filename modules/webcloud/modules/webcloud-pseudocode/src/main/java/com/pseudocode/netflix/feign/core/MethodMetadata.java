@@ -10,10 +10,14 @@ import java.util.Map;
 
 import com.pseudocode.netflix.feign.core.Param.Expander;
 
+//方法元数据
 public final class MethodMetadata implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    //类方法参数类型拼接的一个key
     private String configKey;
+
+    //返回类型
     private transient Type returnType;
     private Integer urlIndex;
     private Integer bodyIndex;
@@ -21,6 +25,7 @@ public final class MethodMetadata implements Serializable {
     private Integer queryMapIndex;
     private boolean queryMapEncoded;
     private transient Type bodyType;
+    //请求模板
     private RequestTemplate template = new RequestTemplate();
     private List<String> formParams = new ArrayList<String>();
     private Map<Integer, Collection<String>> indexToName = new LinkedHashMap<Integer, Collection<String>>();

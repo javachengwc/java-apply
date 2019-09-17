@@ -5,6 +5,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -13,8 +14,10 @@ import java.util.Map;
 
 import static com.pseudocode.netflix.feign.core.Util.checkState;
 
+//feignclient接口方法元数据解析器
 public interface Contract {
 
+    //targetType就是feignclient类类型
     List<MethodMetadata> parseAndValidatateMetadata(Class<?> targetType);
 
     abstract class BaseContract implements Contract {
@@ -51,7 +54,50 @@ public interface Contract {
         }
 
         protected MethodMetadata parseAndValidateMetadata(Class<?> targetType, Method method) {
+
             MethodMetadata data = new MethodMetadata();
+            data.returnType(Types.resolve(targetType, targetType, method.getGenericReturnType()));
+            data.configKey(Feign.configKey(targetType, method));
+
+            if (targetType.getInterfaces().length == 1) {
+                processAnnotationOnClass(data, targetType.getInterfaces()[0]);
+            }
+            processAnnotationOnClass(data, targetType);
+
+            for (Annotation methodAnnotation : method.getAnnotations()) {
+                processAnnotationOnMethod(data, methodAnnotation, method);
+            }
+            Util.checkState(data.template().method() != null,
+                    "Method %s not annotated with HTTP method type (ex. GET, POST)", new Object[] { method.getName() });
+            Class[] parameterTypes = method.getParameterTypes();
+            Type[] genericParameterTypes = method.getGenericParameterTypes();
+
+            Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+            int count = parameterAnnotations.length;
+            for (int i = 0; i < count; i++) {
+                boolean isHttpAnnotation = false;
+                if (parameterAnnotations[i] != null) {
+                    isHttpAnnotation = processAnnotationsOnParameter(data, parameterAnnotations[i], i);
+                }
+                if (parameterTypes[i] == URI.class) {
+                    data.urlIndex(Integer.valueOf(i));
+                } else if (!isHttpAnnotation) {
+                    Util.checkState(data.formParams().isEmpty(), "Body parameters cannot be used with form parameters.", new Object[0]);
+
+                    Util.checkState(data.bodyIndex() == null, "Method has too many Body parameters: %s", new Object[] { method });
+                    data.bodyIndex(Integer.valueOf(i));
+                    data.bodyType(Types.resolve(targetType, targetType, genericParameterTypes[i]));
+                }
+            }
+
+            if (data.headerMapIndex() != null) {
+                checkMapString("HeaderMap", parameterTypes[data.headerMapIndex().intValue()], genericParameterTypes[data.headerMapIndex().intValue()]);
+            }
+
+            if (data.queryMapIndex() != null) {
+                checkMapString("QueryMap", parameterTypes[data.queryMapIndex().intValue()], genericParameterTypes[data.queryMapIndex().intValue()]);
+            }
+
             return data;
         }
 

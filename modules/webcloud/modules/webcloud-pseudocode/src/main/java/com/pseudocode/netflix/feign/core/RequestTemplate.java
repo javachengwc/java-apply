@@ -24,6 +24,7 @@ import static com.pseudocode.netflix.feign.core.Util.emptyToNull;
 import static com.pseudocode.netflix.feign.core.Util.toArray;
 import static com.pseudocode.netflix.feign.core.Util.valuesOrEmpty;
 
+//请求模板
 public final class RequestTemplate implements Serializable {
 
     private static final long serialVersionUID = 1L;

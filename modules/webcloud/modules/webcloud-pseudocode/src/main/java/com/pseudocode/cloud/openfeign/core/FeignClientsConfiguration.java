@@ -1,5 +1,10 @@
 package com.pseudocode.cloud.openfeign.core;
 
+import com.pseudocode.netflix.feign.core.Contract;
+import com.pseudocode.netflix.feign.core.Feign;
+import com.pseudocode.netflix.feign.core.Retryer;
+import com.pseudocode.netflix.feign.core.codec.Decoder;
+import com.pseudocode.netflix.feign.core.codec.Encoder;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +29,10 @@ public class FeignClientsConfiguration {
     private ObjectFactory<HttpMessageConverters> messageConverters;
 
     @Autowired(required = false)
-    private List<AnnotatedParameterProcessor> parameterProcessors = new ArrayList<>();
+    private List<AnnotatedParameterProcessor> parameterProcessors = new ArrayList<AnnotatedParameterProcessor>();
 
     @Autowired(required = false)
-    private List<FeignFormatterRegistrar> feignFormatterRegistrars = new ArrayList<>();
+    private List<FeignFormatterRegistrar> feignFormatterRegistrars = new ArrayList<FeignFormatterRegistrar>();
 
     @Autowired(required = false)
     private Logger logger;
@@ -71,6 +76,7 @@ public class FeignClientsConfiguration {
         }
     }
 
+    //重试器
     @Bean
     @ConditionalOnMissingBean
     public Retryer feignRetryer() {

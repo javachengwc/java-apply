@@ -8,6 +8,7 @@ public interface Retryer extends Cloneable {
 
     Retryer clone();
 
+    //默认实现feign.Retryer.Default，超时延迟100ms开始重试，每隔1s重试一次，重试4次
     public static class Default implements Retryer {
 
         private final int maxAttempts;

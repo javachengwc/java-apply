@@ -18,6 +18,7 @@ import com.pseudocode.netflix.feign.core.codec.ErrorDecoder;
 import static com.pseudocode.netflix.feign.core.Util.checkArgument;
 import static com.pseudocode.netflix.feign.core.Util.checkNotNull;
 
+//Feign,生成动态代理类，基于jdk的动态代理实现
 public class ReflectiveFeign extends Feign {
 
     private final ParseHandlersByName targetToHandlersByName;
@@ -28,10 +29,13 @@ public class ReflectiveFeign extends Feign {
         this.factory = factory;
     }
 
+    //创建实例
     @SuppressWarnings("unchecked")
     @Override
     public <T> T newInstance(Target<T> target) {
         Map<String, MethodHandler> nameToHandler = targetToHandlersByName.apply(target);
+
+        //feign接口方法--methodHandler映射
         Map<Method, MethodHandler> methodToHandler = new LinkedHashMap<Method, MethodHandler>();
         List<DefaultMethodHandler> defaultMethodHandlers = new LinkedList<DefaultMethodHandler>();
 
@@ -46,8 +50,9 @@ public class ReflectiveFeign extends Feign {
                 methodToHandler.put(method, nameToHandler.get(Feign.configKey(target.type(), method)));
             }
         }
+        //创建InvocationHandler，接收请求，转发到methodHandler
         InvocationHandler handler = factory.create(target, methodToHandler);
-        //动态代理
+        //动态代理创建出代理类
         T proxy = (T) Proxy.newProxyInstance(target.type().getClassLoader(), new Class<?>[]{target.type()}, handler);
 
         for(DefaultMethodHandler defaultMethodHandler : defaultMethodHandlers) {
@@ -56,6 +61,7 @@ public class ReflectiveFeign extends Feign {
         return proxy;
     }
 
+    //feign接口统一方法处理入口
     static class FeignInvocationHandler implements InvocationHandler {
 
         private final Target target;
@@ -80,6 +86,7 @@ public class ReflectiveFeign extends Feign {
             } else if ("toString".equals(method.getName())) {
                 return toString();
             }
+            //获取要执行的方法(MethodHandler),然后invoke调用传入参数
             return dispatch.get(method).invoke(args);
         }
 
@@ -103,6 +110,7 @@ public class ReflectiveFeign extends Feign {
         }
     }
 
+    //解析接口方法元数据
     static final class ParseHandlersByName {
 
         private final Contract contract;
@@ -122,10 +130,14 @@ public class ReflectiveFeign extends Feign {
             this.decoder = checkNotNull(decoder, "decoder");
         }
 
+
         public Map<String, MethodHandler> apply(Target key) {
+
+            //解析FeignClient接口方法元数据
             List<MethodMetadata> metadata = contract.parseAndValidatateMetadata(key.type());
             Map<String, MethodHandler> result = new LinkedHashMap<String, MethodHandler>();
             for (MethodMetadata md : metadata) {
+                //RequestTemplate对象封装好要请求的服务名,参数类型
                 BuildTemplateByResolvingArgs buildTemplate;
                 if (!md.formParams().isEmpty() && md.template().bodyTemplate() == null) {
                     buildTemplate = new BuildFormEncodedTemplateFromArgs(md, encoder);
@@ -165,8 +177,10 @@ public class ReflectiveFeign extends Feign {
             }
         }
 
+        //创建requestTemplate
         @Override
         public RequestTemplate create(Object[] argv) {
+            //创建请求模板，metadata.template()获取到的就是一个RequestTemplate
             RequestTemplate mutable = new RequestTemplate(metadata.template());
             if (metadata.urlIndex() != null) {
                 int urlIndex = metadata.urlIndex();
@@ -181,12 +195,14 @@ public class ReflectiveFeign extends Feign {
                     if (indexToExpander.containsKey(i)) {
                         value = expandElements(indexToExpander.get(i), value);
                     }
+                    //把请求参数放到map中
                     for (String name : entry.getValue()) {
                         varBuilder.put(name, value);
                     }
                 }
             }
 
+            //解析处理请求地址，参数，和编码等
             RequestTemplate template = resolve(argv, mutable, varBuilder);
             if (metadata.queryMapIndex() != null) {
                 // add query map parameters after initial resolve so that they take

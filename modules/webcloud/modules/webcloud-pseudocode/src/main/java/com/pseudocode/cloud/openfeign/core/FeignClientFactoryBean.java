@@ -1,5 +1,11 @@
 package com.pseudocode.cloud.openfeign.core;
 
+import com.pseudocode.cloud.openfeign.core.ribbon.LoadBalancerFeignClient;
+import com.pseudocode.netflix.feign.core.*;
+import com.pseudocode.netflix.feign.core.Target.HardCodedTarget;
+import com.pseudocode.netflix.feign.core.codec.Decoder;
+import com.pseudocode.netflix.feign.core.codec.Encoder;
+import com.pseudocode.netflix.feign.core.codec.ErrorDecoder;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
@@ -10,12 +16,16 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import java.util.Map;
 import java.util.Objects;
 
+//feignclient的工厂bean
 public class FeignClientFactoryBean implements FactoryBean<Object>, InitializingBean,ApplicationContextAware {
 
+    //feignclient类名
     private Class<?> type;
 
+    //feignclient服务名
     private String name;
 
     private String url;
@@ -45,6 +55,7 @@ public class FeignClientFactoryBean implements FactoryBean<Object>, Initializing
         Logger logger = loggerFactory.create(this.type);
 
         // @formatter:off
+        //调用FeignContext的getInstance方法,根据name即服务的名字来创建builder
         Feign.Builder builder = get(context, Feign.Builder.class)
                 // required values
                 .logger(logger)
@@ -80,10 +91,12 @@ public class FeignClientFactoryBean implements FactoryBean<Object>, Initializing
         if (level != null) {
             builder.logLevel(level);
         }
+        //设置重试策
         Retryer retryer = getOptional(context, Retryer.class);
         if (retryer != null) {
             builder.retryer(retryer);
         }
+        //设置错误处理
         ErrorDecoder errorDecoder = getOptional(context, ErrorDecoder.class);
         if (errorDecoder != null) {
             builder.errorDecoder(errorDecoder);
@@ -92,8 +105,8 @@ public class FeignClientFactoryBean implements FactoryBean<Object>, Initializing
         if (options != null) {
             builder.options(options);
         }
-        Map<String, RequestInterceptor> requestInterceptors = context.getInstances(
-                this.name, RequestInterceptor.class);
+        //绑定请求拦截器
+        Map<String, RequestInterceptor> requestInterceptors = context.getInstances(this.name, RequestInterceptor.class);
         if (requestInterceptors != null) {
             builder.requestInterceptors(requestInterceptors.values());
         }
@@ -164,8 +177,7 @@ public class FeignClientFactoryBean implements FactoryBean<Object>, Initializing
     protected <T> T get(FeignContext context, Class<T> type) {
         T instance = context.getInstance(this.name, type);
         if (instance == null) {
-            throw new IllegalStateException("No bean found of type " + type + " for "
-                    + this.name);
+            throw new IllegalStateException("No bean found of type " + type + " for " + this.name);
         }
         return instance;
     }
@@ -174,22 +186,24 @@ public class FeignClientFactoryBean implements FactoryBean<Object>, Initializing
         return context.getInstance(this.name, type);
     }
 
-    protected <T> T loadBalance(Feign.Builder builder, FeignContext context,
-                                HardCodedTarget<T> target) {
+    protected <T> T loadBalance(Feign.Builder builder, FeignContext context, HardCodedTarget<T> target) {
+        //获得FeignClient
         Client client = getOptional(context, Client.class);
         if (client != null) {
             builder.client(client);
             Targeter targeter = get(context, Targeter.class);
             return targeter.target(this, builder, context, target);
         }
-
-        throw new IllegalStateException(
-                "No Feign Client for loadBalancing defined. Did you forget to include spring-cloud-starter-netflix-ribbon?");
+        throw new IllegalStateException("No Feign Client for loadBalancing defined. Did you forget to include spring-cloud-starter-netflix-ribbon?");
     }
 
     @Override
     public Object getObject() throws Exception {
+
+        //Feign上下文对象,是feign的容器对象
         FeignContext context = applicationContext.getBean(FeignContext.class);
+
+        //Feign.Builder用来创建feign的构建器
         Feign.Builder builder = feign(context);
 
         if (!StringUtils.hasText(this.url)) {
@@ -200,13 +214,15 @@ public class FeignClientFactoryBean implements FactoryBean<Object>, Initializing
             else {
                 url = this.name;
             }
+            //拼接成http,
             url += cleanPath();
-            return loadBalance(builder, context, new HardCodedTarget<>(this.type,
-                    this.name, url));
+            //创建负载均衡的代理类，底层使用到了jdk动态代理
+            return loadBalance(builder, context, new HardCodedTarget<>(this.type, this.name, url));
         }
         if (StringUtils.hasText(this.url) && !this.url.startsWith("http")) {
             this.url = "http://" + this.url;
         }
+
         String url = this.url + cleanPath();
         Client client = getOptional(context, Client.class);
         if (client != null) {
@@ -217,9 +233,9 @@ public class FeignClientFactoryBean implements FactoryBean<Object>, Initializing
             }
             builder.client(client);
         }
+        //创建默认的代理类
         Targeter targeter = get(context, Targeter.class);
-        return targeter.target(this, builder, context, new HardCodedTarget<>(
-                this.type, this.name, url));
+        return targeter.target(this, builder, context, new HardCodedTarget<>(this.type, this.name, url));
     }
 
     private String cleanPath() {
@@ -303,41 +319,6 @@ public class FeignClientFactoryBean implements FactoryBean<Object>, Initializing
 
     public void setFallbackFactory(Class<?> fallbackFactory) {
         this.fallbackFactory = fallbackFactory;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        FeignClientFactoryBean that = (FeignClientFactoryBean) o;
-        return Objects.equals(applicationContext, that.applicationContext) &&
-                decode404 == that.decode404 &&
-                Objects.equals(fallback, that.fallback) &&
-                Objects.equals(fallbackFactory, that.fallbackFactory) &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(path, that.path) &&
-                Objects.equals(type, that.type) &&
-                Objects.equals(url, that.url);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(applicationContext, decode404, fallback, fallbackFactory,
-                name, path, type, url);
-    }
-
-    @Override
-    public String toString() {
-        return new StringBuilder("FeignClientFactoryBean{")
-                .append("type=").append(type).append(", ")
-                .append("name='").append(name).append("', ")
-                .append("url='").append(url).append("', ")
-                .append("path='").append(path).append("', ")
-                .append("decode404=").append(decode404).append(", ")
-                .append("applicationContext=").append(applicationContext).append(", ")
-                .append("fallback=").append(fallback).append(", ")
-                .append("fallbackFactory=").append(fallbackFactory)
-                .append("}").toString();
     }
 
 }

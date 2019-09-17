@@ -57,12 +57,14 @@ final class SynchronousMethodHandler implements MethodHandler {
     //每一个FeignClient请求，进入此invoke方法
     @Override
     public Object invoke(Object[] argv) throws Throwable {
+        //请求模板
         RequestTemplate template = buildTemplateFromArgs.create(argv);
         Retryer retryer = this.retryer.clone();
         while (true) {
             try {
                 return executeAndDecode(template);
             } catch (RetryableException e) {
+                //重试机制继续或传播
                 retryer.continueOrPropagate(e);
                 if (logLevel != Logger.Level.NONE) {
                     logger.logRetry(metadata.configKey(), logLevel);
@@ -73,6 +75,8 @@ final class SynchronousMethodHandler implements MethodHandler {
     }
 
     Object executeAndDecode(RequestTemplate template) throws Throwable {
+
+        //获取请求对象
         Request request = targetRequest(template);
 
         if (logLevel != Logger.Level.NONE) {
@@ -82,6 +86,7 @@ final class SynchronousMethodHandler implements MethodHandler {
         Response response;
         long start = System.nanoTime();
         try {
+            //调用LoadBalancerFeignClient负载均衡器客户端执行请求
             response = client.execute(request, options);
             response.toBuilder().request(request).build();
         } catch (IOException e) {

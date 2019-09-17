@@ -3,6 +3,7 @@ package com.pseudocode.netflix.feign.core;
 import com.pseudocode.netflix.feign.core.codec.Decoder;
 import com.pseudocode.netflix.feign.core.codec.Encoder;
 import com.pseudocode.netflix.feign.core.codec.ErrorDecoder;
+import com.pseudocode.netflix.feign.core.Request.Options;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -20,10 +21,10 @@ public abstract class Feign {
         StringBuilder builder = new StringBuilder();
         builder.append(targetType.getSimpleName());
         builder.append('#').append(method.getName()).append('(');
-//        for (Type param : method.getGenericParameterTypes()) {
-//            param = Types.resolve(targetType, targetType, param);
-//            builder.append(Types.getRawType(param).getSimpleName()).append(',');
-//        }
+        for (Type param : method.getGenericParameterTypes()) {
+            param = Types.resolve(targetType, targetType, param);
+            builder.append(Types.getRawType(param).getSimpleName()).append(',');
+        }
         if (method.getParameterTypes().length > 0) {
             builder.deleteCharAt(builder.length() - 1);
         }
@@ -37,6 +38,7 @@ public abstract class Feign {
 
     public abstract <T> T newInstance(Target<T> target);
 
+    //设置发送http请求的相关参数，比如http客户端，重试策略，编解码，超时时间等等
     public static class Builder {
 
         private final List<RequestInterceptor> requestInterceptors = new ArrayList<RequestInterceptor>();
@@ -127,7 +129,7 @@ public abstract class Feign {
         }
 
         public <T> T target(Class<T> apiType, String url) {
-            return target(new HardCodedTarget<T>(apiType, url));
+            return target(new Target.HardCodedTarget<T>(apiType, url));
         }
 
         public <T> T target(Target<T> target) {
