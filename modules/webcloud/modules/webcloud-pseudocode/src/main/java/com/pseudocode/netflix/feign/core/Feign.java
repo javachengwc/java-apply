@@ -4,6 +4,7 @@ import com.pseudocode.netflix.feign.core.codec.Decoder;
 import com.pseudocode.netflix.feign.core.codec.Encoder;
 import com.pseudocode.netflix.feign.core.codec.ErrorDecoder;
 import com.pseudocode.netflix.feign.core.Request.Options;
+import com.pseudocode.netflix.feign.core.ReflectiveFeign.ParseHandlersByName;
 
 import java.io.IOException;
 import java.lang.reflect.Method;

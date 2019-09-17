@@ -71,10 +71,6 @@ public class FeignAutoConfiguration {
         }
     }
 
-    // the following configuration is for alternate feign clients if
-    // ribbon is not on the class path.
-    // see corresponding configurations in FeignRibbonClientAutoConfiguration
-    // for load balanced ribbon clients.
     @Configuration
     @ConditionalOnClass(ApacheHttpClient.class)
     @ConditionalOnMissingClass("com.netflix.loadbalancer.ILoadBalancer")

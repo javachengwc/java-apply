@@ -125,6 +125,7 @@ public class FeignClientFactoryBean implements FactoryBean<Object>, Initializing
             builder.logLevel(config.getLoggerLevel());
         }
 
+        //设置到Request.Options中
         if (config.getConnectTimeout() != null && config.getReadTimeout() != null) {
             builder.options(new Request.Options(config.getConnectTimeout(), config.getReadTimeout()));
         }

@@ -11,7 +11,7 @@ class FeignClientSpecification implements NamedContextFactory.Specification {
     //feignclient服务名称
     private String name;
 
-    //feignclient的负载均衡规则
+    //feignclient的独立配置类
     private Class<?>[] configuration;
 
     public FeignClientSpecification() {}

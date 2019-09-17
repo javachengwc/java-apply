@@ -59,6 +59,7 @@ public class LoadBalancerFeignClient implements Client {
         if (options == DEFAULT_OPTIONS) {
             requestConfig = this.clientFactory.getClientConfig(clientName);
         } else {
+            //会把Request.Options的超时时间设置到ribbon负载均衡的超时时间
             requestConfig = new FeignOptionsClientConfig(options);
         }
         return requestConfig;

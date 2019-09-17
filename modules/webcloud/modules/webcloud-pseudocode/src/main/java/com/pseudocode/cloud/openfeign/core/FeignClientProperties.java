@@ -50,12 +50,17 @@ public class FeignClientProperties {
 
     public static class FeignClientConfiguration {
 
+        //日志级别,配置项为:feign.client.config.default.loggerLevel
         private Logger.Level loggerLevel;
 
+        //2个超时时间如果有配置值，会设置到Request.Options中
+        //连接超时
         private Integer connectTimeout;
 
+        //访问超时,配置项为:feign.client.config.default.readTimeout
         private Integer readTimeout;
 
+        //重试器
         private Class<Retryer> retryer;
 
         private Class<ErrorDecoder> errorDecoder;

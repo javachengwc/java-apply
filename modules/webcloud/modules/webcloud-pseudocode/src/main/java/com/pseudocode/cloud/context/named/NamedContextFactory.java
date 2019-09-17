@@ -25,7 +25,7 @@ public abstract class NamedContextFactory<C extends NamedContextFactory.Specific
     //服务名字--上下文Context
     private Map<String, AnnotationConfigApplicationContext> contexts = new ConcurrentHashMap<>();
 
-    //服务名称--负载均衡配置
+    //服务名称--配置类
     private Map<String, C> configurations = new ConcurrentHashMap<>();
 
     private ApplicationContext parent;

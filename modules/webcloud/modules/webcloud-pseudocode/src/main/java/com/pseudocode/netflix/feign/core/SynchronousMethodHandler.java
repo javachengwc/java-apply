@@ -16,7 +16,7 @@ import static com.pseudocode.netflix.feign.core.FeignException.errorReading;
 import static com.pseudocode.netflix.feign.core.Util.checkNotNull;
 import static com.pseudocode.netflix.feign.core.Util.ensureClosed;
 
-//同时操作的MethodHandler
+// 接口方法处理器Handler，真正发起http请求，处理返回结果
 final class SynchronousMethodHandler implements MethodHandler {
 
     private static final long MAX_RESPONSE_BUFFER_SIZE = 8192L;
