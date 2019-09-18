@@ -857,8 +857,7 @@ public class InstanceInfo {
         // Deleted from the discovery server
     }
 
-    synchronized void registerRuntimeMetadata(
-            Map<String, String> runtimeMetadata) {
+    synchronized void registerRuntimeMetadata(Map<String, String> runtimeMetadata) {
         metadata.putAll(runtimeMetadata);
         setIsDirty();
     }

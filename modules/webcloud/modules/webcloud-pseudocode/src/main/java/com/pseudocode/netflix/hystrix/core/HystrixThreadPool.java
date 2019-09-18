@@ -1,11 +1,6 @@
 package com.pseudocode.netflix.hystrix.core;
 
-
-import com.netflix.hystrix.strategy.HystrixPlugins;
-import com.netflix.hystrix.strategy.concurrency.HystrixConcurrencyStrategy;
-import com.netflix.hystrix.strategy.concurrency.HystrixContextScheduler;
-import com.netflix.hystrix.strategy.metrics.HystrixMetricsPublisherFactory;
-import com.netflix.hystrix.strategy.properties.HystrixPropertiesFactory;
+import com.pseudocode.netflix.hystrix.core.strategy.concurrency.HystrixConcurrencyStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Scheduler;
@@ -17,6 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+//hystrix线程池
 public interface HystrixThreadPool {
 
     public ExecutorService getExecutor();
@@ -126,6 +122,7 @@ public interface HystrixThreadPool {
         }
 
         // allow us to change things via fast-properties by setting it each time
+        //设置线程的参数
         private void touchConfig() {
             final int dynamicCoreSize = properties.coreSize().get();
             final int configuredMaximumSize = properties.maximumSize().get();
