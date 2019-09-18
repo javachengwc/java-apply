@@ -5,6 +5,7 @@ public interface HystrixKey {
     String name();
 
     abstract class HystrixKeyDefault implements HystrixKey {
+
         private final String name;
 
         public HystrixKeyDefault(String name) {

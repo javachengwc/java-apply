@@ -81,6 +81,22 @@ public abstract class HystrixConcurrencyStrategy {
 
     public BlockingQueue<Runnable> getBlockingQueue(int maxQueueSize) {
         if (maxQueueSize <= 0) {
+//            SynchronousQueue是一个没有数据缓冲的BlockingQueue，生产者线程对其的插入操作put必须等待消费者的移除操作take，反过来也一样
+//            SynchronousQueue 内部没有容量，但是由于一个插入操作总是对应一个移除操作，反过来同样需要满足。
+//            那么一个元素就不会再SynchronousQueue 里面长时间停留，一旦有了插入线程和移除线程，元素很快就从插入线程移交给移除线程。
+//            也就是说这更像是一种信道（管道），资源从一个方向快速传递到另一方向
+//            SynchronousQueue的以下方法：
+//                * iterator() 永远返回空，因为里面没东西。
+//                * peek() 永远返回null。
+//                * put() 往queue放进去一个element以后就一直wait直到有其他thread进来把这个element取走。
+//                * offer() 往queue里放一个element后立即返回，如果碰巧这个element被另一个thread取走了，offer方法返回true，认为offer成功；否则返回false。
+//                * offer(2000, TimeUnit.SECONDS) 往queue里放一个element但是等待指定的时间后才返回，返回的逻辑和offer()方法一样。
+//                * take() 取出并且remove掉queue里的element（认为是在queue里的。。。），取不到东西他会一直等。
+//                * poll() 取出并且remove掉queue里的element（认为是在queue里的。。。），只有到碰巧另外一个线程正在往queue里offer数据或者put数据的时候，该方法才会取到东西。否则立即返回null。
+//                * poll(2000, TimeUnit.SECONDS) 等待指定的时间然后取出并且remove掉queue里的element,其实就是再等其他的thread来往里塞。
+//                * isEmpty()永远是true。
+//                * remainingCapacity() 永远是0。
+//                * remove()和removeAll() 永远是false。
             return new SynchronousQueue<Runnable>();
         } else {
             return new LinkedBlockingQueue<Runnable>(maxQueueSize);

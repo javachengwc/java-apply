@@ -34,16 +34,13 @@ public interface HystrixThreadPool {
         final static ConcurrentHashMap<String, HystrixThreadPool> threadPools = new ConcurrentHashMap<String, HystrixThreadPool>();
 
         static HystrixThreadPool getInstance(HystrixThreadPoolKey threadPoolKey, HystrixThreadPoolProperties.Setter propertiesBuilder) {
-            // get the key to use instead of using the object itself so that if people forget to implement equals/hashcode things will still work
             String key = threadPoolKey.name();
 
-            // this should find it for all but the first time
             HystrixThreadPool previouslyCached = threadPools.get(key);
             if (previouslyCached != null) {
                 return previouslyCached;
             }
 
-            // if we get here this is the first time so we need to initialize
             synchronized (HystrixThreadPool.class) {
                 if (!threadPools.containsKey(key)) {
                     threadPools.put(key, new HystrixThreadPoolDefault(threadPoolKey, propertiesBuilder));
@@ -74,7 +71,9 @@ public interface HystrixThreadPool {
             threadPools.clear();
         }
     }
-        class HystrixThreadPoolDefault implements HystrixThreadPool {
+
+    //线程池实现类
+    class HystrixThreadPoolDefault implements HystrixThreadPool {
         private static final Logger logger = LoggerFactory.getLogger(HystrixThreadPoolDefault.class);
 
         private final HystrixThreadPoolProperties properties;
@@ -84,14 +83,23 @@ public interface HystrixThreadPool {
         private final int queueSize;
 
         public HystrixThreadPoolDefault(HystrixThreadPoolKey threadPoolKey, HystrixThreadPoolProperties.Setter propertiesDefaults) {
+
+            //线程池属性
             this.properties = HystrixPropertiesFactory.getThreadPoolProperties(threadPoolKey, propertiesDefaults);
+
             HystrixConcurrencyStrategy concurrencyStrategy = HystrixPlugins.getInstance().getConcurrencyStrategy();
+
+            //队列大小
             this.queueSize = properties.maxQueueSize().get();
 
+            //线程池统计
             this.metrics = HystrixThreadPoolMetrics.getInstance(threadPoolKey,
-                    concurrencyStrategy.getThreadPool(threadPoolKey, properties),
-                    properties);
+                    concurrencyStrategy.getThreadPool(threadPoolKey, properties), properties);
+
+            //线程池
             this.threadPool = this.metrics.getThreadPool();
+
+            //线程池队列
             this.queue = this.threadPool.getQueue();
 
             /* strategy: HystrixMetricsPublisherThreadPool */
@@ -122,7 +130,7 @@ public interface HystrixThreadPool {
         }
 
         // allow us to change things via fast-properties by setting it each time
-        //设置线程的参数
+        //动态调整线程的参数
         private void touchConfig() {
             final int dynamicCoreSize = properties.coreSize().get();
             final int configuredMaximumSize = properties.maximumSize().get();
@@ -136,7 +144,6 @@ public interface HystrixThreadPool {
                 maxTooLow = true;
             }
 
-            // In JDK 6, setCorePoolSize and setMaximumPoolSize will execute a lock operation. Avoid them if the pool size is not changed.
             if (threadPool.getCorePoolSize() != dynamicCoreSize || (allowSizesToDiverge && threadPool.getMaximumPoolSize() != dynamicMaximumSize)) {
                 if (maxTooLow) {
                     logger.error("Hystrix ThreadPool configuration for : " + metrics.getThreadPoolKey().name() + " is trying to set coreSize = " +
@@ -165,6 +172,7 @@ public interface HystrixThreadPool {
             metrics.markThreadRejection();
         }
 
+        //线程池队列是否有空余
         @Override
         public boolean isQueueSpaceAvailable() {
             if (queueSize <= 0) {
@@ -172,6 +180,7 @@ public interface HystrixThreadPool {
                 // let the thread-pool reject or not
                 return true;
             } else {
+                //当queueSize大于0，queue是LinkedBlockingQueue,队列大小没办法调整，通过此方法，伪动态调整
                 return threadPool.getQueue().size() < properties.queueSizeRejectionThreshold().get();
             }
         }

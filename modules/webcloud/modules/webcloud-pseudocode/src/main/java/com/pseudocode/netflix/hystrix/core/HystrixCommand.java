@@ -13,6 +13,7 @@ import rx.Observable;
 import rx.functions.Action0;
 import rx.functions.Func0;
 
+//hystrix命令行
 public abstract class HystrixCommand<R> extends AbstractCommand<R> implements HystrixExecutable<R>, HystrixInvokableInfo<R>, HystrixObservable<R> {
 
     protected HystrixCommand(HystrixCommandGroupKey group) {

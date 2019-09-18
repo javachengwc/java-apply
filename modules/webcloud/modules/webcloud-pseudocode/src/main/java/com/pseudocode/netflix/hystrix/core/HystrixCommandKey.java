@@ -3,10 +3,12 @@ package com.pseudocode.netflix.hystrix.core;
 import com.netflix.hystrix.util.InternMap;
 
 public interface HystrixCommandKey extends HystrixKey {
-    class Factory {
-        private Factory() {
-        }
 
+    class Factory {
+
+        private Factory() {
+
+        }
         private static final InternMap<String, HystrixCommandKeyDefault> intern = new InternMap<String, HystrixCommandKeyDefault>(
                 new InternMap.ValueConstructor<String, HystrixCommandKeyDefault>() {
                     @Override
@@ -20,6 +22,7 @@ public interface HystrixCommandKey extends HystrixKey {
         }
 
         private static class HystrixCommandKeyDefault extends HystrixKey.HystrixKeyDefault implements HystrixCommandKey {
+
             public HystrixCommandKeyDefault(String name) {
                 super(name);
             }

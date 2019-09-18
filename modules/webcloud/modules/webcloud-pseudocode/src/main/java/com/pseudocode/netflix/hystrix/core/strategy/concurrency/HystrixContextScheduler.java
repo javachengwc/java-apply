@@ -70,9 +70,11 @@ public class HystrixContextScheduler extends Scheduler {
         public Subscription schedule(Action0 action, long delayTime, TimeUnit unit) {
             if (threadPool != null) {
                 if (!threadPool.isQueueSpaceAvailable()) {
+                    //线程池队列没空余
                     throw new RejectedExecutionException("Rejected command because thread-pool queueSize is at rejection threshold.");
                 }
             }
+            //执行Action
             return worker.schedule(new HystrixContexSchedulerAction(concurrencyStrategy, action), delayTime, unit);
         }
 

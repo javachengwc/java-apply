@@ -6,10 +6,11 @@ import java.util.ServiceLoader;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.pseudocode.netflix.hystrix.core.strategy.concurrency.HystrixConcurrencyStrategy;
+import com.pseudocode.netflix.hystrix.core.strategy.properties.HystrixPropertiesStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//hystrix默认提供了HystrixPlugins类，可以让用户自定义线程池
+//hystrix插件体系，可以让用户自定义线程池等
 public class HystrixPlugins {
 
     private static class LazyHolder { private static final HystrixPlugins INSTANCE = HystrixPlugins.create(); }
