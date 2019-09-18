@@ -1,0 +1,12 @@
+server:
+    port: 8072
+spring:
+    application:
+      name: micro-turbineamqp
+#注册中心
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8080/eureka
+  instance:
+    prefer-ip-address: true

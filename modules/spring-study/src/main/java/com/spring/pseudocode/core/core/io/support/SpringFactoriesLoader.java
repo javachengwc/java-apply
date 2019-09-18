@@ -15,6 +15,7 @@ import java.net.URL;
 import java.util.*;
 
 //加载META-INF/spring.factories的信息
+//springFactoriesLoader会加载classpath下所有JAR文件里面的META-INF/spring.factories文件
 public abstract class SpringFactoriesLoader {
 
     private static final Log logger = LogFactory.getLog(SpringFactoriesLoader.class);
@@ -38,6 +39,7 @@ public abstract class SpringFactoriesLoader {
         return result;
     }
 
+    //加载spring.factories文件
     public static List<String> loadFactoryNames(Class<?> factoryClass, ClassLoader classLoader) {
         String factoryClassName = factoryClass.getName();
         try {

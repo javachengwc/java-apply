@@ -1,0 +1,44 @@
+----------------------------------hystrix-dashboard监控面板---------------------------------
+hystrix-dashboard监控搭建见项目:micro-hystrix-dashboard
+hystrix-dashboard监控访问:http://localhost:port/hystrix
+Hystrix Dashboard的监控首页并没有具体的监控信息。
+Hystrix Dashboard共支持三种不同的监控方式，依次为：
+单体应用的监控：通过URLhttp://hystrix-app:port/hystrix.stream开启，实现对具体某个服务实例的监控。
+默认的集群监控：通过URLhttp://turbine-hostname:port/turbine.stream开启，实现对默认集群的监控。
+指定的集群监控：通过URLhttp://turbine-hostname:port/turbine.stream?cluster=[clusterName]开启，实现对clusterName集群的监控。
+
+Hystrix Dashboard监控单实例节点需要通过访问实例的/hystrix.stream接口来实现，自然需要为服务实例添加这个端点，
+1,服务实例pom.xml中有spring-boot-starter-actuator,spring-cloud-starter-netflix-hystrix组件的依赖。
+2,确保服务实例主类中使用@EnableCircuitBreaker或@EnableHystrix注解，开启了断路器功能。
+在Hystrix Dashboard首页输入http://localhost:serverPort/hystrix.stream，
+填写参数Delay和Title,也可以不填写
+Delay：该参数用来控制服务器上轮询监控信息的延迟时间，默认为2000毫秒，可通过配置该属性来降低客户端的网络和CPU消耗。
+Title：该参数对应了监控页面标题显示，默认会使用具体监控实例的URL。
+点击“Monitor Stream”按钮,就可看到对单实例节点的监控页面
+在监控页面两个重要的图形信息：一个实心圆和一条曲线。
+实心圆：通过颜色的变化代表了实例的健康程度，它的健康度从绿色、黄色、橙色、红色递减。
+        该实心圆除了颜色的变化之外，它的大小也会根据实例的请求流量发生变化，流量越大该实心圆就越大。
+曲线：用来记录2分钟内流量的相对变化，可以通过它来观察到流量的上升和下降趋势。
+
+对集群的监控，需要整合Turbine才能实现,trubine监控搭建见项目:micro-trubine
+turbine对服务的Hystrix数据进行聚合有两种聚合方式。
+1，通过HTTP收集聚合(参见micro-trubine项目)
+2，通过消息代理收集聚合(参见micro-trubine-amqp项目)
+   spring cloud在封装turbine的时候，还实现了基于消息代理的收集实现。
+   可以将所有需要收集的监控信息都输出到消息代理中，然后Turbine服务再从消息代理中异步的获取这些监控信息，
+   最后将这些监控信息聚合并输出到Hystrix Dashboard中
+   对加入监控的服务，需要做下调整，使其监控信息能够输出到RabbitMQ上
+   a,在 pom.xml 里加入以下依赖
+   <dependency>
+       <groupId>org.springframework.cloud</groupId>
+       <artifactId>spring-cloud-netflix-hystrix-stream</artifactId>
+   </dependency>
+   <dependency>
+       <groupId>org.springframework.cloud</groupId>
+       <artifactId>spring-cloud-starter-stream-rabbit</artifactId>
+   </dependency>
+   b,在启动类上加上@EnableHystrix注解
+
+访问Hystrix Dashboard，并开启对http://localhost:trubinePort/turbine.stream的监控，就可看到针对聚合的服务的聚合监控数据。
+
+--------------------------------------------------------------------------------------------

@@ -14,6 +14,9 @@
 		<module>modules/micro-parent</module>
 		<module>modules/micro-webcore</module>
 		<module>modules/micro-eureka</module>
+		<module>modules/micro-hystrix-dashboard</module>
+		<module>modules/micro-turbine</module>
+		<module>modules/micro-turbine-amqp</module>
 		<module>modules/micro-gateway</module>
 		<module>modules/micro-configcenter</module>
 		<module>modules/micro-basic</module>

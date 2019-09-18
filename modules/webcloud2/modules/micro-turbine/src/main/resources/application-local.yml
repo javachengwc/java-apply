@@ -1,0 +1,22 @@
+server:
+    port: 8071
+spring:
+    application:
+      name: micro-turbine
+#注册中心
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8080/eureka
+  instance:
+    prefer-ip-address: true
+
+turbine:
+  #app-config指定了需要收集监控信息的服务名
+  app-config: eureka-consumer-ribbon-hystrix
+  #指定了集群名称为default，
+  #当服务数量非常多的时候，可以启动多个Turbine服务来构建不同的聚合集群，而该参数可以用来区分这些不同的聚合集群，
+  #同时该参数值可以在Hystrix仪表盘中用来定位不同的聚合集群，只需要在Hystrix Stream的URL中通过cluster参数来指定；
+  cluster-name-expression: new String("default")
+  #可以让同一主机上的服务通过主机名与端口号的组合来进行区分，默认情况下是以host来区分不同的服务
+  combine-host-port: true
