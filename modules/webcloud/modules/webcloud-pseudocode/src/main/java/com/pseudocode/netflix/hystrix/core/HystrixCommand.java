@@ -125,6 +125,7 @@ public abstract class HystrixCommand<R> extends AbstractCommand<R> implements Hy
         });
     }
 
+    //同步调用
     public R execute() {
         try {
             return queue().get();
@@ -133,6 +134,7 @@ public abstract class HystrixCommand<R> extends AbstractCommand<R> implements Hy
         }
     }
 
+    //异步调用
     public Future<R> queue() {
         final Future<R> delegate = toObservable().toBlocking().toFuture();
 

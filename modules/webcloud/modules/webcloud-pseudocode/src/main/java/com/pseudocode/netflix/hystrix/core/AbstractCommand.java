@@ -387,10 +387,8 @@ abstract class AbstractCommand<R> implements HystrixInvokableInfo<R>, HystrixObs
                     }
                 }
 
-                Observable<R> hystrixObservable =
-                        Observable.defer(applyHystrixSemantics)
-                                .map(wrapWithAllOnNextHooks);
-
+                //applyHystrixSemantics就是执行命令调用处
+                Observable<R> hystrixObservable = Observable.defer(applyHystrixSemantics).map(wrapWithAllOnNextHooks);
                 Observable<R> afterCache;
 
                 // put in cache

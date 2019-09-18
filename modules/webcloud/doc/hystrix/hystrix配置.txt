@@ -23,7 +23,7 @@ HystrixCommand配置在HystrixCommandProperties中,构造HystrixCommand时通过
     private static final Integer default_metricsRollingPercentileBucketSize = Integer.valueOf(100);
     private static final Integer default_metricsHealthSnapshotIntervalInMilliseconds = Integer.valueOf(500);
 
-    //熔断器在整个统计时间内是否开启的阀值，默认20。也就是10秒钟内至少请求20次，熔断器才发挥起作用
+    //熔断器在整个统计时间内请求数阀值，默认20。也就是10秒钟内至少请求20次，熔断器才发挥起作用
     private final HystrixProperty<Integer> circuitBreakerRequestVolumeThreshold;
 
     //熔断器默认工作时间,默认5秒.熔断器中断请求5秒后会进入半打开状态,放部分流量过去重试
@@ -32,10 +32,10 @@ HystrixCommand配置在HystrixCommandProperties中,构造HystrixCommand时通过
     //是否启用熔断器,默认true
     private final HystrixProperty<Boolean> circuitBreakerEnabled;
 
-    //当出错率超过50%后熔断器启动,默认:50%。
+    //当出错率超过50%后熔断器打开,默认:50%。
     private final HystrixProperty<Integer> circuitBreakerErrorThresholdPercentage;
 
-    //是否强制开启熔断器阻断所有请求,默认:false,不开启
+    //是否强制打开熔断器阻断所有请求,默认:false,不开启
     private final HystrixProperty<Boolean> circuitBreakerForceOpen;
 
     //是否允许熔断器忽略错误,默认false,不开启
@@ -178,7 +178,7 @@ hystrix.threadpool.default.metrics.rollingStats.timeInMilliseconds = 10000
 hystrix.threadpool.default.metrics.rollingStats.numBuckets = 10
 //是否启用熔断器
 hystrix.command.default.circuitBreaker.enabled = true
-//熔断器是否开启的阀值，默认20。也就是10秒钟内至少请求20次，熔断器才发挥起作用
+//熔断器在整个统计时间内请求数阀值，默认20。也就是10秒钟内至少请求20次，熔断器才发挥起作用
 hystrix.command.default.circuitBreaker.requestVolumeThreshold = 20
 //熔断器默认工作时间,默认5秒.熔断器中断请求5秒后会进入半打开状态,放部分流量过去重试
 hystrix.command.default.circuitBreaker.sleepWindowInMilliseconds = 5000
