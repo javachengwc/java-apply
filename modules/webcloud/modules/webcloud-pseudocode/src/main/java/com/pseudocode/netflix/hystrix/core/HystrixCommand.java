@@ -85,6 +85,7 @@ public abstract class HystrixCommand<R> extends AbstractCommand<R> implements Hy
     private final AtomicReference<Thread> executionThread = new AtomicReference<Thread>();
     private final AtomicBoolean interruptOnFutureCancel = new AtomicBoolean(false);
 
+    //正常逻辑执行
     protected abstract R run() throws Exception;
 
     protected R getFallback() {
@@ -97,6 +98,7 @@ public abstract class HystrixCommand<R> extends AbstractCommand<R> implements Hy
             @Override
             public Observable<R> call() {
                 try {
+                    //调用run()方法
                     return Observable.just(run());
                 } catch (Throwable ex) {
                     return Observable.error(ex);

@@ -262,6 +262,7 @@ abstract class AbstractCommand<R> implements HystrixInvokableInfo<R>, HystrixObs
         });
     }
 
+    //命令的具体执行
     protected abstract Observable<R> getExecutionObservable();
 
     protected abstract Observable<R> getFallbackObservable();
@@ -783,6 +784,7 @@ abstract class AbstractCommand<R> implements HystrixInvokableInfo<R>, HystrixObs
         Observable<R> userObservable;
 
         try {
+            //具体的执行
             userObservable = getExecutionObservable();
         } catch (Throwable ex) {
             // the run() method is a user provided implementation so can throw instead of using Observable.onError

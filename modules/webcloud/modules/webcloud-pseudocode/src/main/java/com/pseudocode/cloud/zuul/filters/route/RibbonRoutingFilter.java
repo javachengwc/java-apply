@@ -8,21 +8,15 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.pseudocode.cloud.ribbon.support.RibbonCommandContext;
 import com.pseudocode.netflix.zuul.ZuulFilter;
 import com.pseudocode.netflix.zuul.context.RequestContext;
 import com.pseudocode.netflix.zuul.exception.ZuulException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.cloud.netflix.ribbon.support.RibbonCommandContext;
-import org.springframework.cloud.netflix.ribbon.support.RibbonRequestCustomizer;
-import org.springframework.cloud.netflix.zuul.filters.ProxyRequestHelper;
-import org.springframework.cloud.netflix.zuul.util.ZuulRuntimeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.MultiValueMap;
-
-import com.netflix.client.ClientException;
-import com.netflix.hystrix.exception.HystrixRuntimeException;
 
 import static com.pseudocode.cloud.zuul.filters.support.FilterConstants.REQUEST_ENTITY_KEY;
 import static com.pseudocode.cloud.zuul.filters.support.FilterConstants.RETRYABLE_KEY;
@@ -31,6 +25,9 @@ import static com.pseudocode.cloud.zuul.filters.support.FilterConstants.ROUTE_TY
 import static com.pseudocode.cloud.zuul.filters.support.FilterConstants.SERVICE_ID_KEY;
 import static com.pseudocode.cloud.zuul.filters.support.FilterConstants.LOAD_BALANCER_KEY;
 
+//ribbonRoutingFilter：是route阶段第一个执行的过滤器。
+//该过滤器只对请求上下文中存在serviceId参数的请求进行处理，即只对通过serviceId配置路由规则的请求生效。
+//而该过滤器的执行逻辑就是面向服务路由的核心，它通过使用Ribbon和Hystrix来向服务实例发起请求，并将服务实例的请求结果返回。
 public class RibbonRoutingFilter extends ZuulFilter {
 
     private static final Log log = LogFactory.getLog(RibbonRoutingFilter.class);
@@ -101,10 +98,8 @@ public class RibbonRoutingFilter extends ZuulFilter {
     protected RibbonCommandContext buildCommandContext(RequestContext context) {
         HttpServletRequest request = context.getRequest();
 
-        MultiValueMap<String, String> headers = this.helper
-                .buildZuulRequestHeaders(request);
-        MultiValueMap<String, String> params = this.helper
-                .buildZuulRequestQueryParams(request);
+        MultiValueMap<String, String> headers = this.helper.buildZuulRequestHeaders(request);
+        MultiValueMap<String, String> params = this.helper.buildZuulRequestQueryParams(request);
         String verb = getVerb(request);
         InputStream requestEntity = getRequestBody(request);
         if (request.getContentLength() < 0 && !verb.equalsIgnoreCase("GET")) {

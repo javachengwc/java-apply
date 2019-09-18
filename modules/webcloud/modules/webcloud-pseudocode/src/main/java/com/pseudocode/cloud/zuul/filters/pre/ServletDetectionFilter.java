@@ -11,6 +11,10 @@ import static com.pseudocode.cloud.zuul.filters.support.FilterConstants.IS_DISPA
 import static com.pseudocode.cloud.zuul.filters.support.FilterConstants.PRE_TYPE;
 import static com.pseudocode.cloud.zuul.filters.support.FilterConstants.SERVLET_DETECTION_FILTER_ORDER;
 
+//检测当前情况是否通过spring的DispatcherServlet处理运行
+//一般情况下，发送到API网关的外部请求都会被Spring的DispatcherServlet处理，
+//除了通过/zuul/路径访问的请求会绕过DispatcherServlet，被ZuulServlet处理，主要用来应对处理大文件上传的情况。
+//另外，对于ZuulServlet的访问路径/zuul/，可以通过zuul.servletPath参数来进行修改。
 public class ServletDetectionFilter extends ZuulFilter {
 
     public ServletDetectionFilter() {

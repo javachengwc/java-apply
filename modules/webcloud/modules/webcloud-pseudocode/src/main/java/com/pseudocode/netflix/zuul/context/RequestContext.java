@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.pseudocode.netflix.zuul.constants.ZuulHeaders;
 import com.pseudocode.netflix.zuul.util.DeepCopy;
 
+//请求上下文
 public class RequestContext extends ConcurrentHashMap<String, Object> {
 
     private static final Logger LOG = LoggerFactory.getLogger(RequestContext.class);

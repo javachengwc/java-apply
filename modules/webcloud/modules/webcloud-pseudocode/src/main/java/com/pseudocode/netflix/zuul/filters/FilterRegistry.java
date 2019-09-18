@@ -5,6 +5,7 @@ import com.pseudocode.netflix.zuul.ZuulFilter;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 
+//filter注册器
 public class FilterRegistry {
 
     private static final FilterRegistry INSTANCE = new FilterRegistry();

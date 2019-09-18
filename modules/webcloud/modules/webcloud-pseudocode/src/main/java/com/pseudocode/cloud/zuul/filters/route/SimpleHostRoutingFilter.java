@@ -53,6 +53,10 @@ import static com.pseudocode.cloud.zuul.filters.support.FilterConstants.REQUEST_
 import static com.pseudocode.cloud.zuul.filters.support.FilterConstants.ROUTE_TYPE;
 import static com.pseudocode.cloud.zuul.filters.support.FilterConstants.SIMPLE_HOST_ROUTING_FILTER_ORDER;
 
+//SimpleHostRoutingFilter：是route阶段第二个执行的过滤器。
+//该过滤器只对请求上下文中存在routeHost参数的请求进行处理，即只对通过url配置路由规则的请求生效。
+//而该过滤器的执行逻辑就是直接向routeHost参数的物理地址发起请求，
+//该请求是直接通过httpclient包实现的，而没有使用Hystrix命令进行包装，所以这类请求并没有线程隔离和断路器的保护
 public class SimpleHostRoutingFilter extends ZuulFilter {
 
     private static final Log log = LogFactory.getLog(SimpleHostRoutingFilter.class);
