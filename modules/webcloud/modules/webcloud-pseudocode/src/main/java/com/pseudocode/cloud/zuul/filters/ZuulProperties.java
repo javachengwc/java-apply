@@ -33,8 +33,10 @@ public class ZuulProperties {
 
     private boolean stripPrefix = true;
 
+    //开启重试机制，结合 Ribbon(默认集成)，只需配置即可，慎用，有些接口要考虑到幂等性，D 版之后默认：false
     private Boolean retryable = false;
 
+    //路由配置
     private Map<String, ZuulRoute> routes = new LinkedHashMap<>();
 
     private boolean addProxyHeaders = true;

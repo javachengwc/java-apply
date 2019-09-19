@@ -34,7 +34,7 @@ public abstract class CommonClientConfigKey<T> implements IClientConfigKey<T> {
     //切换服务器实例的重试次数
     public static final IClientConfigKey<Integer> MaxAutoRetriesNextServer = new CommonClientConfigKey<Integer>("MaxAutoRetriesNextServer"){};
 
-    //是否对所有操作请求都进行重试
+    //是否对所有操作请求都进行重试,默认false,只有get请求会重试
     public static final IClientConfigKey<Boolean> OkToRetryOnAllOperations = new CommonClientConfigKey<Boolean>("OkToRetryOnAllOperations"){};
 
     public static final IClientConfigKey<Boolean> RequestSpecificRetryOn = new CommonClientConfigKey<Boolean>("RequestSpecificRetryOn"){};

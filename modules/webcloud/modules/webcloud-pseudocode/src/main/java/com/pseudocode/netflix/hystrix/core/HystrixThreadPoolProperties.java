@@ -22,11 +22,16 @@ public abstract class HystrixThreadPoolProperties {
     static int default_threadPoolRollingNumberStatisticalWindow = 10000; // milliseconds for rolling number
     static int default_threadPoolRollingNumberStatisticalWindowBuckets = 10; // number of buckets in rolling number (10 1-second buckets)
 
+    //当使用线程隔离策略时，线程池的核心大小
     private final HystrixProperty<Integer> corePoolSize;
+    //当Hystrix隔离策略为线程池隔离模式时，最大线程池大小的配置
+    //还需要配置 allowMaximumSizeToDivergeFromCoreSize为true才生效
     private final HystrixProperty<Integer> maximumPoolSize;
     private final HystrixProperty<Integer> keepAliveTime;
     private final HystrixProperty<Integer> maxQueueSize;
     private final HystrixProperty<Integer> queueSizeRejectionThreshold;
+
+    //此属性允许配置的 maximumSize 生效,默认false,不允许
     private final HystrixProperty<Boolean> allowMaximumSizeToDivergeFromCoreSize;
 
     private final HystrixProperty<Integer> threadPoolRollingNumberStatisticalWindowInMilliseconds;
