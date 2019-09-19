@@ -519,6 +519,7 @@ abstract class AbstractCommand<R> implements HystrixInvokableInfo<R>, HystrixObs
                     //执行命令超时异常
                     return handleTimeoutViaFallback();
                 } else if (t instanceof HystrixBadRequestException) {
+                    //抛出 HystrixBadRequestException，不论当前Command是否定义了getFallback()都不会触发，而是向上抛出异常
                     return handleBadRequestByEmittingError(e);
                 } else {
                     /*
@@ -902,6 +903,7 @@ abstract class AbstractCommand<R> implements HystrixInvokableInfo<R>, HystrixObs
         return getFallbackOrThrowException(this, HystrixEventType.TIMEOUT, FailureType.TIMEOUT, "timed-out", new TimeoutException());
     }
 
+    //HystrixBadRequestException
     private Observable<R> handleBadRequestByEmittingError(Exception underlying) {
         Exception toEmit = underlying;
 

@@ -88,6 +88,10 @@ public abstract class HystrixCommand<R> extends AbstractCommand<R> implements Hy
     //正常逻辑执行
     protected abstract R run() throws Exception;
 
+    //降级回退逻辑处理
+    //Hystrix 用来执行 getFallback() 方法所使用的线程同执行 run() 方法使用的线程是来自同一个线程池
+    //getFallback() 的执行时间并不受 HystrixCommand 的超时时间的控制。在使用 fallback 机制的时候，要避免 fallback 方法占用过多的线程
+    //默认情况下，为了避免 getFallback() 方法占用过多的资源，Hystrix 使用了信号量 Semaphore 对其进行资源隔离，默认并发度为10。
     protected R getFallback() {
         throw new UnsupportedOperationException("No fallback available.");
     }

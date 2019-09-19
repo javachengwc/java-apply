@@ -48,8 +48,17 @@ public class StringMain {
         return rt;
     }
 
+    public static void stringSame() {
+        String a="aaaaa";
+        String b ="aa"+new String("aaa");
+        boolean same= a==b;
+        System.out.println("a==b is "+ same);
+    }
+
     public static void main(String args []) throws Exception
 	{
+        stringSame();
+
 	    String ccca ="aabbcc123";
 	    System.out.println("----------"+ccca.matches(numZimu));
 

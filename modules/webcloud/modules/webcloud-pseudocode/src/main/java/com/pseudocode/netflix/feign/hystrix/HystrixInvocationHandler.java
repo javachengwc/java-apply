@@ -65,8 +65,7 @@ final class HystrixInvocationHandler implements InvocationHandler {
         // code is the same as ReflectiveFeign.FeignInvocationHandler
         if ("equals".equals(method.getName())) {
             try {
-                Object otherHandler =
-                        args.length > 0 && args[0] != null ? Proxy.getInvocationHandler(args[0]) : null;
+                Object otherHandler = args.length > 0 && args[0] != null ? Proxy.getInvocationHandler(args[0]) : null;
                 return equals(otherHandler);
             } catch (IllegalArgumentException e) {
                 return false;
