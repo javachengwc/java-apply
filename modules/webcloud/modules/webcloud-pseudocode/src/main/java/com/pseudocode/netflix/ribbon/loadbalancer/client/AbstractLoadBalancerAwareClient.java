@@ -1,5 +1,7 @@
 package com.pseudocode.netflix.ribbon.loadbalancer.client;
 
+import java.net.URI;
+
 import com.pseudocode.netflix.ribbon.core.client.*;
 import com.pseudocode.netflix.ribbon.core.client.config.CommonClientConfigKey;
 import com.pseudocode.netflix.ribbon.core.client.config.IClientConfig;
@@ -9,10 +11,7 @@ import com.pseudocode.netflix.ribbon.loadbalancer.reactive.LoadBalancerCommand;
 import com.pseudocode.netflix.ribbon.loadbalancer.server.Server;
 import rx.Observable;
 
-import java.net.URI;
-
-public abstract class AbstractLoadBalancerAwareClient<S extends ClientRequest, T extends IResponse>
-        extends LoadBalancerContext implements IClient<S, T>, IClientConfigAware {
+public abstract class AbstractLoadBalancerAwareClient<S extends ClientRequest, T extends IResponse> extends LoadBalancerContext implements IClient<S, T>, IClientConfigAware {
 
     public AbstractLoadBalancerAwareClient(ILoadBalancer lb) {
         super(lb);
@@ -22,7 +21,6 @@ public abstract class AbstractLoadBalancerAwareClient<S extends ClientRequest, T
         super(lb, clientConfig);
     }
 
-    @Deprecated
     protected boolean isCircuitBreakerException(Throwable e) {
         if (getRetryHandler() != null) {
             return getRetryHandler().isCircuitTrippingException(e);
@@ -45,6 +43,7 @@ public abstract class AbstractLoadBalancerAwareClient<S extends ClientRequest, T
     //使用负载均衡的方式去执行请求
     public T executeWithLoadBalancer(final S request, final IClientConfig requestConfig) throws ClientException {
         LoadBalancerCommand<T> command = buildLoadBalancerCommand(request, requestConfig);
+
         try {
             return command.submit(
                     new ServerOperation<T>() {
@@ -70,9 +69,24 @@ public abstract class AbstractLoadBalancerAwareClient<S extends ClientRequest, T
                 throw new ClientException(e);
             }
         }
+
     }
 
     public abstract RequestSpecificRetryHandler getRequestSpecificRetryHandler(S request, IClientConfig requestConfig);
+
+    protected LoadBalancerCommand<T> buildLoadBalancerCommand(final S request, final IClientConfig config) {
+        RequestSpecificRetryHandler handler = getRequestSpecificRetryHandler(request, config);
+        LoadBalancerCommand.Builder<T> builder = LoadBalancerCommand.<T>builder()
+                .withLoadBalancerContext(this)
+                .withRetryHandler(handler)
+                .withLoadBalancerURI(request.getUri());
+        customizeLoadBalancerCommandBuilder(request, config, builder);
+        return builder.build();
+    }
+
+    protected void customizeLoadBalancerCommandBuilder(final S request, final IClientConfig config,
+                                                       final LoadBalancerCommand.Builder<T> builder) {
+    }
 
     @Deprecated
     protected boolean isRetriable(S request) {
@@ -89,3 +103,4 @@ public abstract class AbstractLoadBalancerAwareClient<S extends ClientRequest, T
     }
 
 }
+

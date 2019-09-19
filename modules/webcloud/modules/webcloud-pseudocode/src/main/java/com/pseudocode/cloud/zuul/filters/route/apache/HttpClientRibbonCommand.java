@@ -1,6 +1,7 @@
 package com.pseudocode.cloud.zuul.filters.route.apache;
 
 
+import com.pseudocode.cloud.ribbon.apache.RibbonLoadBalancingHttpClient;
 import com.pseudocode.cloud.ribbon.support.RibbonCommandContext;
 import com.pseudocode.cloud.zuul.filters.ZuulProperties;
 import com.pseudocode.netflix.ribbon.core.client.config.IClientConfig;

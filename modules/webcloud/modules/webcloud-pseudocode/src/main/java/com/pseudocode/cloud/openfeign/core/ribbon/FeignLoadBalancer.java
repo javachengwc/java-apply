@@ -9,14 +9,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.pseudocode.cloud.ribbon.RibbonProperties;
 import com.pseudocode.cloud.ribbon.ServerIntrospector;
 import com.pseudocode.netflix.feign.core.Client;
 import com.pseudocode.netflix.feign.core.Request;
 import com.pseudocode.netflix.feign.core.Response;
-import com.pseudocode.netflix.ribbon.core.client.ClientException;
-import com.pseudocode.netflix.ribbon.core.client.ClientRequest;
-import com.pseudocode.netflix.ribbon.core.client.IResponse;
-import com.pseudocode.netflix.ribbon.core.client.RetryHandler;
+import com.pseudocode.netflix.ribbon.core.client.*;
 import com.pseudocode.netflix.ribbon.core.client.config.IClientConfig;
 import com.pseudocode.netflix.ribbon.loadbalancer.ILoadBalancer;
 import com.pseudocode.netflix.ribbon.loadbalancer.client.AbstractLoadBalancerAwareClient;

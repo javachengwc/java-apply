@@ -1,6 +1,7 @@
 package com.pseudocode.cloud.ribbon;
 
 import com.pseudocode.cloud.commons.httpclient.HttpClientConfiguration;
+import com.pseudocode.cloud.ribbon.apache.HttpClientRibbonConfiguration;
 import com.pseudocode.netflix.ribbon.core.client.DefaultLoadBalancerRetryHandler;
 import com.pseudocode.netflix.ribbon.core.client.RetryHandler;
 import com.pseudocode.netflix.ribbon.core.client.config.CommonClientConfigKey;

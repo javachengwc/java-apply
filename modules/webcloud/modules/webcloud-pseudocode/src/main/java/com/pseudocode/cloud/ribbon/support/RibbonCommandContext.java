@@ -16,6 +16,7 @@ public class RibbonCommandContext {
     private final String serviceId;
     private final String method;
     private final String uri;
+    //是否可重试
     private final Boolean retryable;
     private final MultiValueMap<String, String> headers;
     private final MultiValueMap<String, String> params;

@@ -5,8 +5,8 @@ zuul.host.connect-timeout-millis=2000                   ###默认2000
 如果路由方式是serviceId的方式，那么ribbon的超时配置生效
 ribbon:
   OkToRetryOnAllOperations: false                       ###对所有操作请求都进行重试,默认false
-  ReadTimeout: 5000                                     ###ribbon负载均衡超时时间，默认值5000
-  ConnectTimeout: 3000                                  ###ribbon请求连接的超时时间，默认值2000
+  ReadTimeout: 5000                                     ###ribbon负载均衡超时时间，默认值2000
+  ConnectTimeout: 3000                                  ###ribbon请求连接的超时时间，默认值1000
   MaxAutoRetries: 0                                     ###对当前实例的重试次数，默认0
   MaxAutoRetriesNextServer: 1                           ###对切换实例的重试次数，默认1
 
@@ -19,7 +19,7 @@ hystrix:
           enabled: true                                 ###如果enabled设置为false，则请求超时交给ribbon控制,为true,则超时会考虑熔断设的超时
         isolation:
           thread:
-            timeoutInMilliseconds: 1000                 ###断路器超时时间，默认1000ms
+            timeoutInMilliseconds: 10000                ###断路器超时时间，默认1000ms
 feign.hystrix.enabled: true
 如果ribbon超时与hystrix熔断超时都有配置，哪个值小哪个生效。
 比如，配置的ribbon超时时间大于熔断的超时，那么会先走熔断，相当于配的ribbon超时就不生效了。

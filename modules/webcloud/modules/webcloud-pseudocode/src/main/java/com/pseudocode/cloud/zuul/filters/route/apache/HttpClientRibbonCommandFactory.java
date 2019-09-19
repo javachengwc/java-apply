@@ -2,6 +2,7 @@ package com.pseudocode.cloud.zuul.filters.route.apache;
 
 
 import com.pseudocode.cloud.ribbon.SpringClientFactory;
+import com.pseudocode.cloud.ribbon.apache.RibbonLoadBalancingHttpClient;
 import com.pseudocode.cloud.ribbon.support.RibbonCommandContext;
 import com.pseudocode.cloud.zuul.filters.ZuulProperties;
 
@@ -33,8 +34,7 @@ public class HttpClientRibbonCommandFactory extends AbstractRibbonCommandFactory
         final String serviceId = context.getServiceId();
 
         //创建处理请求转发类，该类会用Apache的Http client进行请求的转发
-        final RibbonLoadBalancingHttpClient client = this.clientFactory.getClient(
-                serviceId, RibbonLoadBalancingHttpClient.class);
+        final RibbonLoadBalancingHttpClient client = this.clientFactory.getClient(serviceId, RibbonLoadBalancingHttpClient.class);
         client.setLoadBalancer(this.clientFactory.getLoadBalancer(serviceId));
 
         return new HttpClientRibbonCommand(serviceId, client, context, zuulProperties, zuulFallbackProvider,

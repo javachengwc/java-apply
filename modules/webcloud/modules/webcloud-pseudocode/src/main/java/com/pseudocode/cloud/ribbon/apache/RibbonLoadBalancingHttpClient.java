@@ -5,6 +5,7 @@ import java.net.URI;
 
 import com.pseudocode.cloud.ribbon.RibbonProperties;
 import com.pseudocode.cloud.ribbon.ServerIntrospector;
+import com.pseudocode.cloud.ribbon.support.AbstractLoadBalancingClient;
 import com.pseudocode.netflix.ribbon.core.client.RequestSpecificRetryHandler;
 import com.pseudocode.netflix.ribbon.core.client.RetryHandler;
 import com.pseudocode.netflix.ribbon.core.client.config.IClientConfig;

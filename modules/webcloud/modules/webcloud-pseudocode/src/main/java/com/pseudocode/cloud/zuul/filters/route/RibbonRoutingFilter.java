@@ -107,6 +107,7 @@ public class RibbonRoutingFilter extends ZuulFilter {
         }
 
         String serviceId = (String) context.get(SERVICE_ID_KEY);
+        //是否可重试,
         Boolean retryable = (Boolean) context.get(RETRYABLE_KEY);
         Object loadBalancerKey = context.get(LOAD_BALANCER_KEY);
 
@@ -128,6 +129,8 @@ public class RibbonRoutingFilter extends ZuulFilter {
 
         RibbonCommand command = this.ribbonCommandFactory.create(context);
         try {
+            //RibbonCommand.execute()同步阻塞执行，hystrix如果是多线程隔离，会在隔离线程池中取线程运行run()，
+            //而调用程序要在execute()调用处一直堵塞着，直到run()运行完成返回结果
             ClientHttpResponse response = command.execute();
             this.helper.appendDebug(info, response.getRawStatusCode(), response.getHeaders());
             return response;

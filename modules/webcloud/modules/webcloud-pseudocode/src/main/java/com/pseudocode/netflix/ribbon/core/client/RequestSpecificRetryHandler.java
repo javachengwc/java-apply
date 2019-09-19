@@ -9,6 +9,7 @@ import org.springframework.lang.Nullable;
 import java.net.SocketException;
 import java.util.List;
 
+//重试handler
 public class RequestSpecificRetryHandler implements RetryHandler {
 
     private final RetryHandler fallback;
