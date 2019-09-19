@@ -4,6 +4,7 @@ import com.pseudocode.netflix.feign.core.InvocationHandlerFactory.MethodHandler;
 import com.pseudocode.netflix.feign.core.Target;
 import com.pseudocode.netflix.hystrix.core.HystrixCommand;
 import com.pseudocode.netflix.hystrix.core.HystrixCommand.Setter;
+import rx.Observable;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -59,8 +60,7 @@ final class HystrixInvocationHandler implements InvocationHandler {
     }
 
     @Override
-    public Object invoke(final Object proxy, final Method method, final Object[] args)
-            throws Throwable {
+    public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
         // early exit if the invoked method is from java.lang.Object
         // code is the same as ReflectiveFeign.FeignInvocationHandler
         if ("equals".equals(method.getName())) {
@@ -77,10 +77,12 @@ final class HystrixInvocationHandler implements InvocationHandler {
             return toString();
         }
 
+        //命令行模式
         HystrixCommand<Object> hystrixCommand = new HystrixCommand<Object>(setterMethodMap.get(method)) {
             @Override
             protected Object run() throws Exception {
                 try {
+                    //正常逻辑的执行
                     return HystrixInvocationHandler.this.dispatch.get(method).invoke(args);
                 } catch (Exception e) {
                     throw e;
@@ -132,6 +134,8 @@ final class HystrixInvocationHandler implements InvocationHandler {
         } else if (isReturnsCompletable(method)) {
             return hystrixCommand.toObservable().toCompletable();
         }
+        //调用hystrixCommand.execute()，hystrix如果是多线程隔离，会在隔离线程池中取线程运行run()，
+        //而调用程序要在execute()调用处一直堵塞着，直到run()运行完成返回结果
         return hystrixCommand.execute();
     }
 
