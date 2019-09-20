@@ -1,4 +1,4 @@
-package com.struct.rbtree;
+package com.struct.tree.rbtree;
 
 /**
  * 红黑树,是一种自平衡二叉查找树,它一种特殊的二叉查找树。红黑树的每个节点上都有存储位表示节点的颜色，可以是红(Red)或黑(Black)

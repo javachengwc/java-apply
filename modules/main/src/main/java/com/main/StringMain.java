@@ -51,8 +51,10 @@ public class StringMain {
     public static void stringSame() {
         String a="aaaaa";
         String b ="aa"+new String("aaa");
+        String c="aa"+"aaa";
         boolean same= a==b;
         System.out.println("a==b is "+ same);
+        System.out.println("a==c is "+ (a==c));
     }
 
     public static void main(String args []) throws Exception

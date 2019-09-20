@@ -1,4 +1,4 @@
-package com.struct.binarytree;
+package com.struct.tree.binarytree;
 
 public class TreeNode<T> {
 

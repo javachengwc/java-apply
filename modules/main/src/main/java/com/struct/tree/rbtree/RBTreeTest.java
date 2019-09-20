@@ -1,4 +1,4 @@
-package com.struct.rbtree;
+package com.struct.tree.rbtree;
 
 public class RBTreeTest {
 

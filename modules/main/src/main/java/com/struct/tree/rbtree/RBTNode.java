@@ -1,4 +1,4 @@
-package com.struct.rbtree;
+package com.struct.tree.rbtree;
 
 /**
  * 红黑树节点

@@ -1,5 +1,7 @@
-package com.struct.binarytree;
+package com.struct.tree.binarytree;
 
+//二叉树添加，删除元素都很快，并且在查找方面也有很多的算法优化，
+//二叉树既有链表的好处，也有数组的好处，是两者的优化方案，在处理大批量的动态数据方面非常有用
 public class BinaryTree<T extends Comparable<T>> {
 
 	private TreeNode<T> root;
