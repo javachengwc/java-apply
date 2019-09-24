@@ -8,12 +8,39 @@ PUT test2                                                     ------指定参数
     "number_of_replicas": 1
   }
 }
+PUT test2/_settings                                           ------修改索引副本数
+{
+    "number_of_replicas": 2
+}
+PUT test2/_settings                                           ------指定索引的读写权限
+{
+    "blocks.read_only": true                                  ------只读
+    "blocks.read":true                                        ------禁止读
+    "blocks.write":true                                       ------禁止写
+}
 GET test/_settings                                            ------查看指定索引的配置信息
 GET test,test2/_settings                                      ------查看多个索引的配置信息
 GET book/book/_mapping                                        ------查看索引的mapping信息
 DELETE test                                                   ------删除索引
 POST test2/_close                                             ------关闭索引
 POST test2/_open                                              ------打开索引
+POST _reindex                                                 ------复制索引,目标索引需要先创建
+{
+    "source":{"index":"test","query":{"term":{"title":"tt"}}},
+    "dest":{"index":"test_new"}
+}
+POST /_aliases                                                ------增加别名
+{
+    "actions":
+        {"add":{"index":"test","alias":"alias1"}}
+}
+POST /_aliases                                                ------移除别名
+{
+    "actions":
+        {"remove":{"index":"test","alias":"alias1"}}
+}
+GET /test/_aliases                                            ------查看索引别名
+GET /_aliases                                                 ------查看所有索引别名
 
 PUT book/book/1                                               ------向索引book中的类型book添加一个文档，文档的_id=1
 {
@@ -72,42 +99,44 @@ POST book/book/1/_update                                      ------添加文档
 {
   "script": "ctx._source.createtime=\"2018-06-06\""
 }
+POST book/book/1/_update                                      ------新增一个字段
+{
+  "script": "ctx._source.new_field=\"col_new\""
+}
+POST book/book/1/_update                                      ------移除一个字段
+{
+  "script": "ctx._source.remove(\"createtime\")"
+}
+POST book/_update_by_query                                    ------根据条件更新文档
+{
+  "script": {
+    "inline":"ctx._source.category=params.category",
+    "lang":"painless",
+    "params":{"category":"tt"}
+  },
+  "query":{
+    "term":{"titie":"test"}
+  }
+}
+
 DELETE book/book/1                                            ------删除文档_id=1的文档
+POST book/_delete_by_query                                    ------根据条件删除文档
+{
+  "query":{
+    "term":{
+       "title":"tt"
+    }
+  }
+}
+POST book/book/_delete_by_query                                ------删除所有文档
+{
+  "query":{
+    "match_all":{ }
+  }
+}
 
 es索引http操作
 curl -XPUT localhost:9200/test                                ------创建索引
 返回结果:{"acknowledged":true,"shards_acknowledged":true,"index":"test"}
-
-POST _analyze                                                ------standard分词解析结果
-{
-  "analyzer": "standard",
-  "text": "hello world how are you"
-}
-
-POST _analyze                                                ------simple分词解析结果
-{
-  "analyzer": "simple",
-  "text": "aa bb cc dd.ee ff gg"
-}
-
-PUT ext_standard_analyzer                                   ------自定义分词器ext_standard_analyzer
-{
-  "settings": {
-    "analysis": {
-      "analyzer": {
-        "ext_standard_analyzer": {
-          "type": "standard",
-          "stopwords": "_english_"
-        }
-      }
-    }
-  }
-}
-
-POST ext_standard_analyzer/_analyze                        ------使用自定义分词器解析结果
-{
-  "analyzer": "ext_standard_analyzer",
-  "text": "aa bb cc dd.ee ff gg"
-}
 
 ---------------------------------------------------------------------------------------------
