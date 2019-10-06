@@ -1,0 +1,145 @@
+------------------------es地理位置查询----------------------------------
+es对地理位置的存储有两种类型:地理位置点gen_point,地理位置形状gene_shape
+注:gen_point类型字段维度在前，经度在后，gene_shape类型相反，经度在前，维度在后，
+(维度 0-90，横线，经度 0-180，竖线)
+PUT geo                                  ------创建城市地理位置索引
+{
+    "mappings":{
+        "city":{
+            "properties":{
+                "name":{"type":"keyword"},
+                "location":{"type":"gen_point"}
+            }
+        }
+    }
+}
+gen_distance query查找在一个地理位置点指定范围内的文档
+GET geo/city/_search
+{
+    "query": {
+        "bool": {
+            "must":{
+                "match_all":{}
+            },
+            "filter": {
+                "gen_distance":{
+                    "distance":"200km",
+                    "location":{
+                        "lat":39.085100,
+                        "lon":117.199370
+                    }
+                }
+            }
+        }
+    }
+}
+GET geo/city/_search
+{
+    "query": {
+        "match_all":{}
+    },
+    "sort":[
+        {
+            "_geo_distance":{
+                "location":"39.908814,116.397399",
+                "unit":"km"
+            }
+        }
+    ]
+}                                           ------查询各城市,按照离北京的距离排序
+geo_bounding_box query 用于查找落入指定矩形内的地理位置
+GET geo/city/_search
+{
+    "query": {
+        "bool": {
+            "must":{
+                "match_all":{}
+            },
+            "filter": {
+                "geo_bounding_box":{
+                    "location":{
+                        "top_left":{
+                            "lat":38.486439,
+                            "lon":106.232480
+                        },
+                        "bottom_right":{
+                            "lat":28.682020,
+                             "lon":115.857940
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+gen_polygon query用于查找在指定多边形内的地理位置
+GET geo/city/_search
+{
+    "query": {
+        "bool": {
+            "must":{
+                "match_all":{}
+            },
+            "filter": {
+                "gen_polygon":{
+                    "location":{
+                        "point":[
+                            {"lat":40.841491,"lon":111.751992},
+                            {"lat":29.564710,"lon":106.550730},
+                            {"lat":31.230371,"lon":121.473700}
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}
+PUT geoshape                                  ------创建城市地理形状索引
+{
+    "mappings":{
+        "city":{
+            "properties":{
+                "name":{"type":"keyword"},
+                "location":{"type":"gen_shape"}
+            }
+        }
+    }
+}
+POST geoshape/city/1
+{
+    "name":"西安-郑州",
+    "location":{
+        "type":"linestring",
+        "coordinates":[
+            [108.939840,34.341270],
+            [113.658714,34.744715]
+        ]
+    }
+}
+gen_shape query 用于查找gen_shape类型的地理位置数据
+GET geoshape/city/_search
+{
+    "query": {
+        "bool": {
+            "must":{
+                "match_all":{}
+            },
+            "filter": {
+                "gen_shape":{
+                    "location":{
+                        "shape":{
+                            "type":"envelope",
+                            "coordinates":[
+                                [106.232480,38.486439],
+                                [115.857939,28.682020]
+                            ]
+                        },
+                        "relation":"within"
+                    }
+                }
+            }
+        }
+    }
+}                                -------查找在这个矩形范围内的地理形状
+
+------------------------------------------------------------------------

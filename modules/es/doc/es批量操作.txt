@@ -17,5 +17,6 @@ curl -XPOST 'localhost:9200/customer/external/_bulk?pretty' -d '
      {"doc": { "name": "you you" } }
      {"delete":{"_id":"2"}}'
 
-
+curl -XPOST 'localhost:9200/customer/external/_bulk?pretty' --data-binary @data.json
+将data.json文件数据导入到es中
 ------------------------------------------------------------------------------------

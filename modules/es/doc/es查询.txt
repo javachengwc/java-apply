@@ -29,6 +29,13 @@ lucence的filtered query会智能的先计算filter语句, 然后才计算query�
 一个lucence金科玉律是: 能用filter就用filter, 除非必须使用query(当且仅当需要算分的时候)。
 
 ------------------------------------------------
+全量查询(match_all)
+GET book/book/_search                                        ------全量查询
+{
+  "query": {
+    "match_all": {}
+  }
+}
 词项查询(term查询)
 词项查询将按照存储在倒排索引中的词项进行精确查询。这些查询通常用于数字，日期和枚举等结构化数据，而不是全文本字段。
 GET book/book/_search                                       ------按词项条件分页排序查询出指定的列
@@ -46,7 +53,15 @@ GET book/book/_search                                       ------按词项条�
    {"id":{"order":"desc"}}
   ]
 }
-GET book/book/_search                                        ------按照评分来查询
+GET book/book/_search                                        ------terms查询，用来查询文档中包含多个词的文档
+{
+  "query": {
+    "terms": {
+        "title": ["java","solr"]                             ------查询title中包含"java"或"solr"的文档
+    }
+  }
+}
+GET book/book/_search                                        ------按照评分来查询,此查询的文档评分不低于0.5
 {
   "min_score":"0.5",
   "query": {
@@ -88,6 +103,17 @@ GET book/book/_search                                       ------查询显示�
               "type" : "plain"                              ------type字段允许强制设定的高亮器类型。可以的值是：unified, plain和fvh
             },
             "content" : {}
+        }
+    }
+}
+match查询
+GET book/book/_search                                       ------match query会对查询语句进行分词,默认任何词项被匹配，文档就会被搜索到
+{
+    "query" : {
+        "match": { "title": {
+            "query":"java编程",
+            "operator":"or"                                 ------operator默认or,可指定and
+            }
         }
     }
 }
@@ -140,7 +166,7 @@ GET book/book/_search
         "exists" : { "field" : "author" }
     }
 }
-missing聚合查询
+missing查询
 GET book/book/_search                     ------查询缺失saleCnt字段的文档或saleCnt为null的文档数
 {
   "size": 0,
@@ -150,7 +176,7 @@ GET book/book/_search                     ------查询缺失saleCnt字段的文�
     }
   }
 }
-prefix查询
+prefix查询                                ------查询某字段以给定前缀开始的文档
 GET book/book/_search
 { "query": {
     "prefix" : { "author" : "wu" }
@@ -172,7 +198,7 @@ GET book/book/_search
         }
     }
 }
-fuzzy查询（模糊查询）
+fuzzy查询（建议查询）
 GET book/book/_search
 {
     "query": {
@@ -272,154 +298,73 @@ GET book/book/_search
      }
    }
  }
-聚合查询
-聚合查询的key有value_count,max,min,avg,sum,stats,extended_stats,cardinality,percentiles。
-value_count---表示包含某一字段（比如saleCnt）的文档数。
-cardinality---依照那个field的值的基数，也就是类似sql中的count(distinct fieldValue)
-percentiles---表示百分位统计
-GET book/book/_search                   ------查询最大,最小,平均销售数量(max,min,avg不会考虑不包含此field的文档)
-{
-  "size": 0,
-  "aggs": {
-    "maxCnt": {
-      "max": {"field": "saleCnt"}
-    },
-    "minCnt": {
-      "min": {"field": "saleCnt"}
-    },
-    "avgCnt": {
-      "avg": {"field": "saleCnt"}
-    }
-  }
-}
-GET book/book/_search                  ------查询统计stats信息，结果包含命中的数量，最大,最小,平均,总和值
-                                             extended_stats的统计信息中，还包含其他信息
-{
-  "size": 0,
-  "aggs": {
-    "stats_sale": {
-      "stats": {"field": "saleCnt"}
-    },
-    "ext_stats_sale": {
-       "extended_stats": {"field": "saleCnt"}
-    }
-  }
-}
-桶聚合查询(bucket aggregations查询)(分组聚合查询)
-terms聚合用于分组聚合
-GET book/book/_search                       ------根据title分组，查询出各分组记录个数,并获取各分组平均销售数
-{
-   "size": 0,
-   "aggs": {
-     "group_count": {
-       "terms": {"field": "title"},
-       "aggs":{
-           "avg_sale":{
-              "avg":{"field": "saleCnt"}
-            }
-        }
-     }
-   }
-}
-GET book/book/_search                      ------根据author=wuming条件进行刷选，刷选后求saleCnt的平均值
-{
-  "size": 0,
-  "aggs": {
-    "group_count": {
-      "filter": {
-        "term":{"author": "wuming"}
-      },
-      "aggs":{
-        "avg_sale":{
-          "avg":{"field": "saleCnt"}
-        }
-      }
-    }
-  }
-}
-GET book/book/_search                     ------统计content字段包含”jquery”和包含”solr”的文档数
-{
-  "size": 0,
-  "aggs" : {
-    "rt" : {
-      "filters" : {
-        "filters" : {
-          "jquery" :   { "match" : { "content" : "jquery"   }},
-          "solr" : { "match" : { "content" : "solr" }}
-        }
-      }
-    }
-  }
-}
-GET book/book/_search                   ------统计按照content字段包含”jquery”和包含”solr”的分组，各分组的平均saleCnt。
-{
-  "size": 0,
-  "aggs": {
-    "group_count": {
-      "filters":{
-        "filters": [
-          {"match":{"content": "jquery"}},
-          {"match":{"content": "solr"}}
-        ]
-      },
-      "aggs":{
-        "avg_sale":{
-            "avg":{"field": "saleCnt"}
-        }
-      }
-    }
-  }
-}
-GET book/book/_search                  ------根据saleCnt范围分组，获取各分组文档数,这里的返回是[0,100),[100,300),[300,+无穷大)，
-                                             注意右边界是小于，而不是小于等于。
-{
-  "size": 0,
-  "aggs": {
-    "group_count": {
-      "range": {
-        "field": "saleCnt",
-        "ranges": [
-            {"to": 100},
-            {"from": 100,"to":300},
-            {"from": 300}
-        ]
-      }
-    }
-  }
-}
+bool query 可以把任意多个简单查询组合在一起,使用must,should,must_not,filter选项来表示查询之间的逻辑
 GET book/book/_search
 {
-  "size": 0,
-  "aggs": {
-    "group_count": {
-      "range": {
-        "field": "createtime",
-        "format":"yyyy-MM-dd",
-        "ranges": [
-            {"to": "2017-06-01"},
-            {"from": "2017-06-01","to":"2018-01-01"},
-            {"from": "2018-01-01"}
-        ]
-      }
+    "query": {
+        "bool": {
+            "must":{
+                "match":{"title":"java"}
+            },
+            "must_not": {
+                "range":{"price":{"gte":60}}
+            },
+            "should": [
+                {"match":{"description":"虚拟机"}}
+            ]
+        }
     }
-  }
 }
-GET book/book/_search                   ------查询一年前之前录入的文档数和从一年前以来到现在录入的文档数
+function_score query 可以修改查询的文档得分,适合自定义评分函数取代内置打分的查询
+GET book/book/_search
 {
-  "size": 0,
-  "aggs": {
-    "group_count": {
-      "range": {
-        "field": "createtime",
-        "format":"yyyy-MM-dd",
-        "ranges": [
-            {"to": "now-12M/M"},
-            {"from": "now-12M/M"}
-        ]
-      }
+    "query": {
+        "function_score": {
+            "query": {
+                "match": {"title":"java"}
+            },
+            "script_score":{
+                "script":{
+                    "inline":"Math.sqrt(doc['price'].value/10)"
+                }
+            }
+        }
     }
-  }
 }
+boosting query用于需要对两个查询评分进行调整的场景，它会把两个查询封装在一起并降低其中一个查询的评分。
+GET book/book/_search
+{
+    "query": {
+        "boosting": {
+            "positive": {                              ------查询条件
+                "match": {"title":"java"}
+            },
+            "negative":{
+                "range":{
+                    "publish_time:{"lte":"2015-01-01"}
+                }
+            },
+            "negative_boost":0.2
+        }
+    }
+}                                                     ------此语句表示publish_time在2015-01-01后文档得分不变，在这时间之前的文档得分为原来得分的0.2倍
+indices query用于多索引之间进行查询的场景
+GET _search
+{
+    "query": {
+        "indices": {
+            "indices": ["book1","book2"],
+            "query":{
+                "match":{
+                    "title":"java"
+                }
+            },
+            "no_match_query":{
+                "term":{"title":"basket"}
+            }
+        }
+    }
+}                                                    ------此语句表示搜索索引book1,book2中title字段包含java，其他索引中title字段包含basket的文档。
 ------------------------------------------------
 http方式查询
 http://127.0.0.1:9200/search/{"query":{"term":{"user.name":"cheng"}}}  --post方式查询(get方式拿不到结果)

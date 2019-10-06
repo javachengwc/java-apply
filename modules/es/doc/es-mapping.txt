@@ -291,7 +291,6 @@ GET aa_index/_search
     }
   }
 }
-mapping贴近实际的应用
 PUT chtest
 POST chtest/data/_mapping                    ------设置mapping
 {
@@ -299,7 +298,8 @@ POST chtest/data/_mapping                    ------设置mapping
       "content": {
           "type": "text",
           "analyzer": "ik_max_word",         ------指定分词器
-          "search_analyzer": "ik_max_word"
+          "search_analyzer": "ik_max_word",
+          "similarity":"classic"             ------指定评分模型，es默认采用BM25评分，而不是tf-idf的向量空间模型,这里classic表示使用tf-idf评分
       }
   }
 }

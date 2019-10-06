@@ -1,0 +1,150 @@
+------------------------es聚合查询----------------------
+聚合查询的key有value_count,max,min,avg,sum,stats,extended_stats,cardinality,percentiles。
+value_count---表示包含某一字段（比如saleCnt）的文档数。
+cardinality---依照那个field的值的基数，也就是类似sql中的count(distinct fieldValue)
+percentiles---表示百分位统计
+GET book/book/_search                   ------查询最大,最小,平均销售数量(max,min,avg不会考虑不包含此field的文档)
+{
+  "size": 0,
+  "aggs": {
+    "maxCnt": {
+      "max": {"field": "saleCnt"}
+    },
+    "minCnt": {
+      "min": {"field": "saleCnt"}
+    },
+    "avgCnt": {
+      "avg": {"field": "saleCnt"}
+    }
+  }
+}
+GET book/book/_search                  ------查询统计stats信息，结果包含命中的数量，最大,最小,平均,总和值
+                                             extended_stats的统计信息中，还包含其他信息
+{
+  "size": 0,
+  "aggs": {
+    "stats_sale": {
+      "stats": {"field": "saleCnt"}
+    },
+    "ext_stats_sale": {
+       "extended_stats": {"field": "saleCnt"}
+    }
+  }
+}
+桶聚合查询(bucket aggregations查询)(分组聚合查询)
+terms聚合用于分组聚合
+GET book/book/_search                       ------根据title分组，查询出各分组记录个数,并获取各分组平均销售数
+{
+   "size": 0,
+   "aggs": {
+     "group_count": {
+       "terms": {"field": "title"},
+       "aggs":{
+           "avg_sale":{
+              "avg":{"field": "saleCnt"}
+            }
+        }
+     }
+   }
+}
+GET book/book/_search                      ------根据author=wuming条件进行刷选，刷选后求saleCnt的平均值
+{
+  "size": 0,
+  "aggs": {
+    "group_count": {
+      "filter": {
+        "term":{"author": "wuming"}
+      },
+      "aggs":{
+        "avg_sale":{
+          "avg":{"field": "saleCnt"}
+        }
+      }
+    }
+  }
+}
+GET book/book/_search                     ------统计content字段包含”jquery”和包含”solr”的文档数
+{
+  "size": 0,
+  "aggs" : {
+    "rt" : {
+      "filters" : {
+        "filters" : {
+          "jquery" :   { "match" : { "content" : "jquery"   }},
+          "solr" : { "match" : { "content" : "solr" }}
+        }
+      }
+    }
+  }
+}
+GET book/book/_search                   ------统计按照content字段包含”jquery”和包含”solr”的分组，各分组的平均saleCnt。
+{
+  "size": 0,
+  "aggs": {
+    "group_count": {
+      "filters":{
+        "filters": [
+          {"match":{"content": "jquery"}},
+          {"match":{"content": "solr"}}
+        ]
+      },
+      "aggs":{
+        "avg_sale":{
+            "avg":{"field": "saleCnt"}
+        }
+      }
+    }
+  }
+}
+GET book/book/_search                  ------根据saleCnt范围分组，获取各分组文档数,这里的返回是[0,100),[100,300),[300,+无穷大)，
+                                             注意右边界是小于，而不是小于等于。
+{
+  "size": 0,
+  "aggs": {
+    "group_count": {
+      "range": {
+        "field": "saleCnt",
+        "ranges": [
+            {"to": 100},
+            {"from": 100,"to":300},
+            {"from": 300}
+        ]
+      }
+    }
+  }
+}
+GET book/book/_search
+{
+  "size": 0,
+  "aggs": {
+    "group_count": {
+      "range": {
+        "field": "createtime",
+        "format":"yyyy-MM-dd",
+        "ranges": [
+            {"to": "2017-06-01"},
+            {"from": "2017-06-01","to":"2018-01-01"},
+            {"from": "2018-01-01"}
+        ]
+      }
+    }
+  }
+}
+GET book/book/_search                   ------查询一年前之前录入的文档数和从一年前以来到现在录入的文档数
+{
+  "size": 0,
+  "aggs": {
+    "group_count": {
+      "range": {
+        "field": "createtime",
+        "format":"yyyy-MM-dd",
+        "ranges": [
+            {"to": "now-12M/M"},
+            {"from": "now-12M/M"}
+        ]
+      }
+    }
+  }
+}
+
+--------------------------------------------------------------------
