@@ -11,14 +11,14 @@ import java.nio.channels.SocketChannel;
 
 //buffer最重要的状态变量有三个，以及重要方法
 //    position---缓冲区的位置，是下一个要读取或写入的元素的索引。缓冲区的位置不能为负，并且不能大于其限制
-//    limit---缓冲区的限制。
+//    limit---缓冲区的限制。在写模式下表示最多能写入多少数据，此时和Capacity相同，在读模式下表示最多能读多少数据，此时和缓存中的实际数据大小相同。
 //    capacity---指定了可以存储在缓冲区中的最大数据容量
 //0 <= position <= limit <= capacity
-//clear() 清除方法，使缓冲区为一系列新的通道读取或相对放置 操作做好准备：它将限制设置为容量大小，将位置设置为 0。
-//flip()  反转方法，使缓冲区为一系列新的通道写入或相对获取 操作做好准备：它将限制设置为当前位置，然后将位置设置为 0。
-//rewind() 重绕方法， 使缓冲区为重新读取已包含的数据做好准备：它使限制保持不变，将位置设置为 0。
-//remaining() 返回当前位置与限制之间的元素数。
-//compact() 压缩缓冲区方法，将缓冲区的当前位置和界限之间的字（如果有复制到缓冲区的开始处。
+//clear() 清除方法，转换成写模式.使缓冲区为一系列新的通道写入操作做好准备：它将限制设置为容量大小，将位置设置为 0。
+//flip()  反转方法，转换成读模式，使缓冲区为一系列新的通道读取做好准备：它将限制设置为当前位置，然后将位置设置为 0。
+//rewind() 重绕方法，在读写模式下都可用，它单纯的将当前位置置0，同时取消mark标记，限制保持不变。
+//remaining() 返回当前位置与限制之间的元素数，一般在读模式下调用。
+//compact() 压缩缓冲区方法，将缓冲区的当前位置和界限之间的字（如果有复制到缓冲区的开始处。调用后变成写模式,
 // 即将索引 p = position() 处的字节复制到索引 0 处，将索引 p + 1 处的字节复制到索引 1 处，
 // 依此类推，直到将索引 limit() - 1 处的字节复制到索引 n = limit() - 1 - p 处。
 // 然后将缓冲区的位置设置为 n+1，并将其界限设置为其容量。
@@ -95,15 +95,17 @@ public class SocketBuffer
 		return 1;
 	}
 	
-	private boolean processReadBuf(SelectionKey key)
-		throws Exception
+	private boolean processReadBuf(SelectionKey key) throws Exception
 	{
+		//变成读模式
 		m_readbuf.flip();
 		// 第一次读取，须读取包的大小
 		if(m_curPacketSize == -1)
 		{
+			//已有数据不到4字节
 			if(m_readbuf.remaining() < 4)
 			{
+				//为写作准备
 				m_readbuf.compact();
 				m_logger.debug("length not enough, need 4");
 				return true;
@@ -113,7 +115,8 @@ public class SocketBuffer
 			m_logger.debug("packet size=" + m_curPacketSize);
 			incCapacity(m_curPacketSize - 4);
 		}
-		
+
+		//没有个完整包
 		if(m_readbuf.remaining() < m_curPacketSize - 4)
 		{
 			m_logger.debug("packet size not enough, need " + m_curPacketSize
@@ -124,7 +127,9 @@ public class SocketBuffer
 		
 		// m_logger.debug("m_curPacketSize: " + m_curPacketSize);
 		byte[] bytes = new byte[ m_curPacketSize - 4 ];
+		//读取一个完整包数据
 		m_readbuf.get(bytes, 0, m_curPacketSize - 4);
+		//为写作准备
 		m_readbuf.compact();
 		
 		m_curPacketSize = -1;

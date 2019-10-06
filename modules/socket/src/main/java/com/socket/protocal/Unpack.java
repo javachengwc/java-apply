@@ -79,8 +79,7 @@ public class Unpack
 			else
 				if(obj instanceof Unpack)
 				{
-					((Unpack)obj).buffer = ByteBuffer.allocate(buffer
-						.remaining());
+					((Unpack)obj).buffer = ByteBuffer.allocate(buffer.remaining());
 					((Unpack)obj).buffer.order(ByteOrder.LITTLE_ENDIAN);
 					((Unpack)obj).buffer.put(buffer);
 					((Unpack)obj).buffer.rewind();
