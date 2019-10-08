@@ -36,15 +36,34 @@ ep:http://localhost:8081/solr/car/select?defType=dismax&q=大众&q.op=OR&fl=*,sc
 &bf=sum(recip(ms(NOW,createTime),3.16e-11,1,1),div(1000,price))^100
 在brandName,modelName中搜索关键字大众，brandName和modelName在字段查询中的比重分别是2.0，3.0
 其他还参考价格和创建时间(bf=sum(recip(ms(NOW,createTime),3.16e-11,1,1),div(1000,price))^100)
+如果需要固化下来可把查询打分规则配置到solrconfig.xml中，比如:
+<requestHandler name="standard" class="solr.StandardRequestHandler" default="true" >
+    <lst name="defaults">
+        <str name="rows">10</str>
+        <str name="defType">dismax</str>
+        <str name="bf">
+            sum(recip(ms(NOW,createTime),3.16e-11,1,1),div(1000,price))^100
+        </str>
+        <str name="pf">
+            brandName modelName
+        </str>
+        <str name="qf">
+           brandName^2.0 modelName^3.0
+        </str>
+    </lst>
+</requestHandler>
 
 edismax参数
 参数                      描述
 q.alt                     当q字段为空时，用于设置缺省的query，通常设置q.alt为*:*
 qf                        Query Fields：在哪些字段上去检索数据。如果不指定的话，使用df
+                          搜索关键字匹配某些字段的打分比其他的字段要高用(qf^n)
 mm                        Minimum ‘Should’ Match。
                           Solr支持三种查询，即“必须出现”，“不能出现”和“可以出现”，分别对应于AND, -, OR
 pf                        boosting phrases over words。用于指定一组field，当query完全匹配pf指定的某一个field时，来进行boost，
                           给搜索匹配到的字段打分  如pf =字段1^0.5 字段2^0.2
+                          pf和qf的格式一样。区别是pf会更加注重短语匹配，也就是说如果输入aaa bbb作为查询，那么在配置了pf的字段上，
+                          aaa随后出现bbb的文档的评分更高。这里只是评分更高，如果想获得更加严格的短语匹配，应该在查询中使用"aaa bbb"。
 ps                        Phrase Slop. 短语坡度。短语查询的坡度量用在pf字段，影响boost。
 qs                        Query Phrase Slop。查询短语坡度。
                           查询短语坡度是指短语查询明确包含用户查询的字符串(在qf字段，影响匹配)。

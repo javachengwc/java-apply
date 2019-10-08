@@ -1,5 +1,6 @@
 ------------------------es聚合查询----------------------
-聚合查询的key有value_count,max,min,avg,sum,stats,extended_stats,cardinality,percentiles。
+es提供的聚合功能主要有指标聚合和桶聚合。
+指标聚合查询的key有value_count,max,min,avg,sum,stats,extended_stats,cardinality,percentiles。
 value_count---表示包含某一字段（比如saleCnt）的文档数。
 cardinality---依照那个field的值的基数，也就是类似sql中的count(distinct fieldValue)
 percentiles---表示百分位统计
@@ -7,14 +8,23 @@ GET book/book/_search                   ------查询最大,最小,平均销售�
 {
   "size": 0,
   "aggs": {
+    "docCnt": {
+        "value_count": {"field": "saleCnt"}
+    },
     "maxCnt": {
-      "max": {"field": "saleCnt"}
+        "max": {"field": "saleCnt"}
     },
     "minCnt": {
-      "min": {"field": "saleCnt"}
+        "min": {"field": "saleCnt"}
     },
     "avgCnt": {
-      "avg": {"field": "saleCnt"}
+        "avg": {"field": "saleCnt"}
+    },
+    "sumCnt": {
+        "sum": {"field": "saleCnt"}
+    },
+    "disCnt": {
+        "cardinality": {"field": "saleCnt"}
     }
   }
 }
@@ -28,6 +38,16 @@ GET book/book/_search                  ------查询统计stats信息，结果包
     },
     "ext_stats_sale": {
        "extended_stats": {"field": "saleCnt"}
+    }
+  }
+}
+percentiles aggregation用于百分位统计
+GET book/book/_search
+{
+  "size": 0,
+  "aggs": {
+    "book_price": {
+      "percentiles": {"field": "price"}
     }
   }
 }
@@ -146,5 +166,50 @@ GET book/book/_search                   ------查询一年前之前录入的文�
     }
   }
 }
+missing aggregation空值聚合，可以把文档集中所有缺失字段的文档分到一个桶中
+GET book/book/_search
+{
+  "size": 0,
+  "aggs": {
+    "without_price": {
+      "missing": {"field":"price"}       ------对索引中缺失price字段或此字段值为null的文档进行聚合
+    }
+  }
+}
 
+geo distance aggregation是对地理点(geo point)做范围统计
+GET geo/city/_search                     ------以西安为中心,统计500km以内，500-1000km,1000km以外的城市数量
+{
+  "size": 0,
+  "aggs": {
+    "xian_area": {
+      "geo_distance":{
+        "field":"location",
+        "origin":"34.341270,108.39840",
+        "unit":"km",
+        "ranges":[
+          {"to":500},
+          {"from":500,"to":1000},
+          {"from":1000}
+        ]
+      }
+    }
+  }
+}
+ip range aggregation是对ip类型数据范围聚合
+GET ip_test/_search
+{
+  "size": 0,
+  "aggs": {
+    "ip_segment": {
+      "ip_range":{
+        "field":"ip",
+        "ranges":[
+          {"to":"10.0.0.10"},
+          {"from":"10.0.0.10"}
+        ]
+      }
+    }
+  }
+}
 --------------------------------------------------------------------
