@@ -3,6 +3,7 @@ package com.micro.webcore.interceptor;
 import com.micro.webcore.annotation.AppLogin;
 import com.micro.webcore.annotation.InnerResource;
 import com.micro.webcore.config.FeignHeaderInterceptor;
+import com.micro.webcore.constant.HeaderConstant;
 import com.micro.webcore.constant.JwtConstant;
 import com.micro.webcore.feign.LoginCheckService;
 import com.micro.webcore.model.LoginUser;
@@ -133,8 +134,8 @@ public class AppLoginInterceptor implements HandlerInterceptor {
 
     //是否来自feign调用
     public boolean comefromFeign(HttpServletRequest request) {
-        String comefrom = request.getHeader(FeignHeaderInterceptor.ACCESS_COMEFROM_HEARDER);
-        if (StringUtils.isNotBlank(comefrom) && FeignHeaderInterceptor.ACCESS_COMEFROM_FEIGN.equals(comefrom)) {
+        String comefrom = request.getHeader(HeaderConstant.ACCESS_COMEFROM_HEARDER);
+        if (StringUtils.isNotBlank(comefrom) && HeaderConstant.ACCESS_COMEFROM_FEIGN.equals(comefrom)) {
             return true;
         }
         return false;
