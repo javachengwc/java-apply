@@ -47,7 +47,12 @@ public class MvcConfig extends WebMvcConfigurationSupport {
     @Bean
     public MappingJackson2HttpMessageConverter jackson2HttpMessageConverter() {
         ObjectMapper mapper = new ObjectMapper();
+        // 忽略json字符串中不识别的属性
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        // 忽略无法转换的对象 “No serializer found for class xxx”
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS,false);
+        mapper.configure(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS, true);
+
         mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 
         //禁用对日期以时间戳方式输出
