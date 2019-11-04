@@ -1,6 +1,5 @@
 package com.cache.redis.util;
 
-import com.spring.util.SpringContextUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +19,7 @@ public class RedisLockUtil {
 
     public static RedisTemplate gainRedisTemplate() {
         if(redisTemplate==null) {
-            redisTemplate = (RedisTemplate<String,Object> )SpringContextUtils.getBean(RedisTemplate.class);
+            redisTemplate = (RedisTemplate<String,Object> )SpringContextUtil.getBean(RedisTemplate.class);
             redisTemplate.setKeySerializer(new StringRedisSerializer());
             redisTemplate.setValueSerializer(new StringRedisSerializer());
         }
