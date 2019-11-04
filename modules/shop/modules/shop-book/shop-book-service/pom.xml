@@ -6,7 +6,7 @@
 
     <groupId>com.shop</groupId>
     <artifactId>shop-book-service</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>shop-book-service</name>
@@ -72,12 +72,12 @@
         <dependency>
             <groupId>com.shop</groupId>
             <artifactId>shop-book-api</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.shop</groupId>
             <artifactId>shop-base-util</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>

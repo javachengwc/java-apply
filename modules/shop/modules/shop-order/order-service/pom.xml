@@ -4,15 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.shop</groupId>
-        <artifactId>shop-order</artifactId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
-
     <groupId>com.shop</groupId>
     <artifactId>order-service</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>order-service</name>
@@ -75,9 +69,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.app</groupId>
+            <groupId>com.common</groupId>
             <artifactId>common</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -92,12 +86,12 @@
         <dependency>
             <groupId>com.shop</groupId>
             <artifactId>order-api</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.shop</groupId>
             <artifactId>user-api</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -177,15 +171,17 @@
             <version>1.5.12</version>
         </dependency>
         <dependency>
-            <groupId>com.app</groupId>
+            <groupId>com.component</groupId>
             <artifactId>component-rest-springmvc</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>com.icbc</groupId>
             <artifactId>icbc</artifactId>
             <version>2.0.0.5</version>
         </dependency>
+        -->
     </dependencies>
 
 </project>

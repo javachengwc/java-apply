@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.app</groupId>
+    <groupId>com.shop</groupId>
     <artifactId>storefront-manage</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>storefront-manage</name>
@@ -18,7 +18,10 @@
     <build>
         <finalName>${project.artifactId}</finalName>
         <filters>
+            <!--
             <filter>src/main/filters/filter-${env}.properties</filter>
+            -->
+            <filter>src/main/filters/filter-dev.properties</filter>
         </filters>
         <resources>
             <resource>
@@ -94,19 +97,19 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.app</groupId>
+            <groupId>com.common</groupId>
             <artifactId>common</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.shop</groupId>
             <artifactId>shop-base-util</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.shop</groupId>
             <artifactId>shop-base-model</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
