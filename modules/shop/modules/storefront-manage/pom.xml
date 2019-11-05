@@ -18,10 +18,7 @@
     <build>
         <finalName>${project.artifactId}</finalName>
         <filters>
-            <!--
             <filter>src/main/filters/filter-${env}.properties</filter>
-            -->
-            <filter>src/main/filters/filter-dev.properties</filter>
         </filters>
         <resources>
             <resource>
@@ -166,6 +163,10 @@
             <properties>
                 <env>dev</env>
             </properties>
+            <activation>
+                <!-- 设置默认激活这个配置 -->
+                <activeByDefault>true</activeByDefault>
+            </activation>
         </profile>
         <profile>
             <id>test</id>

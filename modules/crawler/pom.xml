@@ -3,29 +3,10 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
-    <parent>
-        <groupId>com.app</groupId>
-        <artifactId>app</artifactId>
-        <relativePath>../../pom.xml</relativePath>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
-
-    <groupId>com.app</groupId>
+    <groupId>com.crawler</groupId>
     <artifactId>crawler</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>crawler</name>
@@ -35,9 +16,9 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>com.app</groupId>
+            <groupId>com.common</groupId>
             <artifactId>common</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -65,4 +46,18 @@
             <version>1.2.0</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
