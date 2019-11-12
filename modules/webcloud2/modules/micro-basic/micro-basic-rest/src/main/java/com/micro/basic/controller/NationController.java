@@ -5,7 +5,7 @@ import com.micro.basic.model.pojo.Nation;
 import com.micro.basic.service.NationService;
 import com.model.base.Req;
 import com.model.base.Resp;
-import com.shop.base.util.TransUtil;
+import com.util.TransUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
