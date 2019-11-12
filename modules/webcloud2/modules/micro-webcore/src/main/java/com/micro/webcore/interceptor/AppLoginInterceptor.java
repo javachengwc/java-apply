@@ -2,7 +2,6 @@ package com.micro.webcore.interceptor;
 
 import com.micro.webcore.annotation.AppLogin;
 import com.micro.webcore.annotation.InnerResource;
-import com.micro.webcore.config.FeignHeaderInterceptor;
 import com.micro.webcore.constant.HeaderConstant;
 import com.micro.webcore.constant.JwtConstant;
 import com.micro.webcore.feign.LoginCheckService;
@@ -13,7 +12,7 @@ import com.micro.webcore.util.SpringContextUtil;
 import com.micro.webcore.util.TokenUtil;
 import com.model.base.Req;
 import com.model.base.Resp;
-import com.shop.base.util.JsonUtil;
+import com.util.JsonUtil;
 import com.util.date.DateUtil;
 import com.util.web.HttpRenderUtil;
 import org.apache.commons.lang.StringUtils;
