@@ -7,7 +7,7 @@ import com.micro.user.service.UserWalletService;
 import com.micro.webcore.annotation.AppLogin;
 import com.model.base.Req;
 import com.model.base.Resp;
-import com.shop.base.util.TransUtil;
+import com.util.TransUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;

@@ -3,10 +3,10 @@ package com.micro.course.controller;
 import com.micro.course.model.vo.UserCourseQueryVo;
 import com.micro.course.model.vo.UserCourseVo;
 import com.micro.course.service.UserCourseService;
-import com.shop.base.model.Page;
-import com.shop.base.model.Req;
-import com.shop.base.model.Resp;
-import com.shop.base.model.RespHeader;
+import com.model.base.PageVo;
+import com.model.base.Req;
+import com.model.base.Resp;
+import com.model.base.RespHeader;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +26,8 @@ public class UserCourseController {
 
     @ApiOperation(value = "分页查询某用户的课程", notes = "分页查询某用户的课程")
     @RequestMapping(value = "/queryPageForUser", method = RequestMethod.POST)
-    public Resp<Page<UserCourseVo>> queryPageForUser(@RequestBody Req<UserCourseQueryVo> req) {
-        Resp<Page<UserCourseVo>> resp = new Resp<Page<UserCourseVo>>();
+    public Resp<PageVo<UserCourseVo>> queryPageForUser(@RequestBody Req<UserCourseQueryVo> req) {
+        Resp<PageVo<UserCourseVo>> resp = new Resp<PageVo<UserCourseVo>>();
         UserCourseQueryVo queryVo = req.getData();
         Long userId = queryVo.getUserId();
         if(userId==null) {
@@ -36,18 +36,18 @@ public class UserCourseController {
             return resp;
         }
         queryVo.genPage();
-        Page<UserCourseVo> page = userCourseService.queryPage(queryVo);
+        PageVo<UserCourseVo> page = userCourseService.queryPage(queryVo);
         resp.setData(page);
         return resp;
     }
 
     @ApiOperation(value = "分页查询所有用户课程", notes = "分页查询所有用户课程")
     @RequestMapping(value = "/queryPage", method = RequestMethod.POST)
-    public Resp<Page<UserCourseVo>> queryPage(@RequestBody Req<UserCourseQueryVo> req) {
-        Resp<Page<UserCourseVo>> resp = new Resp<Page<UserCourseVo>>();
+    public Resp<PageVo<UserCourseVo>> queryPage(@RequestBody Req<UserCourseQueryVo> req) {
+        Resp<PageVo<UserCourseVo>> resp = new Resp<PageVo<UserCourseVo>>();
         UserCourseQueryVo queryVo = req.getData();
         queryVo.genPage();
-        Page<UserCourseVo> page = userCourseService.queryPage(queryVo);
+        PageVo<UserCourseVo> page = userCourseService.queryPage(queryVo);
         resp.setData(page);
         return resp;
     }

@@ -1,6 +1,6 @@
 package com.micro.course.model.vo;
 
-import com.shop.base.model.PageParam;
+import com.model.base.PageParam;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 

@@ -6,11 +6,8 @@ import com.micro.course.model.vo.CourseVo;
 import com.micro.course.model.vo.UserCourseQueryVo;
 import com.micro.course.model.vo.UserCourseVo;
 import com.micro.course.service.CourseService;
-import com.shop.base.model.Page;
-import com.shop.base.model.Req;
-import com.shop.base.model.Resp;
-import com.shop.base.model.RespHeader;
-import com.shop.base.util.TransUtil;
+import com.model.base.*;
+import com.util.TransUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,11 +43,11 @@ public class CourseController {
 
     @ApiOperation(value = "分页查询课程", notes = "分页查询课程")
     @RequestMapping(value = "/queryPage", method = RequestMethod.POST)
-    public Resp<Page<CourseVo>> queryPage(@RequestBody Req<CourseQueryVo> req) {
-        Resp<Page<CourseVo>> resp = new Resp<Page<CourseVo>>();
+    public Resp<PageVo<CourseVo>> queryPage(@RequestBody Req<CourseQueryVo> req) {
+        Resp<PageVo<CourseVo>> resp = new Resp<PageVo<CourseVo>>();
         CourseQueryVo queryVo = req.getData();
         queryVo.genPage();
-        Page<CourseVo> page = courseService.queryPage(queryVo);
+        PageVo<CourseVo> page = courseService.queryPage(queryVo);
         resp.setData(page);
         return resp;
     }
