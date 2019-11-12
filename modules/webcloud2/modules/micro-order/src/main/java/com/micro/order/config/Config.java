@@ -10,7 +10,7 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.core.env.Environment;
 
 @Configuration
-@ImportResource({"classpath:applicationContext.xml"})
+//@ImportResource({"classpath:applicationContext.xml"})
 public class Config implements EnvironmentAware {
 
     private static Logger logger = LoggerFactory.getLogger(Config.class);

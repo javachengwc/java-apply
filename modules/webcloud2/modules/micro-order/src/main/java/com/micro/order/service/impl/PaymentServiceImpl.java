@@ -8,9 +8,9 @@ import com.micro.order.service.OrderService;
 import com.micro.order.service.PaymentService;
 import com.micro.order.service.remote.GoodsService;
 import com.micro.order.service.remote.UserWalletService;
-import com.shop.base.model.Req;
-import com.shop.base.model.ReqHeader;
-import com.shop.base.model.Resp;
+import com.model.base.Req;
+import com.model.base.ReqHeader;
+import com.model.base.Resp;
 import org.dromara.hmily.annotation.Hmily;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +50,7 @@ public class PaymentServiceImpl implements PaymentService {
         decreaseReq.setHeader(new ReqHeader());
         decreaseReq.setData(goodsStockReq);
         logger.info("PaymentServiceImpl pay 开始扣减库存,goodsId={},goodsCount={}",goodsId,goodsCount);
-        Resp<Void>  decreaseResp=goodsService.decreaseStock(decreaseReq);
+        Resp<Void> decreaseResp=goodsService.decreaseStock(decreaseReq);
         logger.info("PaymentServiceImpl pay 调用扣减库存,返回结果:{},goodsId={}",decreaseResp,goodsId);
 
         UserWalletReq userWalletReq= new UserWalletReq(buyerId,order.getTotalAmount());

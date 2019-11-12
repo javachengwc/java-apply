@@ -9,7 +9,7 @@ import com.micro.order.model.pojo.ShopOrderExample;
 import com.micro.order.model.req.OrderReq;
 import com.micro.order.service.OrderService;
 import com.micro.order.service.PaymentService;
-import com.shop.base.util.TransUtil;
+import com.util.TransUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
