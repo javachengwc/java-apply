@@ -26,5 +26,6 @@
 		<module>modules/micro-course</module>
 		<module>modules/micro-sidecar</module>
 		<module>modules/micro-training</module>
+		<module>modules/micro-apollo</module>
 	</modules>	
 </project>

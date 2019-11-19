@@ -1,0 +1,72 @@
+server:
+  port: 8012
+#注册中心
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8080/eureka
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 15
+
+#负载均衡
+ribbon:
+  MaxAutoRetries: 0
+  MaxAutoRetriesNextServer: 0
+  OkToRetryOnAllOperations: false
+
+#apollo客户端
+apollo:
+  enabled: true
+  env: dev
+  meta: http://localhost:8082
+  cacheDir: D:\tmp\cache-dir
+#定时拉取应用的最新配置,为了防止推送机制失效导致配置不更新
+  refreshInterval: 5000
+  bootstrap:
+      enabled: true
+      namespaces: application,common
+
+spring:
+  application:
+    name: micro-training
+#数据库配置
+  datasource:
+      driver-class-name: com.mysql.jdbc.Driver
+      url: ${dbUrl}
+      username: ${dbUserName}
+      password: ${dbPassword}
+      type: com.alibaba.druid.pool.DruidDataSource
+      initialSize: 5
+      minIdle: 5
+      maxActive: 20
+      maxWait: 60000
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 60000
+      validationQuery: select 1
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+
+#mybatisplus插件
+mybatis-plus:
+  typeAliasesPackage: com.micro.course.model
+  mapper-locations: classpath*:sqlmap/**/**.xml
+  global-config:
+    db-config:
+      id-type: 0
+      field-strategy: ignored
+      logic-delete-value: 0
+      logic-not-delete-value: 1
+      table-prefix:
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: true
+
+#pageHelper
+pagehelper:
+  helperDialect: mysql
+  reasonable: false
+  supportMethodsArguments: true
+  params: count=countSql

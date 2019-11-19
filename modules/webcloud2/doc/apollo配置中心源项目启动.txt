@@ -14,6 +14,7 @@ apollo配置中心服务默认是通过脚本启动，并且里面的apollo-conf
 如果需要把apollo-configservice内嵌的eureka注册中心去掉,用其他的注册中心,
 需要修改ConfigServiceApplication类，将@EnableEurekaServer改成@EnableEurekaClient
 同时修改数据库ApolloConfigDB中的表serverconfig的eureka.service.url此项配置值为eureka注册中心地址
+这里高版本(1.6.0)
 
 3,修改子项目apollo-adminservice的配置application.yml,加入数据库相关信息
     spring:
