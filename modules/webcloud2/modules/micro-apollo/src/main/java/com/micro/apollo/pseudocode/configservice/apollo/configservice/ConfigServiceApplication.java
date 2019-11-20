@@ -1,6 +1,7 @@
 package com.micro.apollo.pseudocode.configservice.apollo.configservice;
 
 
+import com.micro.apollo.pseudocode.common.ApolloCommonConfig;
 import com.micro.apollo.pseudocode.configservice.apollo.metaservice.ApolloMetaServiceConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
