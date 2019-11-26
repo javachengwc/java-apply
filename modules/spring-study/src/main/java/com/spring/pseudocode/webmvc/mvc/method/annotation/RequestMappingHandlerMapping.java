@@ -80,6 +80,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
     }
 
     //判断是否要处理请求映射
+    //默认@Controller,@RequestMapping注解的类会进行处理请求映射
     @Override
     protected boolean isHandler(Class<?> beanType) {
         return AnnotatedElementUtils.hasAnnotation(beanType, Controller.class) || AnnotatedElementUtils.hasAnnotation(beanType, RequestMapping.class);
