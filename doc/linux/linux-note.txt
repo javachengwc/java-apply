@@ -14,12 +14,20 @@ vim /etc/sysconfig/i18n
     LANG="en_US.UTF-8"
     SYSFONT="latarcyrheb-sun16"
 source /etc/sysconfig/i18n                       ---修改系统字符集
-
+--------系统时区
+tzselect
+5-->9-->1-->1
+echo "ZONE=Asia/Shanghai" >> /etc/sysconfig/clock
+rm -f /etc/localtime
+ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 --------date
 date -s 05/15/2016  ---修改日期
 date -s 15:15:00    ---修改时间
+date -s "20160515 15:15:00"
 clock -w   ---强制把系统时间写入CMOS
 
+hwclock --show
+hwclock --set --date "20160515 15:15:00"
 ---------sudo
 sudo是允许普通用户执行一些或者全部的root账号才能执行的命令的一个工具。
 配置文件/etc/sudoers
