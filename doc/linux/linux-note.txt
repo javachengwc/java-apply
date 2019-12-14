@@ -15,6 +15,7 @@ vim /etc/sysconfig/i18n
     SYSFONT="latarcyrheb-sun16"
 source /etc/sysconfig/i18n                       ---修改系统字符集
 --------系统时区
+date -R             ---查看系统时区
 tzselect
 5-->9-->1-->1
 echo "ZONE=Asia/Shanghai" >> /etc/sysconfig/clock
