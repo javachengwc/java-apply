@@ -16,6 +16,10 @@ import java.net.URL;
 import java.util.*;
 
 /**
+ * java中常见操作excel的方式一般有2种：jxl和poi。
+ * jxl只支持到excel 95-2000的版本。在2009年10月已经停止更新，并且不支持excel 2007 OOXML （.xlsx）格式的文件
+ * poi是apache的项目,可对微软的word,excel,ppt进行操作,包括office2003和2007,excl2003和2007。
+ * poi现在一直有更新.所以现在主流使用poi。
   *HSSFWorkbook:是操作Excel2003以前（包括2003）的版本，扩展名是.xls
   *XSSFWorkbook:是操作Excel2007的版本，扩展名是.xlsx
   *对于不同版本的EXCEL文档要使用不同的工具类，如果使用错了，会报错
