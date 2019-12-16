@@ -89,7 +89,7 @@ public class SafeguardStatController extends BaseController {
         try {
             ServletOutputStream outputStream = response.getOutputStream();
             String filename = new String("xxx.csv".getBytes(), "iso-8859-1");
-            response.setHeader("Content-disposition", "attachment; filename=" + filename);
+            response.setHeader("Content-Disposition", "attachment; filename=" + filename);
             response.setContentType("application/x-download");
             ExcelTool.downloadCsv(fields, keys, mapList, outputStream);
         } catch (Exception e) {
