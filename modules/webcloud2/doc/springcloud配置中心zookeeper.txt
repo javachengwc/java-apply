@@ -1,0 +1,19 @@
+------------------------------------springcloud配置中心zookeeper------------------------------
+bootstrap.yml中的配置如下:
+zk:
+  config: xxx:2181
+spring:
+  profiles:
+    active: dev
+  application:
+    name: xxx-api
+  cloud:
+    zookeeper:
+      enabled: true  # true:开启zookeeper配置, false:读本地配置
+      connect-string: ${zk.config}
+      config:
+        root: /config/${spring.profiles.active}
+        enabled: true
+        watcher:
+          enabled: false
+----------------------------------------------------------------------------------------------
