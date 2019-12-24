@@ -51,8 +51,13 @@ wget --user-agent="Mozilla/5.0 Chrome..." http://www.cc.com/cc.zip
 
 或者直接下载rpm包，比如jdk-8u201-linux-x64.rpm
 然后 rpm -ivh jdk-8u201-linux-x64.rpm即可
+
+openjdk的安装
+yum install java-1.8.0-openjdk.x86_64
+yum install java-1.8.0-openjdk-devel
 ---------------maven
 在http://maven.apache.org/download.cgi下载apache-maven-3.3.9-bin.tar.gz
+wget http://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz
 tar -zxvf apache-maven-3.3.9-bin.tar.gz
 vi /etc/profile 设置全局变量
     M2_HOME=/opt/maven/apache-maven-3.2.1
