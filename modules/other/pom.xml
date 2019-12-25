@@ -27,9 +27,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.app</groupId>
+            <groupId>com.common</groupId>
             <artifactId>common</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>dom4j</groupId>
@@ -91,6 +91,11 @@
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna</artifactId>
             <version>5.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.zeroturnaround</groupId>
+            <artifactId>zt-exec</artifactId>
+            <version>1.11</version>
         </dependency>
     </dependencies>
 </project>

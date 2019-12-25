@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
+//只得执行完了才一次性返回所有的结果，不能实时输出结果
 public class RmtShellExecutor
 {
 	private String hostIp;
@@ -83,22 +84,22 @@ public class RmtShellExecutor
 		
 		try{
 			if(login()){
+				System.out.println("RmtShellExecutor executeWithResult login success...");
 				Session session = connection.openSession();
 				session.execCommand(command);
-				
+
+				//只得执行完了才一次性返回所有的结果，不能实时输出结果
 				stdOut = new StreamGobbler(session.getStdout());
 				outStr = processStream(stdOut, charSet);
-//				System.out.println(outStr);
-//				stdErr = new StreamGobbler(session.getStderr());
-//				outErr = processStream(stdErr, charSet);
-//			    System.out.println(outErr);
 				session.waitForCondition(ChannelCondition.EXIT_STATUS, TIME_OUT);
 				
 				session.getExitStatus();
 			}else{
 				throw new Exception("login error on "+hostIp+ "server");
 			}
-		}finally{
+		} catch (Exception e) {
+			e.printStackTrace(System.out);
+		} finally{
 			if(connection != null){
 				connection.close();
 			}
@@ -119,8 +120,10 @@ public class RmtShellExecutor
 	}
 	
 	public static void main(String[] args) throws Exception{
-		RmtShellExecutor rmtShellExecutor = new RmtShellExecutor("127.0.0.1", "root", "root");
-		String result=rmtShellExecutor.executeWithResult("/home/cheng/test.sh");
+		RmtShellExecutor rmtShellExecutor = new RmtShellExecutor("47.107.237.10", "root", "CHeng123!");
+		System.out.println("RmtShellExecutor main start...........");
+		String result=rmtShellExecutor.executeWithResult("/tmp/test.sh");
+		System.out.println("RmtShellExecutor exe shell...........");
 		String resultArrayStr[] = result.split(" ");
 		System.out.println(resultArrayStr[0]);
 	}
