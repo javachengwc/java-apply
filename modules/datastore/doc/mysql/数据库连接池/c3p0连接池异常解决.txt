@@ -21,6 +21,12 @@ vim /etc/my.cnf,增改wait_timeout=1810000     ---修改mysql的wait_timeout
 c3p0.testConnectionOnCheckout=true           #从连接池获取连接的时候检查此连接是否可用
 
 -----------------------------------------------
+异常:The server time zone value '???ú±ê×??±??' is unrecognized or represents more...
+原因:使用了MySQL新版驱动
+解决方式:
+    1,在项目代码-数据库连接URL后，加上serverTimezone=UTC
+    2,在mysql中设置时区，默认为SYSTEM,set global time_zone='+8:00'
+-----------------------------------------------
 c3p0连接池参考配置:
 c3p0.acquireIncrement=3
 c3p0.initialPoolSize=3
