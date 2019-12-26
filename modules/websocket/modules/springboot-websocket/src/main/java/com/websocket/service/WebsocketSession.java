@@ -1,5 +1,6 @@
 package com.websocket.service;
 
+import java.util.Objects;
 import javax.websocket.Session;
 import java.io.IOException;
 
@@ -26,6 +27,29 @@ public class WebsocketSession {
     }
 
     public void sendMessage(String message) throws IOException {
-        this.session.getBasicRemote().sendText(message);
+
+        if(!session.isOpen()){
+            System.out.println("session为空----------------");
+        } else {
+            session.getBasicRemote().sendText(message);
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof WebsocketSession)) {
+            return false;
+        }
+        WebsocketSession that = (WebsocketSession) o;
+        return Objects.equals(getName(), that.getName()) &&
+            Objects.equals(getSession(), that.getSession());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getName(), getSession());
     }
 }
