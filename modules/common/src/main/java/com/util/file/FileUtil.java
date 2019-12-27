@@ -1,5 +1,6 @@
 package com.util.file;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,6 +78,20 @@ public final class FileUtil {
             {
                 logger.error("writer close error,",e);
             }
+        }
+    }
+
+    public static void writeFile(File file, String content) {
+        String filePath = file.getPath();
+        FileOutputStream out = null;
+        try {
+            out =new FileOutputStream(file);
+            IOUtils.write(content, out, "utf-8");
+        } catch(IOException e) {
+            logger.error("PythonExecutor setFileContent error,filePath={},",filePath,e);
+            throw new RuntimeException(e);
+        } finally {
+            IOUtils.closeQuietly(out);
         }
     }
 

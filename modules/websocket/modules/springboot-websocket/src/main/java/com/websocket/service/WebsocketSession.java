@@ -29,7 +29,7 @@ public class WebsocketSession {
     public void sendMessage(String message) throws IOException {
 
         if(!session.isOpen()){
-            System.out.println("session为空----------------");
+            System.out.println("session is not open ----------------");
         } else {
             session.getBasicRemote().sendText(message);
         }

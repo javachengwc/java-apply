@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.RandomStringUtils;
 
 /**
  * string format 转义符是%
@@ -57,9 +58,10 @@ public class StringMain {
         System.out.println("a==c is "+ (a==c));
     }
 
-    public static void main(String args []) throws Exception
-	{
-        stringSame();
+    public static void main(String args []) throws Exception {
+
+      System.out.println(RandomStringUtils.randomAlphabetic(6).toLowerCase());
+      stringSame();
 
 	    String ccca ="aabbcc123";
 	    System.out.println("----------"+ccca.matches(numZimu));
