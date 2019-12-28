@@ -1,4 +1,6 @@
 ------------------------------------------spring mvc---------------------------------------
+请求->过滤器->拦截器的preHandle()->控制器->拦截器的postHandle()->视图页面渲染->拦截器的afterCompletion()
+
 spring mvc的转发与重定向:通过redirect/forward:url方式转发或重定向到另一个controller或url进行后续的处理。
 ep:
 return "forward:/shop/show"; 或return "redirect:/index.jsp";redirect:url也可用于防止表单重复提交。
