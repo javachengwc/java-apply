@@ -5,6 +5,8 @@ import com.micro.webcore.annotation.InnerResource;
 import com.micro.webcore.constant.HeaderConstant;
 import com.micro.webcore.constant.JwtConstant;
 import com.micro.webcore.feign.LoginCheckService;
+import com.micro.webcore.matcher.PathMatchProcesser;
+import com.micro.webcore.matcher.PatternMatcherComposite;
 import com.micro.webcore.model.LoginUser;
 import com.micro.webcore.model.TokenInfo;
 import com.micro.webcore.service.ITokenService;
@@ -15,6 +17,8 @@ import com.model.base.Resp;
 import com.util.JsonUtil;
 import com.util.date.DateUtil;
 import com.util.web.HttpRenderUtil;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +40,11 @@ public class AppLoginInterceptor implements HandlerInterceptor {
 
     private boolean loadTokenService=false;
 
+    private PathMatchProcesser pathMatchProcesser;
+
     @Autowired
     private LoginCheckService loginCheckService;
+
 
     public ITokenService getTokenService() {
         if(loadTokenService) {
@@ -50,6 +57,17 @@ public class AppLoginInterceptor implements HandlerInterceptor {
         }
         loadTokenService=true;
         return tokenService;
+    }
+
+    //是否需要登录
+    public boolean needLogin(HttpServletRequest request, Method method) {
+        AppLogin appLogin = method.getAnnotation(AppLogin.class);
+        if (appLogin != null) {
+            //需要登录验证
+            return true;
+        }
+        boolean match= pathMatchProcesser.requestMatch(request);
+        return match;
     }
 
     @Override
