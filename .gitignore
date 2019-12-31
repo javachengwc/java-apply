@@ -107,3 +107,6 @@ modules/wh8m/modules/newrelic-maven-plugin/target/
 modules/wh8m/modules/newrelic-pointcut/target/
 modules/wh8m/modules/task/target/
 modules/solr/modules/solr7-index/target/
+classes/
+modules/mountain/modules/mountain-client/target/
+modules/mountain/modules/mountain-core/target/

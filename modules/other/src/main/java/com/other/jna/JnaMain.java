@@ -6,13 +6,13 @@ package com.other.jna;
 //    /usr/local/lib
 //ldconfig
 public class JnaMain {
-
-    public static void main(String [] args ) {
-        String param ="str";
-        byte [] rtData  = new byte[100];
-        int result = CLibrary.INSTANTCE.xxx(param, rtData);
-        String rt = new String(rtData);
-        System.out.println("JnaMain invoke 本地c语言so库方法xxx的结果为:"+rt);
-
-    }
+//
+//    public static void main(String [] args ) {
+//        String param ="str";
+//        byte [] rtData  = new byte[100];
+//        int result = CLibrary.INSTANTCE.xxx(param, rtData);
+//        String rt = new String(rtData);
+//        System.out.println("JnaMain invoke 本地c语言so库方法xxx的结果为:"+rt);
+//
+//    }
 }

@@ -17,7 +17,7 @@ public class PtyMain {
 
   public static void main(String [] args) throws Exception {
 
-    String dir="D:\\tmp\\python\\20191231\\2163663";
+    String dir="E:\\tmp";
 
     Map<String, String> envs = new HashMap<>(System.getenv());
     envs.put("TERM", "xterm");

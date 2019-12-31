@@ -87,11 +87,11 @@
             <artifactId>xmlworker</artifactId>
             <version>5.5.6</version>
         </dependency>
-        <dependency>
-            <groupId>net.java.dev.jna</groupId>
-            <artifactId>jna</artifactId>
-            <version>5.2.0</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>net.java.dev.jna</groupId>-->
+            <!--<artifactId>jna</artifactId>-->
+            <!--<version>5.2.0</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.zeroturnaround</groupId>
             <artifactId>zt-exec</artifactId>
@@ -101,7 +101,7 @@
         <dependency>
             <groupId>org.jetbrains.pty4j</groupId>
             <artifactId>pty4j</artifactId>
-            <version>0.8.6</version>
+            <version>0.9.6</version>
             <exclusions>
                 <exclusion>
                     <groupId>log4j</groupId>
@@ -109,5 +109,20 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>org.jvnet.winp</groupId>
+            <artifactId>winp</artifactId>
+            <version>1.28</version>
+        </dependency>
     </dependencies>
+
+
+
+    <repositories>
+        <repository>
+            <id>bintray-jetbrains-pty4j</id>
+            <name>bintray</name>
+            <url>https://jetbrains.bintray.com/pty4j</url>
+        </repository>
+    </repositories>
 </project>
