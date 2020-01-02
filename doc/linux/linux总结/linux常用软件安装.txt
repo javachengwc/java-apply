@@ -406,6 +406,31 @@ vi /etc/ld.so.conf
 /sbin/ldconfig
 /sbin/ldconfig -v
 
+-------------------------python3
+wget https://www.python.org/ftp/python/3.8.0/Python-3.8.0.tgz
+mkdir -p /usr/local/python3
+tar -zxvf Python-3.8.0.tgz
+cd Python-3.8.0
+./configure --prefix=/usr/local/python3
+make
+make install
+ln -s /usr/local/python3/bin/python3 /usr/bin/python3
+vim ~/.bash_profile
+    export PATH=$PATH:$HOME/bin:/usr/local/python3/bin
+
+--------------------------pip
+pip是python包管理工具
+wget --no-check-certificate  https://pypi.python.org/packages/source/s/setuptools/setuptools-19.6.tar.gz
+tar -zxvf setuptools-19.6.tar.gz
+cd setuptools-19.6
+python3 setup.py build
+python3 setup.py install
+wget --no-check-certificate  https://pypi.python.org/packages/source/p/pip/pip-8.0.2.tar.gz
+tar -zxvf pip-8.0.2.tar.gz
+cd pip-8.0.2
+python3 setup.py build
+python3 setup.py install
+
 -------------------------go
 wget https://dl.google.com/go/go1.11.linux-amd64.tar.gz     ---下载相应版本压缩包
 tar -xzvf go1.11.linux-amd64.tar.gz
