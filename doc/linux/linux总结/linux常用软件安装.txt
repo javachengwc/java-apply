@@ -407,6 +407,7 @@ vi /etc/ld.so.conf
 /sbin/ldconfig -v
 
 -------------------------python3
+yum install -y gcc zlib-devel
 wget https://www.python.org/ftp/python/3.8.0/Python-3.8.0.tgz
 mkdir -p /usr/local/python3
 tar -zxvf Python-3.8.0.tgz

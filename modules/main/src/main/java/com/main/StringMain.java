@@ -29,6 +29,8 @@ public class StringMain {
     //${}匹配
     private static String programTemplateStr="\\$\\{(.*?)\\}";
 
+    private static String initMessageTemplateStr="^\\[.*\\](#|\\$)$";
+
     //去信息
     public static String dropInfo(String value) {
         if (StringUtils.isBlank(value) ) {
@@ -59,6 +61,13 @@ public class StringMain {
     }
 
     public static void main(String args []) throws Exception {
+
+      String pre1="[fsdhfisdhfi]$";
+      String pre2="[fshidfhishdih]#";
+      String pre3="[dhfiwhsifhiw]#22";
+      System.out.println(pre1.matches(initMessageTemplateStr)+" "+
+          pre2.matches(initMessageTemplateStr)+" "+
+          pre3.matches(initMessageTemplateStr)+" ");
 
       System.out.println(RandomStringUtils.randomAlphabetic(6).toLowerCase());
       stringSame();

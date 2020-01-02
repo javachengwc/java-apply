@@ -7,49 +7,71 @@ import com.pty4j.windows.WinPtyProcess;
 import java.io.*;
 
 import com.google.common.base.Charsets;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.jvnet.winp.WinProcess;
 import org.jvnet.winp.WinpException;
 
 public class WinPtyMain {
 
-    public static void main(String [] args) throws Exception {
-//        WinPtyProcess.joinCmdArgs(new String[]{
-//                "C:\\Python35\\python.exe",
-//                "C:\\Program Files (x86)\\JetBrains\\PyCharm 5.0.2\\helpers\\pydev\\pydevd.py"
-//        });
+    private static final String ENTER = "\r\n";
 
-//        String [] command=null;
-//        if (OsUtil.isWindows) {
-//            command = new String[]{"cmd.exe"};
-//        } else {
-//            command = new String[]{"/bin/bash", "--login"};
-//            envs.put("TERM", "xterm");
-//        }
-//
+    private static final String LINUX_ENTER="\n";
+
+    public static String [] getSysCmd() {
+        String [] command=null;
+        String os =System.getProperty("os.name");
+        if(os!=null && os.toLowerCase().startsWith("window")) {
+            command = new String[]{"cmd.exe"};
+        }else  {
+            command = new String[]{"/bin/bash", "--login"};
+        }
+        return command;
+    }
+
+    public static void main(String [] args) throws Exception {
 
         //String [] cmd ={"java","A"};
 
         String[] cmd = new String[]{"cmd.exe"};
+        Map<String,String> envs = new HashMap<String,String>(System.getenv());
 
-        String workingDir = new File("E:\\tmp").getAbsolutePath();
+        String workingDir = new File("D:\\tmp\\python").getAbsolutePath();
         PtyProcessBuilder builder = new PtyProcessBuilder(cmd)
                 .setDirectory(workingDir)
-                .setEnvironment(System.getenv())
+                .setEnvironment(envs)
                 .setConsole(false)
                 .setCygwin(false);
         WinPtyProcess process = (WinPtyProcess) builder.start();
         String workingDirectory = getWorkingDirectory(process);
         System.out.println(workingDirectory);
+        System.out.println("-------------------------------");
 
         printProcessOutput(process);
 
+        Thread.sleep(2000);
         OutputStream outputStream =process.getOutputStream();
-        OutputStreamWriter writer = new OutputStreamWriter(outputStream, "utf-8");
-        writer.write("ping www.baidu.com -t \r\n");
+        OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+        writer.write("python aaa.py ");
+        writer.flush();
+        Thread.sleep(1000);
+        writer.write(ENTER);
+        writer.flush();
+        Thread.sleep(1000);
+        writer.flush();
+
+        Thread.sleep(3000);
+        writer.write("abcdefg ");
+        writer.flush();
+        Thread.sleep(3000);
+        writer.write("hijklmn ");
+        writer.flush();
+        Thread.sleep(3000);
+        writer.write(ENTER);
         writer.flush();
         writer.close();
-
-        //printProcessOutput(process);
 
         process.waitFor();
         Thread.sleep(1000);
@@ -59,18 +81,15 @@ public class WinPtyMain {
     public static String getWorkingDirectory( WinPtyProcess process) throws IOException {
         try {
             return process.getWorkingDirectory();
-        }
-        catch (IOException e) {
-//            if (!Platform.is64Bit()) {
-//                return null;
-//            }
+        } catch (IOException e) {
             throw e;
         }
     }
 
     public static void printProcessOutput( Process process) {
-        Thread stdoutReader = new ReaderThread(new InputStreamReader(process.getInputStream(), Charsets.UTF_8), System.out);
-        Thread stderrReader = new ReaderThread(new InputStreamReader(process.getErrorStream(), Charsets.UTF_8), System.err);
+
+        Thread stdoutReader = new ReaderThread(new InputStreamReader(process.getInputStream()), System.out);
+        Thread stderrReader = new ReaderThread(new InputStreamReader(process.getErrorStream()), System.out);
         stdoutReader.start();
         stderrReader.start();
     }
@@ -86,7 +105,6 @@ public class WinPtyMain {
             return null;
         }
         return commandLine;
-        //return ContainerUtil.getFirstItem(ParametersListUtil.parse(commandLine));
     }
 
     private static class ReaderThread extends Thread {
@@ -107,11 +125,14 @@ public class WinPtyMain {
                     if (count < 0) {
                         return;
                     }
-                    myOut.print(new String(buf, 0, count));
+                    String message = new String(buf, 0, count);
+                    System.out.println("-------------"+message);
+                    myOut.print(message);
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
+
     }
 }

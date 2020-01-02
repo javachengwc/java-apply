@@ -1,5 +1,5 @@
 linux中tcp/ip及内核参数优化有多种方式，参数配置得当可以大大提高系统的性能
-vim sysctl.conf                             ###可使用sysctl -p生效
+vim /etc/sysctl.conf                             ###可使用sysctl -p生效
 
     net.core.optmem_max = 10000000
     ###表示每个套接字所允许的最大缓冲区的大小
