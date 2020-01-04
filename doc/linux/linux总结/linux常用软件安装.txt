@@ -415,7 +415,7 @@ cd Python-3.8.0
 ./configure --prefix=/usr/local/python3
 make
 make install
-ln -s /usr/local/python3/bin/python3 /usr/bin/python3
+ln -s /usr/local/python3/bin/python3 /bin/python3
 vim ~/.bash_profile
     export PATH=$PATH:$HOME/bin:/usr/local/python3/bin
 

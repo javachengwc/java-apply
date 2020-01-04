@@ -135,4 +135,9 @@ vim /etc/sysctl.conf                             ###可使用sysctl -p生效
     kernel.pid_max = 65536
     ###允许更多的PIDs (减少滚动翻转问题); may break some programs 32768
 
+端口快速释放，不重复占用的设置
+net.ipv4.tcp_tw_recycle = 1
+net.ipv4.tcp_timestamps = 1
+net.ipv4.tcp_tw_reuse = 1
+
 sysctl -p                                   ###使sysctl.conf生效

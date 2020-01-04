@@ -20,7 +20,7 @@ public class PtyMain {
     String dir="E:\\tmp";
 
     Map<String, String> envs = new HashMap<>(System.getenv());
-    envs.put("TERM", "xterm");
+    envs.put("TERM", "linux");
     String[] command = new String[]{"cmd.exe"};
     PtyProcess ptyProcess = PtyProcess.exec(command, envs, null);
     InputStreamReader in = new InputStreamReader(ptyProcess.getInputStream());
