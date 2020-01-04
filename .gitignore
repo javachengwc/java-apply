@@ -110,3 +110,4 @@ modules/solr/modules/solr7-index/target/
 classes/
 modules/mountain/modules/mountain-client/target/
 modules/mountain/modules/mountain-core/target/
+modules/websocket/modules/springboot-socketio/target/

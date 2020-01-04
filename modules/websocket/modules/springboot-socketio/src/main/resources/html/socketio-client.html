@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <script src="https://cdn.bootcss.com/socket.io/2.3.0/socket.io.js"></script>
+  </head>
+  <body>
+    <div>
+      <textarea id="input" ></textarea> 
+      <button id="btn">send</button>
+	    <textarea id="pa" ></textarea>
+	    <button id="ba">aabb</button>
+      <button id="sz">size</button>
+      <div id="res"></div>
+    </div>
+    <script>
+      ws = io(
+        'ws://localhost:8889?token=1',
+        { reconnection: false,transports:['websocket']}
+      )
+      function checkConnect() {
+		    alert("checkConnect");
+        if (ws.connected) { alert('connected') }
+	    };
+
+      ws.on('info', data => {
+        document.querySelector('#res').innerHTML += data + '<br/>';
+      });
+	    ws.on('init', data => {
+        document.querySelector('#res').innerHTML += data + '<br/>';
+      });
+      document.querySelector('#btn').onclick = () => {
+        ws.emit('code', document.querySelector('#input').value)
+      };
+	    document.querySelector('#ba').onclick = () => {
+        ws.emit('msg',document.querySelector('#pa').value)
+      }
+      document.querySelector('#sz').onclick = () => {
+        ws.emit('resize','100,200')
+      }
+    </script>
+  </body>
+</html>

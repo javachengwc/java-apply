@@ -10,7 +10,8 @@
     <packaging>pom</packaging>
     
 	<modules>
-    <module>modules/springboot-websocket</module>
+	    <module>modules/springboot-socketio</module>
+        <module>modules/springboot-websocket</module>
 		<module>modules/war-websocket</module>
 	</modules>	
 </project>
