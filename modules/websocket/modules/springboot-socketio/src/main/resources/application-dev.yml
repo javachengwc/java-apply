@@ -1,2 +1,9 @@
 server:
   port: 8889
+
+socketio:
+  port: 11889
+
+logging:
+  path: /data/logs
+  filePrefix: sprintboot-socketio
