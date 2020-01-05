@@ -22,6 +22,7 @@ $ sudo service docker start               #运行docker
 $ sudo docker run hello-world             #运行hello-world这个自带的image来验证docker是否安装成功
 
 yum -y install docker                     #安装docker
+service docker start                      #运行docker
 docker images                             #检测docker是否安装成功
 service docker start 或
 systemctl start docker

@@ -407,7 +407,13 @@ vi /etc/ld.so.conf
 /sbin/ldconfig -v
 
 -------------------------python3
-yum install -y gcc zlib-devel
+yum install -y gcc zlib-devel openssl-devel bzip2-devel tk-devel
+yum install -y ncurses-devel sqlite-devel readline-devel tk-devel libffi-devel
+
+##如果libffi-devel直接安装不了，可如下手动安装
+wget http://mirror.centos.org/centos/7/os/x86_64/Packages/libffi-devel-3.0.13-18.el7.x86_64.rpm
+rpm -ivh libffi-devel-3.0.13-18.el7.x86_64.rpm
+
 wget https://www.python.org/ftp/python/3.8.0/Python-3.8.0.tgz
 mkdir -p /usr/local/python3
 tar -zxvf Python-3.8.0.tgz
@@ -419,18 +425,33 @@ ln -s /usr/local/python3/bin/python3 /bin/python3
 vim ~/.bash_profile
     export PATH=$PATH:$HOME/bin:/usr/local/python3/bin
 
+修改yum配置
+vim /usr/bin/yum
+vim /usr/libexec/urlgrabber-ext-down
+把#! /usr/bin/python 修改为#! /usr/bin/python2
+
 --------------------------pip
-pip是python包管理工具
-wget --no-check-certificate  https://pypi.python.org/packages/source/s/setuptools/setuptools-19.6.tar.gz
-tar -zxvf setuptools-19.6.tar.gz
-cd setuptools-19.6
-python3 setup.py build
-python3 setup.py install
-wget --no-check-certificate  https://pypi.python.org/packages/source/p/pip/pip-8.0.2.tar.gz
-tar -zxvf pip-8.0.2.tar.gz
-cd pip-8.0.2
-python3 setup.py build
-python3 setup.py install
+pip是python包管理工具，python已自带了此工具，一般情况 pip 对应的是 Python 2.7，pip3 对应的是 Python 3.x。
+pip --version
+pip3 --version
+如果未安装，可如下操作进行安装
+curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+python get-pip.py
+
+pip install -U pip                                          ---升级 pip
+pip install SomePackage                                     ---安装某包最新版本
+pip install SomePackage==1.0.4                              ---指定版本
+pip install 'SomePackage>=1.0.4'                            ---最小版本
+pip install Django==1.7                                     ---安装Django
+pip install --upgrade SomePackage                           ---升级某包
+pip uninstall SomePackage                                   ---卸载某包
+pip show                                                    ---显示安装包信息
+pip show -f SomePackage                                     ---查看指定包的详细信息
+pip list                                                    ---列出已安装的包
+pip list -o                                                 ---查看可升级的包
+如果 Python2 和 Python3 同时有 pip，则使用方法如下:
+python2 -m pip install XXX
+python3 -m pip install XXX
 
 -------------------------go
 wget https://dl.google.com/go/go1.11.linux-amd64.tar.gz     ---下载相应版本压缩包
