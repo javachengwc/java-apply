@@ -1,5 +1,12 @@
 --------------------------------docker镜像-------------------------------
-Dockerfile:Dockerfile是一个Docker镜像的描述文件
-docker build -t hello:0.1 .
+docker创建镜像可以从 Docker Hub 获取已有镜像并更新，也可以利用本地文件系统创建。
+
+Dockerfile是一个Docker镜像的描述文件
+docker images                             #查看镜像列表
+docker search centos                      #搜索镜像文件
+docker pull docker.io/centos              #拉取镜像文件
+docker tag 113322 docker.io/centos:v22    #给刚打包的镜像设置标签
+docker rmi docker.io/centos:v22           #删除镜像文件
+docker build -t discovery-eureka .        #构建镜像discovery-eureka
 
 ------------------------------------------------------------------------

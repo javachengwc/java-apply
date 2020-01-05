@@ -41,6 +41,7 @@ docker images
 REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE
 docker.io/centos        v2                  113322              10 seconds ago      300 MB
 docker.io/centos        latest              123123              1 weeks ago         200 MB
+
 docker tag 113322 docker.io/centos:v22    #给刚打包的镜像设置标签
 docker rmi docker.io/centos:v22           #删除镜像文件
 docker rm 87de3399a0ab                    #删除单个已经停止的容器
@@ -50,7 +51,8 @@ docker kill $(docker ps -q)               #杀掉所有正在执行的容器
 docker save xxx > /home/install/aa.tar    #将image文件保存到磁盘目录
 docker load < /home/install/centos-v2.tar #将磁盘的镜像文件导入到docker中
 docker tag xxx docker.io/centos:v2        #通过 docker tag 修改名称和tag
-docker run -it docker.io/centos:v2        #启动并进入镜像
+docker run -it docker.io/centos:v2        #启动并进入容器
+
 cd /home/docker/
 mkdir -p discovery-eureka
 cd discovery-eureka

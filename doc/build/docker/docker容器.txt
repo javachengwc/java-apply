@@ -1,0 +1,13 @@
+----------------------------docker容器--------------------------
+镜像运行时叫容器，一个镜像可以开启运行多个容器
+
+docker run -p 2801:2801 -t aa/bb          #启动名为aa/bb的镜像
+docker run -it docker.io/centos:v2        #启动并进入镜像
+docker ps                                 #查看所有运行中的容器
+docker stop xxx                           #停止运行容器（xxx表示CONTAINER ID，容器id）
+docker rm 87de3399a0ab                    #删除单个已经停止的容器
+docker rm $(docker ps -a -q)              #删除所有已经停止的容器
+docker kill xxx                           #杀掉单个正在执行的容器
+docker kill $(docker ps -q)               #杀掉所有正在执行的容器
+
+---------------------------------------------------------------
