@@ -1,0 +1,12 @@
+-------------------------docker-note------------------------
+配置docker的docker hub国内镜像加速地址，修改如下，改后重启docker生效
+vim /etc/docker/daemon.json
+    {
+      "registry-mirrors" : [
+        "https://hub-mirror.c.163.com"
+      ]
+    }
+
+
+
+------------------------------------------------------------

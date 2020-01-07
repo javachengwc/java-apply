@@ -1,13 +1,14 @@
 package com.shopstat.controller.aftersale;
 
 import com.alibaba.fastjson.JSONObject;
+import com.excel.JxlUtil;
 import com.shopstat.controller.BaseController;
 import com.shopstat.model.pojo.StatSafeguard;
 import com.shopstat.model.vo.StatQueryVo;
 import com.shopstat.service.aftersale.SafeguardStatService;
 import com.excel.ExcelUtil;
-import com.excel.JxlTool;
 import com.util.web.HttpRenderUtil;
+import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,12 +67,11 @@ public class SafeguardStatController extends BaseController {
             String filename = new String(( "xxx.xls").getBytes(), "iso-8859-1");
             response.setHeader("Content-disposition", "attachment; filename=" + filename);
             response.setContentType("application/x-download");
-            ExcelTool.download(fidleNameArray, kayArray, mapList, outputStream);
+            ExcelUtil.download(fidleNameArray, kayArray, mapList, outputStream);
         } catch (Exception e) {
             logger.info("makeExcel:", e);
         }
     }
-
 
     private void makeExcel2(List<String[]> data , String[] fidleNameArray, HttpServletResponse response) {
         try {
@@ -79,7 +79,7 @@ public class SafeguardStatController extends BaseController {
             String filename = new String("xxx.xls".getBytes(), "ISO-8859-1");
             response.setHeader("Content-disposition", "attachment; filename=" +filename ); // 设定输出文件头
             response.setContentType("application/msexcel"); // 定义输出类型
-            JxlTool.makeExcelWorkBook(outputStream, filename, fidleNameArray, data);
+            JxlUtil.makeExcelWorkBook(outputStream, filename, fidleNameArray, data);
         } catch (Exception e) {
             logger.info("makeExcel:", e);
         }
@@ -91,10 +91,9 @@ public class SafeguardStatController extends BaseController {
             String filename = new String("xxx.csv".getBytes(), "iso-8859-1");
             response.setHeader("Content-Disposition", "attachment; filename=" + filename);
             response.setContentType("application/x-download");
-            ExcelTool.downloadCsv(fields, keys, mapList, outputStream);
+            ExcelUtil.downloadCsv(fields, keys, mapList, outputStream);
         } catch (Exception e) {
             logger.error("download error: ", e);
         }
     }
-
 }
