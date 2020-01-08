@@ -62,6 +62,14 @@ public class StringMain {
 
     public static void main(String args []) throws Exception {
 
+
+      char charA= 0;
+
+      System.out.println("charA============="+Character.toString(charA));
+      String s = new String(new char [] {charA});
+      System.out.println("wfhiwhfwihf============="+s);
+
+
       String pre1="[fsdhfisdhfi]$";
       String pre2="[fshidfhishdih]#";
       String pre3="[dhfiwhsifhiw]#22";
