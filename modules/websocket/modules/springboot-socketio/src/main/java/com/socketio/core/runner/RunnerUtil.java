@@ -80,7 +80,7 @@ public class RunnerUtil {
       IOUtils.write(content, out, ENCODE_UTF8);
       out.flush();
     } catch(IOException e) {
-      logger.error("PythonExecutor setFileContent error,filePath={},",filePath,e);
+      logger.error("RunnerUtil setFileContent error,filePath={},",filePath,e);
       throw new RuntimeException(e);
     } finally {
       IOUtils.closeQuietly(out);
