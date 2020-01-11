@@ -16,7 +16,7 @@ iptables -L -n                          ----查看配置
 /etc/sysconfig/iptables                 ----iptables的配置文件
 
 直接修改/etc/sysconfig/iptables 使其生效的办法是修改好后先service iptables restart，然后才调用/etc/rc.d/init.d/iptables save，
-这跟用命令添加规则后执行的步骤刚好相反，用命令执行增改规则是先 sava 后restart。！
+这跟用命令添加规则后执行的步骤刚好相反，用命令执行增改规则是先 save 后restart。！
 -----------iptables启动,关闭-------
 #设置iptables开机启动或关闭
 chkconfig iptables on
