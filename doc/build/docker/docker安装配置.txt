@@ -7,8 +7,9 @@ $ uname -r
 $ sudo yum update
   yum search docker                      #搜索docker
   如果有直接安装
-  yum install -y docker
+  yum install -y docker                  #安装docker
 
+#如果没有，手动安装
 $ vim /etc/yum.repos.d/docker.repo        #增加yum仓库
     [dockerrepo]
     name=Docker Repository
@@ -16,17 +17,14 @@ $ vim /etc/yum.repos.d/docker.repo        #增加yum仓库
     enabled=1
     gpgcheck=1
     gpgkey=https://yum.dockerproject.org/gpg
+$ sudo yum install docker-engine          #手动安装docker的时候,安装docker-engine
 
-$ sudo yum install docker-engine          #安装docker
-$ sudo service docker start               #运行docker
-$ sudo docker run hello-world             #运行hello-world这个自带的image来验证docker是否安装成功
-
-yum -y install docker                     #安装docker
-service docker start                      #运行docker
-docker images                             #检测docker是否安装成功
 service docker start 或
 systemctl start docker
 systemctl start docker.service            #启动docker
+docker images                             #检测docker是否安装成功
+docker run hello-world                    #运行hello-world这个自带的image来验证docker是否安装成功
+
 systemctl status docker                   #查看状态
 docker version                            #查看docker版本
 docker info                               #查看docker信息

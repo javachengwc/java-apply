@@ -7,6 +7,6 @@ docker search centos                      #搜索镜像文件
 docker pull docker.io/centos              #拉取镜像文件
 docker tag 113322 docker.io/centos:v22    #给刚打包的镜像设置标签
 docker rmi docker.io/centos:v22           #删除镜像文件
-docker build -t discovery-eureka .        #构建镜像discovery-eureka
+docker build -t discovery-eureka .        #根据当前目录下的Dockerfile构建镜像
 
 ------------------------------------------------------------------------
