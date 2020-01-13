@@ -5,8 +5,12 @@ Dockerfile是一个Docker镜像的描述文件
 docker images                             #查看镜像列表
 docker search centos                      #搜索镜像文件
 docker pull docker.io/centos              #拉取镜像文件
-docker tag 113322 docker.io/centos:v22    #给刚打包的镜像设置标签
+docker tag 113322 docker.io/centos:v22    #给镜像设置标签
+docker commit -m ="add new image" -a="aa" xxx docker.io/centos:v2
+                                          #给镜像打包
 docker rmi docker.io/centos:v22           #删除镜像文件
+docker save xxx > /home/install/aa.tar    #将image文件保存到磁盘目录
+docker load < /home/install/centos-v2.tar #将磁盘的镜像文件导入到docker中
 docker build -t discovery-eureka .        #根据当前目录下的Dockerfile构建镜像
 
 ------------------------------------------------------------------------
