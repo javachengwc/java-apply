@@ -50,7 +50,7 @@ supervisorctl stop xxx                                    ---停止xxx这个prog
 
 supervisorctl restart xxx                                 ---重启xxx这个program
 
-supervisorctl status                                      ---查看监控程序状态
+supervisorctl status                                      ---查看监控程序状态，不加具体program,是列出所有列表
 
 -------------------------------------------------------------
 
