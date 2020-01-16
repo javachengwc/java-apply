@@ -12,5 +12,6 @@ docker rm $(docker ps -a -q)              #删除所有已经停止的容器
 docker kill xxx                           #杀掉单个正在执行的容器
 docker kill $(docker ps -q)               #杀掉所有正在执行的容器
 docker attach xxx                         #进入容器，xxx表示容器id  ,ctrl+c退出容器
-
+docker exec xxx ps aux                    #对容器xxx执行 ps aux
+docker exec -it xxx /bin/bash             #对容器xxx执行bash
 ---------------------------------------------------------------

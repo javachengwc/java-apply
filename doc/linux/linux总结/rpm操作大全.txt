@@ -10,6 +10,7 @@ rpm --rebuilddb        注：这个要花好长时间
 rpm -ivh  file.rpm              --安装并显示安装进度
 rpm -q app                      --查询程序是否安装
 rpm -qa                         --查看系统中所有已经安装的包
+rpm -qf file                    --查找指定文件属于哪个RPM软件包
 rpm -e app                      --卸载app
 
 ------安装--------

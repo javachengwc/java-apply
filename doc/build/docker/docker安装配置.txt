@@ -1,10 +1,14 @@
 ------------------------------docker安装配置------------------------------
 centos下安装docker:
 系统要求:CentOS 7 3.10以上 64位系统.
+Docker的旧版本被称为docker或docker-engine，如果已安装，需卸载。
+$ sudo yum remove docker docker-common container-selinux docker-selinux docker-engine
+
 $ uname -r
   3.10.0-229.el7.x86_64
 
-$ sudo yum update
+$ yum update
+  yum makecache fast
   yum search docker                      #搜索docker
   如果有直接安装
   yum install -y docker                  #安装docker
@@ -17,7 +21,6 @@ $ vim /etc/yum.repos.d/docker.repo        #增加yum仓库
     enabled=1
     gpgcheck=1
     gpgkey=https://yum.dockerproject.org/gpg
-$ sudo yum install docker-engine          #手动安装docker的时候,安装docker-engine
 
 service docker start 或
 systemctl start docker
