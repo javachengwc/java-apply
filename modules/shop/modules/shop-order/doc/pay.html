@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style>
+      button {
+        width: 100px;
+        height: 50px;
+      }
+    </style>
+    <script
+      src="https://cdn.bootcss.com/qrcode-generator/1.4.4/qrcode.min.js"
+      async
+    ></script>
+  </head>
+  <body>
+    <button onclick="wxPub()">公众号支付</button>
+    <button onclick="wxH5()">微信h5支付</button>
+    <button onclick="wxPc()">微信PC支付</button>
+    <button onclick="aliPc()">支付宝PC支付</button>
+    <button onclick="aliH5()">支付宝H5支付</button>
+    <button onclick="aliDmf()">支付宝当面付</button>
+    <script>
+	  //公众号支付
+      function wxPub() {
+        var isWx = /MicroMessenger/i.test(navigator.userAgent);
+        if (!isWx) {
+          alert("请在微信浏览器内发起公众号支付");
+          return;
+        }
+        function onBridgeReady() {
+          fetch("https://xxx.com/pay/genWxPub", {
+            method: "post",
+            body: JSON.stringify({
+              header: {},
+              data: {
+                amount: 0.01,
+                goodsId: 1,
+                goodsName: "测试商品",
+                returnUrl: "http://xxx.com"
+              }
+            }),
+            headers: {
+              token: "ttt",
+              "Content-Type": "application/json"
+            }
+          })
+            .then(res => res.json())
+            .then(res => {
+              if (res.status !== "0") {
+                alert(res.msg);
+                return;
+              }
+              const data = res.data;
+              WeixinJSBridge.invoke(
+                "getBrandWCPayRequest",
+                {
+                  appId: data.appId, //公众号appId
+                  timeStamp: data.timeStamp, //时间戳
+                  nonceStr: data.nonceStr, //随机串
+                  package: data.prepayId,
+                  signType: data.signType, //微信签名方式
+                  paySign: data.paySign //微信签名
+                },
+                function(res) {
+                  if (res.err_msg == "get_brand_wcpay_request:ok") {
+                    alert("支付成功，请查看支付结果");
+                  }
+                }
+              );
+            });
+        }
+        if (typeof WeixinJSBridge == "undefined") {
+          if (document.addEventListener) {
+            document.addEventListener(
+              "WeixinJSBridgeReady",
+              onBridgeReady,
+              false
+            );
+          } else if (document.attachEvent) {
+            document.attachEvent("WeixinJSBridgeReady", onBridgeReady);
+            document.attachEvent("onWeixinJSBridgeReady", onBridgeReady);
+          }
+        } else {
+          onBridgeReady();
+        }
+      }
+
+      //微信h5支付
+      function wxH5() {
+        if (isWx) {
+          alert("请在非微信浏览器内发起微信h5支付");
+          return;
+        }
+        fetch("https://xxx.com/pay/genWxH5", {
+          method: "post",
+          body: JSON.stringify({
+            header: {},
+            data: {
+              amount: 0.01,
+              goodsId: 1,
+              goodsName: "测试商品",
+              returnUrl: "http://xxx.com"
+            }
+          }),
+          headers: {
+            token: "ttt",
+            "Content-Type": "application/json"
+          }
+        })
+          .then(res => res.json())
+          .then(res => {
+            location.href = res.data.result;
+          });
+      }
+
+      //微信PC支付
+      function wxPc() {
+        fetch("https://xxx.com/pay/genWxPc", {
+          method: "post",
+          body: JSON.stringify({
+            header: {},
+            data: {
+              amount: 0.01,
+              goodsId: 1,
+              goodsName: "测试商品",
+              returnUrl: "http://xxx.com"
+            }
+          }),
+          headers: {
+            token: "ttt",
+            "Content-Type": "application/json"
+          }
+        })
+          .then(res => res.json())
+          .then(res => {
+            var typeNumber = 4;
+            var errorCorrectionLevel = "L";
+            var qr = qrcode(typeNumber, errorCorrectionLevel);
+            qr.addData(res.data.result);
+            qr.make();
+            document.body.insertAdjacentHTML("beforeEnd", qr.createImgTag());
+          });
+      }
+
+      //支付宝pc支付  
+      function aliPc() {
+        fetch("https://xxx.com/pay/genAliPc", {
+          method: "post",
+          body: JSON.stringify({
+            header: {},
+            data: {
+              amount: 0.01,
+              goodsId: 1,
+              goodsName: "测试商品",
+              returnUrl: "http://xxx.com"
+            }
+          }),
+          headers: {
+            token: "ttt",
+            "Content-Type": "application/json"
+          }
+        })
+          .then(res => res.json())
+          .then(res => {
+            document.body.insertAdjacentHTML("beforeEnd", res.data.result);
+            document.forms[0].submit();
+          });
+      }
+
+      //支付宝h5支付   
+      function aliH5() {
+        if (isWx) {
+          alert("请在非微信浏览器内发起支付宝h5支付");
+          return;
+        }
+        fetch("https://xxx.com/pay/genAliH5", {
+          method: "post",
+          body: JSON.stringify({
+            header: {},
+            data: {
+              amount: 0.01,
+              goodsId: 1,
+              goodsName: "测试商品",
+              returnUrl: "http://xxx.com"
+            }
+          }),
+          headers: {
+            token: "ttt",
+            "Content-Type": "application/json"
+          }
+        })
+          .then(res => res.json())
+          .then(res => {
+            document.body.insertAdjacentHTML("beforeEnd", res.data.result);
+            document.forms[0].submit();
+          });
+      }
+
+      //支付宝当面付
+      function aliDmf() {
+        fetch("https://xxx.com/pay/genAliDmf", {
+          method: "post",
+          body: JSON.stringify({
+            header: {},
+            data: {
+              amount: 0.01,
+              goodsId: 1,
+              goodsName: "测试商品",
+              returnUrl: "http://xxx.com"
+            }
+          }),
+          headers: {
+            token: "ttt",
+            "Content-Type": "application/json"
+          }
+        })
+          .then(res => res.json())
+          .then(res => {
+            var typeNumber = 4;
+            var errorCorrectionLevel = "L";
+            var qr = qrcode(typeNumber, errorCorrectionLevel);
+            qr.addData(res.data.result);
+            qr.make();
+            document.body.insertAdjacentHTML("beforeEnd", qr.createImgTag());
+          });
+      }
+    </script>
+  </body>
+</html>
