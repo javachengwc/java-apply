@@ -8,6 +8,8 @@ public class NumberMain {
 	
 	public static void main(String args [])
 	{
+        System.out.println(NumberUtils.isDigits("123"));
+
         BigDecimal bd1=new BigDecimal(2.01);
         BigDecimal bd2 = new BigDecimal(2);
         System.out.println(bd1.compareTo(bd2));
