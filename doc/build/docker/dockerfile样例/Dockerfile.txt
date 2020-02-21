@@ -1,0 +1,45 @@
+From centos
+
+WORKDIR /etc/yum.repos.d/
+RUN ls -a
+RUN rm -rf ./CentOS-AppStream.repo
+RUN rm -rf ./CentOS-Base.repo
+RUN rm -rf ./CentOS-Extras.repo
+RUN echo -e "[AppStream]\nname=CentOS-\$releasever - AppStream\nbaseurl=http://mirrors.aliyun.com/centos/\$releasever/AppStream/\$basearch/os/\ngpgcheck=1\nenabled=1\ngpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial" >>CentOS-AppStream.repo
+RUN echo -e "[BaseOS]\nname=CentOS-\$releasever - Base\nbaseurl=http://mirrors.aliyun.com/centos/\$releasever/BaseOS/\$basearch/os/\ngpgcheck=1\nenabled=1\ngpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial">>CentOS-Base.repo
+RUN echo -e "[extras]\nname=CentOS-\$releasever - Extras\nbaseurl=http://mirrors.aliyun.com/centos/\$releasever/extras/\$basearch/os/\ngpgcheck=1\nenabled=1\ngpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial">> CentOS-Extras.repo
+
+#安装系统工具
+RUN yum -y install ncurses
+RUN yum -y install vim
+RUN echo "ZONE=Asia/Shanghai" >> /etc/sysconfig/clock
+RUN rm -f /etc/localtime
+RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+
+#安装python
+RUN yum install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gcc make -y
+RUN yum install libffi-devel -y
+RUN yum -y install wget
+
+WORKDIR /usr/src
+RUN wget https://www.python.org/ftp/python/3.8.0/Python-3.8.0.tgz
+RUN tar -zxvf Python-3.8.0.tgz
+WORKDIR Python-3.8.0
+RUN mkdir -p /usr/local/python3
+RUN ./configure --prefix=/usr/local/python3 --enable-optimizations 
+RUN make
+RUN make install
+RUN ln -s /usr/local/python3/bin/python3 /bin/python3
+RUN ln -s /usr/local/python3/bin/pip3 /bin/pip3
+RUN pip3 install -U pip
+RUN pip3 install baidu-aip requests lxml selenium scrapy schedule
+
+#安装java
+RUN yum install -y java-1.8.0-openjdk.x86_64
+RUN yum install -y java-1.8.0-openjdk-devel
+
+#工作目录
+RUN mkdir -p /data/program
+WORKDIR /data/program
+COPY ["xxx.jar", "."]
+ENTRYPOINT [ "sh", "-c", "java -Dfile.encoding=UTF-8 -Xms128M -Dspring.profiles.active=dev -jar xxx.jar" ]
