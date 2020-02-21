@@ -6,7 +6,15 @@ vim /etc/docker/daemon.json
         "https://hub-mirror.c.163.com"
       ]
     }
-
-
+#国内加速站点
+    https://registry.docker-cn.com
+    http://hub-mirror.c.163.com
+    https://3laho3y3.mirror.aliyuncs.com
+    http://f1361db2.m.daocloud.io
+也可以通过修改docker服务的启动脚本配置加速站点
+vim /usr/lib/systemd/system/docker.service
+    ExecStart=/usr/bin/dockerd --registry-mirror=<your accelerate address>
+systemctl daemon-reload
+systemctl restart docker
 
 ------------------------------------------------------------
