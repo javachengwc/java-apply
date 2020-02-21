@@ -175,13 +175,6 @@
             <artifactId>component-rest-springmvc</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>com.icbc</groupId>
-            <artifactId>icbc</artifactId>
-            <version>2.0.0.5</version>
-        </dependency>
-        -->
     </dependencies>
 
 </project>

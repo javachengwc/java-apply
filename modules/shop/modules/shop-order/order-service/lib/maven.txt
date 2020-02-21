@@ -1,1 +1,0 @@
-mvn install:install-file -Dfile=icbc_2.0.0.5.jar -DgroupId=com.icbc -DartifactId=icbc -Dversion=2.0.0.5 -Dpackaging=jar
