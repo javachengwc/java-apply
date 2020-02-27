@@ -1,0 +1,58 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: database-tool
+  datasource:
+    url: jdbc:mysql://localhost:3306/mysql?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC&zeroDateTimeBehavior=round
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 10             #\u8FDE\u63A5\u6C60\u6700\u5C0F\u8FDE\u63A5\u6570
+      connection-timeout: 30000    #\u8FDE\u63A5\u8D85\u65F6\u65F6\u95F4 --30\u79D2
+      idle-timeout: 60000          #\u8FDE\u63A5\u7A7A\u95F2\u65F6\u95F4 --1\u5206\u949F
+      max-lifetime: 300000         #\u8FDE\u63A5\u751F\u547D\u5468\u671F\uFF0C\u5EFA\u8BAE\u8BBE\u7F6E\u6BD4\u6570\u636E\u5E93\u8D85\u65F6\u65F6\u957F\u5C1130\u79D2\u4EE5\u4E0A --5\u5206\u949F
+      validation-timeout: 3000
+      login-timeout: 5
+      connection-test-query: SELECT 1
+  redis:
+    packages-to-scan: "com.database.tool"
+    expired-time: 3600
+    database: 1
+    host: 127.0.0.1
+    port: 6379
+    password:
+    timeout: 2000s
+    lettuce:
+      pool:
+        max-active: 100 #\u8FDE\u63A5\u6C60\u6700\u5927\u8FDE\u63A5\u6570\uFF08\u4F7F\u7528\u8D1F\u503C\u8868\u793A\u6CA1\u6709\u9650\u5236\uFF09
+        max-idle: 10 #\u8FDE\u63A5\u6C60\u4E2D\u7684\u6700\u5927\u7A7A\u95F2\u8FDE\u63A5
+        min-idle: 5 #\u8FDE\u63A5\u6C60\u4E2D\u7684\u6700\u5C0F\u7A7A\u95F2\u8FDE\u63A5
+        max-wait: 1000 # \u8FDE\u63A5\u6C60\u6700\u5927\u963B\u585E\u7B49\u5F85\u65F6\u95F4\uFF08\u4F7F\u7528\u8D1F\u503C\u8868\u793A\u6CA1\u6709\u9650\u5236\uFF09
+  freemarker:
+    cache: false #\u5173\u95ED\u6A21\u677F\u7F13\u5B58\uFF0C\u65B9\u4FBF\u6D4B\u8BD5
+    charset: UTF-8
+    suffix: .ftl
+    content-type: text/html; charset=utf-8
+    template-loader-path: classpath:/templates
+    settings:
+      template_update_delay: 0 #\u68C0\u67E5\u6A21\u677F\u66F4\u65B0\u5EF6\u8FDF\u65F6\u95F4\uFF0C\u8BBE\u7F6E\u4E3A0\u8868\u793A\u7ACB\u5373\u68C0\u67E5\uFF0C\u5982\u679C\u65F6\u95F4\u5927\u4E8E0\u4F1A\u6709\u7F13\u5B58\u4E0D\u65B9\u4FBF\u8FDB\u884C\u6A21\u677F\u6D4B\u8BD5
+  mvc:
+     static-path-pattern: /static/**
+
+mybatis:
+  mapper-locations: classpath*:mapper/**/**.xml
+  type-aliases-package: com.database.tool
+  configuration:
+    use-generated-keys: true #\u5141\u8BB8JDBC \u751F\u6210\u4E3B\u952E\u3002\u9700\u8981\u9A71\u52A8\u5668\u652F\u6301\u3002\u5982\u679C\u8BBE\u4E3A\u4E86true\uFF0C\u8FD9\u4E2A\u8BBE\u7F6E\u5C06\u5F3A\u5236\u4F7F\u7528\u88AB\u751F\u6210\u7684\u4E3B\u952E\uFF0C\u6709\u4E00\u4E9B\u9A71\u52A8\u5668\u4E0D\u517C\u5BB9\u4E0D\u8FC7\u4ECD\u7136\u53EF\u4EE5\u6267\u884C\u3002  default:false
+    default-executor-type: simple #\u8FD9\u662F\u9ED8\u8BA4\u7684\u6267\u884C\u7C7B\u578B  \uFF08SIMPLE: \u7B80\u5355\uFF1B REUSE: \u6267\u884C\u5668\u53EF\u80FD\u91CD\u590D\u4F7F\u7528prepared statements\u8BED\u53E5\uFF1BBATCH: \u6267\u884C\u5668\u53EF\u4EE5\u91CD\u590D\u6267\u884C\u8BED\u53E5\u548C\u6279\u91CF\u66F4\u65B0\uFF09
+    map-underscore-to-camel-case: true #\u4F7F\u7528\u9A7C\u5CF0\u547D\u540D\u6CD5\u8F6C\u6362\u5B57\u6BB5\u3002
+    jdbc-type-for-null: null #\u8BBE\u7F6E\u4F46JDBC\u7C7B\u578B\u4E3A\u7A7A\u65F6,\u67D0\u4E9B\u9A71\u52A8\u7A0B\u5E8F \u8981\u6307\u5B9A\u503C,default:OTHER\uFF0C\u63D2\u5165\u7A7A\u503C\u65F6\u4E0D\u9700\u8981\u6307\u5B9A\u7C7B\u578B
+
+logging:
+  path: /tmp/logs
+  filePrefix: database-tool

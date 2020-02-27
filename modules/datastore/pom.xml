@@ -12,5 +12,6 @@
 	<modules>
         <module>modules/datastore-mongodb</module>
         <module>modules/datastore-mysql</module>
+		<module>modules/database-tool</module>
 	</modules>	
 </project>
