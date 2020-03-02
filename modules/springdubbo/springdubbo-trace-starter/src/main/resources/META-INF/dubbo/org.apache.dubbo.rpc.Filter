@@ -1,0 +1,2 @@
+consumerTraceIdFilter=com.springdubbo.trace.filter.DubboConsumerTraceIDFilter
+providerTraceIdFilter=com.springdubbo.trace.filter.DubboProviderTraceIDFilter

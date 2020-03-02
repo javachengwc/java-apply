@@ -95,6 +95,11 @@ cat >>test.txt << EOF
 > 222222
 > EOF
 
+-------------------grep命令
+grep -C 5 key file                        ---显示file文件里匹配key字串那行以及上下5行
+grep -B 5 key file                        ---显示key及前5行
+grep -A 5 key file                        ---显示key及后5行
+
 -------------------tee命令
 
 

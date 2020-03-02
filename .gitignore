@@ -111,3 +111,8 @@ classes/
 modules/mountain/modules/mountain-client/target/
 modules/mountain/modules/mountain-core/target/
 modules/websocket/modules/springboot-socketio/target/
+modules/springdubbo/springdubbo-trace-starter/target/
+modules/springdubbo/springdubbo-rest-demo/target/
+modules/springdubbo/springdubbo-dubbo-core/target/
+modules/springdubbo/springdubbo-dubbo-demo/target/
+modules/springdubbo/springdubbo-rest-core/target/

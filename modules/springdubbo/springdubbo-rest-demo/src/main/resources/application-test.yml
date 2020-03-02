@@ -1,0 +1,20 @@
+server:
+  port: 8888
+
+dubbo:
+  application:
+    name: springdubbo-rest-demo
+  registry:
+    protocol: zookeeper
+    address: 127.0.0.1:2181
+  protocol:
+    name: dubbo
+    port: 28888
+  consumer:
+    version: 1.0.0
+    check: false
+    timeout: 3000
+
+logging:
+  path: /data/logs
+  filePrefix: springdubbo-rest-demo

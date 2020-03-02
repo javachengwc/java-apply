@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.springdubbo</groupId>
+    <artifactId>springdubbo-dependencies</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+  <groupId>com.springdubbo</groupId>
+  <artifactId>springdubbo-rest-parent</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>springdubbo-rest-parent</name>
+
+  <properties>
+    <springdubbo.trace.version>1.0.0-SNAPSHOT</springdubbo.trace.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.springdubbo</groupId>
+        <artifactId>springdubbo-trace-starter</artifactId>
+        <version>${springdubbo.trace.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+</project>

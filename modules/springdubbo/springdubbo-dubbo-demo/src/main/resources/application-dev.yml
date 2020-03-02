@@ -1,0 +1,23 @@
+server:
+  port: 8181
+
+# Dubbo config
+dubbo:
+  application:
+    id: springdubbo-dubbo-demo
+    name: springdubbo-dubbo-demo
+    version: 1.0.0
+  protocol:
+    name: dubbo
+    port: 28181
+  registry:
+    protocol: zookeeper
+    address: 127.0.0.1:2181
+  consumer:
+    version: 1.0.0
+    check: false
+    timeout: 3000
+
+logging:
+  path: /data/logs
+  filePrefix: springdubbo-dubbo-demo
