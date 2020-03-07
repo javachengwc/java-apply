@@ -31,7 +31,8 @@ public class StringMain {
 
     private static String initMessageTemplateStr="^\\[.*\\](#|\\$)$";
 
-    //去信息
+
+  //去信息
     public static String dropInfo(String value) {
         if (StringUtils.isBlank(value) ) {
             return value;
@@ -61,7 +62,10 @@ public class StringMain {
     }
 
     public static void main(String args []) throws Exception {
-
+      //匹配替换
+      String ip = "192.11.1.254 11.49a.23.22 10.10a.10.10 2.2.2.2 ";
+      ip = ip.replaceAll("(\\d+)([a-z]+)", "00$1$2");
+      System.out.println(ip);
 
       char charA= 0;
 
@@ -103,8 +107,8 @@ public class StringMain {
         System.out.println(abce.substring(ablen-3));
 
 	    String aa="${title}wwwaaabbb${aa}";
-	    Pattern p = Pattern.compile(programTemplateStr);
-        Matcher mt=p.matcher(aa);
+	    Pattern ppp = Pattern.compile(programTemplateStr);
+        Matcher mt=ppp.matcher(aa);
         while(mt.find()) {
             System.out.println("---------------aac:" + mt.group(1));
         }
