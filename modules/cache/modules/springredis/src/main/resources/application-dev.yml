@@ -1,0 +1,18 @@
+server:
+  port: 8888
+
+spring:
+  redis:
+    database: 2
+    host: 127.0.0.1
+    port: 6379
+    password:
+    pool:
+      max-active: 8
+      max-wait: -1
+      max-idle: 8
+      min-idle: 1
+
+logging:
+  path: /data/logs
+  filePrefix: springredis
