@@ -1,0 +1,86 @@
+-----------------------arthas在线排查工具------------------------
+arthas(阿尔萨斯)是alibaba开源的Java诊断工具，在线排查问题，动态跟踪Java代码；实时监控JVM状态。
+官网:https://arthas.aliyun.com
+curl -O https://arthas.aliyun.com/arthas-boot.jar      ---下载
+java -jar arthas-boot.jar                              ---启动
+命令列表
+    dashboard                                          ---实时数据面板
+    thread                                             ---查看当前线程信息，查看线程的堆栈
+        thread -n 3                                    ---当前最忙的前N个线程并打印堆栈
+        thread -b                                      ---查看当前阻塞其他线程的线程
+        thread -–state WAITING                         ---查看指定状态的线程
+    jvm                                                ---查看当前JVM信息
+    sysprop                                            ---查看当前JVM的系统属性
+    sysenv                                             ---查看当前JVM的环境属性
+    vmoption                                           ---查看，更新JVM诊断相关的参数
+    perfcounter                                        ---查看当前JVM的Perf Counter信息
+    logger                                             ---查看所有logger信息
+        logger -n org.springframework.web              ---查看指定名字的logger信息
+        logger --name ROOT --level debug               ---更新logger level
+        logger --include-no-appender                   ---查看包括没有appender的logger的信息
+    mbean                                              ---查看mbean的信息
+    getstatic
+    ognl                                               ---执行ognl表达式
+        ognl '@aa.bb.cc.Class@method'                  ---获取某静态类的某静态字段
+    sc                                                 ---查看JVM已加载的类信息
+        sc aa.bb.*                                     ---查看包aa.bb下的类
+        sc -d aa.bb.Class                              ---显示此类的详情
+    sm                                                 ---查询JVM已加载的类的方法信息
+        sm -d java.lang.String toString
+    dump                                               ---dump 已加载类的 bytecode 到指定目录
+        dump java.lang.String
+        dump -d /tmp/string.class java.lang.String
+    heapdump                                           ---dump java heap, 类似jmap命令的heap dump功能
+        heapdump /tmp/dump.hprof
+    jad                                                ---反编译指定已加载类的源码
+        jad java.lang.String
+    classloader                                        ---查看classloader的继承树，urls，类加载信息
+        classloader -l                                 ---按类加载类型查看统计信息
+        classloader -t                                 ---查看ClassLoader的继承树
+        classloader -c 3d2eac69                        ---查看URLClassLoader实际的urls
+        classloader -c 3d2eac69 --load aaa.Mlass       ---加载某类到某类加载器
+    mc                                                 ---编译器，编译.java文件生成.class
+        mc -c 327a647b /tmp/Test.java                  ---可以通过-c参数指定classloader进行编译
+        mc -d /tmp/output /tmp/Test.java               ---编译生成.class文件之后，可以结合redefine命令实现热更新代码
+    redefine                                           ---加载外部的.class文件，redefine jvm已加载的类
+        redefine -c 327a647b /tmp/Test.class
+    monitor                                            ---方法执行监控,对匹配 class-pattern/method-pattern的类、方法的调用进行监控
+        monitor -c 5 aa.Mlass bbMethord                ---每5秒统计方法调用情况
+    watch                                              ---方法执行数据观测
+        watch aa.Mlass bbMethord "{params,returnObj}" -x 2              ---观察方法出参和返回值
+        watch aa.Mlass bbMethord "{params,returnObj}" -x 2 -b           ---观察方法入参
+        watch aa.Mlass bbMethord "{params[0],throwExp}" -e -x 2         ---观察方法异常信息
+    trace                                              ---方法内部调用路径，并输出方法路径上的每个节点上耗时
+        trace aa.Mlass bbMethord
+        trace aa.Mlass bbMethord -n 1
+    stack                                              ---输出当前方法被调用的调用路径
+        stack aa.Mlass bbMethord
+        stack aa.Mlass bbMethord '#cost>5'             ---根据执行时间过滤
+    tt                                                 ---方法执行数据的时空隧道，记录下指定方法每次调用的入参和返回信息
+        tt -t aa.Mlass bbMethord
+        tt -l                                          ---用tt记录一段时间方法调用片段后，列出记录的方法执行数据
+        tt -i 1003                                     ---对于某个方法调用，通过 -i 参数后边跟着对应的INDEX编号查看它的详细信息
+        tt -i 1003 -p                                  ---重做一次调用
+    profiler                                           ---支持生成应用热点的火焰图。本质上是通过不断的采样，然后把收集到的采样结果生成火焰图
+        profiler start                                 ---启动profiler
+        profiler getSamples                            ---获取已采集的sample的数量
+        profiler status                                ---查看profiler状态
+        profiler stop --file /tmp/output.svg           ---停止profiler,并生成结果
+        profiler stop --format html --file /xxx.html   ---停止profiler,并生成html格式的结果
+    cat                                                ---类似linux中的cat
+    echo                                               ---类似linux中的echo
+    grep                                               ---类似linux中的grep
+    tee                                                ---类似linux中的tee
+    pwd                                                ---类似linux中的pwd
+    options                                            ---arthas控制java程序的全局开关
+自身命令
+    help                                               ---查看命令帮助信息
+    cls                                                ---清空当前屏幕区域
+    session                                            ---查看当前会话的信息
+    reset                                              ---重置增强类，将被 Arthas 增强过的类全部还原，Arthas 服务端关闭时会重置所有增强过的类
+    version                                            ---输出当前目标 Java 进程所加载的 Arthas 版本号
+    history                                            ---打印命令历史
+    quit                                               ---退出当前arthas客户端，其他arthas客户端不受影响
+    stop                                               ---关闭arthas服务端，所有arthas客户端全部退出
+    keymap                                             ---arthas快捷键列表及自定义快捷键
+---------------------------------------------------------------
