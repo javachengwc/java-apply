@@ -64,10 +64,11 @@ git branch  tmp                    ---创建tmp分支
 git checkout tmp                   ---切换到tmp分支,tmp分支其实就是当时aabbcc版的内容
 git push origin tmp                ---推送到远程tmp分支，远程tmp分支就是master中的aabbcc版本的内容
 --------------------------------------------------------
-git config --list                       --->查看git配置， 配置文件一般是~/.gitconfig
-git config --global user.name  [username]  --->配置git账号
+git config --list                                  --->查看git配置， 配置文件一般是~/.gitconfig
+git config --global user.name  [username]          --->配置git账号
 git config --global user.email [email]
-git config --global core.longpaths true --->解决git clone时候部分文件报错Filename too long
+git config --global core.longpaths true            --->解决git clone时候部分文件报错Filename too long
+git config --system --unset credential.helper      --->进行git操作时，弹出用户名密码藏口
 #在项目工作区的目录 git config -e 可修改工作区的.git/config文件
 ------------------------------------------------------------------------
 git标签
