@@ -59,3 +59,32 @@ supervisorctl status                                      ---查看监控程序�
 而以daemon方式运行，杀掉supervisord对被监控进程无影响
 
 -------------------------------------------------------------
+另一种supervisor配置方式
+vim /etc/supervisord.conf
+    [include]
+    files = supervisord.d/*.ini
+vim /etc/supervisord.d/xxx.ini
+    [program:xxx]
+    # 运行程序
+    command = java -Dfile.encoding=UTF-8 -Xms128M -Xmx256M -Dspring.profiles.active=test -jar /data/soft/xxx.jar
+    # 启动进程数目默认为1
+    numprocs = 1
+    # 如果supervisord是root启动的 设置此用户可以管理该program
+    user = abc
+    # 程序运行的优先级 默认999
+    priority = 996
+    # 随着supervisord 自启动
+    autostart = true
+    # 子进程挂掉后无条件自动重启
+    autorestart = true
+    # 子进程启动多少秒之后 状态为running 表示运行成功
+    startsecs = 20
+    # 进程启动失败 最大尝试次数 超过将把状态置为FAIL
+    startretries = 3
+    # 标准输出的文件路径
+    stdout_logfile =  /data/logs/xxx.log
+    # 日志文件最大大小
+    stdout_logfile_maxbytes=20MB
+    # 日志文件保持数量 默认为10 设置为0 表示不限制
+    stdout_logfile_backups = 30
+-----------------------------------------------------------------
