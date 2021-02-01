@@ -4,25 +4,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-        <groupId>com.app</groupId>
-        <artifactId>wh8m</artifactId>
-        <relativePath>../../pom.xml</relativePath>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
-	
+
     <groupId>com.app</groupId>
-    <artifactId>maven-newrelic-plugin</artifactId>
-    <version>1.0-SNAPSHOT</version>
-	<packaging>maven-plugin</packaging>
-	
-	<name>maven-newrelic-plugin</name>
+    <artifactId>newrelic-maven-plugin</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>maven-plugin</packaging>
+	  <name>newrelic-maven-plugin</name>
 
     <dependencies>
         <dependency>
-            <groupId>com.app</groupId>
+            <groupId>com.common</groupId>
             <artifactId>common</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>dom4j</groupId>
