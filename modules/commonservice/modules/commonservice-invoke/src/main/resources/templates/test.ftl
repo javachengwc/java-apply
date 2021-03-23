@@ -2,11 +2,11 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>index</title>
+  <title>test</title>
 </head>
 <body>
 <div>
-hello
+test ${invokeVo.resourceLink}
 </div>
 
 </body>
