@@ -1,6 +1,6 @@
 package com.commonservice.invoke.controller;
 
-import com.commonservice.invoke.model.InvokeVo;
+import com.commonservice.invoke.model.vo.InvokeVo;
 import com.commonservice.invoke.service.InvokeService;
 import com.model.base.Req;
 import com.model.base.Resp;

@@ -1,4 +1,4 @@
-package com.commonservice.invoke.model;
+package com.commonservice.invoke.model.vo;
 
 import java.io.Serializable;
 import lombok.Data;

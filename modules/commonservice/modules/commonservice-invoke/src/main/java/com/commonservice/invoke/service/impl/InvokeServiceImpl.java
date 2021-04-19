@@ -1,6 +1,6 @@
 package com.commonservice.invoke.service.impl;
 
-import com.commonservice.invoke.model.InvokeVo;
+import com.commonservice.invoke.model.vo.InvokeVo;
 import com.commonservice.invoke.service.InvokeService;
 import com.model.base.Resp;
 import org.slf4j.Logger;

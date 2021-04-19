@@ -1,6 +1,6 @@
 package com.commonservice.invoke.controller;
 
-import com.commonservice.invoke.model.InvokeVo;
+import com.commonservice.invoke.model.vo.InvokeVo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
