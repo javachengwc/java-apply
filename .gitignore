@@ -36,7 +36,6 @@ modules/shop/modules/shop-manage/target/
 modules/shop/modules/shop-order/order-api/target/
 modules/shop/modules/shop-order/order-service/target/
 modules/shop/modules/shop-server/target/
-modules/shop/modules/shop-stat/modules/shop-stat-core/target/classes/com/shopstat/model/pojo/StatSafeguardExample$Criteria.class
 modules/shop/modules/shop-stat/modules/shop-stat-core/target/
 modules/shop/modules/shop-stat/modules/shop-stat-manage/target/
 modules/shop/modules/shop-stat/modules/shop-stat-task/target/
@@ -46,7 +45,6 @@ modules/shop/modules/shop-web/target/
 modules/shop/modules/storefront-manage/target/
 modules/dataaccess/modules/dataaccess-mybatis/target/
 modules/shop/modules/shop-zipkin-server/target/
-modules/shop/modules/shop-stat/modules/shop-stat-service/target/classes/com/shopstat/service/aftersale/SafeguardStatService.class
 modules/shop/modules/shop-stat/modules/shop-stat-service/target/
 modules/shop/modules/shop-eureka-server/target/
 modules/es/modules/es-example/target/
@@ -60,7 +58,6 @@ modules/webcloud2/modules/micro-course/target/
 modules/webcloud2/modules/micro-order/target/
 modules/webcloud2/modules/micro-store/target/
 modules/webcloud2/modules/micro-sidecar/target/
-*.properties
 modules/webcloud2/modules/micro-training/target/
 modules/webcloud2/modules/micro-turbine-amqp/target/
 modules/webcloud2/modules/micro-user/target/
