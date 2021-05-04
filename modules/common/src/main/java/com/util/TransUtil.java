@@ -20,14 +20,16 @@ public class TransUtil {
         return rtList;
     }
 
-    public  static <R,P>  R transEntity(P data,Class<R> clazz ) {
-        try {
-            R rt = clazz.newInstance();
-            BeanUtils.copyProperties(data, rt);
-            return rt;
-        }catch(Exception e) {
-            return null;
+    public static <R,P> List<R> transList(List<P> list, Class<R> clazz,String ...ignores  ) {
+        if(list==null) {
+            return Collections.EMPTY_LIST;
         }
+        List<R> rtList = new ArrayList<R>();
+        for(P per:list) {
+            R entity= transEntity(per,clazz,ignores);
+            rtList.add(entity);
+        }
+        return rtList;
     }
 
     public static <R,P> List<R> transList(List<P> list,ITrans<R,P> trans) {
@@ -42,9 +44,52 @@ public class TransUtil {
         return rtList;
     }
 
+    public static <R,P> List<R> transListWithJson(List<P> list, Class<R> clazz) {
+        if(list==null) {
+            return Collections.EMPTY_LIST;
+        }
+        String jsonStr = JsonUtil.obj2Json(list);
+        List rtList = JsonUtil.json2Obj(jsonStr,List.class,clazz);
+        return rtList;
+    }
+
+    public  static <R,P>  R transEntity(P data,Class<R> clazz ) {
+        try {
+            R rt = clazz.newInstance();
+            BeanUtils.copyProperties(data, rt);
+            return rt;
+        }catch(Exception e) {
+            return null;
+        }
+    }
+
+    public  static <R,P>  R transEntity(P data,Class<R> clazz,String ...ignores ) {
+        try {
+            R rt = clazz.newInstance();
+            BeanUtils.copyProperties(data, rt,ignores);
+            return rt;
+        }catch(Exception e) {
+            return null;
+        }
+    }
+
     public  static <R,P>  R transEntity(P data,ITrans<R,P> trans ) {
         try {
             R rt = trans.doTrans(data);
+            return rt;
+        }catch(Exception e) {
+            return null;
+        }
+    }
+
+    public  static <R,P>  R transEntityWithJson(P data,Class<R> clazz ) {
+        try {
+            R rt = clazz.newInstance();
+            if(data==null) {
+                return rt;
+            }
+            String jsonStr = JsonUtil.obj2Json(data);
+            rt = JsonUtil.json2Obj(jsonStr,clazz);
             return rt;
         }catch(Exception e) {
             return null;

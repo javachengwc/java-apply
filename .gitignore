@@ -117,3 +117,4 @@ modules/springdubbo/springdubbo-dubbo-core/target/
 modules/springdubbo/springdubbo-dubbo-demo/target/
 modules/springdubbo/springdubbo-rest-core/target/
 modules/cache/modules/springredis/target/
+modules/commonservice/modules/commonservice-invoke/target/
