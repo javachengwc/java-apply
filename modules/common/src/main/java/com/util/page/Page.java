@@ -24,6 +24,9 @@ public class Page<T> implements Serializable, Iterable<T> {
 
 	protected String orderBy;
 
+	//是否越界
+	protected boolean bound=false;
+
 	public Page() {
 		this(0, DEFAULT_PAGESIZE, 0);
 	}
@@ -40,6 +43,7 @@ public class Page<T> implements Serializable, Iterable<T> {
 		this.pageNo = pageNumber;
 		this.pageSize = pageSize;
 		this.totalCount = totalCount;
+		this.bound=  ((pageNumber * pageSize - totalCount)-pageSize)>=0;
 		setResult(result);
 	}
 
@@ -116,6 +120,14 @@ public class Page<T> implements Serializable, Iterable<T> {
 
 	public boolean isHasPreviousPage() {
 		return getPageNo() > 1;
+	}
+
+	public boolean isBound() {
+		return bound;
+	}
+
+	public void setBound(boolean bound) {
+		this.bound = bound;
 	}
 
 	public int getLastPageNo() {

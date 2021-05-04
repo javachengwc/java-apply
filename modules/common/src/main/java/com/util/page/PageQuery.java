@@ -65,7 +65,7 @@ public class PageQuery<T> {
 		this.pageSize = pageSize;
 	}
 
-	public int getStart() {
+	public int genStart() {
 		
 		if (pageSize <= 0)
 			start = 0;
@@ -74,6 +74,10 @@ public class PageQuery<T> {
 			start = result > 0 ? result : 0;
 		}
 		
+		return start;
+	}
+
+	public int getStart() {
 		return start;
 	}
 
@@ -117,5 +121,4 @@ public class PageQuery<T> {
 	public interface Extractor<T>{
 		public String pop(T entity);
 	}
-
 }

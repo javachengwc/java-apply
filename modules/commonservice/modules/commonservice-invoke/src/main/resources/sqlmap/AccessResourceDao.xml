@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.commonservice.invoke.dao.ext.AccessResourceDao">
+
+  <resultMap id="BaseResultMap" type="com.commonservice.invoke.model.entity.AccessResource">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="note" jdbcType="VARCHAR" property="note" />
+    <result column="sys_id" jdbcType="INTEGER" property="sysId" />
+    <result column="cate_id" jdbcType="INTEGER" property="cateId" />
+    <result column="http_method" jdbcType="VARCHAR" property="httpMethod" />
+    <result column="content_type" jdbcType="VARCHAR" property="contentType" />
+    <result column="resource_link" jdbcType="VARCHAR" property="resourceLink" />
+    <result column="header" jdbcType="VARCHAR" property="header" />
+    <result column="req_demo" jdbcType="VARCHAR" property="reqDemo" />
+    <result column="resp_demo" jdbcType="VARCHAR" property="respDemo" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+  </resultMap>
+
+  <select id="listPage" resultMap="BaseResultMap">
+    select id,name,note,sys_id,cate_id,http_method,content_type,resource_link,header,req_demo,resp_demo,create_time,modify_time
+    from t_access_resource
+    <where>
+      <if test="entity.name != null and entity.name != '' ">
+        and name = #{entity.name}
+      </if>
+      <if test="entity.sysId != null ">
+        and sys_id = #{entity.sysId}
+      </if>
+      <if test="entity.cateId != null ">
+        and cate_id = #{entity.cateId}
+      </if>
+      <if test="entity.resourceLink != null and entity.resourceLink != '' ">
+        and resource_link like concat(#{entity.resourceLink},'%')
+      </if>
+      <if test="createTimeBegin != null and createTimeBegin != '' ">
+        <![CDATA[ and create_time >= '${createTimeBegin}' ]]>
+      </if>
+      <if test="createTimeEnd != null and createTimeEnd != '' ">
+        <![CDATA[ and create_time < '${createTimeEnd}' ]]>
+      </if>
+    </where>
+    order by id desc
+    <if test="start != null and pageSize != null">
+      limit #{start},#{pageSize}
+    </if>
+  </select>
+
+  <select id="countPage" resultType="java.lang.Integer">
+    select count(1) as count
+    from t_access_resource
+    <where>
+      <if test="entity.name != null and entity.name != '' ">
+        and name = #{entity.name}
+      </if>
+      <if test="entity.sysId != null ">
+        and sys_id = #{entity.sysId}
+      </if>
+      <if test="entity.cateId != null ">
+        and cate_id = #{entity.cateId}
+      </if>
+      <if test="entity.resourceLink != null and entity.resourceLink != '' ">
+        and resource_link like concat(#{entity.resourceLink},'%')
+      </if>
+      <if test="createTimeBegin != null and createTimeBegin != '' ">
+        <![CDATA[ and create_time >= '${createTimeBegin}' ]]>
+      </if>
+      <if test="createTimeEnd != null and createTimeEnd != '' ">
+        <![CDATA[ and create_time < '${createTimeEnd}' ]]>
+      </if>
+    </where>
+  </select>
+
+</mapper>
