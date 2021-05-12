@@ -1,5 +1,6 @@
 package com.util.http;
 
+import com.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +54,7 @@ public class HttpUtil {
             }
             // 定义 BufferedReader输入流来读取URL的响应
             in = new BufferedReader(new InputStreamReader(
-                    connection.getInputStream()));
+                    connection.getInputStream(), CharsetUtil.UTF8));
             String line;
             while ((line = in.readLine()) != null) {
                 result += line;
