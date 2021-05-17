@@ -7,11 +7,11 @@ import lombok.Data;
 @Data
 public class MenuVo implements Serializable {
 
-    private String title;
+    private String name;
 
     private String icon;
 
-    private String href;
+    private String url;
 
     private String target;
 
@@ -21,10 +21,10 @@ public class MenuVo implements Serializable {
 
     }
 
-    public MenuVo(String title,String icon,String href,String target) {
-        this.title = title;
+    public MenuVo(String name,String icon,String url,String target) {
+        this.name = name;
         this.icon = icon;
-        this.href = href;
+        this.url = url;
         this.target = target;
     }
 }

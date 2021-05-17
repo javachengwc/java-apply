@@ -1,0 +1,3 @@
+/*mark*/
+.popup-mask{z-index:20000;position:absolute;top:0;left:0;-moz-opacity:0.5;opacity:0.5;filter:alpha(opacity=50);background-color:#000;width:100%;height:100%;zoom:1;}
+.popup-mask iframe{position:absolute; z-index: -1; }

@@ -1,0 +1,40 @@
+[
+  {
+    "name": "访问资源管理",
+    "url": "resource",
+    "icon": "fa fa-file-text",
+    "target": "_self"
+  },
+  {
+    "name": "主页模板",
+    "url": "",
+    "icon": "fa fa-home",
+    "target": "_self",
+    "child": [
+      {
+        "name": "主页一",
+        "url": "page/welcome-1.html",
+        "icon": "fa fa-tachometer",
+        "target": "_self"
+      },
+      {
+        "name": "主页二",
+        "url": "page/welcome-2.html",
+        "icon": "fa fa-tachometer",
+        "target": "_self"
+      },
+      {
+        "name": "主页三",
+        "url": "page/welcome-3.html",
+        "icon": "fa fa-tachometer",
+        "target": "_self"
+      }
+    ]
+  },
+  {
+    "name": "菜单管理",
+    "url": "page/menu.html",
+    "icon": "fa fa-window-maximize",
+    "target": "_self"
+  }
+]

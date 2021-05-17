@@ -26,4 +26,9 @@ public class IndexController {
     public String run() {
         return "run";
     }
+
+    @RequestMapping(value = "/resource", method = RequestMethod.GET)
+    public String resource() {
+        return "resource";
+    }
 }
