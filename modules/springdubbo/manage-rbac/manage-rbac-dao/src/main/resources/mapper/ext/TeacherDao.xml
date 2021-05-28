@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.rbac.dao.ext.TeacherDao">
+
+  <resultMap id="TeacherMap" type="com.manage.rbac.entity.ext.TeacherDO">
+    <result column="id" jdbcType="INTEGER" property="id"/>
+    <result column="uid" jdbcType="BIGINT" property="uid"/>
+    <result column="account" jdbcType="VARCHAR" property="account"/>
+    <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
+    <result column="name" jdbcType="VARCHAR" property="name"/>
+    <result column="nickname" jdbcType="VARCHAR" property="nickname"/>
+    <result column="state" jdbcType="INTEGER" property="state"/>
+    <result column="disable" jdbcType="INTEGER" property="disable"/>
+    <result column="org_id" jdbcType="INTEGER" property="orgId"/>
+    <result column="org_name" jdbcType="VARCHAR" property="orgName"/>
+  </resultMap>
+
+  <select id="listTeacherPage" resultMap="TeacherMap">
+    select * from (
+    select u.id,u.uid,u.account,u.mobile,u.name,u.nickname,u.state,u.disable,u.org_id,u.org_name
+    from t_user u
+    join t_user_post up on up.user_id =u.id
+    join t_post p on p.id = up.post_id and p.state=0
+    join t_post_role pr on pr.post_id= up.post_id
+    join t_role r on r.id = pr.role_id
+    where u.disable=0
+    and r.code = 'teacher'
+    and r.state = 0
+    <if test="teacherId != null">
+      and u.id = #{teacherId}
+    </if>
+    union
+    select u.id,u.uid,u.account,u.mobile,u.name,u.nickname,u.state,u.disable,u.org_id,u.org_name
+    from t_user u
+    join t_user_crowd uc on uc.user_id =u.id
+    join t_crowd c on c.id = uc.crowd_id and c.state=0
+    join t_crowd_role cr on cr.crowd_id= uc.crowd_id
+    join t_role r on r.id = cr.role_id
+    where u.disable=0
+    and r.code = 'teacher'
+    <if test="teacherId != null">
+      and u.id = #{teacherId}
+    </if>
+    and r.state =0 ) tmp
+    <if test="start != null and pageSize != null">
+      limit #{start},#{pageSize}
+    </if>
+  </select>
+
+  <select id="countPage" resultType="java.lang.Long">
+    select count(*) as count
+    from (
+    select u.id,u.uid,u.account,u.mobile,u.name,u.nickname,u.state,u.disable,u.org_id,u.org_name
+    from t_user u
+    join t_user_post up on up.user_id =u.id
+    join t_post p on p.id = up.post_id and p.state=0
+    join t_post_role pr on pr.post_id= up.post_id
+    join t_role r on r.id = pr.role_id
+    where u.disable=0
+    and r.code = 'teacher'
+    and r.state = 0
+    <if test="teacherId != null">
+      and u.id = #{teacherId}
+    </if>
+    union
+    select u.id,u.uid,u.account,u.mobile,u.name,u.nickname,u.state,u.disable,u.org_id,u.org_name
+    from t_user u
+    join t_user_crowd uc on uc.user_id =u.id
+    join t_crowd c on c.id = uc.crowd_id and c.state=0
+    join t_crowd_role cr on cr.crowd_id= uc.crowd_id
+    join t_role r on r.id = cr.role_id
+    where u.disable=0
+    and r.code = 'teacher'
+    <if test="teacherId != null">
+      and u.id = #{teacherId}
+    </if>
+    and r.state =0 ) tmp
+  </select>
+
+  <select id="listTeacherByIds" resultMap="TeacherMap">
+    select u.id,u.uid,u.account,u.mobile,u.name,u.nickname,u.state,u.disable,u.org_id,u.org_name
+    from t_user u
+    where u.id in
+    <foreach collection="idList" index="index" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
+
+  <select id="listTeacherWithRoleByIds" resultMap="TeacherMap">
+    select * from (
+    select u.id,u.uid,u.account,u.mobile,u.name,u.nickname,u.state,u.disable,u.org_id,u.org_name
+    from t_user u
+    join t_user_post up on up.user_id =u.id
+    join t_post p on p.id = up.post_id and p.state=0
+    join t_post_role pr on pr.post_id= up.post_id
+    join t_role r on r.id = pr.role_id
+    where u.disable=0
+    and r.code = 'teacher'
+    and r.state = 0
+    and u.id in
+    <foreach collection="idList" index="index" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    union
+    select u.id,u.uid,u.account,u.mobile,u.name,u.nickname,u.state,u.disable,u.org_id,u.org_name
+    from t_user u
+    join t_user_crowd uc on uc.user_id =u.id
+    join t_crowd c on c.id = uc.crowd_id and c.state=0
+    join t_crowd_role cr on cr.crowd_id= uc.crowd_id
+    join t_role r on r.id = cr.role_id
+    where u.disable=0
+    and r.code = 'teacher'
+    and r.state =0
+    and u.id in
+    <foreach collection="idList" index="index" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    ) tmp
+  </select>
+
+  <select id="listTeacherByNameOrNickName" resultMap="TeacherMap">
+    select u.id,u.uid,u.account,u.mobile,u.name,u.nickname,u.state,u.disable,u.org_id,u.org_name
+    from t_user u
+    join t_user_post up on up.user_id =u.id
+    join t_post p on p.id = up.post_id and p.state=0
+    join t_post_role pr on pr.post_id= up.post_id
+    join t_role r on r.id = pr.role_id
+    where u.disable=0
+    and ( u.name like CONCAT('%',#{name},'%') or u.nickname like CONCAT('%',#{name},'%') )
+    and r.code = 'teacher'
+    and r.state = 0
+    union
+    select u.id,u.uid,u.account,u.mobile,u.name,u.nickname,u.state,u.disable,u.org_id,u.org_name
+    from t_user u
+    join t_user_crowd uc on uc.user_id =u.id
+    join t_crowd c on c.id = uc.crowd_id and c.state=0
+    join t_crowd_role cr on cr.crowd_id= uc.crowd_id
+    join t_role r on r.id = cr.role_id
+    where u.disable=0
+    and ( u.name like CONCAT('%',#{name},'%') or u.nickname like CONCAT('%',#{name},'%') )
+    and r.code = 'teacher'
+    and r.state =0
+  </select>
+
+  <select id="listTeacherByOrgId" resultMap="TeacherMap">
+    select u.id,u.uid,u.account,u.mobile,u.name,u.nickname,u.state,u.disable,u.org_id,u.org_name
+    from t_user u
+    join t_user_post up on up.user_id =u.id
+    join t_post p on p.id = up.post_id and p.state=0
+    join t_post_role pr on pr.post_id= up.post_id
+    join t_role r on r.id = pr.role_id
+    where u.disable=0
+    and u.org_id = #{orgId}
+    and u.state = 0
+    and r.code = 'teacher'
+    and r.state = 0
+    union
+    select u.id,u.uid,u.account,u.mobile,u.name,u.nickname,u.state,u.disable,u.org_id,u.org_name
+    from t_user u
+    join t_user_crowd uc on uc.user_id =u.id
+    join t_crowd c on c.id = uc.crowd_id and c.state=0
+    join t_crowd_role cr on cr.crowd_id= uc.crowd_id
+    join t_role r on r.id = cr.role_id
+    where u.disable=0
+    and u.org_id = #{orgId}
+    and u.state = 0
+    and r.code = 'teacher'
+    and r.state =0
+  </select>
+
+</mapper>

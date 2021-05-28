@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.rbac.dao.ext.MenuDao">
+
+    <resultMap id="BaseResultMap" type="com.manage.rbac.entity.ext.MenuDO">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="system_id" jdbcType="INTEGER" property="systemId" />
+        <result column="system_name" jdbcType="VARCHAR" property="systemName" />
+        <result column="parent_id" jdbcType="INTEGER" property="parentId" />
+        <result column="parent_name" jdbcType="VARCHAR" property="parentName" />
+        <result column="state" jdbcType="INTEGER" property="state" />
+        <result column="level" jdbcType="INTEGER" property="level" />
+        <result column="tag" jdbcType="VARCHAR" property="tag" />
+        <result column="perms" jdbcType="VARCHAR" property="perms" />
+        <result column="icon" jdbcType="VARCHAR" property="icon" />
+        <result column="type" jdbcType="INTEGER" property="type" />
+        <result column="sort" jdbcType="INTEGER" property="sort" />
+        <result column="creater_id" jdbcType="INTEGER" property="createrId" />
+        <result column="creater_nickname" jdbcType="VARCHAR" property="createrNickname" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+        <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
+        <result column="operator_nickname" jdbcType="VARCHAR" property="operatorNickname" />
+    </resultMap>
+
+    <select id="getMenu" resultMap="BaseResultMap">
+        select m.id, m.name, m.system_id, m.parent_id, m.state, m.level, m.tag, m.perms, m.icon, m.type, m.sort,
+        m.creater_id, m.creater_nickname, m.create_time, m.modify_time, m.operator_id, m.operator_nickname,
+        s.name as system_name, pm.name as parent_name
+        from t_menu m
+        left join t_system s on m.system_id= s.id
+        left join t_menu pm on m.parent_id = pm.id
+        where m.id =#{id}
+    </select>
+
+    <delete id="deleteRoleMenuByMenu">
+        delete from t_role_menu where menu_id = #{menuId}
+    </delete>
+
+    <delete id="deleteRoleMenuByRole">
+        delete from t_role_menu where role_id = #{roleId}
+    </delete>
+
+    <select id="listMenuByRole" resultMap="com.manage.rbac.dao.MenuMapper.BaseResultMap">
+        select m.id, m.name, m.system_id, m.parent_id, m.state, m.level, m.tag, m.perms, m.icon, m.type, m.sort,
+        m.creater_id, m.creater_nickname, m.create_time, m.modify_time, m.operator_id, m.operator_nickname
+        from t_menu m
+        join t_system s on m.system_id= s.id
+        join t_role_menu rm on rm.menu_id = m.id
+        where rm.role_id =#{roleId}
+        and m.state = 0
+        and s.state = 0
+        order by s.sort asc, m.parent_id asc , m.sort asc
+    </select>
+
+    <select id="listMenuByUserPost" resultMap="com.manage.rbac.dao.MenuMapper.BaseResultMap">
+        select m.id, m.name, m.system_id, m.parent_id, m.state, m.level, m.tag, m.perms, m.icon, m.type, m.sort,
+        m.creater_id, m.creater_nickname, m.create_time, m.modify_time, m.operator_id, m.operator_nickname
+        from t_menu m
+        join t_role_menu rm on rm.menu_id = m.id
+        join t_role r on r.id = rm.role_id and r.state=0
+        join t_post_role pr on pr.role_id= rm.role_id
+        join t_post p on p.id =pr.post_id and p.state=0
+        join t_user_post up on up.post_id = pr.post_id
+        join t_user u on u.id = up.user_id
+        where u.id =#{userId}
+        and u.disable = 0
+        and m.state = 0
+        order by m.parent_id asc , m.sort asc
+    </select>
+
+    <select id="listMenuByUserCrowd" resultMap="com.manage.rbac.dao.MenuMapper.BaseResultMap">
+        select m.id, m.name, m.system_id, m.parent_id, m.state, m.level, m.tag, m.perms, m.icon, m.type, m.sort,
+        m.creater_id, m.creater_nickname, m.create_time, m.modify_time, m.operator_id, m.operator_nickname
+        from t_menu m
+        join t_role_menu rm on rm.menu_id = m.id
+        join t_role r on r.id =rm.role_id and r.state=0
+        join t_crowd_role cr on cr.role_id= rm.role_id
+        join t_crowd c on c.id =cr.crowd_id and c.state=0
+        join t_user_crowd uc on uc.crowd_id = cr.crowd_id
+        join t_user u on u.id = uc.user_id
+        where u.id =#{userId}
+        and u.disable = 0
+        and m.state = 0
+        order by m.parent_id asc , m.sort asc
+    </select>
+
+    <select id="listAbleMenu" resultMap="com.manage.rbac.dao.MenuMapper.BaseResultMap">
+        select m.id, m.name, m.system_id, m.parent_id, m.state, m.level, m.tag, m.perms, m.icon, m.type, m.sort,
+        m.creater_id, m.creater_nickname, m.create_time, m.modify_time, m.operator_id, m.operator_nickname
+        from t_menu m
+        join t_system s on m.system_id= s.id
+        where m.state = 0
+        and s.state = 0
+        order by s.sort asc, m.parent_id asc , m.sort asc
+    </select>
+
+    <insert id="addRoleMenu" >
+        insert into t_role_menu (role_id, menu_id,create_time,modify_time)
+        values
+        <foreach collection="menuIdList" item="menuId" separator=",">
+            (#{roleId}, #{menuId},now(),now())
+        </foreach>
+    </insert>
+
+</mapper>

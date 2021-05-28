@@ -1,0 +1,25 @@
+
+spring:
+  application:
+    name: manage-rbac-rest
+nacos:
+  config:
+    server-addr: 120.79.197.191:8848
+    namespace: dev
+    group: manage-rbac-rest
+    auto-refresh: true
+    type: yaml
+    data-id: applocation.properties
+    bootstrap:
+      enable: true
+dubbo:
+  application:
+    name: manage-rbac-rest
+  registry:
+    address: nacos://120.79.197.191:8848?namespace=dev
+  protocol:
+    name: dubbo
+    port: 21890
+  consumer:
+    version: 1.0.0
+    check: false

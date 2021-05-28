@@ -1,0 +1,31 @@
+server:
+  port: 8890
+
+dubbo:
+  application:
+    name: manage-rbac-rest
+  registry:
+    protocol: zookeeper
+    address: 127.0.0.1:2181
+  protocol:
+    name: dubbo
+    port: 21890
+  consumer:
+    version: 1.0.0
+    check: false
+
+spring:
+  redis:
+    database: 1
+    host: 127.0.0.1
+    port: 6379
+    password: 123456
+    pool:
+      max-active: 8
+      max-wait: -1
+      max-idle: 8
+      min-idle: 1
+
+logging:
+  path: /data/logs
+  filePrefix: manage-rbac-rest

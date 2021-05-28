@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.rbac.dao.ext.PostDao">
+
+    <resultMap id="PostRoleMap" type="com.manage.rbac.entity.ext.PostRoleDO">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="post_id" jdbcType="INTEGER" property="postId" />
+        <result column="role_id" jdbcType="INTEGER" property="roleId" />
+        <result column="post_name" jdbcType="VARCHAR" property="postName" />
+        <result column="role_name" jdbcType="VARCHAR" property="roleName" />
+        <result column="creater_id" jdbcType="INTEGER" property="createrId" />
+        <result column="creater_nickname" jdbcType="VARCHAR" property="createrNickname" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    </resultMap>
+
+    <resultMap id="OrgPostMap" type="com.manage.rbac.entity.ext.OrgPostDO">
+        <result column="id" jdbcType="INTEGER" property="id" />
+        <result column="org_id" jdbcType="INTEGER" property="orgId" />
+        <result column="post_id" jdbcType="INTEGER" property="postId" />
+        <result column="creater_id" jdbcType="INTEGER" property="createrId" />
+        <result column="creater_nickname" jdbcType="VARCHAR" property="createrNickname" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+        <result column="org_name" jdbcType="VARCHAR" property="orgName" />
+        <result column="post_name" jdbcType="VARCHAR" property="postName" />
+    </resultMap>
+
+    <select id="listPostPage" resultMap="com.manage.rbac.dao.PostMapper.BaseResultMap">
+        select
+        <include refid="com.manage.rbac.dao.PostMapper.Base_Column_List" />
+        from t_post
+        <where>
+            <if test="post != null and post != '' ">
+                ( name = #{post} or code = #{post} )
+            </if>
+        </where>
+        order by id desc
+        <if test="start != null and pageSize != null">
+            limit #{start},#{pageSize}
+        </if>
+    </select>
+
+    <select id="countByNameOrCode" resultType="java.lang.Long">
+        select count(1) as count
+        from t_post
+        <where>
+            <if test="post != null and post != '' ">
+                and (name = #{post} or code = #{post} )
+            </if>
+        </where>
+    </select>
+
+    <select id="listPostNotOrg" resultMap="com.manage.rbac.dao.PostMapper.BaseResultMap">
+        select p.id,p.name,p.code,p.state,p.creater_id,p.creater_nickname,p.create_time,
+               p.modify_time,p.operator_id,p.operator_nickname
+        from t_post p
+        left join t_org_post op on op.post_id = p.id
+        where op.id is null
+        and p.state=0
+    </select>
+
+    <select id="listPostByOrg" parameterType="java.lang.Integer" resultMap="com.manage.rbac.dao.PostMapper.BaseResultMap">
+        select p.id,p.name,p.code,p.state,p.creater_id,p.creater_nickname,p.create_time,
+        p.modify_time,p.operator_id,p.operator_nickname
+        from t_post p
+        join t_org_post op on op.post_id = p.id
+        where op.org_id = #{orgId}
+        and p.state=0
+    </select>
+
+    <select id="listPostByUser" parameterType="java.lang.Integer" resultMap="com.manage.rbac.dao.PostMapper.BaseResultMap">
+        select p.id,p.name,p.code,p.state,p.creater_id,p.creater_nickname,p.create_time,
+        p.modify_time,p.operator_id,p.operator_nickname
+        from t_post p
+        join t_user_post up on up.post_id = p.id
+        where up.user_id = #{userId}
+        and p.state=0
+    </select>
+
+    <select id="listPostRoleByPosts"  resultMap="PostRoleMap">
+        select pr.id,pr.post_id,pr.role_id,pr.create_time,pr.modify_time,
+            r.name as role_name,p.name as post_name
+        from t_post_role pr
+        join t_role r on r.id = pr.role_id and r.state=0
+        join t_post p on p.id = pr.post_id
+        where pr.post_id in
+        <foreach collection="postIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="listOrgPostByPosts"  resultMap="OrgPostMap">
+        select op.id,op.org_id,op.post_id,op.create_time,op.modify_time,
+        o.name as org_name,p.name as post_name
+        from t_org_post op
+        join t_organization o on o.id = op.org_id and o.state =0
+        join t_post p on p.id = op.post_id
+        where op.post_id in
+        <foreach collection="postIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="listPostTeacherByPosts"  resultMap="PostRoleMap">
+        select pr.id,pr.post_id,pr.role_id,pr.create_time,pr.modify_time,
+        r.name as role_name,p.name as post_name
+        from t_post_role pr
+        join t_role r on r.id = pr.role_id and r.state=0 and r.code='teacher'
+        join t_post p on p.id = pr.post_id and p.state=0
+        where pr.post_id in
+        <foreach collection="postIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+</mapper>

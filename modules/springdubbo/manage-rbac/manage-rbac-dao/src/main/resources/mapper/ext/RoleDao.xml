@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.rbac.dao.ext.RoleDao">
+
+  <select id="listRolePage" resultMap="com.manage.rbac.dao.RoleMapper.BaseResultMap">
+    select
+    <include refid="com.manage.rbac.dao.RoleMapper.Base_Column_List"/>
+    from t_role
+    order by id desc
+    <if test="start != null and pageSize != null">
+      limit #{start},#{pageSize}
+    </if>
+  </select>
+
+  <select id="listRoleByPost" parameterType="java.lang.Integer"
+    resultMap="com.manage.rbac.dao.RoleMapper.BaseResultMap">
+        select r.id,r.name,r.code,r.state,r.type,r.sys_role,r.remark,
+        r.creater_id,r.creater_nickname,r.create_time,r.modify_time,r.operator_id,r.operator_nickname
+        from t_role r
+        join t_post_role pr on pr.role_id = r.id
+        where pr.post_id = #{postId}
+        and r.state=0
+    </select>
+
+  <select id="listRoleByCrowd" parameterType="java.lang.Integer"
+    resultMap="com.manage.rbac.dao.RoleMapper.BaseResultMap">
+        select r.id,r.name,r.code,r.state,r.type,r.sys_role,r.remark,
+        r.creater_id,r.creater_nickname,r.create_time,r.modify_time,r.operator_id,r.operator_nickname
+        from t_role r
+        join t_crowd_role cr on cr.role_id = r.id
+        where cr.crowd_id = #{crowdId}
+        and r.state=0
+    </select>
+
+
+  <select id="listRoleNotRelaPost" parameterType="java.lang.Integer"
+    resultMap="com.manage.rbac.dao.RoleMapper.BaseResultMap">
+        select r.id,r.name,r.code,r.state,r.type,r.sys_role,r.remark,
+        r.creater_id,r.creater_nickname,r.create_time, r.modify_time,r.operator_id,r.operator_nickname
+        from t_role r
+        left join t_post_role pr on pr.role_id = r.id and pr.post_id = #{postId}
+        where pr.id is null
+        and r.state=0
+    </select>
+
+  <select id="listRoleNotRelaCrowd" parameterType="java.lang.Integer"
+    resultMap="com.manage.rbac.dao.RoleMapper.BaseResultMap">
+        select r.id,r.name,r.code,r.state,r.type,r.sys_role,r.remark,
+        r.creater_id,r.creater_nickname,r.create_time, r.modify_time,r.operator_id,r.operator_nickname
+        from t_role r
+        left join t_crowd_role cr on cr.role_id = r.id and cr.crowd_id = #{crowdId}
+        where cr.id is null
+        and r.state=0
+    </select>
+
+  <delete id="deleteRoleMenuByRole">
+        delete from t_role_menu where role_id = #{roleId}
+    </delete>
+
+  <insert id="addRoleMenu">
+    insert into t_role_menu (role_id, menu_id,create_time,modify_time)
+    values
+    <foreach collection="menuIdList" item="menuId" separator=",">
+      (#{roleId}, #{menuId},now(),now())
+    </foreach>
+  </insert>
+
+  <select id="countSysRoleByUserPost" resultType="java.lang.Long">
+        select count(1) as count
+        from t_role r
+        join t_post_role pr on pr.role_id = r.id
+        join t_post p on p.id = pr.post_id and p.state= 0
+        join t_user_post up on up.post_id = p.id
+        where up.user_id =#{userId}
+        and r.state=0
+        and r.sys_role =1
+    </select>
+
+  <select id="countTeacherRoleByUserPost" resultType="java.lang.Long">
+        select count(1) as count
+        from t_role r
+        join t_post_role pr on pr.role_id = r.id
+        join t_post p on p.id = pr.post_id and p.state= 0
+        join t_user_post up on up.post_id = p.id
+        where up.user_id =#{userId}
+        and r.state=0
+        and r.code ='teacher'
+    </select>
+
+  <select id="countSysRoleByUserCrowd" resultType="java.lang.Long">
+        select count(1) as count
+        from t_role r
+        join t_crowd_role cr on cr.role_id = r.id
+        join t_crowd c on c.id = cr.crowd_id and c.state= 0
+        join t_user_crowd uc on uc.crowd_id = c.id
+        where uc.user_id =#{userId}
+        and r.state=0
+        and r.sys_role =1
+    </select>
+
+  <select id="countTeacherRoleByUserCrowd" resultType="java.lang.Long">
+        select count(1) as count
+        from t_role r
+        join t_crowd_role cr on cr.role_id = r.id
+        join t_crowd c on c.id = cr.crowd_id and c.state= 0
+        join t_user_crowd uc on uc.crowd_id = c.id
+        where uc.user_id =#{userId}
+        and r.state=0
+        and r.code ='teacher'
+    </select>
+  <select id="countNotTeacherRoleByUserPost" resultType="java.lang.Long">
+        select count(1) as count
+        from t_role r
+        join t_crowd_role cr on cr.role_id = r.id
+        join t_crowd c on c.id = cr.crowd_id and c.state= 0
+        join t_user_crowd uc on uc.crowd_id = c.id
+        where uc.user_id =#{userId}
+        and r.state=0
+        and r.code  &lt;&gt; 'teacher'
+  </select>
+  <select id="countNotTeacherByUserCrowd" resultType="java.lang.Long">
+      select count(1) as count
+        from t_role r
+        join t_crowd_role cr on cr.role_id = r.id
+        join t_crowd c on c.id = cr.crowd_id and c.state= 0
+        join t_user_crowd uc on uc.crowd_id = c.id
+        where uc.user_id =#{userId}
+        and r.state=0
+        and r.code   &lt;&gt;  'teacher'
+  </select>
+
+  <select id="countOrgAdminRoleByUserPost" resultType="java.lang.Long">
+    select count(1) as count
+    from t_role r
+    join t_post_role pr on pr.role_id = r.id
+    join t_post p on p.id = pr.post_id and p.state= 0
+    join t_user_post up on up.post_id = p.id
+    where up.user_id =#{userId}
+    and r.state=0
+    and r.code ='orgAdmin'
+  </select>
+
+  <select id="countOrgAdminRoleByUserCrowd" resultType="java.lang.Long">
+    select count(1) as count
+    from t_role r
+    join t_crowd_role cr on cr.role_id = r.id
+    join t_crowd c on c.id = cr.crowd_id and c.state= 0
+    join t_user_crowd uc on uc.crowd_id = c.id
+    where uc.user_id =#{userId}
+    and r.state=0
+    and r.code ='orgAdmin'
+  </select>
+
+</mapper>

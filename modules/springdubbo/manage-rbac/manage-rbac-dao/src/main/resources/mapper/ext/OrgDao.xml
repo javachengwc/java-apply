@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.rbac.dao.ext.OrgDao">
+
+    <resultMap id="OrgPostMap" type="com.manage.rbac.entity.ext.OrgPostDO">
+        <result column="id" jdbcType="INTEGER" property="id" />
+        <result column="org_id" jdbcType="INTEGER" property="orgId" />
+        <result column="post_id" jdbcType="INTEGER" property="postId" />
+        <result column="creater_id" jdbcType="INTEGER" property="createrId" />
+        <result column="creater_nickname" jdbcType="VARCHAR" property="createrNickname" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+        <result column="org_name" jdbcType="VARCHAR" property="orgName" />
+        <result column="post_name" jdbcType="VARCHAR" property="postName" />
+    </resultMap>
+
+    <resultMap id="OrgCrowdMap" type="com.manage.rbac.entity.ext.OrgCrowdDO">
+        <result column="id" jdbcType="INTEGER" property="id" />
+        <result column="org_id" jdbcType="INTEGER" property="orgId" />
+        <result column="crowd_id" jdbcType="INTEGER" property="crowdId" />
+        <result column="creater_id" jdbcType="INTEGER" property="createrId" />
+        <result column="creater_nickname" jdbcType="VARCHAR" property="createrNickname" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+        <result column="org_name" jdbcType="VARCHAR" property="orgName" />
+        <result column="crowd_name" jdbcType="VARCHAR" property="crowdName" />
+    </resultMap>
+
+    <select id="listOrgPage" resultMap="com.manage.rbac.dao.OrganizationMapper.BaseResultMap">
+        select
+        <include refid="com.manage.rbac.dao.OrganizationMapper.Base_Column_List" />
+        from t_organization
+        <where>
+            <if test="name != null and name != '' ">
+                name like concat('%',#{name},'%')
+            </if>
+        </where>
+        order by sort asc, id desc
+        <if test="start != null and pageSize != null">
+            limit #{start},#{pageSize}
+        </if>
+    </select>
+
+    <select id="countPage" resultType="java.lang.Long">
+        select count(1) as count
+        from t_organization
+        <where>
+            <if test="name != null and name != '' ">
+                name like concat('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="listOrgByPost" parameterType="java.lang.Integer" resultMap="com.manage.rbac.dao.OrganizationMapper.BaseResultMap">
+        select o.id,o.name,o.level,o.state,o.parent_id,o.parent_name,o.path,o.path_name,o.sort,
+        o.creater_id,o.creater_nickname,o.create_time,o.modify_time,o.operator_id,o.operator_nickname
+        from t_organization o
+        join t_org_post op on op.org_id = o.id
+        where op.post_id = #{postId}
+        and o.state=0
+    </select>
+
+    <select id="listOrgByCrowd" parameterType="java.lang.Integer" resultMap="com.manage.rbac.dao.OrganizationMapper.BaseResultMap">
+        select o.id,o.name,o.level,o.state,o.parent_id,o.parent_name,o.path,o.path_name,o.sort,
+        o.creater_id,o.creater_nickname,o.create_time,o.modify_time,o.operator_id,o.operator_nickname
+        from t_organization o
+        join t_org_crowd oc on oc.org_id = o.id
+        where oc.crowd_id = #{crowdId}
+        and o.state=0
+    </select>
+
+    <select id="listOrgNotRelaPost" parameterType="java.lang.Integer" resultMap="com.manage.rbac.dao.OrganizationMapper.BaseResultMap">
+        select o.id,o.name,o.level,o.state,o.parent_id,o.parent_name,o.path,o.path_name,o.sort,
+        o.creater_id,o.creater_nickname,o.create_time,o.modify_time,o.operator_id,o.operator_nickname
+        from t_organization o
+        left join t_org_post op on op.org_id = o.id and op.post_id = #{postId}
+        where op.id is null
+        and o.state=0
+    </select>
+
+    <select id="listOrgNotRelaCrowd" parameterType="java.lang.Integer" resultMap="com.manage.rbac.dao.OrganizationMapper.BaseResultMap">
+        select o.id,o.name,o.level,o.state,o.parent_id,o.parent_name,o.path,o.path_name,o.sort,
+        o.creater_id,o.creater_nickname,o.create_time,o.modify_time,o.operator_id,o.operator_nickname
+        from t_organization o
+        left join t_org_crowd oc on oc.org_id = o.id and oc.crowd_id = #{crowdId}
+        where oc.id is null
+        and o.state=0
+    </select>
+
+    <select id="listOrgPostByOrgs"  resultMap="OrgPostMap">
+        select op.id,op.org_id,op.post_id,op.create_time,op.modify_time,
+        o.name as org_name,p.name as post_name
+        from t_org_post op
+        join t_post p on p.id = op.post_id and p.state =0
+        join t_organization o on o.id = op.org_id
+        where op.org_id in
+        <foreach collection="orgIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="listOrgCrowdByOrgs"  resultMap="OrgCrowdMap">
+        select oc.id,oc.org_id,oc.crowd_id,oc.create_time,oc.modify_time,
+        o.name as org_name ,c.name as crowd_name
+        from t_org_crowd oc
+        join t_crowd c on c.id = oc.crowd_id and c.state = 0
+        join t_organization o on o.id = oc.org_id
+        where oc.org_id in
+        <foreach collection="orgIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="listOrgByName" resultMap="com.manage.rbac.dao.OrganizationMapper.BaseResultMap">
+        select o.id,o.name,o.level,o.state,o.parent_id,o.parent_name,o.path,o.path_name,o.sort,
+        o.creater_id,o.creater_nickname,o.create_time,o.modify_time,o.operator_id,o.operator_nickname
+        from t_organization o
+        where o.state=0
+        <if test="name != null and name != '' ">
+           and o.name like concat('%',#{name},'%')
+        </if>
+    </select>
+
+</mapper>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+
+    <springProperty scope="context" name="logPath" source="logging.path" />
+    <springProperty scope="context" name="filePrefix" source="logging.filePrefix" />
+
+    <property name="logPath" value="${logPath}"/>
+    <property name="projectName" value="${filePrefix}"/>
+
+    <appender name="FILE-INFO-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/${projectName}-info.log</file>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}/${projectName}-info.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <charset>utf-8</charset>
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}|%p|%X{traceId}|%t|%c|%L|%M|%m%n</Pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE-ERROR-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/${projectName}-error.log</file>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}/${projectName}-error.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <charset>utf-8</charset>
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}|%p|%X{traceId}|%t|%c|%L|%M|%m%n</Pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name="FILE-DEBUG-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/${projectName}-debug.log</file>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}/${projectName}-debug.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <charset>utf-8</charset>
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}|%p|%X{traceId}|%t|%c|%L|%M|%m%n</Pattern>
+        </encoder>
+    </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}|%p|%X{traceId}|%t|%c|%L|%M|%m%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 本地、开发、测试环境 -->
+    <springProfile name="local,dev,test">
+        <logger name="org.springframework.web" level="INFO"/>
+        <logger name="com.manage.rbac" level="DEBUG"/>
+    </springProfile>
+
+    <!-- 预发布 -->
+    <springProfile name="pre">
+        <logger name="org.springframework.web" level="INFO"/>
+        <logger name="com.manage.rbac" level="INFO"/>
+    </springProfile>
+
+    <!-- 生产环境 -->
+    <springProfile name="prod">
+        <logger name="org.springframework.web" level="INFO"/>
+        <logger name="com.manage.rbac" level="INFO"/>
+    </springProfile>
+
+    <root level="info">
+        <appender-ref ref="FILE-INFO-OUT"/>
+        <appender-ref ref="FILE-ERROR-OUT"/>
+        <appender-ref ref="FILE-DEBUG-OUT"/>
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+    <logger name="org.springframework.web" level="INFO"/>
+
+</configuration>

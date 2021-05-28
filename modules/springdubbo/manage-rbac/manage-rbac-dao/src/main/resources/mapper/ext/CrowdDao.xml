@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.rbac.dao.ext.CrowdDao">
+
+    <resultMap id="CrowdRoleMap" type="com.manage.rbac.entity.ext.CrowdRoleDO">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="crowd_id" jdbcType="INTEGER" property="crowdId" />
+        <result column="role_id" jdbcType="INTEGER" property="roleId" />
+        <result column="crowd_name" jdbcType="VARCHAR" property="crowdName" />
+        <result column="role_name" jdbcType="VARCHAR" property="roleName" />
+        <result column="creater_id" jdbcType="INTEGER" property="createrId" />
+        <result column="creater_nickname" jdbcType="VARCHAR" property="createrNickname" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    </resultMap>
+
+    <resultMap id="OrgCrowdMap" type="com.manage.rbac.entity.ext.OrgCrowdDO">
+        <result column="id" jdbcType="INTEGER" property="id" />
+        <result column="org_id" jdbcType="INTEGER" property="orgId" />
+        <result column="crowd_id" jdbcType="INTEGER" property="crowdId" />
+        <result column="creater_id" jdbcType="INTEGER" property="createrId" />
+        <result column="creater_nickname" jdbcType="VARCHAR" property="createrNickname" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+        <result column="org_name" jdbcType="VARCHAR" property="orgName" />
+        <result column="crowd_name" jdbcType="VARCHAR" property="crowdName" />
+    </resultMap>
+
+    <select id="listCrowdPage" resultMap="com.manage.rbac.dao.CrowdMapper.BaseResultMap">
+        select
+        <include refid="com.manage.rbac.dao.CrowdMapper.Base_Column_List" />
+        from t_crowd
+        <where>
+            <if test="name != null and name != '' ">
+                name like concat('%',#{name},'%')
+            </if>
+        </where>
+        order by id desc
+        <if test="start != null and pageSize != null">
+            limit #{start},#{pageSize}
+        </if>
+    </select>
+
+    <select id="countPage" resultType="java.lang.Long">
+        select count(1) as count
+        from t_crowd
+        <where>
+            <if test="name != null and name != '' ">
+                name like concat('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="listCrowdNoSysPage" resultMap="com.manage.rbac.dao.CrowdMapper.BaseResultMap">
+        select c.id,c.name,c.state,c.creater_id,c.creater_nickname,c.create_time,
+        c.modify_time,c.operator_id,c.operator_nickname
+        from t_crowd c
+        where not exists (
+            select 1 from t_crowd_role cr
+            join  t_role r on r.id = cr.role_id and r.sys_role =1
+            where cr.crowd_id = c.id )
+        <if test="name != null and name != '' ">
+            and c.name like concat('%',#{name},'%')
+        </if>
+        order by c.id desc
+        <if test="start != null and pageSize != null">
+            limit #{start},#{pageSize}
+        </if>
+    </select>
+
+    <select id="countNoSysPage" resultType="java.lang.Long">
+        select count(1) as count
+        from t_crowd c
+        where not exists (
+        select 1 from t_crowd_role cr
+        join  t_role r on r.id = cr.role_id and r.sys_role =1
+        where cr.crowd_id = c.id )
+        <if test="name != null and name != '' ">
+            and c.name like concat('%',#{name},'%')
+        </if>
+    </select>
+
+    <select id="listCrowdNotOrg" resultMap="com.manage.rbac.dao.CrowdMapper.BaseResultMap">
+        select c.id,c.name,c.state,c.creater_id,c.creater_nickname,c.create_time,
+        c.modify_time,c.operator_id,c.operator_nickname
+        from t_crowd c
+        left join t_org_crowd oc on oc.crowd_id = c.id
+        where oc.id is null
+        and c.state=0
+    </select>
+
+    <select id="listCrowdByOrg" parameterType="java.lang.Integer" resultMap="com.manage.rbac.dao.CrowdMapper.BaseResultMap">
+        select c.id,c.name,c.state,c.creater_id,c.creater_nickname,c.create_time,
+        c.modify_time,c.operator_id,c.operator_nickname
+        from t_crowd c
+        join t_org_crowd oc on oc.crowd_id = c.id
+        where oc.org_id = #{orgId}
+        and c.state=0
+    </select>
+
+    <select id="listCrowdByUser" parameterType="java.lang.Integer" resultMap="com.manage.rbac.dao.CrowdMapper.BaseResultMap">
+        select c.id,c.name,c.state,c.creater_id,c.creater_nickname,c.create_time,
+        c.modify_time,c.operator_id,c.operator_nickname
+        from t_crowd c
+        join t_user_crowd uc on uc.crowd_id = c.id
+        where uc.user_id = #{userId}
+        and c.state=0
+    </select>
+
+    <select id="listCrowdRoleByCrowds"  resultMap="CrowdRoleMap">
+        select cr.id,cr.crowd_id,cr.role_id,cr.create_time,cr.modify_time,
+        r.name as role_name,c.name as crowd_name
+        from t_crowd_role cr
+        join t_role r on r.id = cr.role_id and r.state=0
+        join t_crowd c on c.id = cr.crowd_id
+        where cr.crowd_id in
+        <foreach collection="crowdIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="listOrgCrowdByCrowds"  resultMap="OrgCrowdMap">
+        select oc.id,oc.org_id,oc.crowd_id,oc.create_time,oc.modify_time,
+        o.name as org_name ,c.name as crowd_name
+        from t_org_crowd oc
+        join t_organization o on o.id = oc.org_id  and o.state = 0
+        join t_crowd c on c.id = oc.crowd_id
+        where oc.crowd_id in
+        <foreach collection="crowdIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <delete id="deleteCrowdRoleByCrowd">
+        delete from t_crowd_role where crowd_id = #{crowdId}
+    </delete>
+
+    <delete id="deleteOrgCrowdByCrowd">
+        delete from t_org_crowd where crowd_id = #{crowdId}
+    </delete>
+
+    <delete id="deleteUserCrowdByCrowd">
+        delete from t_user_crowd where crowd_id = #{crowdId}
+    </delete>
+
+    <select id="listCrowdTeacherByCrowds"  resultMap="CrowdRoleMap">
+        select cr.id,cr.crowd_id,cr.role_id,cr.create_time,cr.modify_time,
+        r.name as role_name,c.name as crowd_name
+        from t_crowd_role cr
+        join t_role r on r.id = cr.role_id and r.state=0 and r.code = 'teacher'
+        join t_crowd c on c.id = cr.crowd_id and c.state =0
+        where cr.crowd_id in
+        <foreach collection="crowdIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+</mapper>

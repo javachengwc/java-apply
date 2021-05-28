@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.rbac.dao.ext.UserDao">
+
+    <resultMap id="OrgPersonCountMap" type="com.manage.rbac.entity.ext.OrgPersonCountDO">
+        <result column="org_id" jdbcType="INTEGER" property="orgId" />
+        <result column="count" jdbcType="BIGINT" property="count" />
+    </resultMap>
+
+    <resultMap id="UserPostMap" type="com.manage.rbac.entity.ext.UserPostDO">
+        <result column="id" jdbcType="INTEGER" property="id" />
+        <result column="user_id" jdbcType="INTEGER" property="userId" />
+        <result column="user_nickname" jdbcType="VARCHAR" property="userNickname" />
+        <result column="post_id" jdbcType="INTEGER" property="postId" />
+        <result column="post_name" jdbcType="VARCHAR" property="postName" />
+        <result column="creater_id" jdbcType="INTEGER" property="createrId" />
+        <result column="creater_nickname" jdbcType="VARCHAR" property="createrNickname" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    </resultMap>
+
+    <resultMap id="UserCrowdMap" type="com.manage.rbac.entity.ext.UserCrowdDO">
+        <result column="id" jdbcType="INTEGER" property="id" />
+        <result column="user_id" jdbcType="INTEGER" property="userId" />
+        <result column="user_nickname" jdbcType="VARCHAR" property="userNickname" />
+        <result column="crowd_id" jdbcType="INTEGER" property="crowdId" />
+        <result column="crowd_name" jdbcType="VARCHAR" property="crowdName" />
+        <result column="creater_id" jdbcType="INTEGER" property="createrId" />
+        <result column="creater_nickname" jdbcType="VARCHAR" property="createrNickname" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    </resultMap>
+
+    <select id="listUserPage" resultMap="com.manage.rbac.dao.UserMapper.BaseResultMap">
+        select
+        <include refid="com.manage.rbac.dao.UserMapper.Base_Column_List" />
+        from t_user
+        <where>
+            disable = 0
+            <if test="user != null and user != '' ">
+                and ( id = #{user} or name = #{user} or mobile=#{user} or nickname=#{user} )
+            </if>
+            <if test="orgId != null ">
+                and org_id = #{orgId}
+            </if>
+            <if test="orgName != null and orgName != '' ">
+                and org_name = #{orgName}
+            </if>
+        </where>
+        order by id desc
+        <if test="start != null and pageSize != null">
+            limit #{start},#{pageSize}
+        </if>
+    </select>
+
+    <select id="countByUserAndOrg" resultType="java.lang.Long">
+        select count(1) as count
+        from t_user
+        <where>
+            disable=0
+            <if test="user != null and user != '' ">
+                and ( id = #{user} or name = #{user} or mobile=#{user} or nickname=#{user} )
+            </if>
+            <if test="orgId != null ">
+                and org_id = #{orgId}
+            </if>
+            <if test="orgName != null and orgName != '' ">
+                and org_name = #{orgName}
+            </if>
+        </where>
+    </select>
+
+    <select id="listUserByMobileOrNickname"  resultMap="com.manage.rbac.dao.UserMapper.BaseResultMap">
+        select
+        <include refid="com.manage.rbac.dao.UserMapper.Base_Column_List" />
+        from t_user
+        <where>
+            disable = 0
+            <if test="condition != null and condition != '' ">
+                and ( mobile like concat('%',#{condition},'%') or
+                      nickname like concat('%',#{condition},'%') )
+            </if>
+            <if test="orgId != null ">
+                and org_id = #{orgId}
+            </if>
+        </where>
+    </select>
+
+    <select id="listUserPostByUsers"  resultMap="UserPostMap">
+        select up.id,up.user_id,up.post_id,up.create_time,up.modify_time,
+        up.user_nickname,p.name as post_name
+        from t_user_post up
+        join t_post p on p.id = up.post_id and p.state =0
+        where up.user_id in
+        <foreach collection="userIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="listUserCrowdByUsers"  resultMap="UserCrowdMap">
+        select uc.id,uc.user_id,uc.crowd_id,uc.create_time,uc.modify_time,
+        uc.user_nickname,c.name as crowd_name
+        from t_user_crowd uc
+        join t_crowd c on c.id = uc.crowd_id and c.state =0
+        where uc.user_id in
+        <foreach collection="userIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="countByOrg" parameterType="java.lang.Integer" resultType="java.lang.Long">
+        select count(1) as count
+        from t_user
+        where org_id = #{orgId}
+        and disable =0
+    </select>
+
+    <select id="listOrgPersonCount"  resultMap="OrgPersonCountMap">
+        select org_id ,count(1) as count
+        from t_user
+        where org_id in
+        <foreach collection="orgIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and disable =0
+        group by org_id
+    </select>
+
+    <select id="listUserByNameOrNickName"  resultMap="com.manage.rbac.dao.UserMapper.BaseResultMap">
+        select
+        <include refid="com.manage.rbac.dao.UserMapper.Base_Column_List" />
+        from t_user
+        <where>
+            disable = 0
+            <if test="name != null and name != '' ">
+                and ( name like concat('%',#{name},'%') or
+                nickname like concat('%',#{name},'%') )
+            </if>
+        </where>
+    </select>
+</mapper>

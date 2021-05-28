@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.manage.rbac</groupId>
+    <artifactId>manage-rbac</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <name>manage-rbac</name>
+    <packaging>pom</packaging>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
+    <modules>
+        <module>manage-rbac-common</module>
+        <module>manage-rbac-service</module>
+        <module>manage-rbac-stub</module>
+        <module>manage-rbac-dubbo</module>
+        <module>manage-rbac-rest</module>
+		<module>manage-rbac-sdk-starter</module>
+        <module>manage-rbac-dao</module>
+    </modules>
+
+</project>
