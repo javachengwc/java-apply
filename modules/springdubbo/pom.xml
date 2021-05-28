@@ -18,7 +18,6 @@
     <module>springdubbo-dubbo-core</module>
     <module>springdubbo-dubbo-demo</module>
     <module>springdubbo-trace-starter</module>
-	<module>manage-rbac</module>
   </modules>
 
 </project>
