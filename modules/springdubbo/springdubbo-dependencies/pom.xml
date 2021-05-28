@@ -25,6 +25,7 @@
     <swagger.version>2.7.0</swagger.version>
     <lombok.version>1.16.22</lombok.version>
     <aspectj.version>1.9.2</aspectj.version>
+    <common.version>1.0.0-SNAPSHOT</common.version>
     <common.model.version>1.0.0-SNAPSHOT</common.model.version>
   </properties>
 
@@ -116,14 +117,29 @@
         <version>${aspectj.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok</artifactId>
-        <version>${lombok.version}</version>
+        <groupId>com.common</groupId>
+        <artifactId>common</artifactId>
+        <version>${common.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.common</groupId>
         <artifactId>common-model</artifactId>
         <version>${common.model.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>${lombok.version}</version>
       </dependency>
       <dependency>
         <groupId>io.springfox</groupId>

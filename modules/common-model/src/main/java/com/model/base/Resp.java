@@ -54,6 +54,10 @@ public class Resp<T> {
         return resp;
     }
 
+    public static <T> Resp<T> error(IResultCode resultCode) {
+        return Resp.error(resultCode.getCode(),resultCode.getMsg());
+    }
+
     public static <T> Resp<T> success() {
         return success("");
     }

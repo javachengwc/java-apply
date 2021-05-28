@@ -27,6 +27,9 @@ public class Page<T> implements Serializable, Iterable<T> {
 	//是否越界
 	protected boolean bound=false;
 
+	//开始下标
+	private int start;
+
 	public Page() {
 		this(0, DEFAULT_PAGESIZE, 0);
 	}
@@ -44,6 +47,12 @@ public class Page<T> implements Serializable, Iterable<T> {
 		this.pageSize = pageSize;
 		this.totalCount = totalCount;
 		this.bound=  ((pageNumber * pageSize - totalCount)-pageSize)>=0;
+		if (pageSize <= 0) {
+			start = 0;
+		} else {
+			int st = (pageNo - 1) * pageSize;
+			start = st > 0 ? st : 0;
+		}
 		setResult(result);
 	}
 
@@ -128,6 +137,14 @@ public class Page<T> implements Serializable, Iterable<T> {
 
 	public void setBound(boolean bound) {
 		this.bound = bound;
+	}
+
+	public int getStart() {
+		return start;
+	}
+
+	public void setStart(int start) {
+		this.start = start;
 	}
 
 	public int getLastPageNo() {

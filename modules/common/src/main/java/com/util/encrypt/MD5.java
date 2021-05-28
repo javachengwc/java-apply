@@ -15,6 +15,9 @@ public class MD5
         String str = "test";
         System.out.println(getMD5(str));
         System.out.println("-------------------------------");
+        String tt ="nrAvgvQTjK"+"f8f97d17d0bd9c6501ae6986b08c81e5_f"+"1591015437950";
+        System.out.println(encodeMd5Hex(tt));
+        System.out.println("-------------------------------");
         System.out.println(encodeMd5Hex(str));
     }
 

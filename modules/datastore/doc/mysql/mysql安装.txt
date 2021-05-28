@@ -2,7 +2,7 @@
 rpm -qa | grep  mysql
     mysql-libs-5.1.73-3.el6_5.i686
 rpm -e mysql-libs-5.1.73-3.el6_5.i686 --nodeps   #卸载自带的低版本mysql
-wget http://mirrors.sohu.com/mysql/MySQL-5.7/mysql-5.7.14-linux-glibc2.5-i686.tar.gz
+wget http://mirrors.sohu.com/mysql/MySQL-5.7/mysql-5.7.30-linux-glibc2.12-x86_64.tar.gz
 tar -zxvf mysql-5.7.14-linux-glibc2.5-i686.tar.gz
 cp -r mysql-5.7.14-linux-glibc2.5-i686 /usr/local/mysql
 groupadd mysql
