@@ -1,0 +1,25 @@
+---------------------------------k8s组件---------------------------------------
+k8s是一个容器编排引擎，也就是容器管理系统。
+Master是调度系统，决定将应用放在哪里运行。
+Master运行的服务包括:kube-apiserver,kube-scheduler,kube-controller-manager,etcd和Pod网络(如flannel)。
+    kube-apiserver(API Server)提供http/https restful api,是k8s的前端接口服务，可以通过它管理集群各种资源。
+    kube-scheduler(Scheduler)调度控制，负责将Pod放在哪个Node上运行。
+    kube-controller-manager(Controller Manager)负责管理集群各种资源，包括replication controller,endpoints controller,
+    namespace controller,serviceaccounts controller等，比如namespace controller管理Namespace资源。
+    etcd负责保存集群配置信息和各资源状态信息。
+    Pod网络是Pod能够相互通信，集群必须部署Pod网络,fiannel就是一个可选方案。
+Node是运行Pod的节点，由Master管理，Node监控并汇报容器状态。并根据Master要求管理容器生命周期。
+Node上运行的k8s组件有:kubelet,kube-proxy和Pod网络。
+    kubelet是Node的agent,当Scheduler调度在Node运行Pod后，会将Pod配置信息发给Node的kubelet,kubelet创建和运行Pod。
+    kube-proxy负责将访问service的TCP/UPD数据流转发到后端的容器，如果有多个副本，kube-proxy会实现负载均衡。
+Pod是k8s最小工作单元，是容器的集合，一个Pod包含一个或多个容器，同一Pod的所有容器共享IP地址和Port空间。
+同一Pod中的容器始终被一起调度。默认下,Pod只能在集群内部访问，需要从外部访问应用，需要将容器的端口映射到节点端口。
+k8s运行容器(Pod)与访问容器(Pod)这两项任务分别由Controller和Service执行。
+    k8s Controller管理Pod,它定义Pod的部署特性，比如有几个副本，在什么样的Node上运行等。
+    k8s Service定义了外界访问一组特定Pod的方式，Service用自己的IP和端口，并为Pod提供了负载均衡。
+Namespace可以将一个k8s集群逻辑上划分成多个虚拟集群，每个Cluster就是一个Namespace,不同Namespace的资源完全隔离。
+k8s默认创建2个Namespace:default和kube-system。
+几乎所有k8s组件本身也运行在Pod里，k8s的系统组件都被放到kube-system namespace中。
+kubelet是唯一没以容器运行的k8s组件，它是通过系统服务运行。可通过systemctl status kubelet.service查看
+kubeadm初始化集群。kubectl是k8s命令行工具。
+-------------------------------------------------------------------------------

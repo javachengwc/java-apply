@@ -3,9 +3,33 @@ Kubernetes是容器集群管理系统，是一个开源的平台，可以实现�
 Kubernetes简称k8s,是将8个字母“ubernete”替换为“8”的缩写。
 通过它可以快速部署应用,快速扩展应用,无缝对接新的应用功能,节省资源，优化硬件资源的使用
 
-系统环境: linux centos 7.3,kubernetes 1.11
+系统环境: linux ubuntu 16.04,kubernetes 1.11
 Master 192.168.0.10
 Slave  192.168.0.20  192.168.0.30
 
-kubernetes
+安装部署:
+apt-get update && apt-get install docker.io                             ###所有节点上安装docker
+apt-get install -y kubelet kubeadm kubectl                              ###所有节点上安装kubelet,kubeadm,kubectl
+kubeadm init --apiserver-advertise-address 192.168.0.10 --pod-network-cidr=10.244.0.0/16
+###在Master上执行，初始化集群，--apiserver-advertise-address指明用Master哪个interface与集群其他节点通信。
+--pod-network-cidr指定Pod网络的范围。
+su - k8s
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+echo "source <(kubetcl completion bash)" >> ~/.bashrc
+###依普通用户k8s配置kubectl,设置后可使用kubectl。
+kubectl apply -f https://raw.githubusercontent.com/coreos/fiannel/master/Documentation/kube-flannel.yml
+###安装Pod网络，这样使用flannel
+kubeadm join --token xxx 192.168.0.10:6443
+###在Slave节点上添加node ,token是初始化集群中输出的token,也可以通过 kubeadm token list查看
+kubectl get nodes                                                      ###查看集群节点,应该有3个
+###当前所有节点都是NotReady状态，需要等待启动若干组件，这些组件在Pod中运行
+kubectl get pod --all-namespaces                                       ###查看组件准备情况
+kubectl describe pod kube-fiannel-ds-v0p3x --namespace=kube-system     ###查看某个组件的情况
+###等待组件的image下载完成自动启动后,Pod都会处于Running状态,此时k8s集群安装完成。
+
+
+
+
 -------------------------------------------------------------------------------------------------

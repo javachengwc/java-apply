@@ -1,0 +1,20 @@
+-------------------------------------------kubectl使用---------------------------------------
+kubectl是k8s的命令行工具，用来部署和管理应用，查看各种资源，创建，删除和更新各种组件
+kubectl cluster-info                                                    ###查看集群信息
+kubectl get namespace                                                   ###查看命名空间
+kubectl get nodes                                                       ###查看集群节点
+kubectl get pods                                                        ###查看集群的应用Pod
+kubectl get pod --all-namespaces                                        ###查看集群所有Pod，包含集群自身使用的。
+kubectl get services                                                    ###查看容器服务端口映射
+kubectl get deployments                                                 ###查看应用副本数
+kubectl run app1 --image=docker.io/xxx/app1:v1 --port=8080              ###部署应用
+kubectl run httpd-app --image=httpd --replicas=2
+kubectl expose deployment/app1 --type="NodePort" --port 8080            ###映射端口
+kubectl scale deployments/app1 --replicas=3                             ###将应用副本数改成3个
+kubectl set image deployments/app1 app1=docker.io/xxx/app1:v2           ###升级应用使用指定版本镜像
+kubectl rollout undo deployments/app1                                   ###回滚应用版本
+
+
+
+
+---------------------------------------------------------------------------------------------
