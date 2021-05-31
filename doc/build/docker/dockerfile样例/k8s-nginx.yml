@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: web_server
+    spec:
+      containers:
+        name: nginx
+        image: nginx:1.7.9
+#      nodeSelector:            ###表述部署在有 disktype=ssd 的label 的节点上
+#        disktype: ssd

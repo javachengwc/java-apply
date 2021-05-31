@@ -1,0 +1,32 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: httpd
+#  namespace: default  默认命名空间是default
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        run: httpd
+    spec:
+      containers:
+        name: httpd
+        image: httpd
+        ports:
+          containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: httpd-svc
+spec:
+  type: NodePort
+  selector:
+    run: httpd
+  ports:
+    protocol: TCP
+    targetPort: 80
+    port: 8080
+    nodePort: 30000
+###targetPort是Pod监听的端口，port是ClusterIP上监听的端口，nodePort是节点上监听的端口

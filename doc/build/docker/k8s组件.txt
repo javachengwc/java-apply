@@ -6,6 +6,7 @@ Master运行的服务包括:kube-apiserver,kube-scheduler,kube-controller-manage
     kube-scheduler(Scheduler)调度控制，负责将Pod放在哪个Node上运行。
     kube-controller-manager(Controller Manager)负责管理集群各种资源，包括replication controller,endpoints controller,
     namespace controller,serviceaccounts controller等，比如namespace controller管理Namespace资源。
+    k8s通过各种Controller来管理Pod的生命周期,包括:Deployment,ReplicaSet,DaemonSet,StatefuleSet,Job等。
     etcd负责保存集群配置信息和各资源状态信息。
     Pod网络是Pod能够相互通信，集群必须部署Pod网络,fiannel就是一个可选方案。
 Node是运行Pod的节点，由Master管理，Node监控并汇报容器状态。并根据Master要求管理容器生命周期。
@@ -17,6 +18,10 @@ Pod是k8s最小工作单元，是容器的集合，一个Pod包含一个或多�
 k8s运行容器(Pod)与访问容器(Pod)这两项任务分别由Controller和Service执行。
     k8s Controller管理Pod,它定义Pod的部署特性，比如有几个副本，在什么样的Node上运行等。
     k8s Service定义了外界访问一组特定Pod的方式，Service用自己的IP和端口，并为Pod提供了负载均衡。
+    service中的Cluster IP是一个虚拟IP,是由k8s节点上的iptables规则管理的,可通过iptables-save命令打印当前节点的iptables规则。
+    kube-dns是一个DNS服务器，kubeadm部署时默认会安装kube-dns组件，当有Service创建，kube-dns会添加该Service的DNS记录。
+    集群中的Pod可以通过<SERVICE_NAME>.<NAMESPACE_NAME>访问Service,这就是通过DNS访问Service。
+    NodePort类型的Service可通过Cluster节点的静态端口对外提供服务,及通过<NodeIP>:<NodePort>访问Service。
 Namespace可以将一个k8s集群逻辑上划分成多个虚拟集群，每个Cluster就是一个Namespace,不同Namespace的资源完全隔离。
 k8s默认创建2个Namespace:default和kube-system。
 几乎所有k8s组件本身也运行在Pod里，k8s的系统组件都被放到kube-system namespace中。

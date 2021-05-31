@@ -1,0 +1,19 @@
+apiVersion: batch/v2alpha1
+kind: CronJob
+metadata:
+  name: cronjobxxx
+spec:
+  schedule: "*/1 * * * *"   ###一分钟执行一次，格式与linux cron一致
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            name: cronjobxxx
+            image: busybox
+            command: ["echo","hello cron job"]
+          restartPolicy: OnFailure
+# k8s默认没有开启enable CronJob功能，需在kube-apiserver中开启
+# vim /etc/kubernetes/manifests/kube-apiserver.yaml
+#    --runtime-config=batch/v2alpha1=true
+#systemctl restart kubelet.service   ###kubelet会重启kube-apiserver Pod

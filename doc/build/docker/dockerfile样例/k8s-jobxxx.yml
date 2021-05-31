@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: jobxxx
+spec:
+#  parallelism: 2         ###job 并行pod数
+#  completions: 6         ###job 完成的pod数
+  template:
+    metadata:
+      name: jobxxx
+    spec:
+      containers:
+        name: jobxxx
+        image: busybox
+        command: ["echo","hello job"]
+      restartPolicy: Never
