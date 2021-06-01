@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: nginx-deployment
 spec:
+#  revisionHistoryLimit: 10    ###kubectl apply每更新应用，都会记录当前配置，保存为1个revision, revisionHistoryLimit设置revision的最大值
   replicas: 2
   template:
     metadata:

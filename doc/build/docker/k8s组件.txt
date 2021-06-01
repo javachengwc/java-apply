@@ -26,5 +26,11 @@ Namespace可以将一个k8s集群逻辑上划分成多个虚拟集群，每个Cl
 k8s默认创建2个Namespace:default和kube-system。
 几乎所有k8s组件本身也运行在Pod里，k8s的系统组件都被放到kube-system namespace中。
 kubelet是唯一没以容器运行的k8s组件，它是通过系统服务运行。可通过systemctl status kubelet.service查看
-kubeadm初始化集群。kubectl是k8s命令行工具。
+kubeadm初始化集群。
+kubectl是k8s命令行工具。
+kubernetse Dashboard 是k8s的图形化管理系统，提供了kubectl绝大部分功能。
+Weave Scope 是Docker和k8s的可视化监控工具。
+Heapster 是k8s原生的集群监控方案。
+Prometheus Operator是基于Prometheus的k8s监控方案，是目前功能最全面的开源方案。
+Es,Fluentd,Kibana组合是k8s集群的日志管理方案。
 -------------------------------------------------------------------------------

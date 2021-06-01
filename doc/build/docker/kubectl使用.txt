@@ -21,6 +21,7 @@ kubectl get replicaset                                                  ###查�
 kubectl describe replicaset xxx-xx                                      ###查看副本xxx-xx详情
 kubectl describe pod xxx                                                ###查看pod详情以及启动日志
 kubectl apply -f xxx.yml                                                ###通过配置文件执行命令
+kubectl apply -f xxx.yml  --record                                      ###--record作用是将当前命令记录在revision中
 kubectl delete deployment xxx                                           ###删除部署的资源xxx
 kubectl delete -f nginx.yml                                             ###删除配置文件对应的资源
 kubectl taint node k8s-master node-role.kubernetes.io/master-           ###master节点当node用，默认不会
@@ -38,11 +39,25 @@ kubectl get cronjob                                                     ###查�
 kubectl get service                                                     ###查看service端口映射
 kubectl describe service httpd-svc                                      ###查看service详情,Endpoints罗列了与Pod的对应关系
 kubectl run busybox --rm -ti --image=busybox  /bin/sh                   ###启动Pod服务,并进入Pod容器
-
-
-
-
-
-
+kubectl rollout history deployment xxx                                  ###查看xxx应用的revision历史记录
+kubectl rollout undo deployment xxx --to-revision=1                     ###xxx应用回滚到第1个版本
+kubectl logs xxxPod xxxApp                                              ###查看某pod中某容器应用日志
+kubectl get pv                                                          ###查看pv存储空间资源
+kubectl get pvc                                                         ###查看存储资源分配情况
+kubectl exec mypod touch /mydata/hello                                  ###对mypod应用执行touch创建文件操作
+kubectl delete pvc mypvc                                                ###删除某pvc,释放资源
+kubectl delete pv                                                       ###删除存储空间资源
+kubectl run -it --rm --image=mysql:5.6 --restart=Never mysql-client
+        -- mysql -h mysql -ppassword                                    ###同个客户端连接访问mysql服务
+kubectl get networkpolicy                                               ###查看网络访问规则
+kubectl run busybox --rm -ti --lavels="access=true" --image=busybox /bin/sh     ###启动Pod并进入Pod
+kubectl create secret generic mysecret -- from-env-file=env.txt         ###创建secret
+kubectl get secret xxx                                                  ###查看某个secret
+kubectl describe secret xxx                                             ###查看某个secret详情
+kubectl edit secret xxx                                                 ###编辑或查看secret value值
+kubectl exec -it mypod sh                                               ###进入pod容器
+kubectl create configmap myconfigmap -- from-env-file=env.txt           ###创建configmap
+kubectl get configmap xxx                                               ###查看某个configmap
+kubectl describe configmap xxx                                          ###查看某个configmap详情
 
 ---------------------------------------------------------------------------------------------

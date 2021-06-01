@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: readiness
+  labels:
+    test: readiness
+spec:
+  restartPolicy: OnFailure
+  containers:
+    name: readiness
+    image: busybox
+    args:
+      /bin/sh
+      -c
+      touch /tmp/healthy; sleep 30; rm -rf /tmp/healthy; sleep 600
+    readinessProbe:
+      exec:
+        command:
+          cat
+          /tmp/healthy
+      initialDelaySeconds: 10
+      periodSeconds: 5
+### readiness检查应用是否准备好,没准备好则将容器设置为不可用，不接收Service 转发的请求。

@@ -1,0 +1,25 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        run: app
+    spec:
+      containers:
+        name: app
+        image: busybox
+        args:
+          /bin/sh
+          -c
+          sleep 10; touch /tmp/healthy; sleep 30000
+        readinessProbe:
+          exec:
+            command:
+              cat
+              /tmp/healthy
+          initialDelaySeconds: 10
+          periodSeconds: 5

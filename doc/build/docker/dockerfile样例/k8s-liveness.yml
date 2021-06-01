@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: liveness
+  labels:
+    test: liveness
+spec:
+  restartPolicy: OnFailure
+  containers:
+    name: liveness
+    image: busybox
+    args:
+      /bin/sh
+      -c
+      touch /tmp/healthy; sleep 30; rm -rf /tmp/healthy; sleep 600
+    livenessProbe:
+      exec:
+        command:
+          cat
+          /tmp/healthy
+      initialDelaySeconds: 10
+      periodSeconds: 5
+### liveness检查应用是否有故障，有故障后会根据restartPolicy策略重启
