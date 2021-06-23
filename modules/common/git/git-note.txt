@@ -192,6 +192,8 @@ git tag -a "v2" -m "cc"
     git clone /path/to/repository
     如果是远端服务器上的仓库，你的命令会是这个样子：
     git clone username@host:/path/to/repository
+    ep: https://e.coding.net/xx/aa.git   -->  git clone https://username:passward@e.coding.net/xx/aa.git
+    如果用户名或密码包含@符号,需要转义成%40，否则会与仓库地址前面的@造成冲突。
 
 工作流
 
