@@ -249,7 +249,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             instanceWrapper = (BeanWrapper)this.factoryBeanInstanceCache.remove(beanName);
         }
         if (instanceWrapper == null) {
-            //createBeanInstance完成通过构造函数初始化bean的操作
+            //createBeanInstance完成通过构造函数初始化bean的操作，通过反射实例化bean
             instanceWrapper = createBeanInstance(beanName, mbd, args);
         }
         Object bean = instanceWrapper != null ? instanceWrapper.getWrappedInstance() : null;
@@ -262,6 +262,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
         if (earlySingletonExposure) {
             //将初始化的bean提前暴露出去，暴露一个ObjectFactory，这也是Spring解决单例bean非构造函数依赖的解决方法
+            //添加到三级缓存
             addSingletonFactory(beanName, new ObjectFactory<Object>() {
                 public Object getObject() throws BeansException {
                     //return AbstractAutowireCapableBeanFactory.this.getEarlyBeanReference(this.val$beanName, this.val$mbd, this.val$bean);
