@@ -6,8 +6,8 @@ public class ArrayContainer implements Container {
 
     public String[] array = new String[0];
 
-    public ArrayContainer(String[] array ) {
-        this.array= Arrays.copyOf(array,array.length);
+    public ArrayContainer(String[] ay ) {
+        this.array= Arrays.copyOf(ay,ay.length);
     }
 
     public Iterator getIterator() {
