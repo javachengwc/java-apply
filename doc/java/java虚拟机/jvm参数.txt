@@ -71,4 +71,12 @@ CMS
     -XX:+UseCMSInitiatingOccupancyOnly	                                         ------命令JVM不基于运行时收集的数据来启动CMS垃圾收集周期(相当于禁止jvm的悲观策略)
     -XX:+ExplicitGCInvokesConcurrent	                                         ------JVM调用系统GC，都执行CMS GC，而不是Full GC
     -XX:+ExplicitGCInvokesConcurrentAndUnloadsClasses	                         ------当有系统GC调用时，永久代也被包括进CMS垃圾回收的范围内
+
+G1
+    -XX:+UseG1GC                                                                 ------使用G1垃圾回收器,java9默认回收器。
+    -XX:G1HeapRegionSize                                                         ------指定Region大小。值是2的幂,范围是1MB到32MB之间,目标是根据最小的Java堆大小划分出约2048个区域。
+    -XX:MaxGCPauseMillis                                                         ------指定期望的最大GC停顿时间。默认值是200ms。
+    -XX:ParallelGCThreads                                                        ------指定STW时GC线程数的值。最多设置为8。
+    -XX:ConcGCthreads                                                            ------指定并发标记的线程数。一般设置为ParallelGCThread的1/4左右。
+    -XX:InitiatingHeapOccupancyPercent                                           ------指定触发Mix GC的Java堆占用率阈值。默认值是45。
 -----------------------------------------------------------------
