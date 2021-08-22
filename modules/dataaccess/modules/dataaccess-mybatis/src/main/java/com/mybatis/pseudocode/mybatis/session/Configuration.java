@@ -411,6 +411,7 @@ public class Configuration
     public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
         //ParameterHandler parameterHandler = mappedStatement.getLang().createParameterHandler(mappedStatement, parameterObject, boundSql);
         ParameterHandler parameterHandler =null;
+        //拦截器插件,拦截参数的处理
         parameterHandler = (ParameterHandler)this.interceptorChain.pluginAll(parameterHandler);
         return parameterHandler;
     }
@@ -418,12 +419,14 @@ public class Configuration
     public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, RowBounds rowBounds, ParameterHandler parameterHandler, ResultHandler resultHandler, BoundSql boundSql)
     {
         ResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, mappedStatement, parameterHandler, resultHandler, boundSql, rowBounds);
+        //拦截器插件,拦截结果集的处理
         resultSetHandler = (ResultSetHandler)this.interceptorChain.pluginAll(resultSetHandler);
         return resultSetHandler;
     }
 
     public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
         StatementHandler statementHandler = new RoutingStatementHandler(executor, mappedStatement, parameterObject, rowBounds, resultHandler, boundSql);
+        //拦截器插件,拦截Sql语法构建的处理
         statementHandler = (StatementHandler)this.interceptorChain.pluginAll(statementHandler);
         return statementHandler;
     }
@@ -450,6 +453,7 @@ public class Configuration
         if (this.cacheEnabled) {
             executor = new CachingExecutor(executor);
         }
+        //拦截器插件,拦截执行器的方法
          executor = (Executor)this.interceptorChain.pluginAll(executor);
         return executor;
     }
