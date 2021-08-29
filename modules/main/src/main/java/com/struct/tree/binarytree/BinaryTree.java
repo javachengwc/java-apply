@@ -68,6 +68,67 @@ public class BinaryTree<T extends Comparable<T>> {
 
 	}
 
+	//节点数量
+	public int getCount() {
+		int cnt =_getCount(root);
+		return cnt;
+	}
+
+	private int _getCount(TreeNode<T> node) {
+		if(node==null) {
+			return 0;
+		}
+		return 1+_getCount(node.left)+_getCount(node.right);
+	}
+
+	//叶子节点数量
+	public int getLeafCount() {
+		int cnt =_getLeafCount(root);
+		return cnt;
+	}
+
+	private int _getLeafCount(TreeNode<T> node) {
+		if(node==null) {
+			return 0;
+		}
+		if(node.right==null && node.left==null) {
+			return 1;
+		}
+		return _getLeafCount(node.left)+_getLeafCount(node.right);
+	}
+
+	//树的深度
+	public int getDepth() {
+		int dpth =_getDepth(root);
+		return dpth;
+	}
+
+	private int _getDepth(TreeNode<T> node) {
+		if(node==null) {
+			return 0;
+		}
+		int left = _getDepth(node.left);
+		int right = _getDepth(node.right);
+		return left>=right? left+1: right+1;
+	}
+
+	//前k层节点个数
+	public int kLevelSize(int k) {
+		int size = _kLevelSize(root,k);
+		return size;
+	}
+
+	private int _kLevelSize(TreeNode<T> node,int k) {
+		if(k==0 || node==null) {
+			return 0;
+		}
+		if(k==1) {
+			return 1;
+		}
+		int rt= _kLevelSize(node.left,k-1)+_kLevelSize(node.right,k-1);
+		return rt;
+	}
+
 	public TreeNode<T> getRoot() {
 		return root;
 	}
@@ -75,5 +136,7 @@ public class BinaryTree<T extends Comparable<T>> {
 	public void setRoot(TreeNode<T> root) {
 		this.root = root;
 	}
+
+
 	
 }
