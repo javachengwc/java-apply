@@ -2,6 +2,8 @@ package com.pseudocode.lang;
 
 public class Object1 {
 
+    Object object;
+
     private static native void registerNatives();
 
     static {
@@ -60,5 +62,14 @@ public class Object1 {
 //        wait(0);
 //    }
 
+//    每个类可以实现readObject、writeObject方法实现自己的序列化策略，
+//    即使是transient修饰的成员变量也可以手动调用ObjectOutputStream的writeInt等方法将这个成员变量序列化
+//    private void writeObject(ObjectOutputStream s) throws java.io.IOException {
+//        //ObjectOutputStream是实现序列化的关键类，它可以将一个对象转换成二进制流
+//    }
+//
+//    private void readObject(ObjectInputStream s) throws java.io.IOException, ClassNotFoundException {
+//        //以通过ObjectInputStream将二进制流还原成对象
+//    }
 
 }
