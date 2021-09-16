@@ -141,3 +141,7 @@ net.ipv4.tcp_timestamps = 1
 net.ipv4.tcp_tw_reuse = 1
 
 sysctl -p                                   ###使sysctl.conf生效
+--------------------------------------------------------------------
+/proc/sys/kernel/pid_max                    ###查系统支持的最大进程数
+/proc/sys/kernel/threads-max                ###查系统支持的最大线程数
+ulimit -u                                   ###某用户下最多可以运行进程或线程数

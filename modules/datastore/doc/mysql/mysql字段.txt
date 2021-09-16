@@ -1,0 +1,22 @@
+-------------------------------mysql字段--------------------------------
+1，int(1)与int的区别
+int(M): M indicates the maximum display width for integer types.在 integer 数据类型中，M 表示最大显示宽度。
+在 int(M) 中，M 的值跟 int(M) 所占多少存储空间并无任何关系。 int(3)、int(4)、int(8) 在磁盘上都是占用 4 btyes 的存储空间。
+除了显示给用户的方式有点不同外，int(M) 跟 int 数据类型是相同的。另外，int(M) 只有跟 zerofill 结合起来，才能清楚看到不同之处。
+int(1)和int在实际使用中，如果不使用 zerofill 是没有任何区别的。
+mysql> create table t(id int(3) zerofill);
+mysql> insert into t(id) values(10);
+mysql> select * from t;
++------+
+| id   |
++------+
+|  010 |
++------+
+
+2，datetime与timestamp的区别
+a,日期存储方式不一样 ，
+对于TIMESTAMP，它把客户端插入的时间从当前时区转化为UTC（世界标准时间）进行存储。查询时，将其又转化为客户端当前时区进行返回。
+对于DATETIME，不做任何改变，基本上是原样输入和输出。
+b,时间范围不一样,
+timestamp所能存储的时间范围为：’1970-01-01 00:00:01.000000’ 到 ‘2038-01-19 03:14:07.999999’；
+datetime所能存储的时间范围为：’1000-01-01 00:00:00.000000’ 到 ‘9999-12-31 23:59:59.999999’。

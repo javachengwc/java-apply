@@ -1,5 +1,7 @@
 package com.struct.tree.binarytree;
 
+import java.util.*;
+
 //二叉树添加，删除元素都很快，并且在查找方面也有很多的算法优化，
 //二叉树既有链表的好处，也有数组的好处，是两者的优化方案，在处理大批量的动态数据方面非常有用
 public class BinaryTree<T extends Comparable<T>> {
@@ -9,6 +11,14 @@ public class BinaryTree<T extends Comparable<T>> {
 	public BinaryTree() {
 
 		root = null;
+	}
+
+	public TreeNode<T> getRoot() {
+		return root;
+	}
+
+	public void setRoot(TreeNode<T> root) {
+		this.root = root;
 	}
 
 	public void insert(T data) {
@@ -129,14 +139,84 @@ public class BinaryTree<T extends Comparable<T>> {
 		return rt;
 	}
 
-	public TreeNode<T> getRoot() {
-		return root;
+	//前序遍历
+	public void preOrder(TreeNode<T> node)
+	{
+		if(node==null) {
+			return;
+		}
+		System.out.print(node.data + " ");
+		preOrder(node.left);
+		preOrder(node.right);
 	}
 
-	public void setRoot(TreeNode<T> root) {
-		this.root = root;
+	//中序遍历
+	public void midOrder(TreeNode<T> node)
+	{
+		if(node==null) {
+			return;
+		}
+		midOrder(node.left);
+		System.out.print(node.data + " ");
+		midOrder(node.right);
 	}
 
+	//后序遍历
+	public void posOrder(TreeNode<T> node)
+	{
+		if(node==null) {
+			return;
+		}
+		posOrder(node.left);
+		posOrder(node.right);
+		System.out.print(node.data + " ");
+	}
 
-	
+	//层序遍历
+	public void levelOrder(TreeNode<T> node) {
+		if (node == null) {
+			return;
+		}
+		Queue<TreeNode> queue = new LinkedList<TreeNode>();
+		queue.add(node);
+		while (!queue.isEmpty()) {
+			TreeNode<T> cur = queue.poll();
+			System.out.print(cur.getData() + "  ");
+
+			if (cur.left != null) {
+				queue.offer(cur.left);
+			}
+			if (cur.right != null) {
+				queue.offer(cur.right);
+			}
+		}
+	}
+
+	//二叉树的层次遍历
+	public static <T> List<List<T>> levelEvery(TreeNode<T> node){
+		List<List<T>> result = new ArrayList<List<T>>();
+		if(node == null){
+			return result;
+		}
+		LinkedList<TreeNode> queue = new LinkedList<TreeNode>();
+		queue.offer(node);
+		while(!queue.isEmpty()){
+			int size = queue.size();
+			List<T> level = new ArrayList<T>();
+			for(int i = 0;i < size ;i++){
+				TreeNode<T> cur = queue.poll();
+				level.add(cur.getData());
+				if(cur.left != null){
+					queue.offer(cur.left);
+				}
+				if(cur.right != null){
+					queue.offer(cur.right);
+				}
+			}
+			result.add(level);
+		}
+		System.out.println(Arrays.deepToString(result.toArray()));
+		return result;
+	}
+
 }

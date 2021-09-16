@@ -1,67 +1,70 @@
 package com.arithmetic.sort;
 
-import java.util.Arrays;
-
 /**
  * 堆排序
- * 堆排序是一种树形选择排序，是对直接选择排序的有效改进
- * 初始时把要排序的数的序列看作是一棵顺序存储的二叉树，调整它们的存储序，使之成为一个 堆，
- * 这时堆的根节点的数最大。然后将根节点与堆的最后一个节点交换。然后对前面(n-1)个数重新调整使之成为堆。
- * 依此类推，直到只有两个节点的堆，并对 它们作交换，最后得到有n个节点的有序序列。
- * 从算法描述来看，堆排序需要两个过程，一是建立堆，二是堆顶与堆的最后一个元素交换位置。
- * 所以堆排序有两个函数组成。一是建堆的渗透函数，二是反复调用渗透函数实现排序的函数。
+ * 1,构建初始堆，将待排序列构成一个大顶堆(或者小顶堆)，升序大顶堆，降序小顶堆；
+ * 2,将堆顶元素与堆尾元素交换，并断开(从待排序列中移除)堆尾元素。
+ * 3,重新构建堆。
+ * 4,重复2~3，直到待排序列中只剩下一个元素(堆顶元素)。
  */
 public class HeapSort {
 
 	public static void main(String[] args) {
 		int[] a = { 49, 38, 65, 97, 76, 13, 27, 49, 78, 34, 12, 64 };
-		int arrayLength = a.length;
-		// 循环建堆
-		for (int i = 0; i < arrayLength - 1; i++) {
-			// 建堆
-			buildMaxHeap(a, arrayLength - 1 - i);
-			// 交换堆顶和最后一个元素
-			swap(a, 0, arrayLength - 1 - i);
-			System.out.println(Arrays.toString(a));
+		heapSort(a);
+		for (int i : a) {
+			System.out.print(i + " ");
 		}
 	}
 
-	// 对data数组从0到lastIndex建大顶堆
-	public static void buildMaxHeap(int[] data, int lastIndex) {
-		// 从lastIndex处节点（最后一个节点）的父节点开始
-		for (int i = (lastIndex - 1) / 2; i >= 0; i--) {
-			// k保存正在判断的节点
-			int k = i;
-			// 如果当前k节点的子节点存在
-			while (k * 2 + 1 <= lastIndex) {
-				// k节点的左子节点的索引
-				int biggerIndex = 2 * k + 1;
-				// 如果biggerIndex小于lastIndex，即biggerIndex+1代表的k节点的右子节点存在
-				if (biggerIndex < lastIndex) {
-					// 若果右子节点的值较大
-					if (data[biggerIndex] < data[biggerIndex + 1]) {
-						// biggerIndex总是记录较大子节点的索引
-						biggerIndex++;
-					}
-				}
-				// 如果k节点的值小于其较大的子节点的值
-				if (data[k] < data[biggerIndex]) {
-					// 交换他们
-					swap(data, k, biggerIndex);
-					// 将biggerIndex赋予k，开始while循环的下一次循环，重新保证k节点的值大于其左右子节点的值
-					k = biggerIndex;
-				} else {
-					break;
-				}
+	//堆排序
+	private static void heapSort(int[] arr) {
+
+		//创建初始堆
+		for (int i = (arr.length - 1) / 2; i >= 0; i--) {
+			//从一半结点从下至上，从右至左调整结构
+			adjustHeap(arr, i, arr.length);
+		}
+
+		for (int i = arr.length - 1; i > 0; i--) {
+			//将堆顶元素与末尾元素进行交换
+			int temp = arr[i];
+			arr[i] = arr[0];
+			arr[0] = temp;
+
+			//重新对堆进行调整
+			adjustHeap(arr, 0, i);
+		}
+	}
+
+	//调整堆
+	private static void adjustHeap(int[] arr, int parent, int length) {
+		//将temp作为父节点
+		int temp = arr[parent];
+		//左孩子
+		int lChild = 2 * parent + 1;
+
+		while (lChild < length) {
+			//右孩子
+			int rChild = lChild + 1;
+			// 如果有右孩子结点，并且右孩子结点的值大于左孩子结点，则选取右孩子结点
+			if (rChild < length && arr[lChild] < arr[rChild]) {
+				lChild++;
 			}
+
+			// 如果父结点的值已经大于孩子结点的值，则直接结束
+			if (temp >= arr[lChild]) {
+				break;
+			}
+
+			// 把孩子结点的值赋给父结点
+			arr[parent] = arr[lChild];
+
+			//选取孩子结点的左孩子结点,继续向下筛选
+			parent = lChild;
+			lChild = 2 * parent + 1;
 		}
+		arr[parent] = temp;
 	}
-
-	// 交换
-	private static void swap(int[] data, int i, int j) {
-		int tmp = data[i];
-		data[i] = data[j];
-		data[j] = tmp;
-	}
-
 }
+
