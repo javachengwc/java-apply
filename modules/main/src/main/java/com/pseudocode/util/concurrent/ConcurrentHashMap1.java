@@ -15,6 +15,7 @@ public class ConcurrentHashMap1<K,V> {
     //默认容量
     private static final int DEFAULT_CAPACITY = 16;
 
+    //最大数组长度
     static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
     //默认并发度
@@ -31,17 +32,22 @@ public class ConcurrentHashMap1<K,V> {
     //转红黑树的最小容量
     static final int MIN_TREEIFY_CAPACITY = 64;
 
+    //扩容时数据前移的步长，默认最小为16
     private static final int MIN_TRANSFER_STRIDE = 16;
 
+    //扩容位数标识，主要用于扩容时生成一个巨大负数使用(第32位的标志位与 16位为1左移16位)
     private static int RESIZE_STAMP_BITS = 16;
 
+    //最大并发线程数 65535
     private static final int MAX_RESIZERS = (1 << (32 - RESIZE_STAMP_BITS)) - 1;
 
+    //扩容位数标识剩下的位数
     private static final int RESIZE_STAMP_SHIFT = 32 - RESIZE_STAMP_BITS;
 
-    static final int MOVED     = -1; // hash for forwarding nodes
-    static final int TREEBIN   = -2; // hash for roots of trees
-    static final int RESERVED  = -3; // hash for transient reservations
+    //节点标识
+    static final int MOVED     = -1; // hash for forwarding nodes 节点正在扩容
+    static final int TREEBIN   = -2; // hash for roots of trees   树节点
+    static final int RESERVED  = -3; // hash for transient reservations  正在设置桶位首节点，与只有一个节点区分
     static final int HASH_BITS = 0x7fffffff; // 最大的整型数INT_MAX
 
     //cpu数
@@ -82,6 +88,7 @@ public class ConcurrentHashMap1<K,V> {
         }
     }
 
+    //hash算法，把位数控制在int最大整数之内
     static final int spread(int h) {
         return (h ^ (h >>> 16)) & HASH_BITS;
     }
@@ -120,6 +127,7 @@ public class ConcurrentHashMap1<K,V> {
 
     @SuppressWarnings("unchecked")
     static final <K,V> ConcurrentHashMap1.Node<K,V> tabAt(ConcurrentHashMap1.Node<K,V>[] tab, int i) {
+        //U.getObjectVolatile本质是寻址公式，也就是 tab[i]，效果都是查看数组某下标处的元素，U.getObjectVolatile更多是从并发角度来考虑的。
         return (ConcurrentHashMap1.Node<K,V>)U.getObjectVolatile(tab, ((long)i << ASHIFT) + ABASE);
     }
 
@@ -132,19 +140,25 @@ public class ConcurrentHashMap1<K,V> {
         U.putObjectVolatile(tab, ((long)i << ASHIFT) + ABASE, v);
     }
 
-    //table是volatile修饰的，读可见
+    //table存储数据的底层数组，volatile修饰，读可见
     transient volatile ConcurrentHashMap1.Node<K,V>[] table;
 
+    ////仅当扩容时不为空，其他时候都为空。扩容完成自动为null
     private transient volatile ConcurrentHashMap1.Node<K,V>[] nextTable;
 
+    //元素个数的基础计数，加上counterCells数组所有元素的value值总和 即为所有元素个数
     private transient volatile long baseCount;
 
+    //扩容指数：为0 是默认值，为负数则正在扩容，为正数代表临界值(阈值)
     private transient volatile int sizeCtl;
 
+    //标识扩容时还未被分配迁移数据的个数
     private transient volatile int transferIndex;
 
+    //用于判断counterCells是否正在被使用，0为可使用，1为当前有线程正在使用
     private transient volatile int cellsBusy;
 
+    //并发情况下，使用该数组进行count联合计数，减少baseCount的计数压力，提高效率
     private transient volatile ConcurrentHashMap1.CounterCell[] counterCells;
 
     public ConcurrentHashMap1() {
@@ -230,22 +244,29 @@ public class ConcurrentHashMap1<K,V> {
     }
 
     final V putVal(K key, V value, boolean onlyIfAbsent) {
+        //校验参数,key value 不能为空
         if (key == null || value == null) throw new NullPointerException();
         int hash = spread(key.hashCode());
         int binCount = 0;
+        //遍历Node
         for (ConcurrentHashMap1.Node<K,V>[] tab = table;;) {
             ConcurrentHashMap1.Node<K,V> f; int n, i, fh;
             if (tab == null || (n = tab.length) == 0)
+                //初始table
                 tab = initTable();
+            //如果下标节点为空
             else if ((f = tabAt(tab, i = (n - 1) & hash)) == null) {
-                if (casTabAt(tab, i, null,
-                        new ConcurrentHashMap1.Node<K,V>(hash, key, value, null)))
+                //CAS对指定位置的节点进行原子操作
+                if (casTabAt(tab, i, null, new ConcurrentHashMap1.Node<K,V>(hash, key, value, null)))
                     break;                   // no lock when adding to empty bin
             }
+            //当 hash 值是 -1时，说明正在扩容
             else if ((fh = f.hash) == MOVED)
+                //调用helpTransfer(tab, f); 一起扩容
                 tab = helpTransfer(tab, f);
             else {
                 V oldVal = null;
+                //锁节点头
                 synchronized (f) {
                     if (tabAt(tab, i) == f) {
                         if (fh >= 0) {
@@ -260,6 +281,7 @@ public class ConcurrentHashMap1<K,V> {
                                 }
                                 ConcurrentHashMap1.Node<K,V> pred = e;
                                 if ((e = e.next) == null) {
+                                    //加入到链尾
                                     pred.next = new ConcurrentHashMap1.Node<K,V>(hash, key, value, null);
                                     break;
                                 }
@@ -278,6 +300,7 @@ public class ConcurrentHashMap1<K,V> {
                 }
                 if (binCount != 0) {
                     if (binCount >= TREEIFY_THRESHOLD)
+                        //链表转红黑树
                         treeifyBin(tab, i);
                     if (oldVal != null)
                         return oldVal;
@@ -431,9 +454,11 @@ public class ConcurrentHashMap1<K,V> {
         return (n < 0L) ? 0L : n; // ignore transient negative values
     }
 
+    //ForwardingNode 继承 Node，扩容时使用，标志当前节点正在移位
     static final class ForwardingNode<K,V> extends ConcurrentHashMap1.Node<K,V> {
         final ConcurrentHashMap1.Node<K,V>[] nextTable;
         ForwardingNode(ConcurrentHashMap1.Node<K,V>[] tab) {
+            //指定 MOVED 为当前节点的 Hash，标志正在移位
             super(MOVED, null, null, null);
             this.nextTable = tab;
         }
@@ -462,10 +487,12 @@ public class ConcurrentHashMap1<K,V> {
         }
     }
 
+    //返回一个扩容标识,返回的数的第16位肯定为1，这为sc设置为巨大的负数提供了条件
     static final int resizeStamp(int n) {
         return Integer.numberOfLeadingZeros(n) | (1 << (RESIZE_STAMP_BITS - 1));
     }
 
+    //初始table
     private final ConcurrentHashMap1.Node<K,V>[] initTable() {
         ConcurrentHashMap1.Node<K,V>[] tab; int sc;
         while ((tab = table) == null || tab.length == 0) {
@@ -489,6 +516,7 @@ public class ConcurrentHashMap1<K,V> {
         return tab;
     }
 
+    //
     private final void addCount(long x, int check) {
         ConcurrentHashMap1.CounterCell[] as; long b, s;
         if ((as = counterCells) != null || !U.compareAndSwapLong(this, BASECOUNT, b = baseCount, s = b + x)) {
@@ -523,6 +551,7 @@ public class ConcurrentHashMap1<K,V> {
         }
     }
 
+    //帮助扩容
     final ConcurrentHashMap1.Node<K,V>[] helpTransfer(ConcurrentHashMap1.Node<K,V>[] tab, ConcurrentHashMap1.Node<K,V> f) {
         ConcurrentHashMap1.Node<K,V>[] nextTab; int sc;
         if (tab != null && (f instanceof ConcurrentHashMap1.ForwardingNode) &&
@@ -541,13 +570,16 @@ public class ConcurrentHashMap1<K,V> {
         return table;
     }
 
+    //调整数组的的大小
     private final void tryPresize(int size) {
         int c = (size >= (MAXIMUM_CAPACITY >>> 1)) ? MAXIMUM_CAPACITY : tableSizeFor(size + (size >>> 1) + 1);
         int sc;
         while ((sc = sizeCtl) >= 0) {
             ConcurrentHashMap1.Node<K,V>[] tab = table; int n;
+            //tab还未被初始化
             if (tab == null || (n = tab.length) == 0) {
                 n = (sc > c) ? sc : c;
+                //CAS 抢夺 SIZECTL 设置权限
                 if (U.compareAndSwapInt(this, SIZECTL, sc, -1)) {
                     try {
                         if (table == tab) {
@@ -579,36 +611,50 @@ public class ConcurrentHashMap1<K,V> {
         }
     }
 
+    //扩容,参数tab表示旧的哈希表，参数nextTab表示构造的新哈希表，要么传入ConcurrentHashMap的nextTable属性，要么传入null。
     private final void transfer(ConcurrentHashMap1.Node<K,V>[] tab, ConcurrentHashMap1.Node<K,V>[] nextTab) {
         int n = tab.length, stride;
+        //stride决定一个线程最大处理的哈希桶数量
+        //n >>> 3 表示表长度除以8
         if ((stride = (NCPU > 1) ? (n >>> 3) / NCPU : n) < MIN_TRANSFER_STRIDE)
             stride = MIN_TRANSFER_STRIDE; // subdivide range
         if (nextTab == null) {            // initiating
             try {
-                @SuppressWarnings("unchecked")
+                //构造一个新的数组容量为旧数据的两倍
                 ConcurrentHashMap1.Node<K,V>[] nt = (ConcurrentHashMap1.Node<K,V>[])new ConcurrentHashMap1.Node<?,?>[n << 1];
                 nextTab = nt;
             } catch (Throwable ex) {      // try to cope with OOME
                 sizeCtl = Integer.MAX_VALUE;
                 return;
             }
+            //赋值给成员属性，防止在多线程下多次初始化
             nextTable = nextTab;
             transferIndex = n;
         }
+        //新哈希表长度
         int nextn = nextTab.length;
+        //占位节点。并且哈希值为-1，对应为成员字段MOVED，用于标识正在扩容
         ConcurrentHashMap1.ForwardingNode<K,V> fwd = new ConcurrentHashMap1.ForwardingNode<K,V>(nextTab);
+        //advance用于提示代码是否进行推进处理，也就是当前桶处理完，处理下一个桶的标识
         boolean advance = true;
+        //finishing变量用于提示扩容是否结束用的
         boolean finishing = false; // to ensure sweep before committing nextTab
+        //for循环就是用来做旧表迁移到新表的逻辑,一直循环,直到迁移完成。
+        //i表示当前线程处理哈希桶的初始下标，bound表示当前线程处理哈希桶的结束下标
         for (int i = 0, bound = 0;;) {
             ConcurrentHashMap1.Node<K,V> f; int fh;
             while (advance) {
                 int nextIndex, nextBound;
+                //--i 是表示处理区间的下一个哈希桶元素列表，因为上次已经处理过i位置。
                 if (--i >= bound || finishing)
                     advance = false;
                 else if ((nextIndex = transferIndex) <= 0) {
+                    //如果下标不合法就结束
                     i = -1;
                     advance = false;
                 }
+                //cas方式设置ConcurrentHashMap的transferIndex属性,transferIndex在transfer初始化阶段赋值为旧哈希表长度,nextIndex此时等于transferIndex。
+                //nextIndex > stride 如果当前分割点位置(transferIndex)大于最大处理阈值stride，就返回nextIndex - stride 作为处理哈希桶区间的起始下标，否则是0
                 else if (U.compareAndSwapInt
                         (this, TRANSFERINDEX, nextIndex, nextBound = (nextIndex > stride ? nextIndex - stride : 0))) {
                     bound = nextBound;
@@ -640,6 +686,7 @@ public class ConcurrentHashMap1<K,V> {
                     if (tabAt(tab, i) == f) {
                         ConcurrentHashMap1.Node<K,V> ln, hn;
                         if (fh >= 0) {
+                            //链表哈希桶 迁移到新的扩容数组。
                             int runBit = fh & n;
                             ConcurrentHashMap1.Node<K,V> lastRun = f;
                             for (ConcurrentHashMap1.Node<K,V> p = f.next; p != null; p = p.next) {
@@ -670,6 +717,7 @@ public class ConcurrentHashMap1<K,V> {
                             advance = true;
                         }
                         else if (f instanceof ConcurrentHashMap1.TreeBin) {
+                            //红黑树哈希桶,迁移到新的扩容数组
                             ConcurrentHashMap1.TreeBin<K,V> t = (ConcurrentHashMap1.TreeBin<K,V>)f;
                             ConcurrentHashMap1.TreeNode<K,V> lo = null, loTail = null;
                             ConcurrentHashMap1.TreeNode<K,V> hi = null, hiTail = null;
@@ -710,6 +758,7 @@ public class ConcurrentHashMap1<K,V> {
         }
     }
 
+    //用于对baseCount的计数
     @sun.misc.Contended static final class CounterCell {
         volatile long value;
         CounterCell(long x) { value = x; }
@@ -805,15 +854,19 @@ public class ConcurrentHashMap1<K,V> {
         }
     }
 
+    //链表转换成红黑树
     private final void treeifyBin(ConcurrentHashMap1.Node<K,V>[] tab, int index) {
         ConcurrentHashMap1.Node<K,V> b; int n, sc;
         if (tab != null) {
             if ((n = tab.length) < MIN_TREEIFY_CAPACITY)
+                //table进行扩容
                 tryPresize(n << 1);
             else if ((b = tabAt(tab, index)) != null && b.hash >= 0) {
+                //头节点b加锁
                 synchronized (b) {
                     if (tabAt(tab, index) == b) {
                         ConcurrentHashMap1.TreeNode<K,V> hd = null, tl = null;
+                        //for循环,把桶位中的单链表转换成双向链表，便于树化,hd指向双向列表的头部，tl指向双向链表的尾部
                         for (ConcurrentHashMap1.Node<K,V> e = b; e != null; e = e.next) {
                             ConcurrentHashMap1.TreeNode<K,V> p = new ConcurrentHashMap1.TreeNode<K,V>(e.hash,e.key,e.val,null,null);
                             if ((p.prev = tl) == null)
@@ -822,6 +875,7 @@ public class ConcurrentHashMap1<K,V> {
                                 tl.next = p;
                             tl = p;
                         }
+                        //把node单链表转换的双向链表转换成TreeBin对象
                         setTabAt(tab, index, new ConcurrentHashMap1.TreeBin<K,V>(hd));
                     }
                 }
@@ -842,6 +896,7 @@ public class ConcurrentHashMap1<K,V> {
         return hd;
     }
 
+    //树节点
     static final class TreeNode<K,V> extends ConcurrentHashMap1.Node<K,V> {
         ConcurrentHashMap1.TreeNode<K,V> parent;  // red-black tree links
         ConcurrentHashMap1.TreeNode<K,V> left;
@@ -889,10 +944,18 @@ public class ConcurrentHashMap1<K,V> {
         }
     }
 
+    //封装TreeNode节点
     static final class TreeBin<K,V> extends ConcurrentHashMap1.Node<K,V> {
+
         ConcurrentHashMap1.TreeNode<K,V> root;
         volatile ConcurrentHashMap1.TreeNode<K,V> first;
+        //等待者线程
         volatile Thread waiter;
+        //锁的状态：
+        //1.写锁状态 写是独占状态，以散列表来看，真正进入到TreeBin中的写线程 同一时刻只能有一个线程。
+        //2.读锁状态 读锁是共享，同一时刻可以有多个线程 同时进入到 TreeBin对象中获取数据。每一个线程都会给lockState=4
+        //3.等待者状态（写线程在等待），当TreeBin中有读线程目前正在读取数据时，写线程无法修改数据，
+        //那么就将lockState的最低2位设置为 0b 10 ：即，换算成十进制就是WAITER = 2;
         volatile int lockState;
         // values for lockState
         static final int WRITER = 1; // set while holding write lock
@@ -907,21 +970,29 @@ public class ConcurrentHashMap1<K,V> {
         }
 
         TreeBin(ConcurrentHashMap1.TreeNode<K,V> b) {
+            //设置当前节点hash为-2 表示此节点是TreeBin节点
             super(TREEBIN, null, null, null);
+            //使用first引用treeNode链表
             this.first = b;
             ConcurrentHashMap1.TreeNode<K,V> r = null;
             for (ConcurrentHashMap1.TreeNode<K,V> x = b, next; x != null; x = next) {
                 next = (ConcurrentHashMap1.TreeNode<K,V>)x.next;
                 x.left = x.right = null;
+                //如果当前红黑树是一个空树，那么设置插入元素为根节点
+                //第一次循环，r一定是null
                 if (r == null) {
                     x.parent = null;
+                    //颜色改为黑色
                     x.red = false;
                     r = x;
                 }
                 else {
+                    //红黑树根节点已经有数据了,k 表示插入节点的key
                     K k = x.key;
                     int h = x.hash;
                     Class<?> kc = null;
+
+                    //这里的for循环，是一个查找并插入的过程
                     for (ConcurrentHashMap1.TreeNode<K,V> p = r;;) {
                         int dir, ph;
                         K pk = p.key;
@@ -950,31 +1021,40 @@ public class ConcurrentHashMap1<K,V> {
             assert checkInvariants(root);
         }
 
+        //加锁：基于CAS的方式更新LOCKSTATE的值，期望值是0，更新值是WRITER（1，写锁）
         private final void lockRoot() {
             if (!U.compareAndSwapInt(this, LOCKSTATE, 0, WRITER))
+                //竞争锁
                 contendedLock(); // offload to separate method
         }
 
+        //释放锁
         private final void unlockRoot() {
             lockState = 0;
         }
 
+        //阻塞等待root锁
         private final void contendedLock() {
             boolean waiting = false;
             for (int s;;) {
+                //没有线程持有写锁时，尝试获取写锁
                 if (((s = lockState) & ~WAITER) == 0) {
                     if (U.compareAndSwapInt(this, LOCKSTATE, s, WRITER)) {
+                        //拿到锁后将等待线程清空（等待线程是它自己）
                         if (waiting)
                             waiter = null;
                         return;
                     }
                 }
+                //有线程持有写锁且本线程状态不为WAITER时
                 else if ((s & WAITER) == 0) {
+                    //尝试占有waiting线程
                     if (U.compareAndSwapInt(this, LOCKSTATE, s, s | WAITER)) {
                         waiting = true;
                         waiter = Thread.currentThread();
                     }
                 }
+                //有线程持有写锁且本线程状态为WAITER时，堵塞自己
                 else if (waiting)
                     LockSupport.park(this);
             }
@@ -984,18 +1064,22 @@ public class ConcurrentHashMap1<K,V> {
             if (k != null) {
                 for (ConcurrentHashMap1.Node<K,V> e = first; e != null; ) {
                     int s; K ek;
+                    //lockState & 0011 != 0 条件成立，说明当前TreeBin有等待者线程或者写操作线程正在加锁
                     if (((s = lockState) & (WAITER|WRITER)) != 0) {
                         if (e.hash == h && ((ek = e.key) == k || (ek != null && k.equals(ek))))
                             return e;
                         e = e.next;
                     }
+                    //添加读锁成功
                     else if (U.compareAndSwapInt(this, LOCKSTATE, s, s + READER)) {
                         ConcurrentHashMap1.TreeNode<K,V> r, p;
                         try {
                             p = ((r = root) == null ? null : r.findTreeNode(h, k, null));
                         } finally {
                             Thread w;
+                            //(w = waiter) != null 说明有一个写线程在等待读操作全部结束
                             if (U.getAndAddInt(this, LOCKSTATE, -READER) == (READER|WAITER) && (w = waiter) != null)
+                                //使用unpark让写线程恢复运行状态
                                 LockSupport.unpark(w);
                         }
                         return p;
@@ -1046,6 +1130,7 @@ public class ConcurrentHashMap1<K,V> {
                     else {
                         lockRoot();
                         try {
+                            //平衡红黑树，使其再次符合规范
                             root = balanceInsertion(root, x);
                         } finally {
                             unlockRoot();
@@ -1374,16 +1459,25 @@ public class ConcurrentHashMap1<K,V> {
         }
     }
 
+    //正在遍历的数组以及索引信息
     static final class TableStack<K,V> {
+        //数组的长度
         int length;
+        //遍历时的索引
         int index;
+        //数组
         ConcurrentHashMap1.Node<K,V>[] tab;
+        //next 指针
         ConcurrentHashMap1.TableStack<K,V> next;
     }
 
+    //主要用于遍历操作
     static class Traverser<K,V> {
+        //数组
         ConcurrentHashMap1.Node<K,V>[] tab;        // current table; updated if resized
+        //下一元素的指针
         ConcurrentHashMap1.Node<K,V> next;         // the next entry to use
+        //stack 栈顶结点， spare 备用节点，可以理解为中继节点
         ConcurrentHashMap1.TableStack<K,V> stack, spare; // to save/restore on ForwardingNodes
         int index;              // index of bin to use next
         int baseIndex;          // current index of initial table
@@ -1398,6 +1492,7 @@ public class ConcurrentHashMap1<K,V> {
             this.next = null;
         }
 
+        //获取下一元素，不存在则返回null
         final ConcurrentHashMap1.Node<K,V> advance() {
             ConcurrentHashMap1.Node<K,V> e;
             if ((e = next) != null)
@@ -1409,9 +1504,11 @@ public class ConcurrentHashMap1<K,V> {
                 if (baseIndex >= baseLimit || (t = tab) == null || (n = t.length) <= (i = index) || i < 0)
                     return next = null;
                 if ((e = tabAt(t, i)) != null && e.hash < 0) {
+                    ///是否正在扩容
                     if (e instanceof ConcurrentHashMap1.ForwardingNode) {
                         tab = ((ConcurrentHashMap1.ForwardingNode<K,V>)e).nextTable;
                         e = null;
+                        //保存当前遍历状态
                         pushState(t, i, n);
                         continue;
                     }
@@ -1427,6 +1524,7 @@ public class ConcurrentHashMap1<K,V> {
             }
         }
 
+        //保存当前遍历状态
         private void pushState(ConcurrentHashMap1.Node<K,V>[] t, int i, int n) {
             ConcurrentHashMap1.TableStack<K,V> s = spare;  // reuse if possible
             if (s != null)
@@ -1440,6 +1538,7 @@ public class ConcurrentHashMap1<K,V> {
             stack = s;
         }
 
+        //恢复存储时的状态
         private void recoverState(int n) {
             ConcurrentHashMap1.TableStack<K,V> s; int len;
             while ((s = stack) != null && (index += (len = s.length)) >= n) {
