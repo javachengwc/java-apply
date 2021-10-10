@@ -11,6 +11,7 @@ package com.ocean.id;
  * snowflake生成的ID整体上按照时间自增排序，并且整个分布式系统内不会产生ID碰撞（由datacenter和workerId作区分），并且效率较高。据说snowflake每秒能够产生26万个ID。
  */
 public class IdGenerator {
+    //twepoch是1970-01-01 00:00:00
     private final long twepoch = 1288834974657L;
     private final long workerIdBits = 5L;
     private final long datacenterIdBits = 5L;
@@ -54,6 +55,7 @@ public class IdGenerator {
 
         lastTimestamp = timestamp;
 
+        //timestamp - twepoch是 当前到1970-01-01 00:00:00时刻所经过的毫秒数。当前时刻减去1288834974657 的值刚好在2^41 里，因此占41位。
         return ((timestamp - twepoch) << timestampLeftShift) | (datacenterId << datacenterIdShift) | (workerId << workerIdShift) | sequence;
     }
 

@@ -1,5 +1,8 @@
 package com.struct.tree.binarytree;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class TreeTest {
 
 	public static void main(String[] args) {
@@ -7,6 +10,7 @@ public class TreeTest {
 		BinaryTree<Integer> biTree = new BinaryTree<Integer>();
 
 		Integer[] data = { 6, 8, 7, 4,3,9,21,33,73,15 };
+		System.out.println(Arrays.toString(data));
 
 		biTree.buildTree(data);
 
@@ -25,6 +29,8 @@ public class TreeTest {
 		int kSize = biTree.kLevelSize(2);
 		int kSize3 = biTree.kLevelSize(3);
 		int kSize4 = biTree.kLevelSize(4);
-		System.out.println("前二层节点数量为:"+kSize+",前三层节点数量为:"+kSize3+",前四层节点数为:"+kSize4);
+		System.out.println("第二层节点数量为:"+kSize+",第三层节点数量为:"+kSize3+",第四层节点数为:"+kSize4);
+
+		List<List<Integer>> llist = biTree.levelEvery(biTree.getRoot());
 	}
 }

@@ -122,7 +122,7 @@ public class BinaryTree<T extends Comparable<T>> {
 		return left>=right? left+1: right+1;
 	}
 
-	//前k层节点个数
+	//第k层节点个数
 	public int kLevelSize(int k) {
 		int size = _kLevelSize(root,k);
 		return size;
@@ -198,14 +198,15 @@ public class BinaryTree<T extends Comparable<T>> {
 		if(node == null){
 			return result;
 		}
+		int level=1;
 		LinkedList<TreeNode> queue = new LinkedList<TreeNode>();
 		queue.offer(node);
 		while(!queue.isEmpty()){
 			int size = queue.size();
-			List<T> level = new ArrayList<T>();
+			List<T> list = new ArrayList<T>();
 			for(int i = 0;i < size ;i++){
 				TreeNode<T> cur = queue.poll();
-				level.add(cur.getData());
+				list.add(cur.getData());
 				if(cur.left != null){
 					queue.offer(cur.left);
 				}
@@ -213,9 +214,10 @@ public class BinaryTree<T extends Comparable<T>> {
 					queue.offer(cur.right);
 				}
 			}
-			result.add(level);
+			level++;
+			result.add(list);
 		}
-		System.out.println(Arrays.deepToString(result.toArray()));
+		System.out.println(result);
 		return result;
 	}
 

@@ -98,7 +98,7 @@ cd /data/hadoop/hadoop-2.7.2/bin
 6,运行hive
 cd /data/hive/apache-hive-2.1.0-bin/bin
 (从hive2.1版本开始, 需要先运行schematool 命令来执行初始化操作,之前的版本不需要执行此步骤)
-./schematool  #运行schematool
+./schematool -initSchema -dbType mysql  #运行schematool
 /hive --service metastore &         ---启动hive metastore服务
 ./hive          #进入hive交互界面
 能进入命令行表示hive运行成功
