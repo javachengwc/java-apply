@@ -63,4 +63,31 @@ chkconfig --level 345 mysql on   #mysql加入启动项
 在my.cnf配置文件中设置
 [mysqld]
 lower_case_table_names=1            ###表名不区分大小写， 0--区分大小写，1--不区分大小写
+
+windows下安装mysql8
+1,下载压缩包，访问地址 https://dev.mysql.com/downloads.mysql，下载mysql-8.0.27-winx64.zip
+2,解压到部署目录
+3,在mysql目录下创建配置文件my.ini
+[mysql]
+default-character-set=utf8
+[mysqld]
+port=3306
+max_connections=200
+character-set-server=utf8
+default-storage-engine=INNODB
+4,管理员身份运行cmd命令行执行
+mysqld -install                    ###出现Service successfully installed,表示安装成功
+mysqld -initialize                 ###初始化mysql ,不会出现任何提示
+net start mysql                    ###启动mysql服务
+mysql -uroot -p                    ###应该需要密码，但初始化的时候没显示密码，不知道密码
+5，免密登录，修改密码
+net stop mysql                     ###先停掉mysql服务
+mysqld --console --skip-grant-tables --shared-menory   ###新窗口a免密启动mysql,不关
+mysql -u root -p                   ###新窗口b下免密登录
+update mysql.user set authentication_string='' where user='root';
+quit;
+然后关闭窗口a,重启mysql,net start mysql
+mysql -uroot -p 回车
+alter user 'root'@'localhost' identified by 'root';    ###重设密码
+6，用新密码验证登录mysql
 -------------------------------------------------------------
