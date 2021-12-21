@@ -18,7 +18,7 @@ public class ExcelParser extends Parser {
 		WS=10, STRING=11, ALPHA=12, SIGN=13, LONG=14, DIGIT=15, FLOAT=16, EXPONENT=17, 
 		POW=18, MUL=19, DIV=20, JOIN=21, GE=22, LE=23, NE=24, GT=25, LT=26, EQ=27;
 	public static final String[] tokenNames = {
-		"<INVALID>", "'%'", "')'", "','", "'('", "'$ROW$'", "':'", "TRUE", "FALSE", 
+		"<INVALID>", "'$ROW$'", "'%'", "'('", "')'", "':'", "','", "TRUE", "FALSE", 
 		"NAME", "WS", "STRING", "ALPHA", "SIGN", "LONG", "DIGIT", "FLOAT", "EXPONENT", 
 		"'^'", "'*'", "'/'", "'&'", "'>='", "'<='", "'<>'", "'>'", "'<'", "'='"
 	};
@@ -89,18 +89,18 @@ public class ExcelParser extends Parser {
 	}
 
 	public static class EvalContext extends ParserRuleContext {
-		public TerminalNode GT() { return getToken(ExcelParser.GT, 0); }
-		public TerminalNode GE() { return getToken(ExcelParser.GE, 0); }
-		public TerminalNode LT() { return getToken(ExcelParser.LT, 0); }
-		public TerminalNode EQ() { return getToken(ExcelParser.EQ, 0); }
-		public Op_joinContext op_join(int i) {
-			return getRuleContext(Op_joinContext.class,i);
-		}
-		public TerminalNode LE() { return getToken(ExcelParser.LE, 0); }
 		public List<Op_joinContext> op_join() {
 			return getRuleContexts(Op_joinContext.class);
 		}
+		public Op_joinContext op_join(int i) {
+			return getRuleContext(Op_joinContext.class,i);
+		}
 		public TerminalNode NE() { return getToken(ExcelParser.NE, 0); }
+		public TerminalNode LT() { return getToken(ExcelParser.LT, 0); }
+		public TerminalNode LE() { return getToken(ExcelParser.LE, 0); }
+		public TerminalNode EQ() { return getToken(ExcelParser.EQ, 0); }
+		public TerminalNode GT() { return getToken(ExcelParser.GT, 0); }
+		public TerminalNode GE() { return getToken(ExcelParser.GE, 0); }
 		public EvalContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -151,16 +151,16 @@ public class ExcelParser extends Parser {
 	}
 
 	public static class Op_joinContext extends ParserRuleContext {
-		public Op_plus_minusContext op_plus_minus(int i) {
-			return getRuleContext(Op_plus_minusContext.class,i);
-		}
-		public TerminalNode JOIN(int i) {
-			return getToken(ExcelParser.JOIN, i);
-		}
 		public List<Op_plus_minusContext> op_plus_minus() {
 			return getRuleContexts(Op_plus_minusContext.class);
 		}
+		public Op_plus_minusContext op_plus_minus(int i) {
+			return getRuleContext(Op_plus_minusContext.class,i);
+		}
 		public List<TerminalNode> JOIN() { return getTokens(ExcelParser.JOIN); }
+		public TerminalNode JOIN(int i) {
+			return getToken(ExcelParser.JOIN, i);
+		}
 		public Op_joinContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -211,13 +211,13 @@ public class ExcelParser extends Parser {
 	}
 
 	public static class Op_plus_minusContext extends ParserRuleContext {
-		public List<TerminalNode> SIGN() { return getTokens(ExcelParser.SIGN); }
-		public TerminalNode SIGN(int i) {
-			return getToken(ExcelParser.SIGN, i);
-		}
 		public Op_mul_divContext op_mul_div(int i) {
 			return getRuleContext(Op_mul_divContext.class,i);
 		}
+		public TerminalNode SIGN(int i) {
+			return getToken(ExcelParser.SIGN, i);
+		}
+		public List<TerminalNode> SIGN() { return getTokens(ExcelParser.SIGN); }
 		public List<Op_mul_divContext> op_mul_div() {
 			return getRuleContexts(Op_mul_divContext.class);
 		}
@@ -271,19 +271,19 @@ public class ExcelParser extends Parser {
 	}
 
 	public static class Op_mul_divContext extends ParserRuleContext {
+		public List<TerminalNode> DIV() { return getTokens(ExcelParser.DIV); }
 		public TerminalNode MUL(int i) {
 			return getToken(ExcelParser.MUL, i);
 		}
-		public List<TerminalNode> DIV() { return getTokens(ExcelParser.DIV); }
+		public TerminalNode DIV(int i) {
+			return getToken(ExcelParser.DIV, i);
+		}
+		public List<TerminalNode> MUL() { return getTokens(ExcelParser.MUL); }
 		public List<Op_powContext> op_pow() {
 			return getRuleContexts(Op_powContext.class);
 		}
-		public List<TerminalNode> MUL() { return getTokens(ExcelParser.MUL); }
 		public Op_powContext op_pow(int i) {
 			return getRuleContext(Op_powContext.class,i);
-		}
-		public TerminalNode DIV(int i) {
-			return getToken(ExcelParser.DIV, i);
 		}
 		public Op_mul_divContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -343,12 +343,12 @@ public class ExcelParser extends Parser {
 		public Signed_eval_unitContext signed_eval_unit(int i) {
 			return getRuleContext(Signed_eval_unitContext.class,i);
 		}
-		public List<Signed_eval_unitContext> signed_eval_unit() {
-			return getRuleContexts(Signed_eval_unitContext.class);
-		}
-		public List<TerminalNode> POW() { return getTokens(ExcelParser.POW); }
 		public TerminalNode POW(int i) {
 			return getToken(ExcelParser.POW, i);
+		}
+		public List<TerminalNode> POW() { return getTokens(ExcelParser.POW); }
+		public List<Signed_eval_unitContext> signed_eval_unit() {
+			return getRuleContexts(Signed_eval_unitContext.class);
 		}
 		public Op_powContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -400,10 +400,10 @@ public class ExcelParser extends Parser {
 	}
 
 	public static class Signed_eval_unitContext extends ParserRuleContext {
-		public TerminalNode SIGN() { return getToken(ExcelParser.SIGN, 0); }
 		public Eval_unitContext eval_unit() {
 			return getRuleContext(Eval_unitContext.class,0);
 		}
+		public TerminalNode SIGN() { return getToken(ExcelParser.SIGN, 0); }
 		public Signed_eval_unitContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -448,26 +448,26 @@ public class ExcelParser extends Parser {
 	}
 
 	public static class Eval_unitContext extends ParserRuleContext {
-		public PercentContext percent() {
-			return getRuleContext(PercentContext.class,0);
+		public TerminalNode FLOAT() { return getToken(ExcelParser.FLOAT, 0); }
+		public FunctionContext function() {
+			return getRuleContext(FunctionContext.class,0);
 		}
+		public TerminalNode TRUE() { return getToken(ExcelParser.TRUE, 0); }
+		public TerminalNode STRING() { return getToken(ExcelParser.STRING, 0); }
 		public RangeContext range() {
 			return getRuleContext(RangeContext.class,0);
 		}
-		public TerminalNode FLOAT() { return getToken(ExcelParser.FLOAT, 0); }
+		public TerminalNode FALSE() { return getToken(ExcelParser.FALSE, 0); }
 		public P_eval_unitContext p_eval_unit() {
 			return getRuleContext(P_eval_unitContext.class,0);
 		}
 		public CellContext cell() {
 			return getRuleContext(CellContext.class,0);
 		}
-		public TerminalNode LONG() { return getToken(ExcelParser.LONG, 0); }
-		public TerminalNode FALSE() { return getToken(ExcelParser.FALSE, 0); }
-		public TerminalNode TRUE() { return getToken(ExcelParser.TRUE, 0); }
-		public TerminalNode STRING() { return getToken(ExcelParser.STRING, 0); }
-		public FunctionContext function() {
-			return getRuleContext(FunctionContext.class,0);
+		public PercentContext percent() {
+			return getRuleContext(PercentContext.class,0);
 		}
+		public TerminalNode LONG() { return getToken(ExcelParser.LONG, 0); }
 		public Eval_unitContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -594,9 +594,9 @@ public class ExcelParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(83); match(4);
+			setState(83); match(3);
 			setState(84); eval();
-			setState(85); match(2);
+			setState(85); match(4);
 			}
 		}
 		catch (RecognitionException re) {
@@ -640,7 +640,7 @@ public class ExcelParser extends Parser {
 			_errHandler.recoverInline(this);
 			}
 			consume();
-			setState(88); match(1);
+			setState(88); match(2);
 			}
 		}
 		catch (RecognitionException re) {
@@ -655,13 +655,13 @@ public class ExcelParser extends Parser {
 	}
 
 	public static class FunctionContext extends ParserRuleContext {
+		public List<EvalContext> eval() {
+			return getRuleContexts(EvalContext.class);
+		}
 		public EvalContext eval(int i) {
 			return getRuleContext(EvalContext.class,i);
 		}
 		public TerminalNode NAME() { return getToken(ExcelParser.NAME, 0); }
-		public List<EvalContext> eval() {
-			return getRuleContexts(EvalContext.class);
-		}
 		public FunctionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -684,19 +684,19 @@ public class ExcelParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(90); match(NAME);
-			setState(91); match(4);
+			setState(91); match(3);
 			setState(100);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << 4) | (1L << TRUE) | (1L << FALSE) | (1L << NAME) | (1L << STRING) | (1L << SIGN) | (1L << LONG) | (1L << FLOAT))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << 3) | (1L << TRUE) | (1L << FALSE) | (1L << NAME) | (1L << STRING) | (1L << SIGN) | (1L << LONG) | (1L << FLOAT))) != 0)) {
 				{
 				setState(92); eval();
 				setState(97);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				while (_la==3) {
+				while (_la==6) {
 					{
 					{
-					setState(93); match(3);
+					setState(93); match(6);
 					setState(94); eval();
 					}
 					}
@@ -707,7 +707,7 @@ public class ExcelParser extends Parser {
 				}
 			}
 
-			setState(102); match(2);
+			setState(102); match(4);
 			}
 		}
 		catch (RecognitionException re) {
@@ -747,9 +747,9 @@ public class ExcelParser extends Parser {
 			setState(104); match(NAME);
 			setState(106);
 			_la = _input.LA(1);
-			if (_la==5) {
+			if (_la==1) {
 				{
-				setState(105); match(5);
+				setState(105); match(1);
 				}
 			}
 
@@ -794,7 +794,7 @@ public class ExcelParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(108); cell();
-			setState(109); match(6);
+			setState(109); match(5);
 			setState(110); cell();
 			}
 		}
@@ -831,12 +831,12 @@ public class ExcelParser extends Parser {
 		"\2\2\2EF\3\2\2\2FG\3\2\2\2GH\5\20\t\2H\17\3\2\2\2IT\7\t\2\2JT\7\n\2\2"+
 		"KT\7\20\2\2LT\7\r\2\2MT\7\22\2\2NT\5\24\13\2OT\5\30\r\2PT\5\32\16\2QT"+
 		"\5\26\f\2RT\5\22\n\2SI\3\2\2\2SJ\3\2\2\2SK\3\2\2\2SL\3\2\2\2SM\3\2\2\2"+
-		"SN\3\2\2\2SO\3\2\2\2SP\3\2\2\2SQ\3\2\2\2SR\3\2\2\2T\21\3\2\2\2UV\7\6\2"+
-		"\2VW\5\4\3\2WX\7\4\2\2X\23\3\2\2\2YZ\t\4\2\2Z[\7\3\2\2[\25\3\2\2\2\\]"+
-		"\7\13\2\2]f\7\6\2\2^c\5\4\3\2_`\7\5\2\2`b\5\4\3\2a_\3\2\2\2be\3\2\2\2"+
+		"SN\3\2\2\2SO\3\2\2\2SP\3\2\2\2SQ\3\2\2\2SR\3\2\2\2T\21\3\2\2\2UV\7\5\2"+
+		"\2VW\5\4\3\2WX\7\6\2\2X\23\3\2\2\2YZ\t\4\2\2Z[\7\4\2\2[\25\3\2\2\2\\]"+
+		"\7\13\2\2]f\7\5\2\2^c\5\4\3\2_`\7\b\2\2`b\5\4\3\2a_\3\2\2\2be\3\2\2\2"+
 		"ca\3\2\2\2cd\3\2\2\2dg\3\2\2\2ec\3\2\2\2f^\3\2\2\2fg\3\2\2\2gh\3\2\2\2"+
-		"hi\7\4\2\2i\27\3\2\2\2jl\7\13\2\2km\7\7\2\2lk\3\2\2\2lm\3\2\2\2m\31\3"+
-		"\2\2\2no\5\30\r\2op\7\b\2\2pq\5\30\r\2q\33\3\2\2\2\f\")\619AEScfl";
+		"hi\7\6\2\2i\27\3\2\2\2jl\7\13\2\2km\7\3\2\2lk\3\2\2\2lm\3\2\2\2m\31\3"+
+		"\2\2\2no\5\30\r\2op\7\7\2\2pq\5\30\r\2q\33\3\2\2\2\f\")\619AEScfl";
 	public static final ATN _ATN =
 		ATNSimulator.deserialize(_serializedATN.toCharArray());
 	static {

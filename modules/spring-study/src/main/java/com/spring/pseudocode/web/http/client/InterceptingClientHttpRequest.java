@@ -9,7 +9,7 @@ import java.util.List;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
-import org.springframework.http.client.AbstractBufferingClientHttpRequest;
+//import org.springframework.http.client.AbstractBufferingClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -17,7 +17,9 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.StreamUtils;
 
-public class InterceptingClientHttpRequest extends AbstractBufferingClientHttpRequest {
+public class InterceptingClientHttpRequest
+        //extends AbstractBufferingClientHttpRequest
+        {
 
     private final ClientHttpRequestFactory requestFactory;
 
@@ -38,20 +40,21 @@ public class InterceptingClientHttpRequest extends AbstractBufferingClientHttpRe
     }
 
 
-    @Override
+    //@Override
     public HttpMethod getMethod() {
         return this.method;
     }
 
-    @Override
+    //@Override
     public URI getURI() {
         return this.uri;
     }
 
-    @Override
+    //@Override
     protected final ClientHttpResponse executeInternal(HttpHeaders headers, byte[] bufferedOutput) throws IOException {
         InterceptingRequestExecution requestExecution = new InterceptingRequestExecution();
-        return requestExecution.execute(this, bufferedOutput);
+        //return requestExecution.execute(this, bufferedOutput);
+        return null;
     }
 
 

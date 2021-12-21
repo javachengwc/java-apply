@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @PropertySource(value = {"classpath:configservice.properties"})
 @ComponentScan(basePackageClasses = {ApolloCommonConfig.class,
-        ApolloBizConfig.class,
+        //ApolloBizConfig.class,
         ConfigServiceApplication.class,
         ApolloMetaServiceConfig.class})
 public class ConfigServiceApplication {

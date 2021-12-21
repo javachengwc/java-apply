@@ -11,18 +11,18 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 	
-    <groupId>com.app</groupId>
+    <groupId>com.task</groupId>
     <artifactId>task</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	
 	<name>task</name>
 
     <dependencies>
         <dependency>
-            <groupId>com.app</groupId>
+            <groupId>com.common</groupId>
             <artifactId>common</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.app</groupId>

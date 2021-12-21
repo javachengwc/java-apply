@@ -38,12 +38,12 @@
                 <version>9.4.38.v20210224</version>
                 <configuration>
                     <scanIntervalSeconds>2</scanIntervalSeconds>
-                    <connectors>
-                        <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-                            <port>8082</port>
-                            <maxIdleTime>60000</maxIdleTime>
-                        </connector>
-                    </connectors>
+                    <!--<connectors>-->
+                        <!--<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">-->
+                            <!--<port>8082</port>-->
+                            <!--<maxIdleTime>60000</maxIdleTime>-->
+                        <!--</connector>-->
+                    <!--</connectors>-->
                     <webAppConfig>
                         <contextPath>/</contextPath>
                         <defaultsDescriptor>src/main/webapp/WEB-INF/common/webdefault.xml</defaultsDescriptor>

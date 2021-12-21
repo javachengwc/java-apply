@@ -21,6 +21,8 @@
 		<module>modules/webcloud-consumer</module>
 		<module>modules/webcloud-feign</module>
 		<module>modules/zipkin-manage</module>
+		<!--
 		<module>modules/webcloud-pseudocode</module>
+		-->
 	</modules>	
 </project>

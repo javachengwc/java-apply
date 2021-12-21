@@ -2,7 +2,6 @@ package com.mybatis.pseudocode.mybatisspring.mapper;
 
 import com.mybatis.pseudocode.mybatis.session.SqlSessionFactory;
 import com.mybatis.pseudocode.mybatisspring.SqlSessionTemplate;
-import com.sun.xml.internal.ws.api.databinding.MetadataReader;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;

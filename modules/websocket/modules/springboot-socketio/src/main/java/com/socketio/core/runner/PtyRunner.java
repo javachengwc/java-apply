@@ -115,7 +115,7 @@ public class PtyRunner implements IPtyRunner {
        // .setInitialColumns()
        // .setInitialRows()
         .setRedirectErrorStream(true)
-        .setWindowsAnsiColorEnabled(false)
+       //.setWindowsAnsiColorEnabled(false)
         .setCygwin(false);
     try {
       ptyProcess = builder.start();

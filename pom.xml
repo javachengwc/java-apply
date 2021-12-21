@@ -9,55 +9,57 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-				<module>modules/common-model</module>
+		<module>modules/common-model</module>
         <module>modules/common</module>
         <module>modules/config</module>
-				<module>modules/concurrent</module>
-				<module>modules/socket</module>
+		<module>modules/concurrent</module>
+		<module>modules/socket</module>
         <module>modules/json</module>
         <module>modules/httpclient</module>
-				<module>modules/excel</module>
+		<module>modules/excel</module>
         <module>modules/xml</module>
         <module>modules/captcha</module>
         <module>modules/email</module>
-				<module>modules/spring-study</module>
+		<!--<module>modules/spring-study</module>-->
         <module>modules/solr</module>
-				<module>modules/zookeeper</module>
-				<module>modules/frame</module>
-				<module>modules/webapp</module>
-				<module>modules/cache</module>
-				<module>modules/datastore</module>
-				<module>modules/dataaccess</module>
-				<module>modules/antlr</module>
-				<module>modules/crawler</module>
-				<module>modules/template</module>
+		<module>modules/zookeeper</module>
+		<module>modules/frame</module>
+		<module>modules/webapp</module>
+		<module>modules/cache</module>
+		<module>modules/datastore</module>
+		<module>modules/dataaccess</module>
+		<module>modules/antlr</module>
+		<module>modules/crawler</module>
+		<module>modules/template</module>
         <module>modules/netty</module>
-				<module>modules/mina</module>
-				<module>modules/mq</module>
-				<module>modules/im</module>
-				<module>modules/es</module>
-				<module>modules/component</module>
-				<module>modules/commonservice</module>
-				<module>modules/consistency</module>
+		<module>modules/mina</module>
+		<module>modules/mq</module>
+		<module>modules/im</module>
+		<module>modules/es</module>
+		<module>modules/component</module>
+		<module>modules/commonservice</module>
+		<module>modules/consistency</module>
         <module>modules/thrift</module>
-				<module>modules/dubbo</module>
-			  <module>modules/springdubbo</module>
-				<module>modules/rule</module>
-				<module>modules/webservice</module>
-				<module>modules/wh8m</module>
-				<module>modules/other</module>
-				<module>modules/main</module>
-				<module>modules/configcenter</module>
-				<module>modules/shop</module>
-				<module>modules/mountain</module>
-				<module>modules/webboot</module>
-				<module>modules/webbootmp</module>
-				<module>modules/websocket</module>
-				<module>modules/webrest</module>
-				<module>modules/webcloud</module>
-				<module>modules/webcloud2</module>
-        <module>modules/bigdata</module>
-				<module>modules/sharding-dbtable</module>
+		<module>modules/dubbo</module>
+		<module>modules/springdubbo</module>
+		<module>modules/rule</module>
+		<module>modules/webservice</module>
+		<module>modules/wh8m</module>
+		<module>modules/other</module>
+		<module>modules/main</module>
+		<module>modules/configcenter</module>
+		<module>modules/shop</module>
+		<module>modules/mountain</module>
+		<module>modules/webboot</module>
+		<module>modules/webbootmp</module>
+		<module>modules/websocket</module>
+		<module>modules/webrest</module>
+		<module>modules/webcloud</module>
+		<module>modules/webcloud2</module>
+		<module>modules/sharding-dbtable</module>
+		<!--
+		<module>modules/bigdata</module>
+		-->
     </modules>
 
 </project>

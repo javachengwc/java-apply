@@ -9,7 +9,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 /**
  * @goal example
  */
-@Mojo(name="example", defaultPhase= LifecyclePhase.NONE, threadSafe=true, requiresDependencyResolution= ResolutionScope.NONE)
+//@Mojo(name="example", defaultPhase= LifecyclePhase.NONE, threadSafe=true, requiresDependencyResolution= ResolutionScope.NONE)
 public class ExampleMojo extends AbstractMojo {
 
     /**

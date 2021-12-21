@@ -9,8 +9,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ComponentScan(basePackageClasses = ApolloMetaServiceConfig.class)
 public class ApolloMetaServiceConfig {
-    @Bean
-    public HttpFirewall allowUrlEncodedSlashHttpFirewall() {
-        return new DefaultHttpFirewall();
-    }
+//    @Bean
+//    public HttpFirewall allowUrlEncodedSlashHttpFirewall() {
+//        return new DefaultHttpFirewall();
+//    }
 }

@@ -16,7 +16,7 @@ import java.io.File;
  * newrelic插件入口
  * @goal newrelic
  */
-@Mojo(name="newrelic", defaultPhase= LifecyclePhase.PACKAGE, requiresProject=true,threadSafe=true, requiresDependencyResolution= ResolutionScope.RUNTIME)
+//@Mojo(name="newrelic", defaultPhase= LifecyclePhase.PACKAGE, requiresProject=true,threadSafe=true, requiresDependencyResolution= ResolutionScope.RUNTIME)
 public class NewrelicMojo extends AbstractMojo {
 
     //变量表达式在赋值的时候会自动转换成对应的值
