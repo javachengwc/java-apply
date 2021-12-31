@@ -1,0 +1,61 @@
+---------------------------redis慢查询分析-------------------------------
+redis慢查询配置:
+  config set slowlog-max-len  100                   ###设置慢查询队列的长度
+  config set slowlog-log-slower-than 100            ###设置慢查询阈值,单位(毫秒),当大于这个时间放入慢查询队列中
+  config get
+redis慢查询命令:
+  slowlog get [n]                                   ###获取慢查询队列，获取前n条慢查询的数据。
+  slowlog len                                       ###获取慢查询队列长度
+  slowlog reset                                     ###清空慢查询队列
+更全面的慢查询可以通过CacheCloud工具监控。
+redis延迟监控(参考:https://redis.io/topics/latency):
+  config set latency-monitor-threshold 100          ###启用延迟监控,单位(毫秒)，如果值为 0，表示关闭延迟监控
+  latency latest                                    ###查看最近得延迟样本数据
+  latency history [event]                           ###查看最多160条的给定 event 的延迟时间序列
+  latency reset [event]                             ###重置event的延迟时间序列数据为零
+  latency graph [event]                             ###以文本图表方式展示
+    event 事件值:
+      command 	                                    ###常规命令
+      fast-command 	                                ###时间复杂度为O(1)和O(log N)的快命令
+      fork 	                                        ###系统调用 fork
+      aof-stat 	                                    ###系统调用 stat
+      aof-write 	                                ###系统调用 write
+      aof-rename 	                                ###系统调用 rename
+      aof-fsync-always 	                            ###设置“appendfsync allways”时的系统调用 fsync
+      aof-write-active-child 	                    ###子进程执行的系统调用 fsync
+      rdb-unlink-temp-file               	        ###系统调用 unlink
+      active-defrag-cycle 	                        ###主动碎片整理周期
+      aof-rewrite-diff-write
+      aof-write-alone
+      aof-write-pending-fsync
+      expire-cycle 	                                ###过期周期
+      eviction-cycle 	                            ###淘汰周期
+      eviction-del
+  latency doctor                                    ###回复可读的延迟分析报告
+  latency help                                      ###查看使用帮助
+redis-cli对延迟监控的支持
+ 采样的原理是向目标 redis-server 发向 PING 命令来获得延迟时间。
+  --latency                                         ###以文本方式显示持续采样服务器延迟时间
+  --latency-dist                                    ###以 256 色的频谱方式显示，如果和参数“--latency”同时使用，则被忽略
+  --latency-history                                 ###持续采集并每隔一段时间（默认15秒，可参数“-i”设置其它值）输出一个记录
+其他:
+  info persistence                                  ###查看持久化情况
+  redis-cli -h{host} -p{port} --bigkeys             ###查看大key,一般超过10K为大key
+  redis-cli -h{host} -p{port} --stat                ###查看redis及时请求状态
+套路:
+可能产生慢查询的原因：
+ 1）典型的一些慢命令，如：save持久化数据化；keys匹配所有的键；hgetall，smembers等大集合的全量操作；
+ 2）使用del命令删除一个非常大的集合键，集合键在删除的时候，需要释放每一个元素的内存空间，exists命令如果查询的是过期的大集合键,也会触发删除操作。
+  对于集合键的删除，redis提供了异步删除方式，主线程中断开数据库与该键的引用关系，真正的删除动作通过队列异步交由另外的子线程处理。
+  不过需要配置lazyfree-lazy-expire=yes,异步进行key过期事件的处理。
+ 3）bgsave持久化，虽是fork子进程执行持久化操作，但有时fork系统调用同样会比较耗时，从而阻塞主线程执行命令请求；
+ 4）aof持久化，aof写入时如果磁盘的负载较高，会阻塞aof的写入，从而影响命令的执行；
+ 5）时间事件循环中的周期性删除过期键，在遇到大量键集中过期时，删除过期键同样会比较耗时；
+ 6）快命令被其他慢命令请求阻塞。
+优化:
+  如果AOF持久化导致阻塞，类似报错：Asynchronous AOF fsync is taking too long(disk is busy).
+  Writing the AOF buffe without waiting for fsync to complete,this may slow down Redis
+  可开启了AOF持久化
+  no-appendfsync-on-rewrite yes        ###重写aof时不追加日志，避免与appendfsync争用文件句柄
+
+-------------------------------------------------------------------------

@@ -1,4 +1,4 @@
---------------------------wget---post请求
+--------------------------wget---
 wget --limit-rate=300k http://www.cc.com/cc.zip     ---下载cc.zip,且限制速度为300k/s
 wget -O name.zip http://www.cc.com/download.aspx?id=100  ---下载内容保存为name.zip,wget默认以最后一个/的后面的字符来命令文件名
 wget -P /tmp/dd/  http://www.cc.com/cc.zip          ---下载cc.zip到指定目录/tmp/dd/中

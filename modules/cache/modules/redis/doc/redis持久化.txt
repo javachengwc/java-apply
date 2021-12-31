@@ -111,9 +111,10 @@ AOF---AOF(append only file)持久化将reids的操作日志以追加的方式写
             no-appendfsync-on-rewrite no         ###在AOF日志进行重写BGREWRITEAOF时，如果设置为yes表示新写操作不进行同步fsync，
                                                      只是暂存在缓冲区里，避免造成磁盘IO操作冲突，等重写完成后在写入。redis中默认为no
             aof-load-truncated yes               ###Redis再恢复时，忽略最后一条可能存在问题的指令(因为最后一条指令可能存在问题，比如写一半时突然断电了)
-            aof-use-rdb-preamble no              ####Redis4.0新增RDB-AOF混合持久化格式，在开启了这个功能之后，AOF重写产生的文件将同时包含RDB格式的内容和AOF格式的内容，
+            aof-use-rdb-preamble no              ###Redis4.0新增RDB-AOF混合持久化格式，在开启了这个功能之后，AOF重写产生的文件将同时包含RDB格式的内容和AOF格式的内容，
                                                      其中RDB格式的内容用于记录已有的数据，而AOF格式的内存则用于记录最近发生了变化的数据，
                                                      这样Redis就可以同时兼有RDB持久化和AOF持久化的优点（既能够快速地生成重写文件，也能够在出现问题时，快速地载入数据）。
+      bgrewriteaof                               ###执行aof日志的rewrite
 ------------------------------------
 RDB与AOF对比
     a,RDB在重启保存了大数据集的实例时比 AOF 要快,因为RDB是数据的内存映射,直接载入到内存,而aof是命令,需要逐条执行。
