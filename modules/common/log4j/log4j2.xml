@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn">
+    <properties>
+        <!-- 优先取系统变量LOG_HOME,如果没值再取默认值/data/logs  -->
+        <property name="LOG_HOME">${sys:LOG_HOME:-/data/logs}</property>
+    </properties>
+    <Appenders>
+        <Console name="stdout" target="SYSTEM_OUT">
+            <PatternLayout pattern="%m%n"/>
+        </Console>
+
+        <RollingFile name="apifile" fileName="${LOG_HOME}/api.log"  filePattern="${LOG_HOME}/api.log.%d{yyyyMMdd-HH}">
+            <PatternLayout>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %X{TRACK} %p %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="infofile" fileName="${LOG_HOME}/info.log" filePattern="${LOG_HOME}/info.log.%d{yyyyMMdd-HH}">
+            <PatternLayout>
+                <Pattern>%d{yy/MM/dd HH:mm:ss} %p %m%X{TRACK}%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="warnfile" fileName="${LOG_HOME}/warn.log" filePattern="${LOG_HOME}/warn.log.%d{yyyyMMdd}">
+            <PatternLayout>
+                <Pattern>%d{yy/MM/dd HH:mm:ss} %p %m%X{TRACK}%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="errorfile" fileName="${LOG_HOME}/error.log" filePattern="${LOG_HOME}/error.log.%d{yyyyMMdd}">
+            <PatternLayout>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %X{TRACK} %p %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Logger name="api" level="DEBUG">
+            <AppenderRef ref="apifile" />
+        </Logger>
+
+        <Logger name="info" level="INFO">
+            <AppenderRef ref="infofile" />
+        </Logger>
+
+        <Logger name="warn" level="WARN">
+            <AppenderRef ref="warnfile" />
+        </Logger>
+
+        <Logger name="error" level="ERROR">
+            <AppenderRef ref="errorfile" />
+        </Logger>
+
+        <Logger name="org.apache.commons.httpclient" level="error"></Logger>
+
+        <Root level="DEBUG">
+
+        </Root>
+    </Loggers>
+</Configuration>
