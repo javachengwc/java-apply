@@ -62,6 +62,19 @@ GET _analyze?pretty
 }
 执行后就能看到ik分词器分词后的词元信息,应该就只有一个词元:洪荒之力
 -----------------------------
+head插件
+./bin/plugin install mobz/elasticsearch-head                ------在线安装head插件
+或
+wget https://github.com/mobz/elasticsearch-head/archive/master.zip
+unzip master.zip
+cp -p -r ./elasticsearch-head-master/*  /data/soft/elasticsearch/plugins/head/          ------手动安装head插件
+
+kopf插件
+./bin/plugin install lmenezes/elasticsearch-kopf            ------在线安装kopt插件
+
+http://127.0.0.1:9200/_plugin/head/                         ------查看head插件
+http://127.0.0.1:9200/_plugin/kopf/                         ------查看kopf插件
+-----------------------------
 bin/elasticsearch-plugin install mapper-size                ------安装mapper-size插件
 bin/elasticsearch-plugin remove mapper-size                 ------删除mapper-size插件
 -------------------------------------------------------------------------
