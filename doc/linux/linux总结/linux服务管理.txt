@@ -123,7 +123,7 @@ journalctl --vacuum-size=1G                        ---指定日志文件占据�
 journalctl --vacuum-time=1years                    ---指定日志文件保存多久
 journalctl -xe                                     ---查看最近的日志
 
-systemctl管理的各服务的配置文件位于/ec/systemd/system/xxx.service,
+systemctl管理的各服务的配置文件位于/etc/systemd/system/xxx.service, 或/usr/lib/systemd/system/xxx.service
 服务的配置文件一般会分为3部分：[Unit]、[Service]和[Install]
 [Unit]部分主要是对这个服务的说明
     Description   就是当使用 systemctl list-units 时，输出的简易说明。
