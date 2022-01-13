@@ -52,6 +52,7 @@ proxy_redirect http://aa.com/two/ http://aa.com/one/;
    ### 如果上游服务器发出的响应是302重定向请求,location字段的URL是：http://aa.com/two/,实际转发给客户端的location是http://aa.com/one/。
 proxy_redirect off;               ###使用off参数时，将使location或者refresh字段维持不变。
 proxy_redirect default;           ###使用默认的default参数时，会按照proxy_pass配置项和所属的location配置项重组发往客户端的location头部。
+proxy_redirect http:// https://;  ###http重定向到https
 
 8,proxy_next_upstream
 语法：proxy_next_upstream [error | timeout | invalid_header | http_500 | http_502 | http_503 | http_504 | http_404 | off ];
