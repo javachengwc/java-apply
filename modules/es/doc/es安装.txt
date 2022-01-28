@@ -38,7 +38,7 @@ linux下安装es6
                             也能以root身份执行。
   bin/elasticsearch -d    ##后台运行es
 
-访问http://localhost:9200/  返回正常表示安装成功。
+访问http://localhost:9200/  可查看es版本信息，状态信息，返回正常表示安装成功。
 
 es配置信息
 /data/deploy/es/config/elasticsearch.yml     ---es主配置文件,ip,端口这些信息配置
