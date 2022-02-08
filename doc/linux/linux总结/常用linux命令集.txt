@@ -61,6 +61,9 @@ iostat -d -x -k 2 3
 lsof -p pid                            ---查找对应pid的文件句柄
 lsof -i:80                             ---查找对应端口被哪个进程占用
 lsof  /tmp/1.txt                       ---查找对应文件被哪个进程占用
+lsof |awk '{print $2}'|sort|uniq -c|sort -nr|more
+                                       ---查询系统中进程占用的句柄数
+lsof -c abc                            ---显示abc进程现在打开的文件
 -----------------------------
 netstat -anp                           ---查看端口
 ss -tnl                                ---查看应用程序监控的端口
