@@ -1,0 +1,36 @@
+Native Memory Tracking (NMT) 是Hotspot VM用来分析VM内部内存使用情况的一个功能。
+可以用jcmd（jdk自带）工具来访问NMT的数据
+
+java程序启动添加-XX:NativeMemoryTracking=detail参数，以收集jvm内存使用数据。
+-XX:+UnlockDiagnosticVMOptions -XX:+PrintNMTStatistics，jvm退出时打印NMT报告。
+-XX:NativeMemoryTracking=[off | summary | detail]
+# off                   #默认关闭
+# summary               #统计各个分类的内存使用情况
+# detail                #Collect memory usage by individual call sites
+
+使用命令jcmd pid VM.native_memory detail查看内存分布
+jcmd <pid> VM.native_memory [summary | detail | baseline | summary.diff | detail.diff | shutdown] [scale= KB | MB | GB]
+# summary               #分类内存使用情况.
+# detail                #详细内存使用情况，除了summary信息之外还包含了虚拟内存使用情况
+# baseline              #创建内存使用快照，方便和后面做对比
+# summary.diff          #和上一次baseline的summary对比
+# detail.diff           #和上一次baseline的detail对比
+# shutdown              #关闭NMT
+
+jcmd命令显示的内存包含堆内内存、Code区域、通过unsafe.allocateMemory和DirectByteBuffer申请的内存，
+但是不包含其他Native Code（C代码）申请的堆外内存。
+
+系统pmap命令用于报告进程的内存映射关系。
+pmap -x pid | sort -k 3 -n -r
+
+系统strace命令跟踪程序执行时进程系统调用(system call)和所接收的信号，
+strace可跟踪进程产生的系统调用，包括参数、返回值和执行所消耗的时间。
+strace -f -e "brk,mmap,munmap" -p pid       #跟踪向系统申请内存调用
+
+
+
+
+
+
+
+

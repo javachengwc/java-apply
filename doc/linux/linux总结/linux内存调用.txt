@@ -1,0 +1,33 @@
+--------------------------------linux内存调用---------------------------
+linux内存系统架构可以分为：用户空间、内核空间及硬件部分3个层面，具体结构如下：
+1、用户空间：c语言应用程序使用malloc()申请内存资源,free()释放内存资源。
+2、内核空间：内核总是驻留在内存中，是操作系统的一部分。内核空间为内核保留，不允许应用程序读写该区域的内容或直接调用内核代码定义的函数。
+3、硬件：处理器包含一个内存管理单元（Memory Management Uint,MMU）的部件，负责把虚拟地址转换为物理地址。
+
+内存相关的系统调用
+1，mmap--创建内存映射,进程创建匿名的内存映射，把内存的物理页映射到进程的虚拟地址空间。
+void *mmap(void *addr，size_t length，int prot，int flags，int fd，off_t offset);
+2，mumap--删除内存映射,该调用在进程地址空间中解除一个映射关系，addr是调用mmap()时返回的地址，len是映射区的大小。
+int munmap(void *addr, size_t len);
+3，brk--改变程序间断点的位置，直接修改有效访问范围的末尾地址实现分配与回收。
+int brk(void * addr);
+4，sbrk--改变程序间断点的位置，程序间断点就是程序数据段的结尾。通过增加程序间断点，进程可以更有效的申请内存。
+void * sbrk(intptr_t increment);
+5，mprotect--设置内存映像保护,把自start开始的、长度为len的内存区的保护属性修改为prot指定的值。
+int mprotect(void *addr, size_t len, int prot);
+6，mlock--内存页面加锁
+7，munlock--内存页面解锁
+8，mlockall--调用进程所有内存页面加锁
+9，munlockall--调用进程所有内存页面解锁
+10，mremap--重新映射虚拟内存地址
+11，msync--将映射内存中的数据写回磁盘
+12，getpagesize--获取页面大小
+13，sync--将内存缓冲区数据写回硬盘
+14，cacheflush--将指定缓冲区中的内容写回磁盘
+
+gdb attach pid                                                 ###将进程attach到gdb上
+(gdb) dump memory /tmp/memory.dump  startAddress endAddress    ###dump出内存区间的内存
+#startAddress endAddress是内存地址区间，/proc/pid/maps里的格式不一样，这里是以0x开头。
+(gdb) quit                                                     ###退出gdb,简写q
+(gdb) help                                                     ###查看命令帮助，具体命令查询在gdb中输入help + 命令,简写h
+------------------------------------------------------------------------
