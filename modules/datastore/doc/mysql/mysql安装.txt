@@ -76,8 +76,8 @@ max_connections=200
 character-set-server=utf8
 default-storage-engine=INNODB
 4,管理员身份运行cmd命令行执行
-mysqld -install                    ###出现Service successfully installed,表示安装成功
-mysqld -initialize                 ###初始化mysql ,不会出现任何提示
+mysqld --install                   ###出现Service successfully installed,表示安装成功
+mysqld --initialize-insecure       ###初始化mysql ,不会出现任何提示
 net start mysql                    ###启动mysql服务
 mysql -uroot -p                    ###应该需要密码，但初始化的时候没显示密码，不知道密码
 5，免密登录，修改密码
