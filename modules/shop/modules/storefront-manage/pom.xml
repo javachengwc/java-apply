@@ -133,12 +133,16 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.22</version>
+            <!--mysql数据库版本5.*,连接驱动包版本用5.*, 数据库版本8.*,连接驱动包版本用8.* -->
+            <!--<version>5.1.22</version>-->
+            <version>8.0.22</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid</artifactId>
-            <version>1.0.18</version>
+            <!--mysql数据库版本5.*,druid版本1.0.*, 数据库版本8.*,druid版本1版本用1.2.8 -->
+            <!--<version>1.0.18</version>-->
+            <version>1.2.8</version>
         </dependency>
         <dependency>
             <groupId>com.github.pagehelper</groupId>
