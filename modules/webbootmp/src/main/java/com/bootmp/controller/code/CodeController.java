@@ -3,13 +3,11 @@ package com.bootmp.controller.code;
 import com.bootmp.generator.action.config.WebGeneratorConfig;
 import com.bootmp.generator.action.model.GenQo;
 import com.bootmp.model.req.GenReq;
-import com.bootmp.service.code.TableService;
-import com.shop.base.model.Req;
-import com.shop.base.model.Resp;
+import com.model.base.Req;
+import com.model.base.Resp;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 

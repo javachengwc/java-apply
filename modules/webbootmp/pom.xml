@@ -68,6 +68,11 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>com.common</groupId>
+            <artifactId>common-model</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
@@ -92,19 +97,18 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>com.shop</groupId>
-            <artifactId>shop-base-model</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.46</version>
+            <!--mysql数据库版本5.*,连接驱动包版本用5.*, 数据库版本8.*,连接驱动包版本用8.* -->
+            <!--<version>5.1.46</version>-->
+            <version>8.0.22</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid</artifactId>
-            <version>1.0.18</version>
+            <!--mysql数据库版本5.*,druid版本1.0.*, 数据库版本8.*,druid版本1版本用1.2.8 -->
+            <!--<version>1.0.18</version>-->
+            <version>1.2.8</version>
         </dependency>
         <dependency>
             <groupId>com.ibeetl</groupId>
