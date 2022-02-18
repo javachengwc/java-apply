@@ -37,12 +37,6 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>9.3.7.v20160115</version>
                 <configuration>
-                    <connectors>
-                        <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-                            <port>8081</port>
-                            <maxIdleTime>60000</maxIdleTime>
-                        </connector>
-                    </connectors>
                     <webAppConfig>
                         <contextPath>/</contextPath>
                         <defaultsDescriptor>src/main/webapp/WEB-INF/common/webdefault.xml</defaultsDescriptor>
@@ -89,7 +83,9 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.22</version>
+            <!--mysql数据库版本5.*,连接驱动包版本用5.*, 数据库版本8.*,连接驱动包版本用8.* -->
+            <!--<version>5.1.22</version>-->
+            <version>8.0.22</version>
         </dependency>
         <dependency>
             <groupId>org.mybatis</groupId>
@@ -109,7 +105,9 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid</artifactId>
-            <version>1.0.13</version>
+            <!--mysql数据库版本5.*,druid版本1.0.*, 数据库版本8.*,druid版本1版本用1.2.8 -->
+            <!--<version>1.0.18</version>-->
+            <version>1.2.8</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
