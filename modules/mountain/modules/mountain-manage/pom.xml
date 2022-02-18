@@ -4,15 +4,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.app</groupId>
+    <groupId>com.mountain</groupId>
     <artifactId>mountain-manage</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <properties>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <appname>mountain-manage</appname>
-        <spring.version>3.2.7.RELEASE</spring.version>
+        <spring.version>4.2.0.RELEASE</spring.version>
     </properties>
 
     <dependencies>
@@ -29,7 +32,9 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.22</version>
+            <!--mysql数据库版本5.*,连接驱动包版本用5.*, 数据库版本8.*,连接驱动包版本用8.* -->
+            <!--<version>5.1.22</version>-->
+            <version>8.0.22</version>
         </dependency>
         <dependency>
             <groupId>org.mybatis</groupId>
@@ -113,9 +118,20 @@
             <version>2.4</version>
         </dependency>
         <dependency>
-            <groupId>com.app</groupId>
+            <groupId>com.mountain</groupId>
             <artifactId>mountain-client</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.4.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.4.4</version>
         </dependency>
     </dependencies>
 
