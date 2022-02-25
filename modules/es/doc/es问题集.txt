@@ -1,0 +1,15 @@
+-----------------------------------es问题集--------------------------------
+1,es集群重启后，出现分片 unassigned shards 情况
+a,强制重新分配集群中的UNASSIGEMED Shards
+curl -XPOST localhost:9200/_cluster/reroute?retry_failed=true
+b,手动更改集群中分片的分配
+curl -XPOST localhost:9200/_cluster/reroute -d '{
+"commands" : [ {
+"allocate" : {
+"index" : "xxx",
+"shard" : 0,
+"node" : "node1",
+"allow_primary": true}
+} ] }'
+
+---------------------------------------------------------------------------
