@@ -1,15 +1,36 @@
 -----------------------------------es问题集--------------------------------
-1,es集群重启后，出现分片 unassigned shards 情况
-a,强制重新分配集群中的UNASSIGEMED Shards
+1，es集群重启后，出现分片未分配的情况 unassigned shards 情况
+a，使用es的cat API分析未分配的分片信息及未分配的原因
+curl -XGET localhost:9200/_cat/shards?h=index,shard,prirep,state,unassigned.reason| grep UNASSIGNED
+b，查看es节点数据存储磁盘已使用容量，如果超过cluster.routing.allocation.disk.watermark.low闸值或对应比例，es不会将分片分给此节点。
+  此种情况下，需要对数据磁盘扩容，才能解决 unassigned shards情况。
+c，es主节点不会将主分片和副本分片分配至同一个节点，同样，也不会将两个副本节点分配到同一个节点，
+  所以当没有足够的节点分配分片时，会出现未分配的状态。检查节点数和副本数的关系，应该为N>=R+1 （其中N为节点数，R为副本数量）
+  如果节点数不够，需要增加节点数 或减少副本数，使关系成立，才能避免这种情况发生。
+d，强制重新分配集群中的UNASSIGEMED Shards
 curl -XPOST localhost:9200/_cluster/reroute?retry_failed=true
-b,手动更改集群中分片的分配
+e，手动更改集群中分片的分配
 curl -XPOST localhost:9200/_cluster/reroute -d '{
-"commands" : [ {
-"allocate" : {
-"index" : "xxx",
-"shard" : 0,
-"node" : "node1",
-"allow_primary": true}
-} ] }'
-
+    "commands" : [ {
+        "allocate" : {
+        "index" : "xxx",
+        "shard" : 1,
+        "node" : "node1",
+        "allow_primary": true }
+    } ]
+}'
+f，检查是否集群中某索引的分片数据已不存在，这中情况下处理方式
+  1,恢复存有分片的源节点，加入到集群中(集群关闭自分配的前提下)
+  2,使用Reroute API强制重分配分片
+  curl -XPOST localhost:9200/_cluster/reroute -d '{
+      "commands" :[ {
+          "allocate_empty_primary" :{
+          "index" :"xxx",
+          "shard" : 0,
+          "node":"<NODE_NAME>",
+          "accept_data_loss": "true" }
+      } ]
+  }'
+  3,从原始数据重建索引或者从备份快照中恢复
+g，也有可能多版本不兼容问题，导致分片未分配
 ---------------------------------------------------------------------------

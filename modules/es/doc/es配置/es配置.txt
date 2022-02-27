@@ -1,0 +1,209 @@
+-----------------------------------es配置--------------------------------------
+es配置文件elasticsearch.yml各配置项:
+cluster.name: club-xxx                                     ###集群名称
+node.name: node1                                           ###节点名称
+node.master: false                                         ###是否主节点
+node.data: true                                            ###是否存储数据
+index.store.type: niofs                                    ###读写文件方式
+index.cache.field.type: soft                               ###缓存类型
+bootstrap.mlockall: true                                   ###内存禁用swap
+gateway.type: local                                        ###本地存储
+gateway.recover_after_nodes: 3                             ###3个数据节点开始恢复
+gateway.recover_after_time: 5m                             ###5分钟后开始恢复数据
+gateway.expected_nodes: 3                                  ###3个es节点开始恢复
+discovery.zen.minimum_master_nodes: 2                      ###实际设置n/2+1,防止脑裂现象
+cluster.routing.allocation.node_initial_primaries_recoveries: 8      ###并发恢复分片数
+cluster.routing.allocation.node_concurrent_recoveries: 2   ###分片迁移recovery并发数
+indices.recovery.max_bytes_per_sec: 250mb                  ###数据在节点间传输最大带宽
+indices.recovery.concurrent_streams: 8                     ###单个节点并发留数量
+discovery.zen.ping.multicast.enabled: false                ###禁用多播
+discovery.zen.ping.unicast.hosts: ["192.168.1.11:9300", "192.168.1.12:9300", "192.168.1.13:9300"]
+discovery.zen.fd.ping_interval: 10s                        ###节点存活检测间隔
+discovery.zen.fd.ping_timeout: 120s                        ###节点存活超时时间
+discovery.zen.fd.ping_retries: 6                           ###节点存活超时重试次数
+http.cors.enabled: true                                    ###开启监控
+index.analysis.analyzer.ik.type: "ik"                      ###ik分词
+threadpool.index.type: fixed                               ###索引线程池类型
+threadpool.index.size: 64                                  ###索引线程池大小
+threadpool.index.queue_size: 1000                          ###索引线程池队列大小
+threadpool.search.size: 64                                 ###检索线程池大小
+threadpool.search.type: fixed                              ###检索线程池类型
+threadpool.search.queue_size: 1000                         ###检索线程池队列大小
+threadpool.get.type: fixed                                 ###取数据线程池类型
+threadpool.get.size: 32                                    ###取数据线程池大小
+threadpool.get.queue_size: 1000                            ###队列大小
+threadpool.bulk.type: fixed                                ###批量请求线程池类型
+threadpool.bulk.size: 32                                   ###批量请求线程池大小
+threadpool.bulk.queue_size: 1000                           ###批量请求线程池队列大小
+threadpool.flush.type: fixed                               ###刷磁盘线程池类型
+threadpool.flush.size: 32                                  ###刷磁盘线程池大小
+threadpool.flush.queue_size: 1000                          ###刷磁盘队列大小
+indices.store.throttle.type: merge
+indices.store.throttle.type: none                          ###写磁盘类型
+indices.store.throttle.max_bytes_per_sec: 500mb            ###写磁盘最大带宽
+index.merge.scheduler.max_thread_count: 8                  ###索引merge最大线程数
+index.translog.flush_threshold_size: 600MB                 ###刷新translog文件阀值
+index.translog.flush_threshold_ops: 500000
+index.translog.durability: async                           ###translog文件异步写入磁盘
+cluster.routing.allocation.cluster_concurrent_rebalance    ###同时可在节点间移动的分片数，默认2
+cluster.routing.allocation.enable: all                     ###分配的分片类型，默认all, 可选值:all,none,none,new_primaries
+cluster.routing.allocation.disk.watermark.low: 85%         ###磁盘的低警戒水位线，默认为磁盘容量的85％。es不会将分片分配给使用磁盘超过85％的节点。
+cluster.routing.allocation.disk.watermark.high: 90%        ###磁盘的高警戒水位线，默认为磁盘容量的90％。es将尝试从磁盘使用率超过90％的节点重新分配分片。
+cluster.routing.allocation.disk.watermark.flood_stage: 95% ###磁盘的洪水警戒水位线，默认为磁盘容量的95％。es将对每个索引强制执行只读索引块。
+cluster.info.update.interval: 30s                          ###检查集群节点磁盘使用情况周期。默认为30秒。
+
+动态设置es集群配置示例
+transient 临时：设置在集群重启之前一直会生效。一旦集群重启，这些设置将被清除。
+persistent 永久：设置永久保存，会将修改持久化到文件中，重启之后也不影响。
+
+###禁用自分片，默认是启用all
+curl -XPUT localhost:9200/_cluster/settings -d '{
+    "transient" : {
+        "cluster.routing.allocation.enable": "none"
+    }
+}'
+
+###禁用分片自平衡，默认是启用all
+curl -XPUT localhost:9200/_cluster/settings -d '{
+    "transient" : {
+        "cluster.routing.rebalance.enable": "none"
+    }
+}'
+
+###清空某配置为默认值
+curl -XPUT localhost:9200/_cluster/settings -d '{
+   "persistent": {
+       "cluster.routing.allocation.enable": null
+   }
+}'
+
+###指定退役节点IP
+curl -XPUT localhost:9200/_cluster/settings -d '{
+    "persistent" : {
+        "cluster.routing.allocation.exclude._ip" : "192.168.1.11,192.168.1.12"
+    }
+}'
+
+###指定保留节点IP,至少符合一项
+curl -XPUT localhost:9200/_cluster/settings -d '{
+    "persistent" : {
+        "cluster.routing.allocation.include._ip" : "192.168.1.11,192.168.1.12"
+    }
+}'
+
+###指定索引节点IP,至少符合一项
+curl -XPUT localhost:9200/<INDEX_NAME>/settings -d '{
+    "index.routing.allocation.include._ip": "192.168.1.11,192.168.1.12"
+}'
+
+###指定保留节点IP,指定项全部符合
+curl -XPUT localhost:9200/_cluster/settings -d '{
+    "persistent" : {
+        "cluster.routing.allocation.require._ip" : "192.168.1.11,192.168.1.12"
+    }
+}'
+
+###设置es集群允许使用_all或*通配符的方式删除索引，默认不允许
+curl -XPUT localhost:9200/_cluster/settings -d '{
+    "persistent" : {
+        "action.destructive_requires_name" : false
+    }
+}'
+
+###设置index恢复时每秒最大字节数限制，默认40mb
+curl -XPUT localhost:9200/_cluster/settings -d '{
+    "persistent": {
+        "indices.recovery.max_bytes_per_sec": "100mb"
+    }
+}'
+
+###开启慢查询
+curl -XPUT localhost:9200/_cluster/settings -d '{
+    "transient" :
+        {
+            "index.search.slowlog.level": "debug",
+            "index.search.slowlog.threshold.query.warn": "5s",
+            "index.search.slowlog.threshold.query.info": "3s",
+            "index.search.slowlog.threshold.query.debug": "1s",
+            "index.search.slowlog.threshold.query.trace": "500ms",
+            "index.search.slowlog.threshold.fetch.warn": "1s",
+            "index.search.slowlog.threshold.fetch.info": "800ms",
+            "index.search.slowlog.threshold.fetch.debug": "500ms",
+            "index.search.slowlog.threshold.fetch.trace": "200ms"
+            "index.indexing.slowlog.threshold.index.warn": "10s",
+            "index.indexing.slowlog.threshold.index.info": "5s",
+            "index.indexing.slowlog.threshold.index.debug": "2s",
+            "index.indexing.slowlog.threshold.index.trace": "500ms",
+            "index.indexing.slowlog.level": "info",
+            "index.indexing.slowlog.source": "1000",
+            "indices.memory.index_buffer_size": "20%"
+        }
+}'
+
+###设置索引的副本数，如果<INDEX_NAME>设为_all,表示所有索引
+curl -XPUT localhost:9200/<INDEX_NAME>/_settings -d' { "number_of_replicas": 2 }'
+
+###设置es节点磁盘的分片分配闸值
+curl -XPUT localhost:9200/_cluster/settings -d '{
+    "persistent": {
+        "cluster.routing.allocation.disk.watermark.low": 85%,
+        "cluster.routing.allocation.disk.watermark.high": 90%,
+        "cluster.routing.allocation.disk.watermark.flood_stage": 95%,
+        "cluster.info.update.interval": "1m"
+    }
+}'
+
+curl -XPUT localhost:9200/_cluster/settings -d '{
+    "transient": {
+        "logger.discover": "DEBUG"
+    }
+    "persistent": {
+        "discovery.zen.minimum_master_nodes": 2
+    }
+}'
+
+###指定自动分片排除的节点，在节点下线时可如此设置
+curl -XPUT localhost:9200/_cluster/settings -d '{
+    "transient": {
+        "cluster.routing.allocation.exclude._name": "node1,node2"
+    }
+}'
+
+curl -XPUT localhost:9200/_cluster/settings -d '{
+    "transient": {
+        "index.indexing.slowlog.level": "warn"
+    }
+}'
+
+###分片分配和移动
+curl -XPOST localhost:9200/_cluster/reroute -d '{
+    "commands" : [ {
+        "move" :
+            {
+              "index" : "order_data", "shard" : 2,
+              "from_node" : "node1",
+              "to_node" : "node2"
+            }
+        },
+        {
+          "allocate" : {
+              "index" : "test", "shard" : 1, "node" : "node3"
+          }
+        }
+    ]
+}'
+
+###设置索引恢复日志级别
+curl -XPUT localhost:9200/_cluster/settings -d '{
+    "transient": {
+        "logger.indices.recovery": "DEBUG"
+    }
+}'
+
+curl -XPOST localhost:9200/_cluster/settings -d '{
+    "transient" :{
+        "indices.memory.index_buffer_size": "20%"
+    }
+}'
+
+------------------------------------------------------------------------------

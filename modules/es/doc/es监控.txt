@@ -1,0 +1,34 @@
+----------------------------------es监控-----------------------------------
+###查看es集群相关状态
+http://localhost:9200/_cluster/health?level=shards    ---查看集群状态
+http://localhost:9200/_cluster/settings?pretty        ---查看集群设置
+http://localhost:9200/_cluster/pending_tasks?pretty
+http://localhost:9200/_cluster/allocation/explain     ---查看集群异常状态
+
+###使用_cat查看es状态，每个命令都支持使用?v参数，来显示详细的信息，每个命令都支持使用?help参数，来输出可以显示的列：
+http://localhost:9200/_cat/health?v                   ---查看es健康状态
+http://localhost:9200/_cat/nodes                      ---查看es节点
+http://localhost:9200/_cat/master?v                   ---查看主节点
+http://localhost:9200/_cat/master?h=host,ip,node      ---查看主节点，只显示host,ip,node列
+http://localhost:9200/_cat/indices                    ---查看es索引
+http://localhost:9200/_cat/shards                     ---查看分片状态
+http://localhost:9200//_cat/recovery                  ---查看索引恢复状态
+/_cat/shards/{index}]
+/_cat/indices/{index}
+/_cat/recovery/{index}
+/_cat/allocation
+/_cat/segments
+/_cat/segments/{index}
+/_cat/count
+/_cat/count/{index}
+/_cat/pending_tasks
+/_cat/aliases
+/_cat/aliases/{alias}
+/_cat/thread_pool
+/_cat/plugins
+/_cat/fielddata
+/_cat/fielddata/{fields}
+/_cat/nodeattrs
+/_cat/repositories
+/_cat/snapshots/{repository}
+---------------------------------------------------------------------------

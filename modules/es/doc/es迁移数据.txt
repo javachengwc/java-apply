@@ -1,0 +1,15 @@
+-----------------------------es迁移数据-------------------------
+es数据文件迁移，索引数据从原目录复制到新目录。
+此种数据迁移，需要先停es服务，然后复制索引数据，再重启es服务，重新恢复索引。
+当索引数据有损坏，es服务启动不起来，可能需要这样逐步迁移索引数据，逐步重启es,来排除损坏的索引。
+cp -rf /data/es-data/es-club/nodes/0/indices/index1_xxx  /data/es-data-new/es-club/nodes/0/indices/
+cp -rf /data/es-data/es-club/nodes/0/indices/index2_xxx  /data/es-data-new/es-club/nodes/0/indices/
+cp -rf /data/es-data/es-club/nodes/0/indices/index3_xxx  /data/es-data-new/es-club/nodes/0/indices/
+...
+
+es迁移数据过程:
+1，新集群扩容
+2，原集群退役节点
+3，logstash等工具迁移
+4，reindex   reindex可能需要在配置中设置白名单,reindex.remote.whitelist: ["192.168.1.11:9200"]
+----------------------------------------------------------------

@@ -1,0 +1,23 @@
+----------------------------------es集群------------------------------
+es集群关闭
+1，禁止分片自动分布
+curl -XPUT localhost:9200/_cluster/settings -d '{
+    "persistent": {
+        "cluster.routing.allocation.enable": "none"
+    }
+}'
+2，执行同步刷新     curl -XPOST localhost:9200/_flush/synced
+3，各节点逐个关闭   kill pid
+
+es集群启动，一般启动后到集群为正常(green)状态需要5-10分钟
+1，逐个启动节点     ./elasticsearch -d
+2，等待所有节点加入集群，查看集群状态  http://localhost:9200/_cat/health?v
+3，启用分片自动分布
+curl -XPUT localhost:9200/_cluster/settings -d '{
+    "persistent": {
+        "cluster.routing.allocation.enable": "all"
+    }
+}'
+4，等待集群可用     http://localhost:9200/_cat/health?v
+                   http://localhost:9200/_cat/recovery?v
+----------------------------------------------------------------------

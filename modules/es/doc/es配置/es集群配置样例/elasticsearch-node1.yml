@@ -1,0 +1,26 @@
+node.rack: es_club_rack
+cluster.name: es-club
+node.name: es-node-01
+node.datacenter: es-datacenter
+index.number_of_shards: 5
+index.number_of_replicas: 1
+index.refresh_interval: 10s
+index.translog.flush_threshold_ops: 50000
+path.data: /data/es-data
+path.logs: /data/es-log
+gateway.recover_after_time: 5m
+discovery.zen.ping.timeout: 120s
+discovery.zen.ping.multicast.enabled: false
+discovery.zen.ping.unicast.hosts: ["192.168.1.11:9300", "192.168.1.12:9300", "192.168.1.13:9300"]
+index.search.slowlog.threshold.query.warn: 10s
+index.search.slowlog.threshold.fetch.warn: 1s
+index.indexing.slowlog.threshold.index.warn: 10s
+index:
+  analysis:
+    analyzer:
+      ik:
+        alias: [ik_analyzer]
+        type: org.elasticsearch.index.analysis.IkAnalyzerProvider
+index.analysis.analyzer.default.type: "ik"
+script.disable_dynamic: false
+bootstrap.mlockall: true
