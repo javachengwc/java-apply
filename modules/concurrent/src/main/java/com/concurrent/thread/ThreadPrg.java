@@ -2,10 +2,7 @@ package com.concurrent.thread;
 
 import com.util.base.ThreadUtil;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * awaitTermination方法会使线程等待timeout时长，当超过timeout时间后，会监测ExecutorService是否已经关闭，若关闭则返回true，否则返回false
@@ -28,8 +25,17 @@ public class ThreadPrg {
         System.out.println("-------------------threads start," + start);
         try {
             while (!exeService.awaitTermination(10, TimeUnit.SECONDS)) {
+                ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) exeService;
+                //任务总数
+                long taskCount = threadPoolExecutor.getTaskCount();
+                //完成的任务数
+                long completedCount = threadPoolExecutor.getCompletedTaskCount();
+                //对列中的任务数
+                int queueTaskSize = threadPoolExecutor.getQueue().size();
+                //活动的线程数
+                int activeThreadCount = threadPoolExecutor.getActiveCount();
                 //等待线程池执行完关闭
-                System.out.println("线程池执行中");
+                System.out.println("线程池执行中,"+taskCount+" "+completedCount+" "+ activeThreadCount);
             }
         }catch(Exception e)
         {
