@@ -48,9 +48,10 @@ indices.store.throttle.type: merge
 indices.store.throttle.type: none                          ###写磁盘类型
 indices.store.throttle.max_bytes_per_sec: 500mb            ###写磁盘最大带宽
 index.merge.scheduler.max_thread_count: 8                  ###索引merge最大线程数
-index.translog.flush_threshold_size: 600MB                 ###刷新translog文件阀值
+index.translog.flush_threshold_size: 600MB                 ###刷新translog文件阀值，控制tranlog数据块的大小，达到threshold大小时，才会flush到lucene索引文件
 index.translog.flush_threshold_ops: 500000
 index.translog.durability: async                           ###translog文件异步写入磁盘
+index.translog.sync_interval：5s                           ###默认5秒
 cluster.routing.allocation.cluster_concurrent_rebalance    ###同时可在节点间移动的分片数，默认2
 cluster.routing.allocation.enable: all                     ###分配的分片类型，默认all, 可选值:all,none,none,new_primaries
 cluster.routing.allocation.disk.watermark.low: 85%         ###磁盘的低警戒水位线，默认为磁盘容量的85％。es不会将分片分配给使用磁盘超过85％的节点。

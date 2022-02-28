@@ -1,0 +1,35 @@
+-------------------------------------es缓存-------------------------------
+es为提升查询效率，提供了多种查询缓存
+http://localhost:9200/_cat/nodes?v&h=name,fm,fcm,sm,qcm,im             ###查看es缓存使用情况
+###fielddata.memory_size (fm)          ###字段缓存占用内存
+###filter_cache.memory_size (fcm)      ###过滤语句缓存占用内存
+###segments.memory (sm)                ###每个分片包含的断占用内存
+
+1，节点查询缓存(Node Query Cache)，只缓存使用了Filter过滤器查询到的结果，也叫Filter Cache。
+节点查询缓存基于es节点级别的缓存，由节点上所有的分片所共享，主要缓存查询的结果集。
+实现了 LRU缓存清除策略，当缓存满了的时候，会清除最近最少使用的数据，为新数据腾出可用空间。
+index.queries.cache.enabled: false                   ###禁用查询缓存,默认开启
+indices.queries.cache.size: 10%                      ###查询缓存大小，默认10%，可设置成百分比，也可设置成具体值，如256mb
+indices.queries.cache.count: 10000                   ###默认10000
+
+2，基于索引分片级别的缓存(Shard Rquest Cache)，es的请求发到一个协调节点，协调节点通过转发请求到实际的数据节点获取数据，并且将数据进行组装以后返回响应。
+每一个节点的分片都会将请求本地结果缓存起来，当访问命中时直接从缓存获取，不需要通过读取磁盘的方式，速度会提升很多。
+默认情况下，Shard Rquest Cache只缓存查询请求中size=0的请求结果，主要包括aggregations、hits.total和suggestions等。
+
+3，Fielddata Cache，包含global ordinals和text字段field data的缓存，
+主要用于对字段进行排序或聚合 ,它将所有的Field data聚合后的结果加载到内存中，以提供快速的访问。
+Fielddata Cache十分消耗内存，因为一般用于排序或者聚合的数据较大，需要有足够多的内存。
+从5.0 版本开始，text 字段默认关闭了 Fielddata 功能，当对一个text类型的字段进行sort、aggregation时会抛异常，需要进行此字段属性"fielddata": true设置。
+indices.fielddata.cache.size: 10%
+
+4，文件系统缓存
+es底层基于lucene实现，lucene底层涉及大量的文件读写，会大量使用文件系统缓存os cache,
+一般需要预留系统内存一半的空间给os cache。通过free命令查看系统buffer/cache使用情况
+
+5，索引缓存(indexing buffer)
+es索引的过程不会直接写入磁盘，而是先写入一个缓冲区，定时刷新到磁盘或者等缓冲区满了以后刷新到磁盘，这个缓冲区就是 indexing buffer。
+indices.memory.index_buffer_size: 10%                ###索引缓存大小,默认值为10%.
+indices.memory.min_index_buffer_size: 48mb           ###最小缓冲区大小，默认48mb
+indices.memory.max_index_buffer_size                 ###最大缓冲区大小
+
+--------------------------------------------------------------------------
