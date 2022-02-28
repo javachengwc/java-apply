@@ -1,0 +1,61 @@
+-----------------------------------es索引模板---------------------------
+es索引模板demo
+
+PUT _template/test_template
+{
+  "index_patterns": [
+    "test_index_*",
+    "test_*"
+  ],
+  "settings": {
+    "number_of_shards": 3,
+    "number_of_replicas": 1,
+    "max_result_window": 10000,
+    "refresh_interval": "30s"
+  },
+  "mappings": {
+    "properties": {
+      "id": {
+        "type": "long"
+      },
+      "title": {
+        "type": "keyword"
+      },
+      "content": {
+        "analyzer": "ik",
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        }
+      },
+      "available": {
+        "type": "boolean"
+      },
+      "review": {
+        "type": "nested",
+        "properties": {
+          "nickname": {
+            "type": "text"
+          },
+          "text": {
+            "type": "text"
+          },
+          "stars": {
+            "type": "integer"
+          }
+        }
+      },
+      "create_date": {
+        "type": "date",
+        "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+      },
+      "ip": {
+        "type": "ip"
+      }
+    }
+  }
+}
+------------------------------------------------------------------------

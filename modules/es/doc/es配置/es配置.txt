@@ -8,6 +8,12 @@ index.store.type: niofs                                    ###读写文件方式
 index.cache.field.type: soft                               ###缓存类型
 bootstrap.mlockall: true                                   ###内存禁用swap
 gateway.type: local                                        ###本地存储
+index.refresh_interval: 1s                                 ###将index buffer刷新到os cache的时间，刷新到os cache的数据才可以被索引到，默认是1s.
+                                                              如果对实时性搜索要求不高,可设置时间长一些，比如30s,以提高性能
+index.max_result_window: 10000                             ###索引能够查询到最大数据量，from+size深分页的最大条数。如果全量导出，可以使用scroll游标办法
+index.store.preload:                                       ###默认情况下，es完全依靠操作系统文件系统缓存来缓存IO操作.设置index.store.preload，告知操作系统在打开时将热索引文件的内容加载到内存中。
+                                                              默认值为空，即不提前加载索引到内存中，可设值有["nvd", "dvd", "tim", "doc", "dim"]。对应的norms, doc values, terms dictionaries, postings lists， points。
+                                                              常见的设置为 index.store.preload = ["nvd", "dvd"]，即提前加载norms评分信息和doc value数据到内存，便于快速索引。
 gateway.recover_after_nodes: 3                             ###3个数据节点开始恢复
 gateway.recover_after_time: 5m                             ###5分钟后开始恢复数据
 gateway.expected_nodes: 3                                  ###3个es节点开始恢复

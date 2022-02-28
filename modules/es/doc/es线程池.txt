@@ -1,0 +1,25 @@
+---------------------------------------es线程池-------------------------------
+es核心线程池有index、search、get、bulk等，具体如下。
+index：       用于索引和删除操作的线程池。它的类型默认为fixed，size默认为可用处理器的数量，队列的size默认为300。
+search：      用于搜索和计数请求的线程池。它的类型默认为fixed，size默认为可用处理器的数量乘以3，队列的size默认为1000。
+suggest：     用于建议器请求的线程池。它的类型默认为fixed，size默认为可用处理器的数量，队列的size默认为1000。
+get：         用于实时的GET请求的线程池。它的类型默认为fixed，size默认为可用处理器的数量，队列的size默认为1000。
+bulk：        用于批量操作的线程池。它的类型默认为fixed，size默认为可用处理器的数量，队列的size默认为50。
+percolate     用于预匹配器操作的线程池。它的类型默认为fixed，size默认为可用处理器的数量，队列的size默认为1000。
+###线程池类型可选值，cache-无限制的线程池，为每个请求创建一个线程。fixed-固定大小的线程池，大小由size属性指定，可指定队列（使用queue_size属性指定）保存请求，
+   直到有一个空闲的线程来执行请求。如果es无法把请求放到队列中（队列满了），该请求将被拒绝。
+
+threadpool.index.type: fixed
+threadpool.index.size: 100
+threadpool.index.queue_size: 500
+
+curl -XPUT localhost:9200/_cluster/settings -d '{
+    "transient": {
+        "threadpool.index.type": "fixed",
+        "threadpool.index.size": 100,
+        "threadpool.index.queue_size": 500
+    }
+}'
+###线程池的调整，可参考数据库连接池大小的调整，其基本结论是，池的大小跟CPU核心数息息相关，通常不要高于2*CPU核心数，过高就会产生反作用。
+es默认的线程设置已经很合理了。对于所有的线程池(除了搜索)，线程个数是根据 CPU 核心数设置的。搜索线程池可设置的大一点，配置为 int(( 核心数 ＊ 3 )／2)＋ 1 。
+------------------------------------------------------------------------------
