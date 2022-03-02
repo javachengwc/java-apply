@@ -8,7 +8,7 @@ java -jar arthas-boot.jar                              ---启动
     thread                                             ---查看当前线程信息，查看线程的堆栈
         thread -n 3                                    ---当前最忙的前N个线程并打印堆栈
         thread -b                                      ---查看当前阻塞其他线程的线程,也就是查找死锁的线程
-        thread -–state WAITING                        ---查看指定状态的线程
+        thread -state WAITING                          ---查看指定状态的线程
         thread id                                      ---id是线程id,具体查看某线程
         thread -all | grep "xxx"                       ---查找名称包括xxx的线程
     jvm                                                ---查看当前JVM信息

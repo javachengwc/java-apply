@@ -14,7 +14,9 @@ indices.queries.cache.count: 10000                   ###默认10000
 
 2，基于索引分片级别的缓存(Shard Rquest Cache)，es的请求发到一个协调节点，协调节点通过转发请求到实际的数据节点获取数据，并且将数据进行组装以后返回响应。
 每一个节点的分片都会将请求本地结果缓存起来，当访问命中时直接从缓存获取，不需要通过读取磁盘的方式，速度会提升很多。
-默认情况下，Shard Rquest Cache只缓存查询请求中size=0的请求结果，主要包括aggregations、hits.total和suggestions等。
+默认情况下，shard request cache只缓存hits.total, aggregations, suggestions类型的数据，并不会缓存hits的内容
+index.requests.cache.enable: false                   ###禁用ShardRequestCache
+indices.requests.cache.size: 1%                      ###shard request缓存大小，默认1%
 
 3，Fielddata Cache，包含global ordinals和text字段field data的缓存，
 主要用于对字段进行排序或聚合 ,它将所有的Field data聚合后的结果加载到内存中，以提供快速的访问。

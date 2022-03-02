@@ -18,6 +18,9 @@ es可以做类似于mysql的水平拆分，将大量的访问很少，频率很�
 es里面的复杂的关联查询，复杂的查询语法，一般性能都不太好，所以对es索引结构的设计，在一开始就设计好。
 写入es的数据就已经是组装关联好的数据，搜索时，不需要利用es的搜索语法去完成类似join之类的搜索。
 对于es的复杂查询操作，比如join，nested，parent-child搜索尽量避免，性能比较差。
+尽量避免使用nested或 parent/child，能不用就不用；nested query慢， parent/child query 更慢，比nested query慢上百倍；
+因此能在mapping设计阶段搞定的（大宽表设计或采用比较smart的数据结构），就不要用父子关系的mapping。
+避免使用动态值作字段(key),  动态递增的mapping，会导致集群崩溃；同样，也需要控制字段的数量，业务中不使用的字段，就不要索引。
 
 5,避免使用es分页查询，改用scroll api滚动查询
 es的分页是会把每个shard上存储的前pageSize*pageNo条数据都查到一个协调节点上，协调节点对这些数据进行一些合并、处理，再获取到最终页数据。

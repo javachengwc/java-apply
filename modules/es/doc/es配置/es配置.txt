@@ -17,6 +17,10 @@ index.store.preload:                                       ###默认情况下，
 gateway.recover_after_nodes: 3                             ###3个数据节点开始恢复
 gateway.recover_after_time: 5m                             ###5分钟后开始恢复数据
 gateway.expected_nodes: 3                                  ###3个es节点开始恢复
+index.mapping.nested_fields.limit: 50                      ###nested fields字段限制个数，默认50
+index.mapping.nested_objects.limit :10000
+index.mapping.total_fields.limit:1000                      ###索引的字段限制个数
+index.mapping.depth.limit: 20                              ###mapping深度限制数
 discovery.zen.minimum_master_nodes: 2                      ###实际设置n/2+1,防止脑裂现象
 cluster.routing.allocation.node_initial_primaries_recoveries: 8      ###并发恢复分片数
 cluster.routing.allocation.node_concurrent_recoveries: 2   ###分片迁移recovery并发数
@@ -41,17 +45,22 @@ threadpool.get.queue_size: 1000                            ###队列大小
 threadpool.bulk.type: fixed                                ###批量请求线程池类型
 threadpool.bulk.size: 32                                   ###批量请求线程池大小
 threadpool.bulk.queue_size: 1000                           ###批量请求线程池队列大小
-threadpool.flush.type: fixed                               ###刷磁盘线程池类型
 threadpool.flush.size: 32                                  ###刷磁盘线程池大小
 threadpool.flush.queue_size: 1000                          ###刷磁盘队列大小
 indices.store.throttle.type: merge
 indices.store.throttle.type: none                          ###写磁盘类型
 indices.store.throttle.max_bytes_per_sec: 500mb            ###写磁盘最大带宽
-index.merge.scheduler.max_thread_count: 8                  ###索引merge最大线程数
-index.translog.flush_threshold_size: 600MB                 ###刷新translog文件阀值，控制tranlog数据块的大小，达到threshold大小时，才会flush到lucene索引文件
-index.translog.flush_threshold_ops: 500000
-index.translog.durability: async                           ###translog文件异步写入磁盘
-index.translog.sync_interval：5s                           ###默认5秒
+index.merge.scheduler.max_thread_count: 8                  ###索引merge归并线程最大数
+index.merge.policy.floor_segment: 2m                       ###索引归并的segment大小, 默认是2MB
+index.merge.policy.max_merge_at_once: 10                   ###一次最多归并多少个segment, 默认10个
+index.merge.policy.segments_per_tier: 10                   ###默认10,
+index.merge.policy.max_merge_at_once_explicit: 30          ###一次直接归并多少个segment, 默认是30个
+index.merge.policy.max_merged_segment: 5gb                 ###大于此值的segment不参与归并, 默认5gb
+index.translog.flush_threshold_size: 600MB                 ###刷新translog文件阀值，当translog的大小达到此预设值时, 执行一次flush操作,默认是512mb
+index.translog.flush_threshold_ops: 500000                 ###发生多少次操作(累计多少条数据)后进行一次flush, 默认是unlimited
+index.translog.flush_threshold_period: 30m                 ###每隔多长时间执行一次flush操作, 默认是30m
+index.translog.durability: async                           ###事务日志translog文件异步写入磁盘,事务日志是为了防止数据丢失。
+index.translog.sync_interval：5s                           ###translog刷盘间隔时间,默认5秒
 cluster.routing.allocation.cluster_concurrent_rebalance    ###同时可在节点间移动的分片数，默认2
 cluster.routing.allocation.enable: all                     ###分配的分片类型，默认all, 可选值:all,none,none,new_primaries
 cluster.routing.allocation.disk.watermark.low: 85%         ###磁盘的低警戒水位线，默认为磁盘容量的85％。es不会将分片分配给使用磁盘超过85％的节点。
@@ -123,6 +132,21 @@ curl -XPUT localhost:9200/_cluster/settings -d '{
         "indices.recovery.max_bytes_per_sec": "100mb"
     }
 }'
+
+###设置索引异步刷新translog提高写入效率，
+###需要先关闭索引再设置，不然会报错Can't update non dynamic settings，然后再打开索引
+curl -XPUT localhost:9200/<INDEX_NAME>/_settings -d '{
+    "transient" :{
+        "index.translog.durability": "async",
+        "index.translog.flush_threshold_size":"512mb",
+        "index.translog.sync_interval": "60s"
+    }
+}'
+
+###优化merge的配置项
+curl -XPUT localhost:9200/_all/_settings -d '{
+    "index.merge.policy.floor_segment":"30mb"
+}
 
 ###开启慢查询
 curl -XPUT localhost:9200/_cluster/settings -d '{
@@ -207,7 +231,7 @@ curl -XPUT localhost:9200/_cluster/settings -d '{
     }
 }'
 
-curl -XPOST localhost:9200/_cluster/settings -d '{
+curl -XPUT localhost:9200/_cluster/settings -d '{
     "transient" :{
         "indices.memory.index_buffer_size": "20%"
     }
