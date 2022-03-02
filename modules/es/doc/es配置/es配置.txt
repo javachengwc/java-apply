@@ -36,6 +36,8 @@ index.analysis.analyzer.ik.type: "ik"                      ###ik分词
 threadpool.index.type: fixed                               ###索引线程池类型
 threadpool.index.size: 64                                  ###索引线程池大小
 threadpool.index.queue_size: 1000                          ###索引线程池队列大小
+threadpool.index.reject_policy: caller                     ###索引线程池拒绝方式,默认是abort,会使索引请求失败，抛出EsRejectedExecutionException，
+                                                              设置成caller会使索引请求在io线程中执行
 threadpool.search.size: 64                                 ###检索线程池大小
 threadpool.search.type: fixed                              ###检索线程池类型
 threadpool.search.queue_size: 1000                         ###检索线程池队列大小
