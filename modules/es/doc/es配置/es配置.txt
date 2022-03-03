@@ -23,7 +23,7 @@ index.mapping.total_fields.limit:1000                      ###索引的字段限
 index.mapping.depth.limit: 20                              ###mapping深度限制数
 discovery.zen.minimum_master_nodes: 2                      ###实际设置n/2+1,防止脑裂现象
 cluster.routing.allocation.node_initial_primaries_recoveries: 8      ###并发恢复分片数
-cluster.routing.allocation.node_concurrent_recoveries: 2   ###分片迁移recovery并发数
+cluster.routing.allocation.node_concurrent_recoveries: 2   ###每个节点可同时恢复的分片个数
 indices.recovery.max_bytes_per_sec: 250mb                  ###数据在节点间传输最大带宽
 indices.recovery.concurrent_streams: 8                     ###单个节点并发留数量
 discovery.zen.ping.multicast.enabled: false                ###禁用多播
@@ -63,6 +63,7 @@ index.translog.flush_threshold_ops: 500000                 ###发生多少次操
 index.translog.flush_threshold_period: 30m                 ###每隔多长时间执行一次flush操作, 默认是30m
 index.translog.durability: async                           ###事务日志translog文件异步写入磁盘,事务日志是为了防止数据丢失。
 index.translog.sync_interval：5s                           ###translog刷盘间隔时间,默认5秒
+index.routing.allocation.total_shards_per_node             ###每个节点分片数量
 cluster.routing.allocation.cluster_concurrent_rebalance    ###同时可在节点间移动的分片数，默认2
 cluster.routing.allocation.enable: all                     ###分配的分片类型，默认all, 可选值:all,none,none,new_primaries
 cluster.routing.allocation.disk.watermark.low: 85%         ###磁盘的低警戒水位线，默认为磁盘容量的85％。es不会将分片分配给使用磁盘超过85％的节点。
@@ -211,19 +212,13 @@ curl -XPUT localhost:9200/_cluster/settings -d '{
 ###分片分配和移动
 curl -XPOST localhost:9200/_cluster/reroute -d '{
     "commands" : [ {
-        "move" :
-            {
-              "index" : "order_data", "shard" : 2,
+        "move" :{
+              "index" : "order_data",
+              "shard" : 2,
               "from_node" : "node1",
               "to_node" : "node2"
-            }
-        },
-        {
-          "allocate" : {
-              "index" : "test", "shard" : 1, "node" : "node3"
-          }
         }
-    ]
+    }]
 }'
 
 ###设置索引恢复日志级别
