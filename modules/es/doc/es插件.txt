@@ -74,7 +74,8 @@ kopf插件
 
 http://127.0.0.1:9200/_plugin/head/                         ------查看head插件
 http://127.0.0.1:9200/_plugin/kopf/                         ------查看kopf插件
-http://127.0.0.1:9200/_plugin/sql/                          ------查看sql插件
+http://127.0.0.1:9200/_plugin/sql/                          ------es-sql插件
+http://127.0.0.1:9200/_plugin/bigdesk/                      ------es监控插件
 -----------------------------
 bin/elasticsearch-plugin install mapper-size                ------安装mapper-size插件
 bin/elasticsearch-plugin remove mapper-size                 ------删除mapper-size插件

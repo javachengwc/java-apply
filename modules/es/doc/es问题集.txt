@@ -32,7 +32,15 @@ f，检查是否集群中某索引的分片数据已不存在，这中情况下�
       } ]
   }'
   3,从原始数据重建索引或者从备份快照中恢复
-g，也有可能多版本不兼容问题，导致分片未分配
+g，如果某个node突然挂掉了导致某些shard是unassigned的，这时如果cluster.routing.allocation.enable:none
+   那么即使cluster.routing.rebalance.enable:all,这些unassigned的shard也不会被分配到其他节点，因为最根本的shard分配操作被禁止了。
+   如果这时设置为cluster.routing.rebalance.enable: none，cluster.routing.allocation.enable: all
+   那么对应的unassigned的shard会被分配到其他节点上面。重启挂掉的node(如果node上面没有数据)，那么该node上面的shard数量会一直是0，
+   因为rebalance被关闭了。当重新设置cluster.routing.rebalance.enable: all的时候，才会将部分shard迁移到新启动的node上面。
+   rebalance的功能需要依赖allocation功能的开启，allocation没开启就不能进行rebalance操作的（手动的relocation也不能进行），
+   allocation还会限制shard丢失之后的shard重新分配。
+
+h，也有可能多版本不兼容问题，导致分片未分配
 
 2,es更数据时报VersionConflictEngineException
 es更新数据时偶尔会报VersionConflictEngineException，经过分析是因为系统存在多个应用同时更新数据的场景。

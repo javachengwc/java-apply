@@ -8,6 +8,7 @@ index.store.type: niofs                                    ###读写文件方式
 index.cache.field.type: soft                               ###缓存类型
 bootstrap.mlockall: true                                   ###内存禁用swap
 gateway.type: local                                        ###本地存储
+processors:                                                ###强制修改cpu核数，以突破写线程数限制。此参数慎用
 index.refresh_interval: 1s                                 ###将index buffer刷新到os cache的时间，刷新到os cache的数据才可以被索引到，默认是1s.
                                                               如果对实时性搜索要求不高,可设置时间长一些，比如30s,以提高性能
 index.max_result_window: 10000                             ###索引能够查询到最大数据量，from+size深分页的最大条数。如果全量导出，可以使用scroll游标办法
@@ -21,11 +22,9 @@ index.mapping.nested_fields.limit: 50                      ###nested fields字�
 index.mapping.nested_objects.limit :10000
 index.mapping.total_fields.limit:1000                      ###索引的字段限制个数
 index.mapping.depth.limit: 20                              ###mapping深度限制数
-discovery.zen.minimum_master_nodes: 2                      ###实际设置n/2+1,防止脑裂现象
-cluster.routing.allocation.node_initial_primaries_recoveries: 8      ###并发恢复分片数
-cluster.routing.allocation.node_concurrent_recoveries: 2   ###每个节点可同时恢复的分片个数
 indices.recovery.max_bytes_per_sec: 250mb                  ###数据在节点间传输最大带宽
 indices.recovery.concurrent_streams: 8                     ###单个节点并发留数量
+discovery.zen.minimum_master_nodes: 2                      ###实际设置n/2+1,防止脑裂现象
 discovery.zen.ping.multicast.enabled: false                ###禁用多播
 discovery.zen.ping.unicast.hosts: ["192.168.1.11:9300", "192.168.1.12:9300", "192.168.1.13:9300"]
 discovery.zen.fd.ping_interval: 10s                        ###节点存活检测间隔
@@ -64,12 +63,29 @@ index.translog.flush_threshold_period: 30m                 ###每隔多长时间
 index.translog.durability: async                           ###事务日志translog文件异步写入磁盘,事务日志是为了防止数据丢失。
 index.translog.sync_interval：5s                           ###translog刷盘间隔时间,默认5秒
 index.routing.allocation.total_shards_per_node             ###每个节点分片数量
-cluster.routing.allocation.cluster_concurrent_rebalance    ###同时可在节点间移动的分片数，默认2
+cluster.routing.allocation.node_initial_primaries_recoveries: 8      ###初始unassigned primary shard的恢复只能通过原来有这个shard的node被重新启动了来进行恢复。
+                                                                        此值可稍微设置大一些，以便更多的unassigned primary shard可以更快的被恢复。
+cluster.routing.allocation.node_concurrent_incoming_recoveries: 2    ###设置每个节点可以有多少个shard可以接收从外面进来的recovery用的数据。默认2。
+cluster.routing.allocation.node_concurrent_outgoing_recoveries: 2   ###设置每个节点可以有多少个shard在向外提供shard recovery的数据。默认2。
+cluster.routing.allocation.node_concurrent_recoveries: 2   ###每个节点可同时恢复的分片个数,上面2设置的综合。
+cluster.routing.allocation.same_shard.host: false          ###检查防止同一个shard的多个instances在同一个host上面，默认false
+cluster.routing.rebalance.enable: all                      ###开关shard的rebalance，none-禁用
+cluster.routing.allocation.allow_rebalance                 ###什么时候允许rebalance操作开始，always - 任何时候，
+                                                              indices_primaries_active --当集群中的primary shards都被allocated之后才允许
+                                                              indices_all_active -- (default) 当集群中的所有的shard(primaries and replicas) 都被allocated之后才允许
+cluster.routing.allocation.cluster_concurrent_rebalance: 2 ###设置集群rebalance的并行度，默认2
+cluster.routing.allocation.balance.shard: 45%              ###设置每个node上的shard总数在集群balance中占据的权重因子，默认是0.45f,
+                                                              增加这个值表示集群的balance更倾向于使每个node上面的shard数量都保持一致。
+cluster.routing.allocation.balance.index: 55%              ###设置每个index在node上的shards数量的权重，默认是0.55f,
+                                                              增大这个值表示集群的balance更倾向于让index的shards平均的分配到cluster的每个node上
+cluster.routing.allocation.balance.threshold:              ###shard rebalance的触发阈值，默认是1.0f,增大这个值表示对集群的balance要求更低，不容易触发rebalance。
 cluster.routing.allocation.enable: all                     ###分配的分片类型，默认all, 可选值:all,none,none,new_primaries
 cluster.routing.allocation.disk.watermark.low: 85%         ###磁盘的低警戒水位线，默认为磁盘容量的85％。es不会将分片分配给使用磁盘超过85％的节点。
 cluster.routing.allocation.disk.watermark.high: 90%        ###磁盘的高警戒水位线，默认为磁盘容量的90％。es将尝试从磁盘使用率超过90％的节点重新分配分片。
-cluster.routing.allocation.disk.watermark.flood_stage: 95% ###磁盘的洪水警戒水位线，默认为磁盘容量的95％。es将对每个索引强制执行只读索引块。
+cluster.routing.allocation.disk.watermark.flood_stage: 95% ###磁盘的洪水警戒水位线，默认为磁盘容量的95％。es将对每个索引强制只允许只读和删除操作。
 cluster.info.update.interval: 30s                          ###检查集群节点磁盘使用情况周期。默认为30秒。
+cluster.routing.allocation.disk.threshold_enabled: true    ###默认是true,如果设置为false表示在进行shard allocation的时候不考虑磁盘的因素。
+cluster.routing.allocation.disk.include_relocations: true  ###设置在计算node的磁盘的使用量时是否加上relacating的shard的磁盘使用，默认是true。
 
 动态设置es集群配置示例
 transient 临时：设置在集群重启之前一直会生效。一旦集群重启，这些设置将被清除。
@@ -200,6 +216,13 @@ curl -XPUT localhost:9200/_cluster/settings -d '{
 curl -XPUT localhost:9200/_cluster/settings -d '{
     "transient": {
         "cluster.routing.allocation.exclude._name": "node1,node2"
+    }
+}'
+
+###指定自动分片包含的节点
+curl -XPUT localhost:9200/_cluster/settings -d '{
+    "transient": {
+        "cluster.routing.allocation.include._name": "node1,node2,node3"
     }
 }'
 

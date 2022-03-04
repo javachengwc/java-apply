@@ -1,0 +1,26 @@
+开发程序连接es服务,有两种方式
+1、创建客户端节点来连接
+Node node = NodeBuilder.nodeBuilder().clusterName(clusterName).client(true).node();
+Client client = node.client();
+其中client(true)将node指定为客户端节点，不能写漏，客户端节点不持有数据，
+通过此方式创建客户端能知道所有关于集群、索引、分片的信息，在操作上可以更快的执行。
+但启动时客户端节点必须加入集群并建立与其他节点的连接，此过程需要消耗时间和资源。不建议使用。
+
+2、使用传输客户端连接（即使用TransportClient来创建）：
+Settings settings = ImmutableSettings.settingsBuilder()
+        .put("cluster.name", xxx)
+        .put("client.transport.ping_timeout", 5)
+        .put("client.transport.nodes_sampler_interval", 5).build();
+
+Client client = new TransportClient(settings)
+        .addTransportAddress(new InetSocketTransportAddress(host1,port1))
+        .addTransportAddress(new InetSocketTransportAddress(host2,port2))
+        .addTransportAddress(new InetSocketTransportAddress(host3,port3));
+使用它，启动快，不需要像第一种方式那样建立很多的socket连接。
+但因为它不像前者那样知道集群、索引、分片的这些信息，所以在分发数据和查询上没前者快，
+不能直接发送到指定的节点或直接从某个节点去取数据，需要es在其中进行一些额外的转发才能完成。
+TransportClient类的可用配置：
+client.transport.sniff                     默认值为false，当设置为true时，会读取集群中的节点信息，列表为所有数据节点，否则节点列表为构建客户端对象时传入的节点列表
+client.transport.ignore_cluster_name       默认值为false，当设置为true时，会忽视配置中的集群名称并尝试连接到某个可连接集群上，而不管集群名称是否匹配。
+client.transport.ping_timeout              默认为5s，指定ping命令响应的超时时间。
+client.reansport.nodes_sampler_interval    默认为5s，指定检查节点可用性的时间间隔。
