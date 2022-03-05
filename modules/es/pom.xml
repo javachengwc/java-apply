@@ -12,5 +12,6 @@
 	<modules>
         <module>modules/es-example</module>
         <module>modules/esearch6</module>
+        <module>modules/es-consumer</module>
 	</modules>
 </project>

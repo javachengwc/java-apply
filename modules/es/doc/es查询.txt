@@ -368,6 +368,7 @@ GET _search
 ------------------------------------------------
 http方式查询
 http://127.0.0.1:9200/search/{"query":{"term":{"user.name":"cheng"}}}  --post方式查询(get方式拿不到结果)
+http://127.0.0.1:9200/<INDEX_NAME>/<TYPE>/_search?q=<FIELD>:value      --查询<FIELD>字段中包含value的文档
 
 http://127.0.0.1:9200/search/
 {"query":

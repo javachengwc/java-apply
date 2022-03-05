@@ -1,0 +1,69 @@
+server:
+  port: 8888
+
+logging:
+  path: /data/logs
+  filePrefix: es-consumer
+
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/db_es?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+    max-active: 60
+    min-idle: 6
+    max-wait: 20000
+
+es:
+  enabled: false   #开启es开关
+  cluster:
+    name: es-club
+  ping:
+    timeout: 5000
+  nodes:
+    sampler:
+      interval: 5000
+  host: 127.0.0.1
+  port: 9300
+  host2: 127.0.0.1
+  port2: 9300
+  host3: 127.0.0.1
+  port3: 9300
+
+zk:
+  address: 127.0.0.1:2181
+  session:
+    timeout: 5000
+  connect:
+    timeout: 10000
+  sync:
+    time: 400
+
+rebalance:
+  backoff: 2000
+  max:
+    retries: 10
+
+message:
+  access:
+    topic: access_topic
+    group: access_group
+  activity:
+    topic: activity_topic
+    group: activity_group
+
+#mybatisplus插件
+mybatis-plus:
+  typeAliasesPackage: com.es.consumer.model
+  mapper-locations: classpath*:sqlmap/**/*.xml
+  global-config:
+    db-config:
+      id-type: 0
+      logic-delete-value: 0
+      logic-not-delete-value: 1
+      table-prefix:
+  configuration:
+    map-underscore-to-camel-case: true   #使用驼峰命名法转换字段。
+

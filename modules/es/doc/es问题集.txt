@@ -39,16 +39,15 @@ g，如果某个node突然挂掉了导致某些shard是unassigned的，这时如
    因为rebalance被关闭了。当重新设置cluster.routing.rebalance.enable: all的时候，才会将部分shard迁移到新启动的node上面。
    rebalance的功能需要依赖allocation功能的开启，allocation没开启就不能进行rebalance操作的（手动的relocation也不能进行），
    allocation还会限制shard丢失之后的shard重新分配。
-
 h，也有可能多版本不兼容问题，导致分片未分配
 
-2,es更数据时报VersionConflictEngineException
+2，es更数据时报VersionConflictEngineException
 es更新数据时偶尔会报VersionConflictEngineException，经过分析是因为系统存在多个应用同时更新数据的场景。
 es是乐观锁数据更新，通过版本号控制。而我们的数据更新场景为部分数据更新，es会进行数据反查然后进行更新，反查和更新之间存在其他线程更新数据的情况，
 因此当前数据版本号和反查得到的版本号不一致，会抛出异常
 可以通过设置request.setRetryOnConflict(10); //版本号冲突时会重试10次，来解决问题。
 
-3,es分片不均匀，集群负载不均衡
+3，es分片不均匀，集群负载不均衡
 es集群共3节点，索引主分片集中在2个节点，另1节点全是副本，此节点的资源就没有利用起来，只是备份数据，而读写压力都在其他2节点上，各节点负载不均衡
 1，手动移动分片
 curl -XPOST http://localhost:9200/_cluster/reroute -d '{
@@ -61,5 +60,17 @@ curl -XPOST http://localhost:9200/_cluster/reroute -d '{
     }
   }]
 }'
+
+4，es写入慢排查
+a,内存参数配置不合理，如果内存足,可配置30G每个es数据实例节点。
+b,bulk提交量过大，导致内存被堆满，一次提交的bulk数量不宜过大，实践证明5-10MB左右大小合适。
+c,客户端IP，端口配置问题,es的客户端采用轮询方式，所以尽量配置所有节点的IP、端口，或者开启嗅探功能。
+d,写入时指定DOC ID，导致读IO高。写入时指定DOC ID，意味着首先需要判断ID是否重复，
+在大数据量下，可能会需要从磁盘进行一次读操作，从而占用大量的磁盘IO，导致写入速度慢。
+e,bulk队列积压，请求线程被拒绝。大量的bulk队列被等待或者积压，导致线程被拒绝，这时需要适当降低业务请求的并发量。
+f,热分片问题,单个索引的分片集中分布在某几个机器节点上，导致写入压力无法均匀地分布到各个机器节点上，形成阻塞的问题。
+
+
+5，es查询慢排查
 
 ---------------------------------------------------------------------------

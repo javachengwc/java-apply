@@ -87,6 +87,19 @@ POST /_aliases                                                ------移除别名
 GET /test/_aliases                                            ------查看索引别名
 GET /_aliases                                                 ------查看所有索引别名
 
+es文档的id有2种生成方式，一种是用户自定义，即在请求中带上文档id，这时可以用PUT或者POST请求。另一种是es自动生成 _id，此时只能用POST请求
+PUT /{index}/{type}/{id}                                      ------增加文档,自定义_id
+{
+  "field": "value",
+   ...
+}
+
+POST /{index}/{type}                                          ------增加文档,自动生成_id
+{
+  "field": "value",
+     ...
+}
+
 PUT book/book/1                                               ------向索引book中的类型book添加一个文档，文档的_id=1
 {
   "id":1,
@@ -94,6 +107,7 @@ PUT book/book/1                                               ------向索引boo
   "author":"wuming",
   "content":"jquery是javascript的一个框架"
 }
+
 POST book/book                                                ------向索引book中的类型book添加一个文档，文档的_id未知
 {
   "id":2,

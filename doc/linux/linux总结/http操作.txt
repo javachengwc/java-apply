@@ -15,8 +15,8 @@ wget --header="Content-Type: application/json;charset=utf-8" --post-data='{"mobi
 curl http://xxx.com -d "a=1&b=2&c=cc"                                  ---普通请求
 curl -H "Content-Type: application/json;charset=utf-8" -X POST -d '{"mobile":"11111111111","captha":"666666"}' http://xxx.com
                                                                        ---post请求
-curl -O -L https://xxx.com                                            ---可看进度地访问资源
-
+curl -O -L https://xxx.com                                             ---可看进度地访问资源
+curl -XPOST http://url/path/method?param=value                         ---curl post请求
 
 
 

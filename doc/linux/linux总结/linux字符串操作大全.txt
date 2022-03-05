@@ -101,6 +101,7 @@ grep -B 5 key file                        ---显示key及前5行
 grep -A 5 key file                        ---显示key及后5行
 grep "text" file1 file2                   ---多文件查找
 grep -l "text" file1 file2                ---匹配文本在哪些文件
+grep -L pattern file                      ---列出不匹配的文件名
 grep "text" . -r -n                       ---多级目录中对文本进行递归查找
 grep -v "text" file                       ---反转查找，输出除之外的所有行
 grep -E "[1-9]+" file                     ---正则表达式查找
@@ -110,6 +111,9 @@ grep -e "a" -e "b"                        ----e指定多个匹配样式查找
 grep "text" . -r --include *.{java,html}  ---在目录中.java和.html文件中递归查找
 grep "text" . -r --exclude "README"       ---结果中排除README文件
 grep "text" . -r --exclude-from filelist  ---结果中排除filelist列的文件
+grep -E '123|abc' file                    ---grep或操作
+egrep '123|abc' file                      ---egrep或操作
+grep -w pattern file                      ---只匹配整个单词，而不是字符串的一部分
 
 -------------------tee命令
 

@@ -116,3 +116,4 @@ modules/springdubbo/springdubbo-rest-core/target/
 modules/cache/modules/springredis/target/
 modules/commonservice/modules/commonservice-invoke/target/
 modules/webcloud/modules/webcloud-pseudocode/target/
+modules/es/modules/es-consumer/target/
