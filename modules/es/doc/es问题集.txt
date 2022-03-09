@@ -61,16 +61,16 @@ curl -XPOST http://localhost:9200/_cluster/reroute -d '{
   }]
 }'
 
-4，es写入慢排查
-a,内存参数配置不合理，如果内存足,可配置30G每个es数据实例节点。
-b,bulk提交量过大，导致内存被堆满，一次提交的bulk数量不宜过大，实践证明5-10MB左右大小合适。
-c,客户端IP，端口配置问题,es的客户端采用轮询方式，所以尽量配置所有节点的IP、端口，或者开启嗅探功能。
-d,写入时指定DOC ID，导致读IO高。写入时指定DOC ID，意味着首先需要判断ID是否重复，
-在大数据量下，可能会需要从磁盘进行一次读操作，从而占用大量的磁盘IO，导致写入速度慢。
-e,bulk队列积压，请求线程被拒绝。大量的bulk队列被等待或者积压，导致线程被拒绝，这时需要适当降低业务请求的并发量。
-f,热分片问题,单个索引的分片集中分布在某几个机器节点上，导致写入压力无法均匀地分布到各个机器节点上，形成阻塞的问题。
-
-
-5，es查询慢排查
+4，es写入数据时报错EsRejectedExecutionException[rejected execution of org.elasticsearch.transport.netty.
+MessageChannelHandler$RequestHandler@123456 on EsThreadPoolExecutor[index, queue capacity = 200
+这是写入流量超出了es服务器index的吞吐能力，索引线程池队列满了而报错，
+要么降低写入流量，要么增加索引线程池的吞吐能力，比如队列长度，线程池大小不建议调整(默认已经是比较优的设置了)
+比如8核机器上es 索引线程池配置
+threadpool:
+    index:
+        type: fixed
+        size: 8
+        queue: 1000                        ###默认200
+        reject_policy: caller              ###默认abort
 
 ---------------------------------------------------------------------------

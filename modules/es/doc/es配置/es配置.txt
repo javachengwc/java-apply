@@ -22,13 +22,14 @@ index.mapping.nested_fields.limit: 50                      ###nested fields字�
 index.mapping.nested_objects.limit :10000
 index.mapping.total_fields.limit:1000                      ###索引的字段限制个数
 index.mapping.depth.limit: 20                              ###mapping深度限制数
-indices.recovery.max_bytes_per_sec: 250mb                  ###数据在节点间传输最大带宽
-indices.recovery.concurrent_streams: 8                     ###单个节点并发留数量
+indices.recovery.max_bytes_per_sec: 250mb                  ###节点恢复时的最大带宽
+indices.recovery.concurrent_streams: 8                     ###节点从网络复制恢复副本分片时的数据流个数。默认是3
 discovery.zen.minimum_master_nodes: 2                      ###实际设置n/2+1,防止脑裂现象
 discovery.zen.ping.multicast.enabled: false                ###禁用多播
 discovery.zen.ping.unicast.hosts: ["192.168.1.11:9300", "192.168.1.12:9300", "192.168.1.13:9300"]
+discovery.zen.ping_timeout: 60s                            ###仅在加入或者选举 master 主节点的时候才起作用
 discovery.zen.fd.ping_interval: 10s                        ###节点存活检测间隔
-discovery.zen.fd.ping_timeout: 120s                        ###节点存活超时时间
+discovery.zen.fd.ping_timeout: 120s                        ###节点存活超时时间,在运行的集群中，master检测所有节点以及节点检测master是否畅通时长期有用
 discovery.zen.fd.ping_retries: 6                           ###节点存活超时重试次数
 http.cors.enabled: true                                    ###开启监控
 index.analysis.analyzer.ik.type: "ik"                      ###ik分词
@@ -51,11 +52,14 @@ threadpool.flush.queue_size: 1000                          ###刷磁盘队列大
 indices.store.throttle.type: merge
 indices.store.throttle.type: none                          ###写磁盘类型
 indices.store.throttle.max_bytes_per_sec: 500mb            ###写磁盘最大带宽
-index.merge.scheduler.max_thread_count: 8                  ###索引merge归并线程最大数
-index.merge.policy.floor_segment: 2m                       ###索引归并的segment大小, 默认是2MB
+indices.queries.cache.size: 10%                            ###查询缓存大小，默认10%
+indices.fielddata.cache.size: 30%                          ###字段数据缓存大小，在聚类或排序中很有必要
+index.queries.cache.enabled: false                         ###禁用查询缓存，默认开启
+index.merge.scheduler.max_thread_count: 8                  ###索引merge归并线程数
+index.merge.policy.floor_segment: 2mb                      ###索引归并的segment大小, 默认是2MB,小于这个大小的 segment，优先被归并
 index.merge.policy.max_merge_at_once: 10                   ###一次最多归并多少个segment, 默认10个
 index.merge.policy.segments_per_tier: 10                   ###默认10,
-index.merge.policy.max_merge_at_once_explicit: 30          ###一次直接归并多少个segment, 默认是30个
+index.merge.policy.max_merge_at_once_explicit: 30          ###forcemerge时一次最多归并多少个segment, 默认是30个
 index.merge.policy.max_merged_segment: 5gb                 ###大于此值的segment不参与归并, 默认5gb
 index.translog.flush_threshold_size: 600MB                 ###刷新translog文件阀值，当translog的大小达到此预设值时, 执行一次flush操作,默认是512mb
 index.translog.flush_threshold_ops: 500000                 ###发生多少次操作(累计多少条数据)后进行一次flush, 默认是unlimited
@@ -63,8 +67,12 @@ index.translog.flush_threshold_period: 30m                 ###每隔多长时间
 index.translog.durability: async                           ###事务日志translog文件异步写入磁盘,事务日志是为了防止数据丢失。
 index.translog.sync_interval：5s                           ###translog刷盘间隔时间,默认5秒
 index.routing.allocation.total_shards_per_node             ###每个节点分片数量
+index.write.wait_for_active_shards: 1                      ###指定有多少个活跃的shards时，才能执行索引文档的操作。默认值为1，即只要primary shard 是活跃的就可以索引文档。
+index.unassigned.node_left.delayed_timeout: 5m             ###es启动后,延迟多长时间后才开始分配unassigned的分片
+node.attr.box_type: hot                                    ###将节点设置成hot节点，也可设置成warm节点, 表示数据频繁使用程度，热数据，温数据
+index.routing.allocation.require.box_type: hot             ###设置将索引写入hot节点,也可设置成warm
 cluster.routing.allocation.node_initial_primaries_recoveries: 8      ###初始unassigned primary shard的恢复只能通过原来有这个shard的node被重新启动了来进行恢复。
-                                                                        此值可稍微设置大一些，以便更多的unassigned primary shard可以更快的被恢复。
+                                                                        默认是4,此值可稍微设置大一些，以便更多的unassigned primary shard可以更快的被恢复。
 cluster.routing.allocation.node_concurrent_incoming_recoveries: 2    ###设置每个节点可以有多少个shard可以接收从外面进来的recovery用的数据。默认2。
 cluster.routing.allocation.node_concurrent_outgoing_recoveries: 2   ###设置每个节点可以有多少个shard在向外提供shard recovery的数据。默认2。
 cluster.routing.allocation.node_concurrent_recoveries: 2   ###每个节点可同时恢复的分片个数,上面2设置的综合。
@@ -151,6 +159,20 @@ curl -XPUT localhost:9200/_cluster/settings -d '{
         "indices.recovery.max_bytes_per_sec": "100mb"
     }
 }'
+
+###禁止自动创建索引
+curl -XPUT localhost:9200/_cluster/settings -d '{
+    "persistent": {
+        "action.auto_create_index": "false"
+    }
+}
+
+###禁止自动扩展索引mapping
+curl -XPUT localhost:9200/_cluster/settings -d '{
+    "persistent": {
+        "index.mapper.dynamic": "false"
+    }
+}
 
 ###设置索引异步刷新translog提高写入效率，
 ###需要先关闭索引再设置，不然会报错Can't update non dynamic settings，然后再打开索引

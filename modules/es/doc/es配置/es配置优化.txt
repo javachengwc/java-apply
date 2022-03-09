@@ -1,3 +1,56 @@
 -----------------------------------------------es配置优化----------------------------------------
+###jvm相关优化
+vim config/jvm.options
+-Xms16g -Xmx16g              ###系统内存的一半,但不超过32G
+
+###cluster相关优化
+规模较大的集群配置专有主节点
+#es默认每个节点既是候选主节点，又是数据节点,minimum_master_nodes推荐配置为候选主节点数量一半以上
+discovery.zen.minimum_master_nodes: 2     ###实际设置n/2+1,防止脑裂现象
+#主节点配置
+node.master:true
+node.data: false
+node.ingest:false
+#数据节点配置
+node.master:false
+node.data:true
+node.ingest:true
+
+###discovery zen相关优化
+#大量写入的场景，会占用大量的网络带宽，很可能使节点之间的心跳超时,默认的心跳间隔相对过于频繁（1s检测一次）
+discovery.zen.fd.ping_timeout: 120s
+discovery.zen.fd.ping_retries: 6
+discovery.zen.fd.ping_interval: 30s
+
+###thread相关优化
+threadpool.index.queue_size: 2000
+threadpool.search.queue_size: 1000
+threadpool.get.queue_size: 1000
+threadpool.bulk.queue_size: 2000
+
+###index_buffer相关优化
+indices.memory.index_buffer_size：30%
+indices.memory.min_index_buffer_size
+indices.memory.max_index_buffer_size
+
+###index相关优化
+index.refresh_interval: 2m
+index.number_of_replicas: 1
+
+###translog相关优化
+index.translog.durability: async
+index.translog.sync_interval：1m
+index.translog.flush_threshold_size：1024mb
+
+###merge相关优化
+index.merge.policy.floor_segment: 100mb
+index.merge.scheduler.max_thread_count: 1
+indices.store.throttle.max_bytes_per_sec: 100mb
+
+#index mapping相关优化(可以的情况下)
+es自动生成id
+禁用_all字段,"_all":{"enabled":false}
+去掉打分，去掉docValues
+index_options设置,控制在建立索引时,doc数量、词频、positions、offsets是否添加到倒排索引
 
 -------------------------------------------------------------------------------------------------

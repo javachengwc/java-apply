@@ -12,4 +12,38 @@ es迁移数据过程:
 2，原集群退役节点
 3，logstash等工具迁移
 4，reindex   reindex可能需要在配置中设置白名单,reindex.remote.whitelist: ["192.168.1.11:9200"]
+reindex requires _source to be enabled for all documents in the source index.
+###同es内的索引迁移
+POST _reindex
+{
+    "source": {
+        "index": "from_index"
+    },
+    "dest": {
+        "index": "to_index"
+    }
+}
+
+###跨es的索引迁移
+POST _reindex
+{
+    "source": {
+        "remote": {
+            "host": "http://fromhost:9200",
+            "username": "user",
+            "passward": "passward"
+        },
+        "index": "from_index",
+        "query": {
+            "match": {
+                "test": "data"
+            }
+        }
+    },
+    "dest": {
+        "index": "to_index"
+    }
+}
+###查看迁移任务情况
+GET _tasks?detailed=true&actions=*reindex
 ----------------------------------------------------------------

@@ -3,7 +3,7 @@
 http://localhost:9200/_cluster/health?level=shards    ---查看集群状态
 http://localhost:9200/_cluster/settings?pretty        ---查看集群设置
 http://localhost:9200/_cluster/pending_tasks?pretty
-http://localhost:9200/_cluster/allocation/explain     ---查看分片未分配原因
+http://localhost:9200/_cluster/allocation/explain     ---查看分片未分配原因，5.0版本以上支持
 http://localhost:9200/_nodes/stats                    ---查看各节点状态，信息周全且详细
 http://localhost:9200/_nodes/thread_pool              ---查看各节点线程池情况
 
@@ -16,12 +16,12 @@ http://localhost:9200/_cat/indices                    ---查看es索引
 http://localhost:9200/_cat/shards                     ---查看分片状态
 http://localhost:9200/_cat/recovery                   ---查看索引恢复状态
 http://localhost:9200/_cat/thread_pool?v              ---查询线程池运行情况
+http://localhost:9200/_cat/segments/{index}?v         ---查看索引的segment情况
 /_cat/shards/{index}]
 /_cat/indices/{index}
 /_cat/recovery/{index}
-/_cat/allocation
 /_cat/segments
-/_cat/segments/{index}
+/_cat/allocation
 /_cat/count
 /_cat/count/{index}
 /_cat/pending_tasks

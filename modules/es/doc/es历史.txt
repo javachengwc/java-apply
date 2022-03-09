@@ -1,0 +1,26 @@
+--------------------------------------------es历史-----------------------------------
+2010年2月 | 最初版本  | es发布第一个版本
+2010年5月 | 0.7.0版本 | 第一个可查询到的版本发布,重要特性：Zen Discovery 自动发现模块，
+                                 Groovy Client支持，简单的插件管理机制等
+2014年2月 | 1.0.0版本 | 重要特性：Snapshot/Restore API 备份恢复API，
+                                 支持聚合分析Aggregations，
+                                 CAT API 支持，Doc values 引入等
+2015年10月| 2.0.0版本 | 重要特性：增加了 pipleline Aggregations，
+                                 query/filter 查询合并，都合并到query中，存储压缩可配置等
+2016年10月| 5.0.0版本 | 大转折版本，重要特性：Lucene 6.x 的支持，磁盘空间少一半；索引时间少一半；查询性能提升25%，
+                                 引入新的字段类型 Text/Keyword 来替换 String，
+                                 仅支持非root用户启动，支持IPV6，
+                                 提供了第一个Java原生的REST客户端SDK，提供IngestNode预处理支持，
+                                 提供了 Painless 脚本，代替Groovy脚本等
+2017年8月 | 6.0.0版本 | 重要特性：Index sorting，即索引阶段的排序，
+                                 Removal of types，开始不支持一个 index 里面存在多个 type，
+                                 Load aware shard routing， 基于负载的请求路由(之前的搜索请求是全节点轮询)等。
+2019年4月 | 7.0.0版本 | 重要特性：引入了真正的内存断路器，Zen2 是 Elasticsearch 的全新集群协调层，
+                                 集群连接变化：TransportClient被废弃，以至于es7的java代码只能使用restclient
+                                 默认的Primary Shared数从5改为1，避免Over Sharding，
+                                 间隔查询(Intervals queries) 的支持等。
+2022年2月 | 8.0.0版本 | 重要特性：默认开启安全配置（三层安全），简化开启安全需要的工作，
+                                 存储空间优化，对倒排文件使用新的编码集，对于keyword、match_only_text、text类型字段有效。
+                                 优化geo_point，geo_shape类型的索引（写入）效率：15%的提升。
+                                 技术预览版KNN API发布，（K邻近算法），跟推荐系统、自然语言排名相关。
+-------------------------------------------------------------------------------------
