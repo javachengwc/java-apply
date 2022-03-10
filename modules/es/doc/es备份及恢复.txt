@@ -1,3 +1,33 @@
 -----------------------------------es备份及恢复----------------------------------
+es数据备份和恢复可以由 snapshot 模块完成，snapshot模块可以通过文件共享系统为单个索引或整个集群远程创建快照和进行数据恢复。
 
+
+通过elasticdump工具进行索引保存和转移
+elaelasticdump还具有从一个索引导出至另一个索引，通过Query DSL(ES查询语法)导出数据（不支持折叠）等一些实用功能。
+npm install elasticdump                              ###(安装elasticdump,前提已安装好node)
+elasticdump --input=http://127.0.0.1:9200/index_name/index_type
+            --output=/data/xx_index_mapping.json
+            --type=mapping                           ###导出索引mapping数据
+
+elasticdump --input=http://127.0.0.1:9200/index_name/index_type
+            --output=/data/xx_index_data.json
+            --type=data                              ###导出索引数据
+
+elasticdump --input=http://127.0.0.1:9200/index_name/index_type
+            --output=/data/xx_index_query.json
+            --searchBody="{\"query\":{\"term\":{\"username\": \"admin\"}}}"
+                                                     ###导出查询结果到指定文件
+
+elasticdump --input=http://127.0.0.1:9200/index1
+            --output=http://127.0.0.1:9200/index2
+            --input-params="{\"preference\":\"_shards:0\"}"
+                                                     ###复制分片数据到另一索引
+
+elasticdump --output=http://127.0.0.1:9200/index_name
+            --input=/data/xx_index_mapping.json
+            --type=mapping                           ###mapping导入到索引
+
+elasticdump --output=http:///127.0.0.1:9200/index_name
+            --input=/data/xx_index_data.json
+            --type=data                              ###es文档数据导入到索引
 ---------------------------------------------------------------------------------

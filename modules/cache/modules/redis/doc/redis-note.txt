@@ -40,11 +40,17 @@ lpop key                          ---从左移出key对应list的头元素，并
 
 lrange key  0 -1                  ---查看key对应的list所有元素，注:lrange key start end 是包含end下标元素的
 
+lindex key n                      ---查看key对应的list下标为n的值
+
+lset key n value                  ---设置key对应的list下标为n的值为value
+
 sadd key value                    ---给key对应的set添加一个value
 
 sinter key                        ---返回key对应的set的全部成员,不存在的key被视为空集
 
 smembers key                      ---返回key对应的set的全部成员,不存在的key被视为空集
+
+sismember key member              ---key对应的set是否存在member
 
 spop key                          ---移除并返回key对应的set中的一个随机元素
 

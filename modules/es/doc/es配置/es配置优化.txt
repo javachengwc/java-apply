@@ -48,7 +48,7 @@ index.merge.scheduler.max_thread_count: 1
 indices.store.throttle.max_bytes_per_sec: 100mb
 
 #index mapping相关优化(可以的情况下)
-es自动生成id
+es自动生成id(对于不涉及es索引_id相关的场景，采用es自动生成id,写入性能效果非常明显)
 禁用_all字段,"_all":{"enabled":false}
 去掉打分，去掉docValues
 index_options设置,控制在建立索引时,doc数量、词频、positions、offsets是否添加到倒排索引
