@@ -39,7 +39,7 @@ public interface EsService {
      *
      * @param mapData id-json
      */
-    public void bulkInsert(Map<String, String> mapData, String index, String type);
+    public void bulkInsert(Map<String, String> mapData, String index, String type, boolean autoId);
 
     /**
      * 更新索引

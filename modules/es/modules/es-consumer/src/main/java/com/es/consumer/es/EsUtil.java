@@ -84,16 +84,20 @@ public class EsUtil {
      *
      * @param mapData id-json
      */
-    public static void bulkInsert(Client client, Map<String, String> mapData, String index, String type) {
+    public static void bulkInsert(Client client, Map<String, String> mapData, String index, String type, boolean autoId) {
         try {
             long startTime = System.currentTimeMillis();
             BulkRequestBuilder bulkRequest = client.prepareBulk();
             for (Map.Entry<String, String> entry : mapData.entrySet()) {
                 String id = entry.getKey();
-                if (StringUtils.isNotBlank(id)) {
-                    bulkRequest.add(client.prepareIndex(index, type, id).setSource(entry.getValue()));
-                } else {
+                if(autoId) {
                     bulkRequest.add(client.prepareIndex(index, type).setSource(entry.getValue()));
+                } else {
+                    if (StringUtils.isNotBlank(id)) {
+                        bulkRequest.add(client.prepareIndex(index, type, id).setSource(entry.getValue()));
+                    } else {
+                        bulkRequest.add(client.prepareIndex(index, type).setSource(entry.getValue()));
+                    }
                 }
             }
             BulkResponse bulkResponse = bulkRequest.get();

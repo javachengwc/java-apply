@@ -151,7 +151,7 @@ public class EsServiceImpl implements EsService {
     }
 
     @Override
-    public void bulkInsert(Map<String, String> mapData, String index, String type) {
+    public void bulkInsert(Map<String, String> mapData, String index, String type, boolean autoId) {
         esExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -160,10 +160,14 @@ public class EsServiceImpl implements EsService {
                     BulkRequestBuilder bulkRequest = client.prepareBulk();
                     for (Map.Entry<String, String> entry : mapData.entrySet()) {
                         String id = entry.getKey();
-                        if (StringUtils.isNotBlank(id)) {
-                            bulkRequest.add(client.prepareIndex(index, type, id).setSource(entry.getValue()));
-                        } else {
+                        if(autoId) {
                             bulkRequest.add(client.prepareIndex(index, type).setSource(entry.getValue()));
+                        } else {
+                            if (StringUtils.isNotBlank(id)) {
+                                bulkRequest.add(client.prepareIndex(index, type, id).setSource(entry.getValue()));
+                            } else {
+                                bulkRequest.add(client.prepareIndex(index, type).setSource(entry.getValue()));
+                            }
                         }
                     }
                     BulkResponse bulkResponse = bulkRequest.get();

@@ -3,6 +3,7 @@ package com.es.consumer.activity.service;
 import com.alibaba.fastjson.JSON;
 import com.es.consumer.activity.model.ActivityIndex;
 import com.es.consumer.base.config.IndexEnum;
+import com.es.consumer.base.config.SettingConfig;
 import com.es.consumer.base.service.MessageService;
 import com.es.consumer.base.thread.DealExecutor;
 import com.es.consumer.es.EsService;
@@ -51,6 +52,12 @@ public class ActivityService implements MessageService {
         }
         index.setCreateTime(new Date().getTime());
         String data = JSON.toJSONString(index);
-        DealExecutor.getInstance().insert(esService, data, IndexEnum.ACTIVITY.getIndex(), IndexEnum.ACTIVITY.getType(), index.getId());
+
+        String docId=null;
+        if(!SettingConfig.autoId) {
+            //id非自动生成，设置记录id为文档id
+            docId= index.getId();
+        }
+        DealExecutor.getInstance().insert(esService, data, IndexEnum.ACTIVITY.getIndex(), IndexEnum.ACTIVITY.getType(), docId);
     }
 }

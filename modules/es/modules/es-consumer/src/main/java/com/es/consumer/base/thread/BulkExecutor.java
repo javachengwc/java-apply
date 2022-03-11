@@ -2,11 +2,13 @@ package com.es.consumer.base.thread;
 
 import com.es.consumer.base.config.SettingConfig;
 import com.es.consumer.es.EsService;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -62,7 +64,9 @@ public class BulkExecutor {
     }
 
     public void bulkInsert(EsService esService,String data ,String index, String type, String id) {
-        bulkMap.put(id,data);
+        boolean autoId= StringUtils.isBlank(id)?true:false;
+        String key = StringUtils.isBlank(id)? UUID.randomUUID().toString():id;
+        bulkMap.put(key,data);
         if(bulkMap.size()>= SettingConfig.bulkCount) {
             final Map<String, String> map = new HashMap<String,String>();
             synchronized (BulkExecutor.class) {
@@ -76,7 +80,7 @@ public class BulkExecutor {
                     executors.submit(new Runnable() {
                         @Override
                         public void run() {
-                            esService.bulkInsert(map, index , type);
+                            esService.bulkInsert(map, index ,type, autoId);
                         }
                     });
                 }catch (Exception e){

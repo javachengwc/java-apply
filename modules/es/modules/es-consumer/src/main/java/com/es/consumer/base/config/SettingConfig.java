@@ -13,4 +13,9 @@ public class SettingConfig {
 
     //bulk批量处理数量
     public static int bulkCount=100;
+
+    //es写入文档是否自动生成id
+    //自动生成id比指定id写入速度快很多
+    public static boolean autoId=true;
+
 }
