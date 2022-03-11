@@ -117,3 +117,5 @@ modules/cache/modules/springredis/target/
 modules/commonservice/modules/commonservice-invoke/target/
 modules/webcloud/modules/webcloud-pseudocode/target/
 modules/es/modules/es-consumer/target/
+modules/netty/modules/netty3/target/
+modules/netty/modules/netty4/target/
