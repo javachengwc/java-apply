@@ -12,5 +12,6 @@
 	<modules>
         <module>modules/netty3</module>
         <module>modules/netty4</module>
+        <module>modules/netty-practice</module>
 	</modules>	
 </project>
