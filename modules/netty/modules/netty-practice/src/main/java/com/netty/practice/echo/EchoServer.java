@@ -5,7 +5,6 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
@@ -46,8 +45,8 @@ public class EchoServer {
                     //设置netty以nio IO模型运行
                     //如果程序运行在linux系统上，可以使用EpollServerSocketChannel，它采用 epoll 模型，比 select 模型更高效
                     .channel(NioServerSocketChannel.class)
-                    //设置SO_BACKLOG 参数，表示最大等待连接数
-                    .option(ChannelOption.SO_BACKLOG, 100)
+                    //设置SO_BACKLOG 参数，表示最大等待连接数，为了防止惊群效应，可以把这个参数调大一些
+                    .option(ChannelOption.SO_BACKLOG, 1024)
                     //ServerSocketChannel对应的 Handler,只能设置一个，它会在 SocketChannel 建立起来之前执行
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(new ChannelInitializer<SocketChannel>() {
@@ -60,7 +59,7 @@ public class EchoServer {
                             // 可以添加多个子Handler
                             // 添加长度+内容解码器
                             //p.addLast(new LengthFieldBasedFrameDecoder(1024,1024,1024));
-                            //添加业务处理handler
+                            //添加业务处理handler，如果是在这里p.addLast(new EchoServerHandler())，是每一个Channel都会创建一个Handler实例
                             p.addLast(serverHandler);
                             //如果是使用addLast(group,handler),表示多线程处理业务
                             //p.addLast(EventExecutorGroup group,serverHandler);

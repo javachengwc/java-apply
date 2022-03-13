@@ -12,7 +12,8 @@ import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicLong;
 
-//@Sharable的Handler，表示一个可以被分享的handler，可以分享给多个客户端使用
+//@Sharable的Handler，表示这个Handler 没有线程安全的问题，可以被多个 Channel 共享，可以创建为单例。
+//编写的大部分Handler应该是 @Sharable的，在Handler中不添加状态信息，无状态才能作为单例使用。
 @Sharable
 public class EchoServerHandler extends ChannelInboundHandlerAdapter {
 
