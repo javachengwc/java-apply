@@ -1,0 +1,28 @@
+--------------------------------------ByteBuf-note---------------------------------
+ByteBuf 声明了两个指针：一个读指针 readIndex 用于读取数据，一个写指针 writeIndex 用于写数据。
+ByteBuf分类有三种：
+1,Pooled 和 Unpooled，池化和非池化
+    池化，即初始化时分配好一块内存作为内存池，每次创建 ByteBuf 时从这个内存池中分配一块连续的内存给这个 ByteBuf 使用，待这个 ByteBuf 使用完了之后再放回内存池中，供后续的 ByteBuf 使用。
+    利用池化技术，可以减少虚拟机频繁的内存回收带来的性能开销及资源消耗。池化技术在很多场景中都有使用到，比如，数据库连接池、线程池等，它们都有一些共同的特点，就是创建对象比较耗费资源。
+    非池化，即完全利用 JVM 本身的内存管理能力来管理对象的生命周期，对象的内存分配完全交给 JVM 来管理。
+2,Heap 和 Direct，堆内存和直接内存
+    堆内存，比较好理解，即 JVM 本身的堆内存。
+    直接内存，独立于 JVM 内存之外的内存空间，直接向操作系统申请一块内存。
+3,Safe 和 Unsafe，安全和非安全
+    Unsafe，底层使用 Java 本身的 Unsafe 来操作底层的数据结构，即直接利用对象在内存中的指针来操作对象。
+基于以上三个维度，形成了 2 * 2 * 2 = 8 种完全不一样的 ByteBuf，即
+    PooledHeapByteBuf
+    PooledUnsafeHeapByteBuf
+    PooledDirectByteBuf
+    PooledUnsafeDirectByteBuf
+    UnpooledHeapByteBuf
+    UnpooledUnsafeHeapByteBuf
+    UnpooledDirectByteBuf
+    UnpooledUnsafeDirectByteBuf
+对于此8种 ByteBuf，可以使用 ByteBufAllocator 分配器来创建 ByteBuf 对象。
+    PooledByteBufAllocator，使用池化技术，内部会根据平台特性自行决定使用哪种 ByteBuf
+    UnpooledByteBufAllocator，不使用池化技术，内部会根据平台特性自行决定使用哪种 ByteBuf
+    PreferHeapByteBufAllocator，更偏向于使用堆内存，即除了显式地指明了使用直接内存的方法都使用堆内存
+    PreferDirectByteBufAllocator，更偏向于使用直接内存，即除了显式地指明了使用堆内存的方法都使用直接内存
+
+-----------------------------------------------------------------------------------

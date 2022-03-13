@@ -9,6 +9,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicLong;
 
 //@Sharable的Handler，表示一个可以被分享的handler，可以分享给多个客户端使用
@@ -45,9 +46,9 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     private String transMsg(ByteBuf buf) {
-        byte[] barray = new byte[buf.readableBytes()];
-        buf.getBytes(0, barray);
-        String str = new String(barray);
+        byte[] bytes  = new byte[buf.readableBytes()];
+        buf.readBytes(bytes);
+        String str = new String(bytes, StandardCharsets.UTF_8);
         return str;
     }
 }
