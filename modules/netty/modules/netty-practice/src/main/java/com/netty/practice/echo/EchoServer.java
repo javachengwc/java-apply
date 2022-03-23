@@ -36,7 +36,7 @@ public class EchoServer {
 
         //workerGroup，用于处理消息的读写事件
         EventLoopGroup workerGroup = new NioEventLoopGroup();
-        EchoServerHandler serverHandler = new EchoServerHandler();
+        final EchoServerHandler serverHandler = new EchoServerHandler();
         try {
             //服务端引导类 ServerBootstrap,集成所有配置，引导程序加载
             ServerBootstrap b = new ServerBootstrap();

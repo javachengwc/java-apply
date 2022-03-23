@@ -9,7 +9,6 @@ mysql锁包括表锁，页锁，行锁
 页面锁：开销和加锁时间界于表锁和行锁之间；会出现死锁；锁定粒度界于表锁和行锁之间，并发度一般。
 
 MySQL 5.1支持对MyISAM和MEMORY表进行表级锁定，对BDB表进行页级锁定，对InnoDB表进行行级锁定。
-
 MyISAM表的读和写是串行的，即在进行读操作时不能进行写操作，反之也是一样。
 但在一定条件下MyISAM表也支持查询和插入的操作的并发进行，其机制是通过控制一个变量（concurrent_insert）来进行的，
 当其值设置为0时，不允许并发插入；
@@ -20,11 +19,14 @@ MyISAM锁调度,当一个进程请求某个MyISAM表的读锁，同时另一个�
 可以通过一些设置来调节MyISAM的调度行为。指定参数low-priority-updates，使MyISAM默认引擎给予读请求以优先的权利。
 
 Innodb实现了共享锁和排他锁两种类型的行级锁
-共享锁：允许事务读一行数据，其它事务可立即获得共享锁。
-排他锁：允许事务更新或删除行，其它事务需等待锁释放才能获取锁。
+共享锁(S)：允许事务读一行数据，其它事务可立即获得共享锁。
+排他锁(X)：允许事务更新或删除行，其它事务需等待锁释放才能获取锁。
+一般来说X锁和S，X锁都互斥，S锁和S锁不互斥。
+
 Innodb支持意向共享锁和意向排他锁两种类型的表级锁
-意向共享锁：事务想要获得表中某几行的共享锁。
-意向排他锁：事务想要获得表中某几行的排他锁。
+意向共享锁(IS)：事务想要获得表中某几行的共享锁。
+意向排他锁(IX)：事务想要获得表中某几行的排他锁。
+
 InnoDB行锁是通过给索引项加锁来实现的，即只有通过索引条件检索数据，InnoDB才使用行级锁，否则将使用表锁。
 假设有个表单test ，有id,name两列，id是主键
 select * from test where id=3 for update;               ---行锁
@@ -41,8 +43,36 @@ READ COMMITTED隔离级别中，SELECT ... FOR UPDATE和SELECT ... LOCK IN SHARE
 而如果在某个查询条件范围类UPDATE和DELETE语句，InnoDB必须对范围覆盖的间隙设置next-key锁定或间隙锁定以及其它用户做的块插入。
 这是很必要的，因为要让MySQL复制和恢复起作用，“幽灵行”必须被阻止掉。
 
-监控和分析事务及可能存在的锁问题涉及的相关表：
+针对Innodb存储引擎，如果需要查看当前的锁等待情况，可以设置InnoDB Monitors，然后通过Show innodb status查看，
+设置的方式是：CREATE TABLE innodb_monitor(a INT) ENGINE=INNODB;
+监视器可以通过发出下列语句来被停止：DROP TABLE innodb_monitor;
+设置监视器后，在show innodb status的显示内容中，会有详细的当前锁等待的信息，包括表名、锁类型、锁定记录的情况等。
+默认情况下每15秒会向日志中记录监控的内容，如果长时间打开会导致.err文件变得非常大，在确认问题原因之后，需要删除监控表以关闭监视器。
 
+insert插入操作的加锁逻辑:
+1,唯一性约束检查，先申请LOCK_INSERT_INTENTION
+2,如果没有唯一键冲突，新数据插入完成之后:LOCK_X + LOCK_REC_NOT_GAP
+3,若发生唯一约束冲突，需要对冲突的唯一索引申请加上S Next-key Lock。
+如果其他会话中包含已经插入记录的事务没有提交，则申请加锁出现等待，show engine innodb status中的事务列表中会提示 lock mode S waiting
+InnoDB和其他数据库不同，InnoDB的可重复读也就是RR事务隔离级别下就解决了幻读。
+RR事务隔离级别下,对于通过索引(唯一或者非唯一)更新或者删除记录，会申请加上gap锁或next-key锁。
+RR事务隔离级别下，update语句中条件为非唯一索引一般会加next-key锁是由于不能确定查询的明确的行数，
+有可能其他事务在当前事务查询的过程中，再次添加这个索引的数据，导致隔离性遭到破坏，从而是幻读。
+而唯一索引由于明确了唯一的数据行，所以不需要添加间隙锁解决幻读。
+RC事务隔离级别下,不会加入间隙锁，但是在RC级别下会出现幻读。
+
+
+自增长锁--一种特殊的表锁机制，提升并发插入性能,它在sql执行完就释放锁，并不是事务执行完。
+record lock(RK)--记录锁,locks rec but not gap,锁直接加在索引记录上面，锁住的是key,会阻塞其他事务对其插入、更新、删除。
+    如果锁的是非主键索引，会在自己的索引上面加锁之后然后再去主键上面加锁锁住。如果要锁的列没有索引，则会进行全表记录加锁。
+gap lock(GK)--间隙锁，锁定一个范围，但不包括记录本身，防止其他事务在间隔中插入数据。
+    gap锁的目的，是为了防止同一事务的两次当前读，出现幻读的情况。RR隔离级别通过gap锁来解决幻读。
+next key lock(NK)--临键锁，= Gap Lock + Record Lock,临建锁是记录锁与间隙锁的组合，既包含索引记录，又包含索引区间，主要是为了解决幻读。
+insert intention lock(IK)--插入意向锁，如果插入前，该间隙已经有gap锁，那么insert会申请插入意向锁。
+    为了避免幻读，当其他事务持有该间隙的间隔锁，当前事务插入意向锁就会被阻塞。
+
+监控和分析事务及可能存在的锁问题涉及的相关表：
+show engine innodb status;                               ---查看最近死锁情况(如果发生过死锁)
 select * from information_schema.innodb_trx;             ---查看当前的事务
 kill id  #杀死sql线程
 select * from information_schema.INNODB_LOCKS;           ---查看当前锁定的事务
@@ -54,5 +84,7 @@ show status like 'Table_locks%';
 通过检查Innodb_row_lock状态变量来分析系统上的行锁的争夺情况
 show status like 'innodb_row_lock%';
 
+set global innodb_status_output_locks=ON;                ---打开锁统计，正常下别打开，打开后日志会很多。
+set global innodb_status_output=ON;
 
 ------------------------------------------------------------------------

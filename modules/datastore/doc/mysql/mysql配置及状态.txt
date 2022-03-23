@@ -36,6 +36,9 @@ show privileges;
 -----显示安装以后可用的存储引擎和默认引擎
 show engines;
 
+-----查看mysql版本
+select version();
+
 --------------mysql常用状态查询--------------
 
 --查看MySQL本次启动后的运行时间(单位：秒)

@@ -6,16 +6,20 @@
     持久性（Durability）：一旦事务完成，无论发生什么系统错误，它的结果都不应该受到影响，这样就能从任何系统崩溃中恢复过来。通常情况下，事务的结果被写到持久化存储器中。
 
 mysql默认是repeatable read 隔离级别。也就是可重复读（repeatable-read）。
+脏读: 读取未提交数据
+不可重复读: 前后多次读取，数据内容不一致, 它是读取了其他事务更改的数据，针对update操作。
+幻读: 前后多次读取，数据总量不一致, 它是读取了其他事务新增的数据，针对insert与delete操作。
+
 mysql事务隔离级别 	                脏读 	不可重复读 	幻读
 读未提交（read-uncommitted） 	    是 	        是 	     是
 读已提交（read-committed） 	        否 	        是 	     是
-可重复读（repeatable-read） 	    否 	        否 	     否/是(InnoDB和XtraDB存储引擎通过多版本并发控制（MVCC）解决了幻读的问题)
+可重复读（repeatable-read） 	        否 	        否 	     否/是(InnoDB和XtraDB存储引擎通过多版本并发控制（MVCC）解决了幻读的问题)
 串行化（serializable） 	            否 	        否 	     否
 --------------------------------------------------------
 select @@tx_isolation;                                              ###查看当前事务隔离级别
 set session transaction isolation level read committed;
 set session transaction isolation level repeatable read;            ###修改事务隔离级别
-set  [global | session]  transaction isolation level 隔离级别名称;    ###修改全局或当前事物隔离级别
+set  [global | session]  transaction isolation level 隔离级别名称;   ###修改全局或当前事物隔离级别
 
 mysql数据库配置事物隔离级别
 vim /etc/my.cnf
