@@ -55,12 +55,11 @@ insert插入操作的加锁逻辑:
 3,若发生唯一约束冲突，需要对冲突的唯一索引申请加上S Next-key Lock。
 如果其他会话中包含已经插入记录的事务没有提交，则申请加锁出现等待，show engine innodb status中的事务列表中会提示 lock mode S waiting
 InnoDB和其他数据库不同，InnoDB的可重复读也就是RR事务隔离级别下就解决了幻读。
-RR事务隔离级别下,对于通过索引(唯一或者非唯一)更新或者删除记录，会申请加上gap锁或next-key锁。
+RR事务隔离级别下,对于通过索引(非唯一)更新或者删除记录，会申请加上gap锁或next-key锁。
 RR事务隔离级别下，update语句中条件为非唯一索引一般会加next-key锁是由于不能确定查询的明确的行数，
 有可能其他事务在当前事务查询的过程中，再次添加这个索引的数据，导致隔离性遭到破坏，从而是幻读。
 而唯一索引由于明确了唯一的数据行，所以不需要添加间隙锁解决幻读。
 RC事务隔离级别下,不会加入间隙锁，但是在RC级别下会出现幻读。
-
 
 自增长锁--一种特殊的表锁机制，提升并发插入性能,它在sql执行完就释放锁，并不是事务执行完。
 record lock(RK)--记录锁,locks rec but not gap,锁直接加在索引记录上面，锁住的是key,会阻塞其他事务对其插入、更新、删除。
@@ -86,5 +85,5 @@ show status like 'innodb_row_lock%';
 
 set global innodb_status_output_locks=ON;                ---打开锁统计，正常下别打开，打开后日志会很多。
 set global innodb_status_output=ON;
-
+set global innodb_print_all_deadlocks=ON;                ---打开死锁监控
 ------------------------------------------------------------------------
