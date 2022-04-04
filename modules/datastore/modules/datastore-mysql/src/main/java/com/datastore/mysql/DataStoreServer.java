@@ -1,6 +1,6 @@
-package com.datastore.mysql.server;
+package com.datastore.mysql;
 
-import com.datastore.mysql.server.config.Config;
+import com.datastore.mysql.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

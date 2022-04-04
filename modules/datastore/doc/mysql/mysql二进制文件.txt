@@ -8,7 +8,8 @@ mysql> show binlog events in 'mysql-bin.000002'
 mysqlbinlog mysql_bin.000001
 mysqlbinlog D:\mysqlquery\mysql-bin.000005 > D:\log.txt  报错的话，可用
 mysqlbinlog --no-defaults D:\mysqlquery\mysql-bin.000005 > D:\log.txt 试一下
-mysqlbinlog -v --base64-output=decode-rows mysql-bin.000689 > 689.log    ###阿里云rds中的二进制日志转换
+mysqlbinlog -v --base64-output=decode-rows mysql-bin.000689 > 689.log                                           ###阿里云rds中的二进制日志转换
+mysqlbinlog -h127.0.0.1 -u root -p --read-from-remote-server binlog.000001 --base64-output=decode-rows -v       ###远程获取binlog
 
 --根据二进制文件恢复误删除数据
 --根据操作点恢复

@@ -12,13 +12,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("web")
+@RequestMapping("/web")
 public class WebController {
 
     private static Logger logger = LoggerFactory.getLogger(WebController.class);
 
     @ResponseBody
-    @RequestMapping("getWebInfo")
+    @RequestMapping("/getWebInfo")
     public Map<String,Object> getWebInfo(HttpServletRequest request, HttpServletResponse response, HttpSession session)
     {
 
@@ -45,7 +45,7 @@ public class WebController {
         return map;
     }
 
-    @RequestMapping(value = "redirect", method = RequestMethod.GET)
+    @RequestMapping(value = "/redirect", method = RequestMethod.GET)
     public String redirect(@RequestParam(value = "url") String url, HttpServletRequest request)
     {
         logger.info("WebController redirect invoked.................");

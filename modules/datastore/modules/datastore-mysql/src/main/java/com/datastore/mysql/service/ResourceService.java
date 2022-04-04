@@ -1,32 +1,21 @@
 package com.datastore.mysql.service;
 
-import com.datastore.mysql.dao.mapper.ResourceMapper;
-import com.datastore.mysql.model.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.datastore.mysql.model.entity.Resource;
 
 import java.util.List;
 
-@Service
-public class ResourceService {
+public interface ResourceService {
 
-    @Autowired
-    private ResourceMapper resourceMapper;
+    public Resource getByName(String name);
 
-    public Resource getByName(String name) {
+    public Resource getById(Integer id);
 
-        return resourceMapper.getByName(name);
-    }
+    public Integer countAll();
 
-    public Resource getById(Integer id) {
-        return resourceMapper.getById(id);
-    }
+    public List<Resource> queryAll();
 
-    public Integer countAll() {
-        return resourceMapper.countAll();
-    }
+    public boolean uptByName(Resource paramResource);
 
-    public List<Resource> queryAll() {
-        return resourceMapper.queryAll();
-    }
+    public boolean uptShowByName(String name);
+
 }
