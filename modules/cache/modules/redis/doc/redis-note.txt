@@ -90,6 +90,8 @@ hmset key field1 value1 f2 v2     ---批量添加field-value到key对应的hash�
 
 hkeys key                         ---返回key对应的hash表(map)中所有域
 
+hvals key                         ---返回key对应的hash表(map)中所有值
+
 hexists key field                 ---查看key对应的hash表中,给定域 field 是否存在
 
 hlen key                          ---返回key对应的hash表中域的数量
