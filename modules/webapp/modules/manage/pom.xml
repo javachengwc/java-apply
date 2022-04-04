@@ -22,7 +22,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <appname>manage</appname>
 
-        <struts2.version>2.1.8.1</struts2.version>
+        <struts2.version>2.5.26</struts2.version>
         <ibatis.version>2.3.4.726</ibatis.version>
         <mybatis.version>3.0.1</mybatis.version>
     </properties>
