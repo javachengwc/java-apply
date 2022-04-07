@@ -39,3 +39,11 @@
 假设先写数据库，再淘汰缓存：第一步写数据库操作成功，第二步淘汰缓存失败，则会出现DB中是新数据，Cache中是旧数据，数据不一致。
 假设先淘汰缓存，再写数据库：第一步淘汰缓存成功，第二步写数据库失败，则只会引发一次Cache miss。
 结论：数据和缓存的操作时序：先淘汰缓存，再写数据库。
+
+4,redis客户端使用jedis, 使用连接池获取redi连接，有时获取不到连接而报异常
+JedisConnectionException [Could not get a resource from the pool]
+很可能是使用redis连接后没正确释放连接导致，比如使用jedisPool.returnResourceObject(jedis)释放连接，可能就有问题，
+如果访问redis有异常，returnResourceObject()方法不能正常释放，需要用returnBrokenResource()释放。
+但这2个释放方法，在高点版本的jedis包都是弃用的方法，正确释放方法是使用 jedis.close() 来释放连接。
+Jedis jedis = jedisPool.getResource() 获取连接处也可能存在获取不到连接资源的情况。 在释放连接时最好对jedis进行非空判断。
+
