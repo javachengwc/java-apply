@@ -1,0 +1,33 @@
+-----------------------------nginx健康检查---------------------------
+nginx提供了3种http服务健康检查方案
+1，tcp层默认检查方案：定时与后端服务建立一条tcp连接，链接建立成功则认为服务节点是健康的。
+2，http层默认检查方案：http层健康检查，会向服务发送一个http请求"GET / HTTP/1.0\r\n\r\n"，返回状态是2xx或3xx时认为后端服务正常。
+3，自定义方案,使用者自己定义检查方案。如下:
+upstream tomcat_out {
+    server 192.168.1.11:8080;
+    server 192.168.1.12:8080;
+    check interval=10000 rise=2 fall=5 timeout=1000 type=http port=8080;
+    check_http_send "HEAD /info/getStatus HTTP/1.0\r\n\r\n";
+    check_http_expect_alive http_2xx;
+}
+check字段参数:
+    Syntax: check interval=milliseconds [fall=count] [rise=count] [timeout=milliseconds] [default_down=true|false] [type=tcp|http|ssl_hello|mysql|ajp] [port=check_port]
+    Default: 如果没有配置参数，默认值是: interval=30000 fall=5 rise=2 timeout=1000 default_down=true type=tcp
+check字段参数含义：
+    interval：        向后端发送的健康检查包的间隔时间。
+    fall(fall_count): 连续失败次数达到fall_count，服务器就被认为是down。
+    rise(rise_count): 连续成功次数达到rise_count，服务器就被认为是up。
+    timeout:          后端健康请求的超时时间。
+    default_down:     设定初始服务的状态，true表示服务是down的，false表示是up的。默认值是true。
+    type：            健康检查包的类型，支持以下多种类型
+                      tcp：简单的tcp连接，如果连接成功，就说明后端正常。
+                      ssl_hello：发送一个初始的SSL hello包并接受服务器的SSL hello包。
+                      http：发送HTTP请求，通过后端的回复包的状态来判断后端是否存活。
+                      mysql: 向mysql服务器连接，通过接收服务器的greeting包来判断后端是否存活。
+                      ajp：向后端发送AJP协议的Cping包，通过接收Cpong包来判断后端是否存活。
+    port:             指定后端服务器的检查端口。默认是0，表示跟后端server提供真实服务的端口一样。
+check_http_expect_alive 指定健康检查时http回复的成功状态
+    Syntax: check_http_expect_alive [ http_2xx | http_3xx | http_4xx | http_5xx ]
+    Default: http_2xx | http_3xx
+check_http_send 配置http健康检查包发送的请求内容
+---------------------------------------------------------------------
