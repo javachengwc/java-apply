@@ -4,24 +4,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.app</groupId>
-        <artifactId>webapp</artifactId>
-        <relativePath>../../pom.xml</relativePath>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
-
-    <groupId>com.app</groupId>
+    <groupId>com.web</groupId>
     <artifactId>manage</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
-    <name>manage</name>
-
     <properties>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <appname>manage</appname>
-
         <struts2.version>2.1.8.1</struts2.version>
         <ibatis.version>2.3.4.726</ibatis.version>
         <mybatis.version>3.0.1</mybatis.version>

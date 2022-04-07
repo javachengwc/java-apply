@@ -21,18 +21,18 @@ public class MyBatisPrg {
         InputStream is = Resources.getResourceAsStream(config);
         SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(is);
         SqlSession session = factory.openSession();
-        System.out.println(session.selectOne("selectUu", 1));
+        System.out.println((Object)session.selectOne("selectUu", 1));
         //同一个session的相同sql查询,将会使用一级缓存
-        System.out.println(session.selectOne("selectUu", 1));
+        System.out.println((Object)session.selectOne("selectUu", 1));
         //参数改变,需要重新查询
-        System.out.println(session.selectOne("selectUu", 2));
+        System.out.println((Object)session.selectOne("selectUu", 2));
         //清空缓存后需要重新查询
         session.clearCache();
-        System.out.println(session.selectOne("selectUu", 1));
+        System.out.println((Object)session.selectOne("selectUu", 1));
         //session close
         session.close();
         session = factory.openSession();
-        System.out.println(session.selectOne("selectUu", 1));
+        System.out.println((Object)session.selectOne("selectUu", 1));
         session.close();
     }
 }

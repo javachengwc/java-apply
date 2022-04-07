@@ -24,7 +24,7 @@
         <module>modules/solr</module>
 		<module>modules/zookeeper</module>
 		<module>modules/frame</module>
-		<module>modules/webapp</module>
+		<module>modules/webapplication</module>
 		<module>modules/cache</module>
 		<module>modules/datastore</module>
 		<module>modules/dataaccess</module>
