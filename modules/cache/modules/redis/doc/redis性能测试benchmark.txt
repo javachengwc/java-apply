@@ -20,3 +20,4 @@ redis-benchmark -h 127.0.0.1 -p 6379 -q                       ###显示每秒钟
 redis-benchmark -t set,lpush -n 100000 -q                     ###指定需要测试的命令set,lpush进行测试
 redis-benchmark -n 1000000 -t set,get -P 16 -q                ###使用 pipelining 组织 16 条命令进行测试
                                                               ###Redis 支持 /topics/pipelining，使得可以一次性执行多条命令成为可能。Redis pipelining 可以提高服务器的 TPS
+redis-benchmark -h 127.0.0.1 -p 6379 -c 50 -n 10000 -d 2      ###50个并发链接，10000个请求，每个请求2kb，检测redis服务器性能

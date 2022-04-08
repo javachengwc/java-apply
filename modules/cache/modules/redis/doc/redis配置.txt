@@ -1,3 +1,17 @@
+redis命令行中查看配置
+config get maxclients                     ------查看最大连接数
+config get save                           ------查看redis持久化配置
+config get protected-mode                 ------查看保护模式是否开启
+config get tcp-keepalive
+config get timeout
+config get loglevel                       ------查看日志级别
+config get stop-writes-on-bgsave-error    ------当rdb持久化出错后，是否停止工作
+config get maxmemory-policy
+config get maxmemory                      ------查看redis设置的最大内存
+config get slave-serve-stale-data         ------当从库同主机失去连接或者复制正在进行，从库是否继续响应客户端的请求
+命令行中设置配置，使用 config set key value即可。
+------------------------------------------------
+
 redis如果不指定配置文件，redis也可以启动，此时，redis使用默认的内置配置。
 不过在正式环境，常常通过配置文件redis.conf来配置redis
 
@@ -124,7 +138,7 @@ everysec表示每秒同步一次（拆中，默认值）
 33）hz 10
 redis使用一个内部程序来处理后台任务，例如关闭超时的client连接，清除过期的key等等。
 它并不会同时处理所有的任务，redis通过指定的hz参数去检查和执行任务。
-hz默认设为10，提高它的值将会占用更多的cpu，当然相应的redis将会更快的处理同时到期的许多key，以及更精确的去处理超时。
+hz默认设为10，表示每秒运行10次，提高它的值将会占用更多的cpu，当然相应的redis将会更快的处理同时到期的许多key，以及更精确的去处理超时。
 hz的取值范围是1~500，通常不建议超过100，只有在请求延时非常低的情况下可以将值提升到100。
 
 34）client-output-buffer-limit <class><hard limit><soft limit><soft seconds>

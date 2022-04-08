@@ -6,6 +6,8 @@ auth pwd                          ---密码验证
 
 select num                        ---选择reids上存储数据的dbindex
 
+ping                              ---ping命令，返回pong
+
 set mykey2 "hello"                ---设置mykey2值为hello
 
 keys my*                          ---根据参数中的模式，获取符合该模式的所有key
