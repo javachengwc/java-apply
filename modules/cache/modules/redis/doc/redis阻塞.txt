@@ -1,0 +1,83 @@
+----------------------------------redis阻塞----------------------------------
+redis阻塞可以从以下几个方面来整体的进行分析
+内在原因:
+1，慢查询
+2，bigkey大对象
+3，api或数据结构使用不合理
+4，cpu饱和
+5，fork子进程阻塞
+6，aof刷盘阻塞
+7，HugePage写操作阻塞
+8，redis输入、输出缓冲区导致的阻塞
+外在原因:
+9，cpu竞争
+10，swap内存交换
+11，网络问题
+-----------------------------------------
+1，慢查询分析见[redis慢查询分析.txt]
+2，bigkey大对象可能导致的如下问题
+    a,内存空间不均衡，可能造成节点的内存空间使用不均匀。
+    b,超时阻塞，由于redis单线程的特性，操作bigkey比较耗时，意味着阻塞redis的可能性增大。
+    c,网络阻塞，每次获取bigkey产生的网络流量较大。
+   执行redis-cli -h {ip} -p {port} --bigkeys命令可找出大对象出来。
+   执行debug object key查看key对应value序列化后的长度,或strlen key查看key的字节数。
+3，api或数据结构使用不合理，比如对一个包含上万元素的hash结构执行hgetall操作,数据量大且命令复杂度O(n),很可能阻塞。
+4，cpu饱和，单线程的redis处理命令时只能使用一个cpu。cpu饱和是指redis把单核CPU使用率跑到接近100%。
+   使用top命令很容易识别出对应redis进程的cpu使用率。cpu饱和将导致redis无法处理更多的命令，严重影响吞吐量和应用的稳定性。
+   使用统计命令redis -cli -h {ip} -p {port} --stat获取redis使用情况，该命令每秒输出一行统计信息。
+   如果只有几百或几千ops的redis实例就接近cpu饱和是很不正常的，有可能使用了高算法复杂度的命令或过度的内存优化，
+   通过info commandstats命令可查看redis命令开销时间，比如下面的耗时统计
+   cmdstat_hset:calls=198737512,usec=25021927283,usec_per_call=133.27
+   hset命令算法复杂度只有0(1)但平均耗时却达到133微秒，是不合理的，正常情况耗时应该在10微秒左右。
+   可能是因为redis服务为了追求低内存使用量，过度放宽ziplist使用条件(修改hash-max-ziplist-entries和 hash-max-ziplist-value配置)
+   针对ziplist的操作算法复杂度在0(n)到0(n2)之间,虽然采用ziplist编码后hash结构内存占用会变小，但是操作变得更慢且更消耗cpu。
+   ziplist压缩编码是redis用来平衡空间和效率的优化方式，需要合理设置使用。
+5，fork子进程阻塞，在rdb生成和aof重写时，会fork一个子进程完成持久化工作，当fork操作执行太过耗时也会造成阻塞，
+   阻塞原因是该操作会复制父进程的空间内存表，即fork操作耗时跟内存量(数据集)关系较大。
+   fork 操作是重量级操作，可降低fork操作执行频率，适当放宽aof重写触发时机。
+   合理配置Linux内存分配策略：vm.overcommit_memory = 1
+   默认是0，当发现没有足够内存做内存分配时，就会不去分配。对于fork讲，会造成fork阻塞。
+   info stats命令信息中lastest_fork_usec指标，表示redis最近一次fork操作耗时,单位微妙。
+6，aof刷盘阻塞，aof文件刷盘一般每秒一次，硬盘压力过大时，fsync需要等待写入完成。
+   如果主线程发现距离上一次的fsync成功超过2秒,为了数据安全性它会阻塞直到后台线程执行fsync操作完成,
+   这种阻塞行为主要是硬盘压力引起,可查看redis日志识别出这种情况。当发生这种阻塞行为时，会打印如下日志:
+   Asynchronous AOF fsync is taking too long (disk is busy? ).  Writing the AOF
+   buffer without waiting for fsync to complete, this may slow down Redis.
+   info persistence命令信息中的aof_delayed_fsync指标，表示aof fsync延迟个数历史总数，每次发生aof刷盘阻塞主线程时会累加。
+7，HugePage写操作阻塞，子进程在执行重写期间利用linux写时复制技术降低内存开销，因此只有写操作时redis才复制要修改的内存页。
+   对于开启Transparent HugePages的系统，每次写命令引起的复制内存页单位由4K变为2MB, 放大了512倍，
+   会拖慢写操作的执行时间，导致大量写操作慢查询。比如简单的incr命令也会出现在慢查询中。
+   可以关闭系统的Transparent HugePages功能，执行 echo never > /sys/kernel/mm/transparent_hugepage/enabled
+8，redis输入、输出缓冲区导致的阻塞，redis为每个客户端分配了输入缓冲区，会将客户端发送命令临时保存，然后取出来执行。
+   通过client list 命令可查看连接的客户端列表，在客户端列表信息中，qbuf表示总容量（0 表示没有分配查询缓冲区），
+   qbuf-free表示剩余容量（0 表示没有剩余空间）；大小不能超过 1G，当大小超过 1G 时会将客户端自动关闭，输入缓冲区不受maxmemory限制。
+   当大量的key进入输入缓冲区且无法被消费时，即可造成redis阻塞；通过info clients命令blocked_clients指标可查看到当前阻塞的客户端数。
+   输出缓冲区是 redis-server 端实现的一个读取缓冲区，redis-server 在接收到客户端的请求后，把获取结果写入到 client buffer 中，
+   而不是直接发送给客户端。从而可以继续处理客户端的其他请求，这样异步处理方式使 redis-server 不会因为网络原因阻塞其他请求的处理。
+9，cpu竞争问题, redis是典型的cpu密集型应用，不建议和其他多核cpu密集型服务部署在一起。
+   当其他进程过度消耗cpu时，将严重影响redis吞吐量。可以通过top 、sar等命令定位到cpu消耗的时间点和具体进程。
+   部署redis时为了充分利用多核cpu,通常一台机器部署多个实例。常见的一种优化是把redis进程绑定到cpu上，用于降低cpu频繁上下文切换的开销。
+   这个优化技巧正常情况下没有问题，但是存在例外情况,当redis父进程创建子进程进行rdb/aof重写时，如果做了cpu绑定，会与父进程共享使用一个cpu。
+   子进程重写时对单核cpu使用率通常在90%以上，父进程与子进程将产生激烈cpu竞争，极大影响redis稳定性。
+   因此对于开启了持久化或参与复制的主节点不建议绑定cpu。
+10，swap内存交换，当系统的物理内存不够用时，可以拿出一部分硬盘的空间来充当内存(也就是虚拟内存，也称为swap交换内存)，
+   以存放内存中较少被使用的数据。当redis进程上发生内存交换，redis和使用redis上数据的应用都会受到严重的性能影响。
+   一般启用redis的系统都禁用swap内存交换或降低系统使用 swap 优先级，如 echo 10 > /proc/sys/vm/swappiness
+   可根据进程号查询内存交换信息: cat /proc/{process_id}/smaps | grep Swap
+   如果交换量都是OKB或者个别的是4KB，则是正常现象，说明进程内存没有被交换。
+11，网络问题
+   a,网络闪断，通过sar -n DEV 查看本机流量是否正常。
+   b,redis连接拒绝，redis通过maxclients参数控制客户端最大连接数,默认10000。当redis连接数大于maxclients时会拒绝新的连接进入，
+     info stats命令的rejected _connections指标记录所有被拒绝连接的数量。
+   c,连接溢出，客户端想成功连接上redis服务需要操作系统和redis的限制都通过才可以。
+     操作系统一般会对进程使用的资源做限制，其中一项是对进程可打开最大文件数控制，通过ulimit -n查看，通常默认1024。
+     linux系统对tcp连接也定义为一个文件句柄，因此对于支撑大量连接的redis来说需要增大这个值，如设置ulimit -n 65535
+     系统对于特定端口的tcp连接使用backlog队列保存。redis默认的长度为511，通过tcp-backlog参数设置。
+     如果redis用于高并发场景为了防止缓慢连接占用，可适当增大这个设置。
+     操作系统的backlog 默认值为128。使用 echo 511 > /proc/sys/net/core/somaxconn命令进行修改。
+     通过 netstat -s grep overflowed 命令获取因backlog队列溢出造成的连接拒绝统计，如下:
+     # netstat -s  丨 grep overflowed
+     663 times the listen queue of a socket overflowed
+     如怀疑backlog队列溢出，可以周期定时执行上面命令统计，查看是否有持续增长的连接拒绝情况。
+   d,网络延迟，执行redis-cli -h {ip} -p {port} --latency命令，测量机器之间的网络延迟。
+-----------------------------------------------------------------------------

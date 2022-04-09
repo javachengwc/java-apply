@@ -83,9 +83,10 @@ public class JedisClient {
     }
 
     public <T> T execute(JedisExecutor<T> executor) {
-        Jedis jedis = jedisPools.getResource();
+        Jedis jedis = null;
         T result = null;
         try {
+            jedis = jedisPools.getResource();
             result = executor.execute(jedis);
         } finally {
             if (jedis != null) {

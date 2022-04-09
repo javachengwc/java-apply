@@ -114,6 +114,19 @@ no表示等操作系统进行数据缓存同步到磁盘的aof文件（快）
 always表示每次更新操作后手动调用fsync将数据写到磁盘的aof文件（慢，安全）
 everysec表示每秒同步一次（拆中，默认值）
 
+no-appendfsync-on-rewrite no|yes
+在日志重写时，不进行命令追加操作，而只是将其放在缓冲区里，避免与命令的追加造成DISK IO上的冲突。
+设置为yes表示rewrite期间对新写操作不fsync,暂时存在内存中,等rewrite完成后再写入，默认为no，建议yes
+
+auto-aof-rewrite-percentage 100
+表示（aof_current_size- aof_base_size） / aof_base_size 的比值。aof文件重写之后当前文件大小增长多少就触发重写。
+当前aof文件大小是上次日志重写得到aof文件大小的2倍时，自动启动新的日志重写过程。
+自动触发时机 : aof_current_size>auto-aof-rewrite-min-size &&
+(aof_current_size - aof_base_size) / aof_base_size >= auto-aof-rewrite-percentage
+
+auto-aof-rewrite-min-size 64mb
+当前aof文件启动新的日志重写过程的最小值，避免刚刚启动reids时由于文件尺寸较小导致频繁的重写。
+
 27）slowlog-log-slower-than 10000
 配置记录慢日志的条件，单位是微妙，当是负值时，关闭慢日志记录，当是0时，记录所有操作
 

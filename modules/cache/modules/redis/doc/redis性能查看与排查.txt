@@ -62,6 +62,20 @@ redis内存碎片率稍大于1是合理的，这个值表示内存碎片率比�
 如果内存碎片率低于1，redis可能会把部分数据交换到硬盘上。应该增加可用物理内存或减少redis内存占用。
 3.修改内存分配器：
 redis支持malloc、jemalloc11、tcmalloc几种不同的内存分配器，每个分配器在内存分配和碎片上都有不同的实现。
+redis内存碎片清理方式
+1，手动清理
+memory purge                                         ###只支持jemalloc内存分配器
+2，自动清理
+###redis.conf配置文件
+activedefrag yes                                     ###开启自动清理内存碎片
+active-defrag-ignore-bytes 100mb                     ###内存碎片的字节数达到100M时开始清理
+active-defrag-threshold-lower 10                     ###内存碎片空间占redis总内存比例达到10%时开始清理
+                                                     ###active-defrag-ignore-bytes与active-defrag-threshold-lower两条件同时满足才会触发内存碎片清理
+active-defrag-threshold-upper 100                    ###内存碎片超过100%，则尽最大努力整理
+active-defrag-cycle-min 1                            ###内存自动整理占用资源最小百分比,所用cpu时间的比例不低于1%，保证能正常清理
+active-defrag-cycle-max 25                           ###内存自动整理占用资源最大百分比,所用cup时间的比例不高于25%，超过25%停止清理，避免redis主线程阻塞
+active-defrag-max-scan-fields 1000                   ###自动清理过程中长度小于1000的set/hash/zset/list才会进行自动清理
+3，重启redis也会清理内存碎片
 --------------------------------------------------
 redis延迟
 redis的延迟数据是无法从info信息中获取的。要查看延迟时间，可以用 Redis-cli工具加--latency参数运行
