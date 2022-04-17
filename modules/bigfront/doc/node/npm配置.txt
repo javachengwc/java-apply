@@ -1,0 +1,26 @@
+-------------------------------------npm配置--------------------------------
+npm使用package.json的文件作为npm包的描述文件，package.json包含了包的基本信息（名称、版本号、描述等）和依赖关系。
+例如：
+###package.json
+{
+    "name": "demo",
+    "version": "1.0.0",
+    "dependencies": {
+        "@antv/data-set": "^0.8.0",
+        "@babel/polyfill": "^7.0.0-beta.36"
+    }
+}
+name: 表示项目名称，上面表示项目为demo，如果发布到 npmjs.com 会以此命名，除了这种方式的名称，
+还有一种命名的方式是@scope/name的方式，是作用域包，例如用来转化 ES6 语法的@babel/core就是@babel的作用域。
+dependencies: 是项目的依赖，对应的还有开发依赖devDependencies。
+npm不仅可以用于模块管理，还可以用于执行脚本。package.json文件中可以添加scripts字段，用于指定脚本命令，供npm直接调用。
+例如：
+###package.json
+{
+    "scripts": {
+        "build": "cross-env ESLINT=none roadhog build",
+        "start": "cross-env ESLINT=none roadhog dev",
+    }
+}
+在package.json添加上面scripts后，可以直接使用npm run build和npm run start命令了。
+----------------------------------------------------------------------------
