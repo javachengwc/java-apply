@@ -6,7 +6,7 @@ import java.io.Serializable;
 import lombok.Data;
 
 @Data
-public class ResourceQuery extends PageQuery<AccessResourceVo> implements Serializable {
+public class AccessResourceQuery extends PageQuery<AccessResourceVo> implements Serializable {
 
     private String createTimeBegin;
 

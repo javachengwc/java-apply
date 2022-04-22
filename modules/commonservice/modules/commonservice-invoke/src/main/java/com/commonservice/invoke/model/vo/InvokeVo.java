@@ -1,6 +1,9 @@
 package com.commonservice.invoke.model.vo;
 
 import java.io.Serializable;
+import java.util.Map;
+
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
@@ -9,9 +12,13 @@ import lombok.Data;
 @Data
 public class InvokeVo implements Serializable {
 
-    /**
-     * 资源链接
-     */
-    private String resourceLink;
+    @ApiModelProperty("访问接口id")
+    private Long resourceId;
+
+    @ApiModelProperty("请求头")
+    private Map<String,String> headers;
+
+    @ApiModelProperty("请求参数")
+    private Map<String,String> params;
 
 }

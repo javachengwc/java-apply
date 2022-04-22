@@ -5,10 +5,12 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+
 import lombok.Data;
 
 @Data
-@ApiModel(description = "访问资源", value = "accessResourceVo")
+@ApiModel(description = "访问接口", value = "accessResourceVo")
 public class AccessResourceVo implements Serializable {
 
     private Long id;
@@ -19,15 +21,17 @@ public class AccessResourceVo implements Serializable {
 
     private Integer sysId;
 
+    private String sysName;
+
     private Integer cateId;
+
+    private String cateName;
 
     private String httpMethod;
 
     private String contentType;
 
     private String resourceLink;
-
-    private String header;
 
     private String reqDemo;
 
@@ -40,4 +44,10 @@ public class AccessResourceVo implements Serializable {
     @ApiModelProperty("修改时间")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date modifyTime;
+
+    @ApiModelProperty("接口请求头列表")
+    private List<ResourceHeaderVo> headerList;
+
+    @ApiModelProperty("接口请求参数列表")
+    private List<ResourceParamVo> paramList;
 }

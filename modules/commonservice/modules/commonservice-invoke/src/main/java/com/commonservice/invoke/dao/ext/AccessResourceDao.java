@@ -1,13 +1,13 @@
 package com.commonservice.invoke.dao.ext;
 
 import com.commonservice.invoke.model.entity.AccessResource;
-import com.commonservice.invoke.model.param.ResourceQuery;
+import com.commonservice.invoke.model.param.AccessResourceQuery;
 import java.util.List;
 
 public interface AccessResourceDao {
 
-    public int countPage(ResourceQuery resourceQuery);
+    public int countPage(AccessResourceQuery resourceQuery);
 
-    public List<AccessResource> listPage(ResourceQuery resourceQuery);
+    public List<AccessResource> listPage(AccessResourceQuery resourceQuery);
 
 }

@@ -38,4 +38,15 @@ public class HashOpt extends BaseOpt {
         });
         return  result;
     }
+
+    public String hmset(String key,Map<String, String> hash) {
+        String rt =this.execute(key, new RedisInvoker<String>() {
+            @Override
+            public String invoke(Jedis jedis) {
+                String result = jedis.hmset(key, hash);
+                return result;
+            }
+        });
+        return  rt;
+    }
 }

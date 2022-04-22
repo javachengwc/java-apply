@@ -81,11 +81,23 @@ public class BaseOpt {
         return result;
     }
 
+    //设置缓存过期，unixTime是UNIX时间戳，秒
     public Long expireAt(String key, long unixTime) {
         Long result = this.execute(key, new RedisInvoker<Long>() {
             @Override
             public Long invoke(Jedis jedis) {
                 Long result = jedis.expireAt(key,unixTime);
+                return result;
+            }
+        });
+        return result;
+    }
+
+    public Boolean exists(String key) {
+        Boolean result = this.execute(key, new RedisInvoker<Boolean>() {
+            @Override
+            public Boolean invoke(Jedis jedis) {
+                Boolean result = jedis.exists(key);
                 return result;
             }
         });

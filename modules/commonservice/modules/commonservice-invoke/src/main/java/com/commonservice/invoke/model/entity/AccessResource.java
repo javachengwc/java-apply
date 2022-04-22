@@ -36,9 +36,6 @@ public class AccessResource implements Serializable {
     @TableField("resource_link")
     private String resourceLink;
 
-    @TableField("header")
-    private String header;
-
     @TableField("req_demo")
     private String reqDemo;
 

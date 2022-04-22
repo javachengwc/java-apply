@@ -12,7 +12,6 @@
     <result column="http_method" jdbcType="VARCHAR" property="httpMethod" />
     <result column="content_type" jdbcType="VARCHAR" property="contentType" />
     <result column="resource_link" jdbcType="VARCHAR" property="resourceLink" />
-    <result column="header" jdbcType="VARCHAR" property="header" />
     <result column="req_demo" jdbcType="VARCHAR" property="reqDemo" />
     <result column="resp_demo" jdbcType="VARCHAR" property="respDemo" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -20,7 +19,7 @@
   </resultMap>
 
   <select id="listPage" resultMap="BaseResultMap">
-    select id,name,note,sys_id,cate_id,http_method,content_type,resource_link,header,req_demo,resp_demo,create_time,modify_time
+    select id,name,note,sys_id,cate_id,http_method,content_type,resource_link,req_demo,resp_demo,create_time,modify_time
     from t_access_resource
     <where>
       <if test="entity.name != null and entity.name != '' ">

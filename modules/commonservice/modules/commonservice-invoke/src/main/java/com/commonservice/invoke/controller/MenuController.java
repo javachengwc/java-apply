@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-@Api(value = "菜单接口")
+@Api(description = "菜单接口")
 @RestController
 @RequestMapping("/menu")
 @Slf4j
