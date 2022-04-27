@@ -1,0 +1,100 @@
+--------------------------------vue-cli搭建项目-----------------------------
+vue cli是基于vue.js进行快速开发的系统。提供：
+1,通过 @vue/cli 实现的交互式的项目脚手架。
+2,通过 @vue/cli + @vue/cli-service-global 实现的零配置原型开发。
+3,一个运行时依赖 (@vue/cli-service)，该依赖：
+    可升级；
+    基于 webpack 构建，并带有合理的默认配置；
+    可以通过项目内的配置文件进行配置；
+    可以通过插件进行扩展。
+4,一个丰富的官方插件集合，集成了前端生态中最好的工具。
+5,一套完全图形化的创建和管理 vue.js 项目的用户界面。
+包含3个组件：
+1,CLI: @vue/cli 全局安装的 npm 包，提供了终端里的vue命令（如：vue create 、vue serve 、vue ui 等命令）
+  通过 vue create 快速搭建一个新项目，通过 vue serve 构建项目，通过 vue ui 通过一套图形化界面管理项目。
+2,CLI 服务: @vue/cli-service是一个开发环境依赖。它是一个 npm 包，局部安装在每个 @vue/cli 创建的项目中。
+  CLI 服务是构建于 webpack 和 webpack-dev-server 之上的。它包含了：
+      加载其它 CLI 插件的核心服务；
+      一个针对绝大部分应用优化过的内部的 webpack 配置；
+      项目内部的 vue-cli-service 命令，提供 serve、build 和 inspect 命令。
+3,CLI 插件: 给vue 项目提供可选功能的 npm 包 （如： Babel/TypeScript 转译、ESLint 集成、unit和 e2e测试 等）
+  CLI 插件的名字以 @vue/cli-plugin- (内建插件) 或 vue-cli-plugin- (社区插件) 开头，非常容易使用。
+  当在项目内部运行 vue-cli-service 命令时，它会自动解析并加载 package.json 中列出的所有 CLI 插件。
+-------------------------------------------------------------------------
+vue cli 安装及命令
+npm install -g @vue/cli                                   ###安装vue cli
+yarn global add @vue/cli
+vue --version                                             ###查看vue cli版本
+npm update -g @vue/cli                                    ###升级vue cli
+yarn global upgrade --latest @vue/cli
+vue upgrade [options] [plugin-name]                       ###升级项目中的vue cli相关模块（以 @vue/cli-plugin- 或 vue-cli-plugin- 开头
+选项：
+  -t, --to <version>    升级 <plugin-name> 到指定的版本
+  -f, --from <version>  跳过本地版本检测，默认插件是从此处指定的版本升级上来
+  -r, --registry <url>  使用指定的 registry 地址安装依赖
+  --all                 升级所有的插件
+  --next                检查插件新版本时，包括 alpha/beta/rc 版本在内
+  -h, --help            输出帮助内容
+vue-cli-service serve [options] [entry]                   ###启动项目，启动一个开发服务器 (基于 webpack-dev-server)
+                                                             并附带开箱即用的模块热重载 (Hot-Module-Replacement)。
+选项：
+  --open                在服务器启动时打开浏览器
+  --copy                在服务器启动时将 URL 复制到剪切版
+  --mode                指定环境模式 (默认值：development)
+  --host                指定 host (默认值：0.0.0.0)
+  --port                指定 port (默认值：8080)
+  --https               使用 https (默认值：false)
+命令行参数 [entry] 将被指定为唯一入口 (默认值：src/main.js，TypeScript 项目则为 src/main.ts)，而非额外的追加入口。
+vue-cli-service build [options] [entry|pattern]          ###编译打包项目，会在 dist/ 目录产生一个可用于生产环境的包，
+                                                            带有 JS/CSS/HTML 的压缩，和为更好的缓存而做的自动的 vendor chunk splitting。
+选项：
+  --mode                指定环境模式 (默认值：production)
+  --dest                指定输出目录 (默认值：dist)
+  --modern              面向现代浏览器带自动回退地构建应用
+  --target              app | lib | wc | wc-async (默认值：app)
+  --name                库或 Web Components 模式下的名字 (默认值：package.json 中的 "name" 字段或入口文件名)
+  --no-clean            在构建项目之前不清除目标目录的内容
+  --report              生成 report.html 以帮助分析包内容
+  --report-json         生成 report.json 以帮助分析包内容
+  --watch               监听文件变化
+vue-cli-service inspect [options] [...paths]             ###审查一个vue cli项目的 webpack config。
+选项：
+  --mode                指定环境模式 (默认值：development)
+npx vue-cli-service help                                 ###查看vue-cli-service所有的命令
+npx vue-cli-service help [command]                       ###查看vue-cli-service command命令的说明及选项
+----------------------------------------------------------------------------
+vue cli 搭建项目
+vue create project-name                                  ###通过命令交互方式搭建项目
+vue create project-name -r url                           ###搭建项目，安装依赖时使用指定的 npm registry
+vue ui                                                   ###通过图形界面搭建项目并管理项目
+vue add eslint                                           ###在当前项目中安装eslint插件
+vue upgrade [options] [plugin-name]                      ###升级当前项目中某插件
+//cd project-name
+npm rum serve                                            ###启动项目
+yarn serve
+npx vue-cli-service serve
+npm rum build                                            ###编译打包项目
+npm run link                                             ###检查项目代码
+vue cli >= 3 和旧版使用了相同的 vue 命令，所以 vue cli 2 (vue-cli) 被覆盖了。
+如果仍然需要使用旧版本的 vue init 功能，可以全局安装一个桥接工具, 如下:
+npm install -g @vue/cli-init
+vue init webpack project-name                            ###通过vue cli 2.0搭建项目，vue init的运行效果跟vue-cli@2.x相同
+----------------------------------------------------------------------------
+其他点:
+1,可使用 vue.config.js 里的 devServer 字段配置开发服务器
+module.exports = defineConfig({
+  transpileDependencies: true,
+  devServer: {
+	host: 'localhost',
+    port: 8081,
+    // 默认打开浏览器
+    open: true
+  }
+});
+2,cache-loader 会默认为 Vue/Babel/TypeScript 编译开启。文件会缓存在 node_modules/.cache 中,
+  如果遇到了编译方面的问题，记得先删掉缓存目录之后再试试看。
+3,thread-loader 会在多核 CPU 的机器上为 Babel/TypeScript 转译开启
+4,搭建项目后，@vue/cli-service 也会安装 yorkie，它会让 package.json 的 gitHooks 字段中方便地指定 Git hook
+5,package.json 文件里的 browserslist 字段 (或一个单独的 .browserslistrc 文件)，指定了项目的目标浏览器的范围。
+  这个值会被 @babel/preset-env 和 Autoprefixer 用来确定需要转译的 JavaScript 特性和需要添加的 CSS 浏览器前缀。
+----------------------------------------------------------------------------
