@@ -2,29 +2,35 @@ package com.commonservice.invoke.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.commonservice.invoke.dao.ResourceInvokeMapper;
+import com.commonservice.invoke.dao.ext.ResourceInvokeDao;
 import com.commonservice.invoke.model.entity.AccessResource;
 import com.commonservice.invoke.model.entity.ResourceInvoke;
+import com.commonservice.invoke.model.param.ResourceInvokeQuery;
 import com.commonservice.invoke.model.vo.InvokeVo;
-import com.commonservice.invoke.model.vo.ResourceInvokeVo;
 import com.commonservice.invoke.service.AccessResourceService;
 import com.commonservice.invoke.service.ResourceInvokeService;
 import com.commonservice.invoke.util.HttpProxy;
 import com.commonservice.invoke.util.HttpResponse;
+import com.model.base.PageVo;
 import com.model.base.Resp;
 import com.util.JsonUtil;
-import com.util.page.Page;
-import com.util.page.PageQuery;
+import com.util.base.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @Slf4j
 public class ResourceInvokeServiceImpl extends ServiceImpl<ResourceInvokeMapper, ResourceInvoke>
         implements ResourceInvokeService {
+
+    @Autowired
+    private ResourceInvokeDao resourceInvokeDao;
 
     @Autowired
     private AccessResourceService accessResourceService;
@@ -91,8 +97,25 @@ public class ResourceInvokeServiceImpl extends ServiceImpl<ResourceInvokeMapper,
         return  resourceInvoke;
     }
 
-    public Page<ResourceInvoke> page(PageQuery<ResourceInvokeVo> query) {
+    public PageVo<ResourceInvoke> page(ResourceInvokeQuery query) {
+        log.info("ResourceInvokeServiceImpl page start ,query={}", JsonUtil.obj2Json(query));
+        int pageNum = query.getPageNum();
+        int pageSize = query.getPageSize();
+        int total = resourceInvokeDao.countPage(query);
 
-        return null;
+        PageVo<ResourceInvoke> page = new PageVo<ResourceInvoke>();
+        page.setTotalCount(total);
+
+        if(page.isBound(pageNum,pageSize)) {
+            page.setList(Collections.EMPTY_LIST);
+            return page;
+        }
+
+        if(StringUtils.isNotBlank(query.getOrderBy())) {
+            query.setOrderBy(StringUtil.field2Col(query.getOrderBy()));
+        }
+        List<ResourceInvoke> list = resourceInvokeDao.listPage(query);
+        page.setList(list);
+        return page;
     }
 }

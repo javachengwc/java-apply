@@ -24,4 +24,9 @@ public class PageVo<T> {
         this.totalCount=totalCount;
         this.list=list;
     }
+
+    //是否越界
+    public boolean isBound(int pageNum,int pageSize) {
+        return ((pageNum * pageSize - totalCount)-pageSize)>=0;
+    }
 }

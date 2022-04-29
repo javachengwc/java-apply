@@ -1,20 +1,22 @@
 package com.commonservice.invoke.model.param;
 
+import com.model.base.PageParam;
 import lombok.Data;
 
-import java.io.Serializable;
-import java.util.Date;
-
 @Data
-public class ResourceInvokeQuery implements Serializable {
+public class ResourceInvokeQuery extends PageParam {
 
     private Long id;
 
     private Integer sysId;
 
+    private String sysName;
+
     private Integer cateId;
 
     private Long resourceId;
+
+    private String resourceName;
 
     private String resourceLink;
 

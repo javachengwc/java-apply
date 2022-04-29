@@ -120,6 +120,36 @@ public class NetUtil {
     }
 
     /**
+     * 获取IP地址
+     */
+    public static String getHostIp()
+    {
+        try
+        {
+            return InetAddress.getLocalHost().getHostAddress();
+        }
+        catch (UnknownHostException e)
+        {
+        }
+        return "127.0.0.1";
+    }
+
+    /**
+     * 获取主机名
+     */
+    public static String getHostName()
+    {
+        try
+        {
+            return InetAddress.getLocalHost().getHostName();
+        }
+        catch (UnknownHostException e)
+        {
+        }
+        return "未知";
+    }
+
+    /**
      * 遍历本地网卡，返回第一个合理的IP
      */
     public static InetAddress getLocalAddress() {

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.commonservice.invoke.dao.ext.ResourceInvokeDao">
+
+    <resultMap id="BaseResultMap" type="com.commonservice.invoke.model.entity.ResourceInvoke">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="resource_id" jdbcType="BIGINT" property="resourceId" />
+        <result column="resource_name" jdbcType="VARCHAR" property="resourceName" />
+        <result column="resource_link" jdbcType="VARCHAR" property="resourceLink" />
+        <result column="http_method" jdbcType="VARCHAR" property="httpMethod" />
+        <result column="content_type" jdbcType="VARCHAR" property="contentType" />
+        <result column="req_header" jdbcType="VARCHAR" property="reqHeader" />
+        <result column="req_data" jdbcType="VARCHAR" property="reqData" />
+        <result column="resp_code" jdbcType="INTEGER" property="respCode" />
+        <result column="resp_data" jdbcType="VARCHAR" property="respData" />
+        <result column="is_success" jdbcType="INTEGER" property="isSuccess" />
+        <result column="error_message" jdbcType="VARCHAR" property="errorMessage" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    </resultMap>
+
+    <select id="listPage" resultMap="BaseResultMap">
+        select n.id, n.resource_id, n.resource_name, n.resource_link, n.http_method, n.content_type, n.req_header, n.req_data,
+               n.resp_code, n.resp_data, n.is_success, n.error_message, n.create_time, n.modify_time
+        from t_resource_invoke  n
+        join t_access_resource  a on n.resource_id = a.id
+        left join t_resource_system s on a.sys_id = s.id
+        <where>
+            <if test="sysName != null and sysName != '' ">
+                and s.name like concat('%',#{sysName},'%')
+            </if>
+            <if test="resourceName != null and resourceName != '' ">
+                and n.resource_name like concat('%',#{resourceName},'%')
+            </if>
+            <if test="isSuccess != null ">
+                and n.is_success = #{isSuccess}
+            </if>
+            <if test="createTimeBegin != null and createTimeBegin != '' ">
+                <![CDATA[ and n.create_time >= '${createTimeBegin}' ]]>
+            </if>
+            <if test="createTimeEnd != null and createTimeEnd != '' ">
+                <![CDATA[ and n.create_time < '${createTimeEnd}' ]]>
+            </if>
+        </where>
+        <if test="orderBy != null and orderBy != '' and order != null and order != '' ">
+            order by n.${orderBy} ${order}
+        </if>
+        <if test="orderBy == null or orderBy == '' ">
+            order by n.id desc
+        </if>
+        <if test="start != null and pageSize != null">
+            limit #{start},#{pageSize}
+        </if>
+    </select>
+
+    <select id="countPage" resultType="java.lang.Integer">
+        select count(1) as count
+        from t_resource_invoke  n
+        join t_access_resource  a on n.resource_id = a.id
+        left join t_resource_system s on a.sys_id = s.id
+        <where>
+            <if test="sysName != null and sysName != '' ">
+                and s.name like concat('%',#{sysName},'%')
+            </if>
+            <if test="resourceName != null and resourceName != '' ">
+                and n.resource_name like concat('%',#{resourceName},'%')
+            </if>
+            <if test="isSuccess != null ">
+                and n.is_success = #{isSuccess}
+            </if>
+            <if test="createTimeBegin != null and createTimeBegin != '' ">
+                <![CDATA[ and n.create_time >= '${createTimeBegin}' ]]>
+            </if>
+            <if test="createTimeEnd != null and createTimeEnd != '' ">
+                <![CDATA[ and n.create_time < '${createTimeEnd}' ]]>
+            </if>
+        </where>
+    </select>
+
+</mapper>

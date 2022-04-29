@@ -1,15 +1,15 @@
 package com.commonservice.invoke.controller;
 
 import com.commonservice.invoke.model.entity.ResourceInvoke;
+import com.commonservice.invoke.model.param.ResourceInvokeQuery;
 import com.commonservice.invoke.model.vo.InvokeVo;
 import com.commonservice.invoke.model.vo.ResourceInvokeVo;
 import com.commonservice.invoke.service.ResourceInvokeService;
+import com.model.base.PageVo;
 import com.model.base.Req;
 import com.model.base.Resp;
 import com.util.JsonUtil;
 import com.util.TransUtil;
-import com.util.page.Page;
-import com.util.page.PageQuery;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -38,12 +38,12 @@ public class ResourceInvokeController {
 
     @RequestMapping(value = "/page", method = RequestMethod.POST)
     @ApiOperation(value = "分页查询接口调用记录",notes = "分页查询接口调用记录")
-    public Resp<Page<ResourceInvokeVo>> page(@RequestBody Req<PageQuery<ResourceInvokeVo>> req){
-        PageQuery<ResourceInvokeVo> query= req.getData();
+    public Resp<PageVo<ResourceInvokeVo>> page(@RequestBody Req<ResourceInvokeQuery> req){
+        ResourceInvokeQuery query= req.getData();
         log.info("ResourceInvokeController page start,query={}", JsonUtil.obj2Json(query));
-        query.genStart();
-        Page<ResourceInvoke> pageData=resourceInvokeService.page(query);
-        Page<ResourceInvokeVo> rtPage = TransUtil.transEntityWithJson(pageData,Page.class);
+        query.genPage();
+        PageVo<ResourceInvoke> pageData=resourceInvokeService.page(query);
+        PageVo<ResourceInvokeVo> rtPage = TransUtil.transEntityWithJson(pageData,PageVo.class);
         return Resp.data(rtPage);
     }
 

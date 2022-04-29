@@ -18,10 +18,10 @@ public class PageParam {
     protected Integer start = 0;
 
     //排序字段
-    private String orderByColumn;
+    private String orderBy;
 
     //排序顺序 asc--升序,desc--降序
-    private String orderBySort;
+    private String order;
 
     //组装分页
     public void genPage()
