@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.commonservice.invoke.model.entity.AccessResource;
 import com.commonservice.invoke.model.param.AccessResourceQuery;
 import com.commonservice.invoke.model.vo.AccessResourceVo;
-import com.util.page.Page;
+import com.model.base.PageVo;
 import java.util.List;
 
 public interface AccessResourceService extends IService<AccessResource> {
@@ -13,6 +13,6 @@ public interface AccessResourceService extends IService<AccessResource> {
 
     public List<AccessResource> listPage(AccessResourceQuery resourceQuery);
 
-    public Page<AccessResourceVo> page(AccessResourceQuery resourceQuery);
+    public PageVo<AccessResourceVo> page(AccessResourceQuery resourceQuery);
 
 }

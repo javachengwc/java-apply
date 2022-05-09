@@ -3,10 +3,13 @@ package com.commonservice.invoke.controller;
 import com.commonservice.invoke.model.entity.AccessResource;
 import com.commonservice.invoke.model.param.AccessResourceQuery;
 import com.commonservice.invoke.model.vo.AccessResourceVo;
+import com.commonservice.invoke.model.vo.ResourceInvokeVo;
 import com.commonservice.invoke.service.AccessResourceService;
+import com.model.base.PageVo;
 import com.model.base.Req;
 import com.model.base.Resp;
 import com.util.JsonUtil;
+import com.util.TransUtil;
 import com.util.page.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -32,11 +35,11 @@ public class AccessResourceController {
 
     @RequestMapping(value = "/page", method = RequestMethod.POST)
     @ApiOperation(value = "分页查询访问接口",notes = "分页查询访问接口")
-    public Resp<Page<AccessResourceVo>> page(@RequestBody Req<AccessResourceQuery> req){
+    public Resp<PageVo<AccessResourceVo>> page(@RequestBody Req<AccessResourceQuery> req){
         AccessResourceQuery query= req.getData();
         log.info("AccessResourceController page start,query={}", JsonUtil.obj2Json(query));
         query.genStart();
-        Page<AccessResourceVo> pageData=accessResourceService.page(query);
+        PageVo<AccessResourceVo> pageData=accessResourceService.page(query);
         return Resp.data(pageData);
     }
 

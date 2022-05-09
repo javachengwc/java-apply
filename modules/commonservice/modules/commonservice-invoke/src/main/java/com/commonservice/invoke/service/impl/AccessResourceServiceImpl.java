@@ -7,12 +7,14 @@ import com.commonservice.invoke.model.entity.AccessResource;
 import com.commonservice.invoke.model.param.AccessResourceQuery;
 import com.commonservice.invoke.model.vo.AccessResourceVo;
 import com.commonservice.invoke.service.AccessResourceService;
+import com.model.base.PageVo;
 import com.util.JsonUtil;
 import com.util.TransUtil;
-import com.util.page.Page;
+import com.util.base.StringUtil;
 import java.util.Collections;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,22 +34,27 @@ public class AccessResourceServiceImpl extends ServiceImpl<AccessResourceMapper,
         return accessResourceDao.listPage(resourceQuery);
     }
 
-    public Page<AccessResourceVo> page(AccessResourceQuery resourceQuery) {
-        log.info("AccessResourceServiceImpl page start ,resourceQuery={}", JsonUtil.obj2Json(resourceQuery));
-        int pageNo = resourceQuery.getPageNo();
-        int pageSize = resourceQuery.getPageSize();
+    public PageVo<AccessResourceVo> page(AccessResourceQuery query) {
+        log.info("AccessResourceServiceImpl page start ,resourceQuery={}", JsonUtil.obj2Json(query));
+        int pageNum = query.getPageNo();
+        int pageSize = query.getPageSize();
 
-        int total = accessResourceDao.countPage(resourceQuery);
+        int total = accessResourceDao.countPage(query);
 
-        Page<AccessResourceVo> pageData = new Page<AccessResourceVo>(pageNo,pageSize,total);
-        if (pageData.isBound()) {
-            pageData.setResult(Collections.EMPTY_LIST);
-            return pageData;
+        PageVo<AccessResourceVo> page = new PageVo<AccessResourceVo>();
+        page.setTotalCount(total);
+
+        if(page.isBound(pageNum,pageSize)) {
+            page.setList(Collections.EMPTY_LIST);
+            return page;
         }
 
-        List<AccessResource> list = accessResourceDao.listPage(resourceQuery);
+        if(StringUtils.isNotBlank(query.getOrderBy())) {
+            query.setOrderBy(StringUtil.field2Col(query.getOrderBy()));
+        }
+        List<AccessResource> list = accessResourceDao.listPage(query);
         List<AccessResourceVo> voList = TransUtil.transListWithJson(list, AccessResourceVo.class);
-        pageData.setResult(voList);
-        return pageData;
+        page.setList(voList);
+        return page;
     }
 }

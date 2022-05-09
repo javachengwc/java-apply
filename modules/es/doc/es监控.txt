@@ -17,6 +17,7 @@ http://localhost:9200/_cat/shards                     ---查看分片状态
 http://localhost:9200/_cat/recovery                   ---查看索引恢复状态
 http://localhost:9200/_cat/thread_pool?v              ---查询线程池运行情况
 http://localhost:9200/_cat/segments/{index}?v         ---查看索引的segment情况
+http://localhost:9200/_cat/plugins                    ---查看es安装的插件
 /_cat/shards/{index}]
 /_cat/indices/{index}
 /_cat/recovery/{index}
@@ -27,7 +28,6 @@ http://localhost:9200/_cat/segments/{index}?v         ---查看索引的segment�
 /_cat/pending_tasks
 /_cat/aliases
 /_cat/aliases/{alias}
-/_cat/plugins
 /_cat/fielddata
 /_cat/fielddata/{fields}
 /_cat/nodeattrs

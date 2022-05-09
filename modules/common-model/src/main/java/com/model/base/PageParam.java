@@ -4,9 +4,11 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @ApiModel(value = "pageParam", description = "分页参数")
 @Data
-public class PageParam {
+public class PageParam implements Serializable {
 
     @ApiModelProperty(name = "pageNum", value = "第几页")
     protected Integer pageNum = 1;
