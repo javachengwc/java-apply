@@ -30,7 +30,7 @@
         <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
           <el-form-item label="系统" prop="sysName">
             <el-input
-              v-model="queryParams.sysName"
+              v-model="queryParams.entity.sysName"
               placeholder="请输入系统名称"
               clearable
               style="width: 240px"
@@ -39,7 +39,7 @@
           </el-form-item>
           <el-form-item label="API名称" prop="name">
             <el-input
-              v-model="queryParams.name"
+              v-model="queryParams.entity.name"
               placeholder="请输入API名称"
               clearable
               style="width: 240px"
@@ -48,20 +48,20 @@
           </el-form-item>
           <el-form-item label="API地址" prop="resourceLink">
             <el-input
-              v-model="queryParams.resourceLink"
+              v-model="queryParams.entity.resourceLink"
               placeholder="请输入API地址"
               clearable
-              style="width: 240px"
+              style="width: 557px"
               @keyup.enter.native="handleQuery"
             />
           </el-form-item>
           <el-form-item label="创建时间">
             <el-date-picker
               v-model="dateRange"
-              style="width: 240px"
+              style="width: 557px"
               value-format="yyyy-MM-dd HH:mm:ss"
               type="datetimerange"
-              range-separator="-"
+              range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
             ></el-date-picker>
@@ -125,46 +125,27 @@
 
         <el-table v-loading="loading" :data="list" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column label="ID" align="center" key="id" prop="id" v-if="columns[0].visible" />
-          <el-table-column label="API名称" align="center" key="name" prop="userName" v-if="columns[1].visible" :show-overflow-tooltip="true" />
-          <el-table-column label="请求方式" align="center" key="httpMethod" prop="nickName" v-if="columns[2].visible" />
-          <el-table-column label="API地址" align="center" key="resourceLink" prop="dept.deptName" v-if="columns[3].visible" :show-overflow-tooltip="true" />
+          <el-table-column label="ID" align="center" key="id" prop="id" v-if="columns[0].visible" width="60" />
+          <el-table-column label="API名称" align="center" key="name" prop="name" v-if="columns[1].visible" width="200" >
+            <template slot-scope="scope" >
+              <div style="color:#1890ff" @click="handleDetail(scope.row)">{{ scope.row.name }}</div>
+            </template>
+          </el-table-column>
+          <el-table-column label="请求方式" align="center" key="httpMethod" prop="httpMethod" v-if="columns[2].visible" width="80" />
+          <el-table-column label="API地址" align="center" key="resourceLink" prop="resourceLink" v-if="columns[3].visible" :show-overflow-tooltip="true" />
           <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[4].visible" width="160">
             <template slot-scope="scope">
               <span>{{ parseTime(scope.row.createTime) }}</span>
             </template>
           </el-table-column>
-          <el-table-column
-            label="操作"
-            align="center"
-            width="200"
-            class-name="small-padding fixed-width"
-          >
+          <el-table-column label="操作" align="center" width="120" class-name="small-padding fixed-width" >
             <template slot-scope="scope" >
-              <el-button
-                size="mini"
-                type="text"
-                icon="el-icon-edit"
-                @click="handleDetail(scope.row)"
-              >查看</el-button>
               <el-button
                 size="mini"
                 type="text"
                 icon="el-icon-edit"
                 @click="handleInvoke(scope.row)"
               >调用</el-button>
-              <el-button
-                size="mini"
-                type="text"
-                icon="el-icon-edit"
-                @click="handleUpdate(scope.row)"
-              >修改</el-button>
-              <el-button
-                size="mini"
-                type="text"
-                icon="el-icon-delete"
-                @click="handleDelete(scope.row)"
-              >删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -172,7 +153,7 @@
         <pagination
           v-show="total>0"
           :total="total"
-          :page.sync="queryParams.pageNum"
+          :page.sync="queryParams.pageNo"
           :limit.sync="queryParams.pageSize"
           @pagination="getPage"
         />
@@ -232,6 +213,58 @@
       </div>
     </el-dialog>
 
+    <!-- 调用API接口对话框 -->
+    <el-dialog :title="invoke.title" :visible.sync="invoke.open" width="800px" append-to-body>
+      <el-form ref="form" :model="invoke.form" label-width="80px">
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="API名称" prop="name">
+              <div class="invoke-row-class">{{invoke.form.name }}</div>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="接口描述" prop="note">
+              <div class="invoke-row-class">{{invoke.form.note }}</div>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-form-item label="API地址" prop="resourceLink">
+            <el-col :span="2" >
+              <div style="width: 99%; display: inline-block; background: #f2f2f2; font-weight: 600; text-align: center;">{{invoke.form.httpMethod }}</div>
+            </el-col>
+            <el-col :span="22">
+              <div class="invoke-row-class"><el-link type="primary" disabled>{{invoke.form.resourceLink }}</el-link></div>
+            </el-col>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="请求参数">
+              <el-input v-model="invoke.form.reqDemo" type="textarea" placeholder="请输入内容" :rows="6" ></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12"  align="center" >
+            <el-button @click="handleApiInvoke" >调  用</el-button>
+          </el-col>
+          <el-col :span="12"  align="center" >
+              <el-button @click="clearInvoke">清空结果</el-button>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div style="padding-top: 10px;">
+        <div><el-tag size="medium" type="info">响应结果</el-tag></div>
+        <div class="result_show"> {{invoke.result }} </div>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="invoke.open = false">关  闭</el-button>
+      </div>
+    </el-dialog>
+
     <!-- 导入对话框 -->
     <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
       <el-upload
@@ -266,7 +299,8 @@
 
 <script>
 import { apiPage, getApiResource, addApiResource, updateApiResource, delApiResource } from "@/api/interapi/apiresource";
-import { treeselect } from "@/api/system/dept";
+import { apiInvoke } from "@/api/interapi/invokerecord";
+import { treeselect } from "@/api/interapi/apicategory";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
@@ -293,7 +327,7 @@ export default {
       title: "",
       // 类别树选项
       cateOptions: undefined,
-      // 是否显示弹出层
+      // 是否显示增加或修改弹出层
       open: false,
       // 类别名称
       cateName: undefined,
@@ -304,6 +338,15 @@ export default {
       defaultProps: {
         children: "children",
         label: "label"
+      },
+      //调用接口参数
+      invoke: {
+        title: "接口调用",
+        // 是否显示弹出层（接口调用）
+        open: false,
+        // 调用接口数据
+        form: {},
+        result: undefined
       },
       // 接口导入参数
       upload: {
@@ -322,11 +365,13 @@ export default {
       },
       // 查询参数
       queryParams: {
-        pageNum: 1,
+        pageNo: 1,
         pageSize: 10,
-        sysName: undefined,
-        name: undefined,
-        resourceLink: undefined
+        entity: {
+          sysName: undefined,
+          name: undefined,
+          resourceLink: undefined
+        }
       },
       // 列信息
       columns: [
@@ -349,7 +394,7 @@ export default {
   },
   watch: {
     // 根据类别名称筛选类别树
-    deptName(val) {
+    cateName(val) {
       this.$refs.tree.filter(val);
     }
   },
@@ -382,7 +427,7 @@ export default {
     },
     // 类别节点单击事件
     handleNodeClick(data) {
-      this.queryParams.cateId = data.id;
+      this.queryParams.entity.cateId = data.id;
       this.handleQuery();
     },
     // 取消按钮
@@ -410,7 +455,7 @@ export default {
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.queryParams.pageNum = 1;
+      this.queryParams.pageNo = 1;
       this.getPage();
     },
     /** 重置按钮操作 */
@@ -424,6 +469,25 @@ export default {
       this.ids = selection.map(item => item.id);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
+    },
+    // 调用窗口
+    handleInvoke(row) {
+      this.invoke.open = true;
+      this.invoke.form = row;
+    },
+    // 调用api接口
+    handleApiInvoke() {
+      this.invoke.form.resourceId =this.invoke.form.id;
+      this.invoke.form.params = JSON.parse(this.invoke.form.reqDemo);
+      let reqData = this.wrapReqData(this.invoke.form);
+      apiInvoke(reqData).then(response => {
+          this.invoke.result = response;
+        }
+      );
+    },
+    // 清除调用结果
+    clearInvoke() {
+      this.invoke.result="";
     },
     /** 新增按钮操作 */
     handleAdd() {
@@ -452,6 +516,13 @@ export default {
         this.title = "修改用户";
         this.form.password = "";
       });
+    },
+    /** 查看链接操作 */
+    handleDetail(row) {
+      this.reset();
+      this.getTreeselect();
+      this.open = true;
+      this.title = "接口详情";
     },
     /** 提交按钮 */
     submitForm: function() {
@@ -518,3 +589,22 @@ export default {
   }
 };
 </script>
+<style>
+.invoke-row-class {
+  display:inline-block;
+  width:100%;
+  background:#F5F7FA;
+  font-weight:520;
+  text-align:left;
+  padding-left:6px;
+}
+.result_show {
+ width:100%;
+ height:300px;
+ margin-bottom:20px;
+ border:1px solid #ccc;
+ overflow:auto;
+ border-radius: 4px;
+}
+
+</style>

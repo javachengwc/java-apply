@@ -8,3 +8,12 @@ export function page(data) {
     data: data
   })
 }
+
+// 调用api接口
+export function apiInvoke(data) {
+  return request({
+    url: '/resource/invoke/invoke',
+    method: 'post',
+    data: data
+  })
+}

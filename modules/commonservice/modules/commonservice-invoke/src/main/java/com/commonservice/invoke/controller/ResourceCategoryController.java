@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.commonservice.invoke.model.entity.ResourceCategory;
+import com.commonservice.invoke.model.param.CategoryTreeParam;
 import com.commonservice.invoke.model.vo.ResourceCategoryVo;
+import com.commonservice.invoke.model.vo.TreeSelectVo;
 import com.commonservice.invoke.service.ResourceCategoryService;
 import com.model.base.Req;
 import com.model.base.Resp;
@@ -19,6 +21,9 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Api(description = "接口目录")
 @RestController
@@ -58,5 +63,34 @@ public class ResourceCategoryController {
         log.info("ResourceCategoryController getById start,id={}", id);
         ResourceCategory data=resourceCategoryService.getById(id);
         return Resp.data(data);
+    }
+
+    @GetMapping("/tree")
+    @ApiOperation("查询类别树")
+    public Resp<List<TreeSelectVo>> tree(CategoryTreeParam cateTreeParam){
+        String name = cateTreeParam == null? "": cateTreeParam.getName();
+        Long parentId = cateTreeParam== null ?null: cateTreeParam.getParentId();
+        log.info("ResourceCategoryController tree start,name={},parentId={}",name,parentId);
+        List<ResourceCategory> list = resourceCategoryService.queryList(name,parentId);
+        List<ResourceCategory> cateList = resourceCategoryService.genTree(list);
+        List<TreeSelectVo> rtList = TransUtil.transList(cateList, new TransUtil.ITrans<TreeSelectVo, ResourceCategory>() {
+            @Override
+            public TreeSelectVo doTrans(ResourceCategory data) {
+                TreeSelectVo treeSelectVo = new TreeSelectVo();
+                treeSelectVo.setId(data.getId());
+                treeSelectVo.setLabel(data.getName());
+                List<ResourceCategory> list = data.getChildren();
+                if(list!=null && list.size() > 0) {
+                    List<TreeSelectVo> childList = new ArrayList<TreeSelectVo>();
+                    for(ResourceCategory per: list) {
+                        TreeSelectVo child = doTrans(per);
+                        childList.add(child);
+                    }
+                    treeSelectVo.setChildren(childList);
+                }
+                return treeSelectVo;
+            }
+        });
+        return Resp.data(rtList);
     }
 }

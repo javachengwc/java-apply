@@ -52,7 +52,7 @@ public class ResourceInvokeServiceImpl extends ServiceImpl<ResourceInvokeMapper,
             log.info("ResourceInvokeServiceImpl invoke httpProxy end ,resourceId={},url={}",resourceId,url);
         } catch (Exception e) {
             log.error("ResourceInvokeServiceImpl invoke error,url={},httpMethod={},contentType={},invokeVo={}",
-                    url,httpMethod,contentType,invokeVo);
+                    url,httpMethod,contentType,invokeVo,e);
             errorMsg = StringUtils.isBlank(e.getMessage()) ? e.getClass().getSimpleName(): e.getMessage();
             resp = Resp.error(errorMsg);
         }

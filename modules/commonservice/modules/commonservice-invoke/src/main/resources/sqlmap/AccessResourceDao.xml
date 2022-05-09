@@ -19,55 +19,63 @@
   </resultMap>
 
   <select id="listPage" resultMap="BaseResultMap">
-    select id,name,note,sys_id,cate_id,http_method,content_type,resource_link,req_demo,resp_demo,create_time,modify_time
-    from t_access_resource
+    select a.id,a.name,a.note,a.sys_id,a.cate_id,a.http_method,a.content_type,a.resource_link,a.req_demo,a.resp_demo,a.create_time,a.modify_time
+    from t_access_resource a
+    left join t_resource_system s on s.id = a.sys_id
     <where>
-      <if test="entity.name != null and entity.name != '' ">
-        and name = #{entity.name}
+      <if test="entity!=null and entity.name != null and entity.name != '' ">
+        and a.name = #{entity.name}
       </if>
-      <if test="entity.sysId != null ">
-        and sys_id = #{entity.sysId}
+      <if test="entity!=null and entity.sysId != null ">
+        and a.sys_id = #{entity.sysId}
       </if>
-      <if test="entity.cateId != null ">
-        and cate_id = #{entity.cateId}
+      <if test="entity!=null and entity.sysName != null and entity.sysName != '' ">
+        and s.name like concat('%',#{entity.sysName},'%')
       </if>
-      <if test="entity.resourceLink != null and entity.resourceLink != '' ">
-        and resource_link like concat(#{entity.resourceLink},'%')
+      <if test="entity!=null and entity.cateId != null ">
+        and a.cate_id = #{entity.cateId}
+      </if>
+      <if test="entity!=null and entity.resourceLink != null and entity.resourceLink != '' ">
+        and a.resource_link like concat('%',#{entity.resourceLink},'%')
       </if>
       <if test="createTimeBegin != null and createTimeBegin != '' ">
-        <![CDATA[ and create_time >= '${createTimeBegin}' ]]>
+        <![CDATA[ and a.create_time >= '${createTimeBegin}' ]]>
       </if>
       <if test="createTimeEnd != null and createTimeEnd != '' ">
-        <![CDATA[ and create_time < '${createTimeEnd}' ]]>
+        <![CDATA[ and a.create_time < '${createTimeEnd}' ]]>
       </if>
     </where>
-    order by id desc
+    order by a.id desc
     <if test="start != null and pageSize != null">
       limit #{start},#{pageSize}
     </if>
   </select>
 
   <select id="countPage" resultType="java.lang.Integer">
-    select count(1) as count
-    from t_access_resource
+    select count(*) as count
+    from t_access_resource a
+    left join t_resource_system s on s.id = a.sys_id
     <where>
-      <if test="entity.name != null and entity.name != '' ">
-        and name = #{entity.name}
+      <if test="entity!=null and entity.name != null and entity.name != '' ">
+        and a.name = #{entity.name}
       </if>
-      <if test="entity.sysId != null ">
-        and sys_id = #{entity.sysId}
+      <if test="entity!=null and entity.sysId != null ">
+        and a.sys_id = #{entity.sysId}
       </if>
-      <if test="entity.cateId != null ">
-        and cate_id = #{entity.cateId}
+      <if test="entity!=null and entity.sysName != null and entity.sysName != '' ">
+        and s.name like concat('%',#{entity.sysName},'%')
       </if>
-      <if test="entity.resourceLink != null and entity.resourceLink != '' ">
-        and resource_link like concat(#{entity.resourceLink},'%')
+      <if test="entity!=null and entity.cateId != null ">
+        and a.cate_id = #{entity.cateId}
+      </if>
+      <if test="entity!=null and entity.resourceLink != null and entity.resourceLink != '' ">
+        and a.resource_link like concat('%',#{entity.resourceLink},'%')
       </if>
       <if test="createTimeBegin != null and createTimeBegin != '' ">
-        <![CDATA[ and create_time >= '${createTimeBegin}' ]]>
+        <![CDATA[ and a.create_time >= '${createTimeBegin}' ]]>
       </if>
       <if test="createTimeEnd != null and createTimeEnd != '' ">
-        <![CDATA[ and create_time < '${createTimeEnd}' ]]>
+        <![CDATA[ and a.create_time < '${createTimeEnd}' ]]>
       </if>
     </where>
   </select>

@@ -156,7 +156,7 @@ public class HttpProxy {
                 req.setHeader(per.getKey(),per.getValue());
             }
         }
-        if(StringUtils.isNotBlank(contentType) && !headers.containsKey(HTTP.CONTENT_TYPE)) {
+        if(StringUtils.isNotBlank(contentType) && (headers==null || !headers.containsKey(HTTP.CONTENT_TYPE))) {
             req.setHeader(HTTP.CONTENT_TYPE,contentType);
         }
     }
