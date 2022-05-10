@@ -11,6 +11,8 @@ public class HttpResponse implements Serializable {
 
     private Integer code;
 
-    private String body;
+    private Object body;
+
+    private boolean json = false;
 
 }

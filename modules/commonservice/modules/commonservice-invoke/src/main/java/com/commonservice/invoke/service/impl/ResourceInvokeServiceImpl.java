@@ -81,8 +81,9 @@ public class ResourceInvokeServiceImpl extends ServiceImpl<ResourceInvokeMapper,
         paramJson= paramJson.length()>1000? paramJson.substring(0,1000): paramJson;
         resourceInvoke.setReqData(paramJson);
 
-        String respData =( httpResponse==null || httpResponse.getBody()== null ) ? "" : httpResponse.getBody();
-        respData= respData.length()>2000? respData.substring(0,2000): respData;
+        String respData =( httpResponse==null || httpResponse.getBody()== null ) ? "" :
+                ( httpResponse.isJson() ? JsonUtil.obj2Json(httpResponse.getBody()) : httpResponse.getBody().toString());
+        respData= respData.length()>10000? respData.substring(0,10000): respData;
         resourceInvoke.setRespData(respData);
 
         resourceInvoke.setRespCode(httpResponse==null? -1 :httpResponse.getCode());

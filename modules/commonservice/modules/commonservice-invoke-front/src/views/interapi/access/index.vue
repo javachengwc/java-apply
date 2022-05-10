@@ -478,7 +478,11 @@ export default {
     // 调用api接口
     handleApiInvoke() {
       this.invoke.form.resourceId =this.invoke.form.id;
-      this.invoke.form.params = JSON.parse(this.invoke.form.reqDemo);
+      if(this.invoke.form.reqDemo == null || this.invoke.form.reqDemo.length<=0) {
+        this.invoke.form.params = {};
+      } else {
+        this.invoke.form.params = JSON.parse(this.invoke.form.reqDemo);
+      }
       let reqData = this.wrapReqData(this.invoke.form);
       apiInvoke(reqData).then(response => {
           this.invoke.result = response;

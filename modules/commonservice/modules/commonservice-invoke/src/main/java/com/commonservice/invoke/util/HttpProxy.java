@@ -40,7 +40,7 @@ public class HttpProxy {
 
     public static final int SO_TIMEOUT_MS = 5*1000;
 
-    public static final String UTF8 = "UTF-8";
+    public static final Charset UTF8 = Charset.forName("UTF-8");
 
     public static CloseableHttpClient httpClient;
 
@@ -60,7 +60,7 @@ public class HttpProxy {
 
     public static HttpResponse invoke(String url, String httpMethod,
                                        Map<String, String> params, Map<String, String> headers,
-                                       String contentType,String charset) throws Exception {
+                                       String contentType,Charset charset) throws Exception {
         HttpRequestBase req = null;
         if(GET_METHOD.equalsIgnoreCase(httpMethod)) {
             req = genHttpGet(url, params);
@@ -92,6 +92,15 @@ public class HttpProxy {
                     String returnStr = EntityUtils.toString(entity, charset);
                     httpResponse.setBody(returnStr);
                     EntityUtils.consume(entity);
+                    if(StringUtils.isNotBlank(returnStr)) {
+                        try {
+                            Object obj = JsonUtil.json2Obj(returnStr, Object.class);
+                            httpResponse.setBody(obj);
+                            httpResponse.setJson(true);
+                        } catch (Exception ee) {
+                            logger.warn("HttpProxy invoke json2Obj returnStr fail ,", ee);
+                        }
+                    }
                 }
             }
         } catch (Exception e) {
@@ -133,14 +142,14 @@ public class HttpProxy {
         }
         if(StringUtils.isNotBlank(contentType) && contentType.startsWith(CONTENT_TYPE_JSON )) {
             String bodyJsonStr = JsonUtil.obj2Json(params);
-            post.setEntity(new StringEntity(bodyJsonStr, Charset.forName(UTF8)));
+            post.setEntity(new StringEntity(bodyJsonStr, UTF8));
             return post;
         }
         List<NameValuePair> list = new ArrayList<NameValuePair>();
         for (String key : params.keySet()) {
             list.add(new BasicNameValuePair(key, params.get(key)));
         }
-        post.setEntity(new UrlEncodedFormEntity(list,Charset.forName(UTF8)));
+        post.setEntity(new UrlEncodedFormEntity(list,UTF8));
         return post;
     }
 
