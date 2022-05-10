@@ -84,8 +84,8 @@
       @pagination="getPage"
     />
 
-    <!-- 调用记录详细 -->
-    <el-dialog title="调用记录详细" :visible.sync="open" width="700px" append-to-body>
+    <!-- 调用详细 -->
+    <el-dialog title="调用详细" :visible.sync="open" width="700px" append-to-body>
       <el-form ref="form" :model="form" label-width="100px" size="mini">
         <el-row>
           <el-col :span="24">
@@ -110,7 +110,7 @@
             <el-form-item label="请求参数：">{{ form.reqData }}</el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="返回参数：">{{ form.respData }}</el-form-item>
+            <el-form-item label="返回结果：">{{ form.respData }}</el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="异常信息：" v-if="form.isSuccess === 0">{{ form.errorMessage }}</el-form-item>

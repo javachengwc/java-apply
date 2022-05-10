@@ -14,6 +14,8 @@ tcpdump -i eth0 ether src or dst 00:11:22:6C:E2:A7         ---在网口eth0上�
 tcpdump ip host 192.168.0.2 and ! 192.168.0.3              ---获取主机192.168.0.2除了和主机192.168.0.3之外所有主机通信的ip包
 tcpdump -i eth0 src host hostname                          ---获取主机hostname发送的所有数据
 tcpdump -i eth0 dst host hostname                          ---监视所有送到主机hostname的数据包
+tcpdump -i eth0 host ip -w /tmp/dump.out                   ---监控有ip交互的数据包，并保存到dump.out文件中
+tcpdump -r dump.out > cc.out                               ---把dump下来的包转化成可查看的文件cc.out,通过查看cc.out查看抓包信息
 
 tcpdump主要包括以下几种类型的关键字
 1,关于类型的关键字，主要包括host，net，port
@@ -85,6 +87,11 @@ tcpdump结果片段分析
 第5列是包接收方地址以及端口号
 第6列是冒号
 第7列是Flags标识，取值可能是[S][.][P.][F.]
+[S]: SYN(开始连接)
+[P]: PSH(推送数据)
+[F]: FIN(结束连接)
+[R]: RST(重置连接)
+[.]: 可以用来表示ACK标志位1
 第8,9,10列是tcp协议报文头的一些变量值
 seq是请求同步的序列号,ack是已经同步的序列号,win是当前可用的窗口,length是tcp协议报文体的长度
 

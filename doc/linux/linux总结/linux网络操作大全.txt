@@ -174,15 +174,17 @@ awk '{print $1}' access.log |sort|uniq -c|sort -nr|head -10
 
 traceroute命令显示数据包到达目的主机所经过的路由 
 
-
-traceroute ip           ---跟踪数据包到达网络主机所经过的路由,相当与window下的trancert
+traceroute -n -T -p port ip             ---跟踪数据包到达网络主机端口所经过的路由
+traceroute ip                           ---跟踪数据包到达网络主机所经过的路由,相当与window下的trancert
 traceroute www.sina.com.cn
 
 ping命令测试网络的连通性,是否丢包
 
-ping ip                 ---结果可查看到ip的发包丢包
+ping ip                                 ---结果可查看到ip的发包丢包
 ping www.sina.com.cn
 ping -c 4 192.168.1.12
+
+paping ip -p port                       ---检查端口连接情况
 
 hostname命令更改主机名
 
