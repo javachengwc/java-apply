@@ -6,6 +6,7 @@ ssh 192.168.1.100             ---ssh到192.168.1.100
 ssh 192.168.1.100 -p1000      ---ssh到192.168.1.100，服务器端口为1000
 
 ssh -p port root@remoteIp                  ---远程到remoteIp上
+ssh ip -l root                             ---以root身份远程连接到ip
 scp -P port -r dir root@remoteIp:/data     ---将本地目录dir拷贝到远程remoteIp的/data下
 scp -P port root@remoteIp:/tmp/data.txt /opt/   ---将远程data.txt考本的本机/opt下
 
