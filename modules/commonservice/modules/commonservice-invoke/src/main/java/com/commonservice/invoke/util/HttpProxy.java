@@ -36,9 +36,9 @@ public class HttpProxy {
 
     public static final String CONTENT_TYPE_JSON = "application/json";
 
-    public static final int CONNECTION_TIMEOUT_MS = 2*1000;//2秒
+    public static final int CONNECTION_TIMEOUT_MS = 200*1000;//200秒
 
-    public static final int SO_TIMEOUT_MS = 5*1000;
+    public static final int SO_TIMEOUT_MS = 200*1000;
 
     public static final Charset UTF8 = Charset.forName("UTF-8");
 
