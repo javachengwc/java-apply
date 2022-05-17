@@ -95,8 +95,10 @@ public class HttpProxy {
                     if(StringUtils.isNotBlank(returnStr)) {
                         try {
                             Object obj = JsonUtil.json2Obj(returnStr, Object.class);
-                            httpResponse.setBody(obj);
-                            httpResponse.setJson(true);
+                            if(obj!=null) {
+                                httpResponse.setBody(obj);
+                                httpResponse.setJson(true);
+                            }
                         } catch (Exception ee) {
                             logger.warn("HttpProxy invoke json2Obj returnStr fail ,", ee);
                         }

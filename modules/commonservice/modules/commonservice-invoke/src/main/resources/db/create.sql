@@ -12,20 +12,22 @@ create table t_resource_category (
   id bigint AUTO_INCREMENT,
   name varchar(50) default '' comment '名称',
   parent_id bigint default 0 comment '父类目',
+  sys_id bigint comment '系统id',
   note varchar(50) default '' comment '备注',
   sort int default 1 comment '排序',
   create_time datetime,
   modify_time datetime,
   primary key (`id`),
-  key idx_parent(parent_id)
+  key idx_parent(parent_id,id),
+  key idx_system(sys_id,id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='接口类目表';
 
 create table t_access_resource (
   id bigint(20) AUTO_INCREMENT,
   name varchar(50) default '' comment '接口名称',
   note varchar(200) default '' comment '备注',
-  sys_id int comment '所属系统id',
-  cate_id int comment '类目id',
+  sys_id bigint comment '系统id',
+  cate_id bigint comment '类目id',
   http_method varchar(20) default 'GET' comment '接口httpMethod,GET,POST,PUT,DELETE,HEAD,PATCH',
   content_type varchar(100) default '' comment '请求数据类型Content-Type',
   resource_link varchar(200) default '' comment '接口链接',

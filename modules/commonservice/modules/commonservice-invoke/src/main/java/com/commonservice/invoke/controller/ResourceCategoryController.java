@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.commonservice.invoke.model.entity.ResourceCategory;
 import com.commonservice.invoke.model.param.CategoryTreeParam;
+import com.commonservice.invoke.model.param.ResourceCategoryQuery;
 import com.commonservice.invoke.model.vo.ResourceCategoryVo;
 import com.commonservice.invoke.model.vo.TreeSelectVo;
 import com.commonservice.invoke.service.ResourceCategoryService;
@@ -70,8 +71,10 @@ public class ResourceCategoryController {
     public Resp<List<TreeSelectVo>> tree(CategoryTreeParam cateTreeParam){
         String name = cateTreeParam == null? "": cateTreeParam.getName();
         Long parentId = cateTreeParam== null ?null: cateTreeParam.getParentId();
-        log.info("ResourceCategoryController tree start,name={},parentId={}",name,parentId);
-        List<ResourceCategory> list = resourceCategoryService.queryList(name,parentId);
+        Long sysId = cateTreeParam==null ? null: cateTreeParam.getSysId();
+        log.info("ResourceCategoryController tree start,name={},parentId={},sysId={}",name,parentId,sysId);
+        ResourceCategoryQuery query = TransUtil.transEntity(cateTreeParam,ResourceCategoryQuery.class);
+        List<ResourceCategory> list = resourceCategoryService.queryList(query);
         List<ResourceCategory> cateList = resourceCategoryService.genTree(list);
         List<TreeSelectVo> rtList = TransUtil.transList(cateList, new TransUtil.ITrans<TreeSelectVo, ResourceCategory>() {
             @Override

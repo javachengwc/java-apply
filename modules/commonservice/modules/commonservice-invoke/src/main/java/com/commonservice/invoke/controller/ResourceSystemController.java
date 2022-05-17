@@ -20,6 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Api(description = "接口系统")
 @RestController
 @RequestMapping("/resource/system")
@@ -58,5 +60,14 @@ public class ResourceSystemController {
         log.info("ResourceSystemController getById start,id={}", id);
         ResourceSystem data=resourceSystemService.getById(id);
         return Resp.data(data);
+    }
+
+    @GetMapping("/list")
+    @ApiOperation("查询接口系统列表")
+    public Resp<List<ResourceSystemVo>> list(){
+        log.info("ResourceSystemController list start......");
+        List<ResourceSystem> list=resourceSystemService.listBySort();
+        List<ResourceSystemVo> rtList = TransUtil.transList(list,ResourceSystemVo.class);
+        return Resp.data(rtList);
     }
 }

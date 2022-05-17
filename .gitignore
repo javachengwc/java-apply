@@ -120,3 +120,4 @@ modules/es/modules/es-consumer/target/
 modules/netty/modules/netty3/target/
 modules/netty/modules/netty4/target/
 modules/datastore/modules/datastore-mysql/target/
+modules/datastore/modules/database-tool/target/

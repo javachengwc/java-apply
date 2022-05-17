@@ -10,7 +10,7 @@ export function apiPage(data) {
 }
 
 // 查询api接口详细
-export function getApiResource(resourceId) {
+export function getApiResource(query) {
   return request({
     url: '/access/resource/getById',
     method: 'get',
@@ -37,7 +37,7 @@ export function updateApiResource(data) {
 }
 
 // 删除api接口
-export function delApiResource(resourceId) {
+export function delApiResource(query) {
   return request({
     url: '/access/resource/del',
     method: 'post',

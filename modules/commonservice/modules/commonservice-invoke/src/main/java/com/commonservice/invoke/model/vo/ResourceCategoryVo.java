@@ -16,6 +16,8 @@ public class ResourceCategoryVo implements Serializable {
 
     private Long parentId;
 
+    private Long sysId;
+
     private String note;
 
     private Integer sort;

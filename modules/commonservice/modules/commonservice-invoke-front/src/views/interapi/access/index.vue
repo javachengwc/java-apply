@@ -1,8 +1,23 @@
 <template>
   <div class="app-container">
     <el-row :gutter="20">
-      <!--分类数据-->
       <el-col :span="4" :xs="24">
+        <!-- 系统 -->
+        <el-select
+          v-model="sysId"
+          placeholder="系统"
+          clearable
+          style="margin-bottom: 20px"
+          @change="handleSysChange"
+        >
+          <el-option
+            v-for="sys in sysOptions"
+            :key="sys.id"
+            :label="sys.name"
+            :value="sys.id"
+          />
+        </el-select>
+        <!--分类数据-->
         <div class="head-container">
           <el-input
             v-model="cateName"
@@ -28,15 +43,6 @@
       <!--API接口数据-->
       <el-col :span="20" :xs="24">
         <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-          <el-form-item label="系统" prop="sysName">
-            <el-input
-              v-model="queryParams.entity.sysName"
-              placeholder="请输入系统名称"
-              clearable
-              style="width: 240px"
-              @keyup.enter.native="handleQuery"
-            />
-          </el-form-item>
           <el-form-item label="API名称" prop="name">
             <el-input
               v-model="queryParams.entity.name"
@@ -51,7 +57,7 @@
               v-model="queryParams.entity.resourceLink"
               placeholder="请输入API地址"
               clearable
-              style="width: 557px"
+              style="width: 240px"
               @keyup.enter.native="handleQuery"
             />
           </el-form-item>
@@ -167,11 +173,6 @@
           <el-col :span="12">
             <el-form-item label="用户昵称" prop="nickName">
               <el-input v-model="form.nickName" placeholder="请输入用户昵称" maxlength="30" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="归属部门" prop="deptId">
-              <treeselect v-model="form.deptId" :options="deptOptions" :show-count="true" placeholder="请选择归属部门" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -299,6 +300,7 @@
 
 <script>
 import { apiPage, getApiResource, addApiResource, updateApiResource, delApiResource } from "@/api/interapi/apiresource";
+import { listSystem } from "@/api/interapi/apisystem";
 import { apiInvoke } from "@/api/interapi/invokerecord";
 import { treeselect } from "@/api/interapi/apicategory";
 import Treeselect from "@riophae/vue-treeselect";
@@ -339,6 +341,10 @@ export default {
         children: "children",
         label: "label"
       },
+      //当前系统
+      sysId: undefined,
+      // 系统选项
+      sysOptions: [],
       //调用接口参数
       invoke: {
         title: "接口调用",
@@ -399,10 +405,23 @@ export default {
     }
   },
   created() {
+    this.getSystems();
     this.getPage();
-    this.getTreeselect();
   },
   methods: {
+    /** 获取系统列表 */
+    getSystems() {
+       listSystem().then(response => {
+           this.sysOptions = response.data;
+           if(this.sysOptions != null && this.sysOptions.length > 0) {
+             this.sysId = this.sysOptions[0].id;
+             this.queryParams.entity.sysId= this.sysId;
+             console.log(this.sysId);
+             this.getTreeselect();
+           }
+         }
+       );
+    },
     /** 分页查询接口 */
     getPage() {
       this.loading = true;
@@ -416,8 +435,11 @@ export default {
     },
     /** 查询类别树结构 */
     getTreeselect() {
-      treeselect().then(response => {
+      let reqData = {"sysId": this.sysId};
+      treeselect(reqData).then(response => {
         this.cateOptions = response.data;
+        this.$refs.tree;
+        console.log("haha");
       });
     },
     // 筛选类别节点
@@ -452,6 +474,11 @@ export default {
         roleIds: []
       };
       this.resetForm("form");
+    },
+    /** 当前接口系统改变事件 */
+    handleSysChange() {
+      console.log(this.sysId);
+      this.getTreeselect();
     },
     /** 搜索按钮操作 */
     handleQuery() {

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.commonservice.invoke.dao.ResourceCategoryMapper;
 import com.commonservice.invoke.model.entity.ResourceCategory;
+import com.commonservice.invoke.model.param.ResourceCategoryQuery;
 import com.commonservice.invoke.service.ResourceCategoryService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
@@ -15,15 +16,16 @@ import java.util.List;
 public class ResourceCategoryServiceImpl extends ServiceImpl<ResourceCategoryMapper, ResourceCategory>
         implements ResourceCategoryService {
 
-    public List<ResourceCategory> queryList(String name, Long parentId) {
-        QueryWrapper<ResourceCategory> query = new QueryWrapper<ResourceCategory>();
+    public List<ResourceCategory> queryList(ResourceCategoryQuery query) {
+        QueryWrapper<ResourceCategory> queryWrapper = new QueryWrapper<ResourceCategory>();
         ResourceCategory category = new ResourceCategory();
-        category.setParentId(parentId);
-        if(StringUtils.isNotBlank(name)) {
-            category.setName(name);
+        category.setParentId(query.getParentId());
+        category.setSysId(query.getSysId());
+        if(StringUtils.isNotBlank(query.getName())) {
+            category.setName(query.getName());
         }
-        query.setEntity(category);
-        List<ResourceCategory> list = this.list(query);
+        queryWrapper.setEntity(category);
+        List<ResourceCategory> list = this.list(queryWrapper);
         return list;
     }
 

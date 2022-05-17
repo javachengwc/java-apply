@@ -5,12 +5,11 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class CategoryTreeParam implements Serializable {
+public class ResourceCategoryQuery implements Serializable {
 
     private Long sysId;
 
     private String name;
 
     private Long parentId;
-
 }

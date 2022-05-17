@@ -24,6 +24,9 @@ public class ResourceCategory implements Serializable {
     @TableField("parent_id")
     private Long parentId;
 
+    @TableField("sys_id")
+    private Long sysId;
+
     @TableField("note")
     private String note;
 
