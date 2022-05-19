@@ -8,6 +8,7 @@ uname -r                                         ---查看系统的发行版号
 getconf LONG_BIT                                 ---查看系统位数
 lsb_release -a                                   ---查看lsb和特定版本的相关信息
    ###如果无此命令，通过yum install -y redhat-lsb 安装lsb_release
+cat /etc/centos-release                          ---查看centos操作系统发行信息
 --------------系统字符集
 echo $LANG                                       ---查看linux系统字符集
 vim /etc/sysconfig/i18n
