@@ -53,13 +53,13 @@ public class HttpProxy {
     }
 
     public static HttpResponse invoke(String url, String httpMethod,
-                                      Map<String, String> params, Map<String, String> headers,
+                                      Map<String, Object> params, Map<String, String> headers,
                                       String contentType) throws Exception {
         return invoke(url,httpMethod,params,headers,contentType,UTF8);
     }
 
     public static HttpResponse invoke(String url, String httpMethod,
-                                       Map<String, String> params, Map<String, String> headers,
+                                       Map<String, Object> params, Map<String, String> headers,
                                        String contentType,Charset charset) throws Exception {
         HttpRequestBase req = null;
         if(GET_METHOD.equalsIgnoreCase(httpMethod)) {
@@ -118,18 +118,21 @@ public class HttpProxy {
         return httpResponse;
     }
 
-    public static HttpGet genHttpGet(String url, Map<String, String> params) throws URISyntaxException {
+    public static HttpGet genHttpGet(String url, Map<String, Object> params) throws URISyntaxException {
         HttpGet get = new HttpGet(genGetUrl(url, params));
         return get;
     }
 
-    private static String genGetUrl(String url, Map<String, String> params) {
+    private static String genGetUrl(String url, Map<String, Object> params) {
 
         StringBuffer uriStr = new StringBuffer(url);
         if (params != null) {
             List<NameValuePair> ps = new ArrayList<NameValuePair>();
             for (String key : params.keySet()) {
-                ps.add(new BasicNameValuePair(key, params.get(key)));
+                boolean valueExist = params.get(key) !=null;
+                if(valueExist) {
+                    ps.add(new BasicNameValuePair(key, params.get(key).toString()));
+                }
             }
             uriStr.append("?");
             uriStr.append(URLEncodedUtils.format(ps, UTF8));
@@ -137,7 +140,7 @@ public class HttpProxy {
         return uriStr.toString();
     }
 
-    public static HttpPost genHttpPost(String url, Map<String,String> params, String contentType) throws Exception {
+    public static HttpPost genHttpPost(String url, Map<String,Object> params, String contentType) throws Exception {
         HttpPost post = new HttpPost(url);
         if(params==null || params.size()<=0) {
             return post;
@@ -149,7 +152,10 @@ public class HttpProxy {
         }
         List<NameValuePair> list = new ArrayList<NameValuePair>();
         for (String key : params.keySet()) {
-            list.add(new BasicNameValuePair(key, params.get(key)));
+            boolean valueExist = params.get(key) !=null;
+            if(valueExist) {
+                list.add(new BasicNameValuePair(key, params.get(key).toString()));
+            }
         }
         post.setEntity(new UrlEncodedFormEntity(list,UTF8));
         return post;

@@ -415,7 +415,6 @@ export default {
            this.sysOptions = response.data;
            if(this.sysOptions != null && this.sysOptions.length > 0) {
              this.sysId = this.sysOptions[0].id;
-             this.queryParams.entity.sysId= this.sysId;
              console.log(this.sysId);
              this.getTreeselect();
            }
@@ -435,6 +434,7 @@ export default {
     },
     /** 查询类别树结构 */
     getTreeselect() {
+      this.queryParams.entity.sysId= this.sysId;
       let reqData = {"sysId": this.sysId};
       treeselect(reqData).then(response => {
         this.cateOptions = response.data;

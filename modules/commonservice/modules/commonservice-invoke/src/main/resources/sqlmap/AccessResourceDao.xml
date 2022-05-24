@@ -24,7 +24,7 @@
     left join t_resource_system s on s.id = a.sys_id
     <where>
       <if test="entity!=null and entity.name != null and entity.name != '' ">
-        and a.name = #{entity.name}
+        and a.name like concat('%',#{entity.name},'%')
       </if>
       <if test="entity!=null and entity.sysId != null ">
         and a.sys_id = #{entity.sysId}
@@ -57,7 +57,7 @@
     left join t_resource_system s on s.id = a.sys_id
     <where>
       <if test="entity!=null and entity.name != null and entity.name != '' ">
-        and a.name = #{entity.name}
+        and a.name like concat('%',#{entity.name},'%')
       </if>
       <if test="entity!=null and entity.sysId != null ">
         and a.sys_id = #{entity.sysId}

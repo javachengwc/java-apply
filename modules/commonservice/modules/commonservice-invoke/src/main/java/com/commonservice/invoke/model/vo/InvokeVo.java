@@ -19,6 +19,6 @@ public class InvokeVo implements Serializable {
     private Map<String,String> headers;
 
     @ApiModelProperty("请求参数")
-    private Map<String,String> params;
+    private Map<String,Object> params;
 
 }
