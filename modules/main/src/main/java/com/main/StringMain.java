@@ -62,6 +62,9 @@ public class StringMain {
     }
 
     public static void main(String args []) throws Exception {
+      String abcdef="abcdef";
+      System.out.println(StringUtils.upperCase(abcdef));
+
       //匹配替换
       String ip = "192.11.1.254 11.49a.23.22 10.10a.10.10 2.2.2.2 ";
       ip = ip.replaceAll("(\\d+)([a-z]+)", "00$1$2");

@@ -46,6 +46,9 @@ public class ResourceInvokeServiceImpl extends ServiceImpl<ResourceInvokeMapper,
         Resp<Object> resp = new Resp<Object>();
         HttpResponse httpResponse = null;
         String errorMsg = null;
+        //产生调用并保存
+        ResourceInvoke invokeInfo = genResourceInvoke(accessResource,invokeVo);
+        this.save(invokeInfo);
         try {
             httpResponse = HttpProxy.invoke(url,httpMethod,invokeVo.getParams(),invokeVo.getHeaders(),contentType);
             resp.setData(httpResponse);
@@ -57,14 +60,14 @@ public class ResourceInvokeServiceImpl extends ServiceImpl<ResourceInvokeMapper,
             resp = Resp.error(errorMsg);
         }
 
-        //产生调用结果并保存
-        ResourceInvoke resourceInvokeInfo = genResourceInvoke(accessResource,invokeVo,httpResponse,errorMsg);
-        this.save(resourceInvokeInfo);
+        //更新调用结果
+        ResourceInvoke invokeResult = genInvokeResult(httpResponse,errorMsg,invokeInfo.getInvokeTime());
+        invokeResult.setId(invokeInfo.getId());
+        this.updateById(invokeResult);
         return  resp;
     }
 
-    private ResourceInvoke genResourceInvoke(AccessResource accessResource,InvokeVo invokeVo,
-                                             HttpResponse httpResponse,String errorMsg) {
+    private ResourceInvoke genResourceInvoke(AccessResource accessResource,InvokeVo invokeVo) {
         Date now = new Date();
         ResourceInvoke resourceInvoke = new ResourceInvoke();
         resourceInvoke.setResourceId(accessResource.getId());
@@ -80,6 +83,17 @@ public class ResourceInvokeServiceImpl extends ServiceImpl<ResourceInvokeMapper,
         String paramJson = (invokeVo.getParams()==null || invokeVo.getParams().size()<=0)?"":JsonUtil.obj2Json(invokeVo.getParams());
         paramJson= paramJson.length()>1000? paramJson.substring(0,1000): paramJson;
         resourceInvoke.setReqData(paramJson);
+        resourceInvoke.setInvokeTime(now);
+        resourceInvoke.setCreateTime(now);
+        resourceInvoke.setModifyTime(now);
+        return  resourceInvoke;
+    }
+
+    private ResourceInvoke genInvokeResult( HttpResponse httpResponse,String errorMsg,Date invokeTime) {
+        Date now = new Date();
+        ResourceInvoke resourceInvoke = new ResourceInvoke();
+        resourceInvoke.setReturnTime(now);
+        resourceInvoke.setCost(now.getTime()-invokeTime.getTime());
 
         String respData =( httpResponse==null || httpResponse.getBody()== null ) ? "" :
                 ( httpResponse.isJson() ? JsonUtil.obj2Json(httpResponse.getBody()) : httpResponse.getBody().toString());
@@ -92,10 +106,7 @@ public class ResourceInvokeServiceImpl extends ServiceImpl<ResourceInvokeMapper,
         String errorMessage =( errorMsg== null ) ? "" : errorMsg;
         errorMessage= errorMessage.length()>200? errorMessage.substring(0,200): errorMessage;
         resourceInvoke.setErrorMessage(errorMessage);
-
-        resourceInvoke.setCreateTime(now);
-        resourceInvoke.setModifyTime(now);
-        return  resourceInvoke;
+        return resourceInvoke;
     }
 
     public PageVo<ResourceInvoke> page(ResourceInvokeQuery query) {

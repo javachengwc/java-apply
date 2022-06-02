@@ -22,8 +22,8 @@ public class ResourceInvokeQuery extends PageParam {
 
     private Integer isSuccess;
 
-    private String createTimeBegin;
+    private String invokeTimeBegin;
 
-    private String createTimeEnd;
+    private String invokeTimeEnd;
 
 }

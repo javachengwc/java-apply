@@ -16,19 +16,21 @@
         <result column="resp_data" jdbcType="VARCHAR" property="respData" />
         <result column="is_success" jdbcType="INTEGER" property="isSuccess" />
         <result column="error_message" jdbcType="VARCHAR" property="errorMessage" />
+        <result column="invoke_time" jdbcType="TIMESTAMP" property="invokeTime" />
+        <result column="return_time" jdbcType="TIMESTAMP" property="returnTime" />
+        <result column="cost" jdbcType="BIGINT" property="cost" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
     </resultMap>
 
     <select id="listPage" resultMap="BaseResultMap">
         select n.id, n.resource_id, n.resource_name, n.resource_link, n.http_method, n.content_type, n.req_header, n.req_data,
-               n.resp_code, n.resp_data, n.is_success, n.error_message, n.create_time, n.modify_time
+               n.resp_code, n.resp_data, n.is_success, n.error_message, n.invoke_time, n.return_time, n.cost, n.create_time, n.modify_time
         from t_resource_invoke  n
         join t_access_resource  a on n.resource_id = a.id
-        left join t_resource_system s on a.sys_id = s.id
         <where>
-            <if test="sysName != null and sysName != '' ">
-                and s.name like concat('%',#{sysName},'%')
+            <if test="sysId != null ">
+                and a.sys_id = #{sysId}
             </if>
             <if test="resourceName != null and resourceName != '' ">
                 and n.resource_name like concat('%',#{resourceName},'%')
@@ -36,11 +38,11 @@
             <if test="isSuccess != null ">
                 and n.is_success = #{isSuccess}
             </if>
-            <if test="createTimeBegin != null and createTimeBegin != '' ">
-                <![CDATA[ and n.create_time >= '${createTimeBegin}' ]]>
+            <if test="invokeTimeBegin != null and invokeTimeBegin != '' ">
+                <![CDATA[ and n.invoke_time >= '${invokeTimeBegin}' ]]>
             </if>
-            <if test="createTimeEnd != null and createTimeEnd != '' ">
-                <![CDATA[ and n.create_time < '${createTimeEnd}' ]]>
+            <if test="invokeTimeEnd != null and invokeTimeEnd != '' ">
+                <![CDATA[ and n.invoke_time < '${invokeTimeEnd}' ]]>
             </if>
         </where>
         <if test="orderBy != null and orderBy != '' and order != null and order != '' ">
@@ -58,10 +60,9 @@
         select count(1) as count
         from t_resource_invoke  n
         join t_access_resource  a on n.resource_id = a.id
-        left join t_resource_system s on a.sys_id = s.id
         <where>
-            <if test="sysName != null and sysName != '' ">
-                and s.name like concat('%',#{sysName},'%')
+            <if test="sysId != null ">
+                and a.sys_id = #{sysId}
             </if>
             <if test="resourceName != null and resourceName != '' ">
                 and n.resource_name like concat('%',#{resourceName},'%')
@@ -69,11 +70,11 @@
             <if test="isSuccess != null ">
                 and n.is_success = #{isSuccess}
             </if>
-            <if test="createTimeBegin != null and createTimeBegin != '' ">
-                <![CDATA[ and n.create_time >= '${createTimeBegin}' ]]>
+            <if test="invokeTimeBegin != null and invokeTimeBegin != '' ">
+                <![CDATA[ and n.invoke_time >= '${invokeTimeBegin}' ]]>
             </if>
-            <if test="createTimeEnd != null and createTimeEnd != '' ">
-                <![CDATA[ and n.create_time < '${createTimeEnd}' ]]>
+            <if test="invokeTimeEnd != null and invokeTimeEnd != '' ">
+                <![CDATA[ and n.invoke_time < '${invokeTimeEnd}' ]]>
             </if>
         </where>
     </select>

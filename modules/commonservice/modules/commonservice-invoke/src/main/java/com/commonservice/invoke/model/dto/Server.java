@@ -1,15 +1,17 @@
 package com.commonservice.invoke.model.dto;
 
-import com.commonservice.invoke.util.ArithUtil;
-import com.util.net.NetUtil;
-import lombok.Data;
-
 import java.io.Serializable;
+import java.lang.management.ManagementFactory;
 import java.net.UnknownHostException;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
+import com.commonservice.invoke.util.ArithUtil;
+import com.util.date.DateUtil;
+import com.util.net.NetUtil;
+import lombok.Data;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.CentralProcessor.TickType;
@@ -18,11 +20,15 @@ import oshi.hardware.HardwareAbstractionLayer;
 import oshi.software.os.FileSystem;
 import oshi.software.os.OSFileStore;
 import oshi.software.os.OperatingSystem;
+import oshi.util.Util;
 
+/**
+ * 服务器相关信息
+ */
 @Data
 public class Server implements Serializable {
 
-    private static final int OSHI_WAIT_SECOND = 10;
+    private static final int OSHI_WAIT_SECOND = 200;
 
     /**
      * CPU相关信息
@@ -72,10 +78,7 @@ public class Server implements Serializable {
     {
         // CPU信息
         long[] prevTicks = processor.getSystemCpuLoadTicks();
-        try {
-            Thread.sleep(OSHI_WAIT_SECOND);
-        } catch (InterruptedException var3) {
-        }
+        Util.sleep(OSHI_WAIT_SECOND);
         long[] ticks = processor.getSystemCpuLoadTicks();
         long nice = ticks[TickType.NICE.getIndex()] - prevTicks[TickType.NICE.getIndex()];
         long irq = ticks[TickType.IRQ.getIndex()] - prevTicks[TickType.IRQ.getIndex()];
@@ -102,6 +105,7 @@ public class Server implements Serializable {
         mem.setTotal(memory.getTotal());
         mem.setUsed(memory.getTotal() - memory.getAvailable());
         mem.setFree(memory.getAvailable());
+        mem.setUsage(ArithUtil.mul(ArithUtil.div(mem.getUsed(), mem.getTotal(), 4), 100));
     }
 
     /**
@@ -128,6 +132,19 @@ public class Server implements Serializable {
         jvm.setFree(Runtime.getRuntime().freeMemory());
         jvm.setVersion(props.getProperty("java.version"));
         jvm.setHome(props.getProperty("java.home"));
+        jvm.setUsed(jvm.getTotal()-jvm.getFree());
+        jvm.setUsage(ArithUtil.mul(ArithUtil.div(jvm.getUsed(), jvm.getTotal(),4), 100));
+        jvm.setName(ManagementFactory.getRuntimeMXBean().getVmName());
+        jvm.setInputArgs(ManagementFactory.getRuntimeMXBean().getInputArguments().toString());
+        long startTimeMilis = ManagementFactory.getRuntimeMXBean().getStartTime();
+        jvm.setStartTime(new Date(startTimeMilis));
+        jvm.setRunTime(DateUtil.dateLongTransReadAble(""+(new Date().getTime() - startTimeMilis)/1000 ,1));
+    }
+
+    public static Date getServerStartDate()
+    {
+        long time = ManagementFactory.getRuntimeMXBean().getStartTime();
+        return new Date(time);
     }
 
     /**
@@ -136,8 +153,7 @@ public class Server implements Serializable {
     private void setSysFiles(OperatingSystem os)
     {
         FileSystem fileSystem = os.getFileSystem();
-        //List<OSFileStore> fsArray = fileSystem.getFileStores();
-        OSFileStore [] fsArray = fileSystem.getFileStores();
+        List<OSFileStore> fsArray = fileSystem.getFileStores();
         for (OSFileStore fs : fsArray)
         {
             long free = fs.getUsableSpace();
@@ -157,6 +173,9 @@ public class Server implements Serializable {
 
     /**
      * 字节转换
+     *
+     * @param size 字节大小
+     * @return 转换后值
      */
     public String convertFileSize(long size)
     {

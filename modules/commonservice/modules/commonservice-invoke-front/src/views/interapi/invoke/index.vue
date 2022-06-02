@@ -2,13 +2,19 @@
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="系统名称" prop="sysName">
-        <el-input
-          v-model="queryParams.sysName"
-          placeholder="请输入系统名称"
+        <el-select
+          v-model="queryParams.sysId"
+          placeholder="系统"
           clearable
-          style="width: 240px;"
-          @keyup.enter.native="handleQuery"
-        />
+          style="margin-bottom: 20px"
+        >
+          <el-option
+            v-for="sys in sysOptions"
+            :key="sys.id"
+            :label="sys.name"
+            :value="sys.id"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="API名称" prop="resourceName">
         <el-input
@@ -30,13 +36,13 @@
           <el-option key="0" label="失败" value="0" />
         </el-select>
       </el-form-item>
-      <el-form-item label="操作时间">
+      <el-form-item label="调用时间">
         <el-date-picker
           v-model="dateRange"
-          style="width: 240px"
+          style="width: 380px"
           value-format="yyyy-MM-dd HH:mm:ss"
-          type="daterange"
-          range-separator="-"
+          type="datetimerange"
+          range-separator="至"
           start-placeholder="开始时间"
           end-placeholder="结束时间"
         ></el-date-picker>
@@ -58,11 +64,12 @@
           <div v-if="scope.row.isSuccess === 0">失败</div>
         </template>
       </el-table-column>
-      <el-table-column label="操作时间" align="center" prop="createTime" sortable="custom" :sort-orders="['descending', 'ascending']" width="180">
+      <el-table-column label="调用时间" align="center" prop="invokeTime" sortable="custom" :sort-orders="['descending', 'ascending']" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
+          <span>{{ parseTime(scope.row.invokeTime) }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="耗时(ms)" align="center" prop="cost" />
 
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -104,7 +111,13 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="操作时间：">{{ parseTime(form.createTime) }}</el-form-item>
+            <el-form-item label="耗时：">{{ form.cost }} ms</el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="调用时间：">{{ parseTime(form.invokeTime) }}</el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="返回时间：">{{ parseTime(form.returnTime) }}</el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="请求参数：">{{ form.reqData }}</el-form-item>
@@ -126,6 +139,7 @@
 
 <script>
 import { page } from "@/api/interapi/invokerecord";
+import { listSystem } from "@/api/interapi/apisystem";
 
 export default {
   name: "invokerecord",
@@ -151,24 +165,39 @@ export default {
       defaultSort: {prop: 'createTime', order: 'descending'},
       // 表单参数
       form: {},
+      // 系统选项
+      sysOptions: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        sysName: undefined,
+        sysId: undefined,
         resourceName: undefined,
         isSuccess: undefined
       }
     };
   },
   created() {
-    this.getPage();
+    this.getSystems(this.getPage);
   },
   methods: {
+    /** 获取系统列表 */
+    getSystems( callback ) {
+       let reqData = {"optionAll": 1};
+       listSystem(reqData).then(response => {
+           this.sysOptions = response.data;
+           if(this.sysOptions != null && this.sysOptions.length > 0) {
+             this.queryParams.sysId = this.sysOptions[0].id;
+             console.log(this.queryParams.sysId);
+           }
+           callback();
+         }
+       );
+    },
     /** 查询调用记录 */
     getPage() {
       this.loading = true;
-      let reqData = this.wrapReqData(this.wrapDateRange(this.queryParams, this.dateRange,"createTime"));
+      let reqData = this.wrapReqData(this.wrapDateRange(this.queryParams, this.dateRange,"invokeTime"));
       page(reqData).then( response => {
           this.list = response.data.list;
           this.total = response.data.totalCount;

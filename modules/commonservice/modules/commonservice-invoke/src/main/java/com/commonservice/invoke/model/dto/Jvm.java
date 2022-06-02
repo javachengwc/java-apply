@@ -3,6 +3,7 @@ package com.commonservice.invoke.model.dto;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 
 @Data
 public class Jvm implements Serializable {
@@ -23,6 +24,11 @@ public class Jvm implements Serializable {
     private double free;
 
     /**
+     * JDK名称
+     */
+    private String name;
+
+    /**
      * JDK版本
      */
     private String version;
@@ -31,5 +37,24 @@ public class Jvm implements Serializable {
      * JDK路径
      */
     private String home;
+
+    private double used;
+
+    private double usage;
+
+    /**
+     * 运行参数
+     */
+    private String inputArgs;
+
+    /**
+     * JDK启动时间
+     */
+    private Date startTime;
+
+    /**
+     * JDK运行时间
+     */
+    private String runTime;
 
 }

@@ -34,6 +34,12 @@ public class ResourceInvokeVo implements Serializable {
 
     private String errorMessage;
 
+    private Date invokeTime;
+
+    private Date returnTime;
+
+    private Long cost;
+
     private Date createTime;
 
     private Date modifyTime;

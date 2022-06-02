@@ -22,4 +22,6 @@ public class Mem implements Serializable {
      */
     private double free;
 
+
+    private double usage;
 }

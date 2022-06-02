@@ -64,9 +64,19 @@ public class ResourceSystemController {
 
     @GetMapping("/list")
     @ApiOperation("查询接口系统列表")
-    public Resp<List<ResourceSystemVo>> list(){
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "optionAll", value = "是否包含全部", required = false, dataType = "Integer", paramType = "query")
+    })
+    public Resp<List<ResourceSystemVo>> list(@RequestParam(value = "optionAll",required = false) Integer optionAll){
         log.info("ResourceSystemController list start......");
         List<ResourceSystem> list=resourceSystemService.listBySort();
+        if(optionAll!=null && optionAll==1) {
+            //包含全部
+            ResourceSystem optionAllSystem= new ResourceSystem();
+            optionAllSystem.setName("全部");
+            optionAllSystem.setSort(0);
+            list.add(0,optionAllSystem);
+        }
         List<ResourceSystemVo> rtList = TransUtil.transList(list,ResourceSystemVo.class);
         return Resp.data(rtList);
     }

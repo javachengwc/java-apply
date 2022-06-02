@@ -49,6 +49,15 @@ public class ResourceInvoke implements Serializable {
     @TableField("error_message")
     private String errorMessage;
 
+    @TableField("invoke_time")
+    private Date invokeTime;
+
+    @TableField("return_time")
+    private Date returnTime;
+
+    @TableField("cost")
+    private Long cost;
+
     @TableField("create_time")
     private Date createTime;
 

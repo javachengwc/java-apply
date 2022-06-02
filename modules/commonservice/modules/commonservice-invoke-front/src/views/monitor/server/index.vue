@@ -50,18 +50,18 @@
               <tbody>
                 <tr>
                   <td class="el-table__cell is-leaf"><div class="cell">总内存</div></td>
-                  <td class="el-table__cell is-leaf"><div class="cell" v-if="server.mem">{{ server.mem.total }}G</div></td>
-                  <td class="el-table__cell is-leaf"><div class="cell" v-if="server.jvm">{{ server.jvm.total }}M</div></td>
+                  <td class="el-table__cell is-leaf"><div class="cell" v-if="server.mem">{{ Math.round(server.mem.total/1024/1024/1024 *100)/100 }}G</div></td>
+                  <td class="el-table__cell is-leaf"><div class="cell" v-if="server.jvm">{{ Math.round(server.jvm.total/1024/1024 *100)/100 }}M</div></td>
                 </tr>
                 <tr>
                   <td class="el-table__cell is-leaf"><div class="cell">已用内存</div></td>
-                  <td class="el-table__cell is-leaf"><div class="cell" v-if="server.mem">{{ server.mem.used}}G</div></td>
-                  <td class="el-table__cell is-leaf"><div class="cell" v-if="server.jvm">{{ server.jvm.used}}M</div></td>
+                  <td class="el-table__cell is-leaf"><div class="cell" v-if="server.mem">{{ Math.round(server.mem.used/1024/1024/1024 *100)/100 }}G</div></td>
+                  <td class="el-table__cell is-leaf"><div class="cell" v-if="server.jvm">{{ Math.round(server.jvm.used/1024/1024 *100)/100 }}M</div></td>
                 </tr>
                 <tr>
                   <td class="el-table__cell is-leaf"><div class="cell">剩余内存</div></td>
-                  <td class="el-table__cell is-leaf"><div class="cell" v-if="server.mem">{{ server.mem.free }}G</div></td>
-                  <td class="el-table__cell is-leaf"><div class="cell" v-if="server.jvm">{{ server.jvm.free }}M</div></td>
+                  <td class="el-table__cell is-leaf"><div class="cell" v-if="server.mem">{{ Math.round(server.mem.free/1024/1024/1024 *100)/100 }}G</div></td>
+                  <td class="el-table__cell is-leaf"><div class="cell" v-if="server.jvm">{{ Math.round(server.jvm.free/1024/1024 *100)/100 }}M</div></td>
                 </tr>
                 <tr>
                   <td class="el-table__cell is-leaf"><div class="cell">使用率</div></td>
