@@ -5,11 +5,13 @@ import com.util.date.CalendarUtil;
 import com.util.date.DateUtil;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import java.util.Date;
 
 @ApiModel(description = "订单查询条件", value = "orderQueryVo")
+@Data
 public class OrderQueryVo extends PageParam {
 
     @ApiModelProperty(name = "orderId", value = "订单id")
@@ -29,54 +31,6 @@ public class OrderQueryVo extends PageParam {
 
     @ApiModelProperty(name = "endTime", value = "结束日期  yyyy-MM-dd")
     private String endTime;
-
-    public Long getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(Long orderId) {
-        this.orderId = orderId;
-    }
-
-    public Integer getStatu() {
-        return statu;
-    }
-
-    public void setStatu(Integer statu) {
-        this.statu = statu;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public Long getShopId() {
-        return shopId;
-    }
-
-    public void setShopId(Long shopId) {
-        this.shopId = shopId;
-    }
-
-    public String getBeginTime() {
-        return beginTime;
-    }
-
-    public void setBeginTime(String beginTime) {
-        this.beginTime = beginTime;
-    }
-
-    public String getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(String endTime) {
-        this.endTime = endTime;
-    }
 
     public void ready() {
         this.genPage();

@@ -12,9 +12,9 @@
 		<sharding-jdbc.version>2.0.0.M3</sharding-jdbc.version>
 		<hikari-cp.version>2.4.11</hikari-cp.version>
 		<commons-dbcp.version>1.4</commons-dbcp.version>
-		<mysql-connector-java.version>5.1.30</mysql-connector-java.version>
 		<slf4j.version>1.7.7</slf4j.version>
 		<logback.version>1.1.6</logback.version>
+		<lombok.version>1.16.22</lombok.version>
 	</properties>
 
 	<dependencyManagement>
@@ -71,7 +71,9 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>${mysql-connector-java.version}</version>
+			<!--mysql数据库版本5.*,连接驱动包版本用5.*, 数据库版本8.*,连接驱动包版本用8.* -->
+			<!--<version>5.1.46</version>-->
+			<version>8.0.22</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -82,6 +84,11 @@
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<version>${logback.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>${lombok.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.springfox</groupId>
@@ -108,6 +115,7 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>1.5.10.RELEASE</version>
 				<executions>
 					<execution>
 						<goals>

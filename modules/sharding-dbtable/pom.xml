@@ -6,7 +6,7 @@
 
     <groupId>com.sharding</groupId>
     <artifactId>sharding-dbtable</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     
 	<modules>
