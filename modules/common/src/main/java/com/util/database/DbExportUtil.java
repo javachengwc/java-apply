@@ -18,22 +18,22 @@ public class DbExportUtil {
      * @param db                 数据库名
      * @param user               账号
      * @param password           密码
-     * @param backUpDir          保存的目录
+     * @param backupDir          保存的目录
      * @return
      * mysqldump  -h 127.0.0.1 -P 3306 --user=root --password=root --lock-all-tables=true  --result-file=E:/ttt\db_admin-20150703115322.sql --default-character-set=utf8 db_admin
      */
-    public static String backUpDb(String host,Integer port,String user,String password,String db,String backUpDir) {
+    public static String backupDb(String host,Integer port,String user,String password,String db,String backupDir) {
 
         // 生成临时备份文件
         SimpleDateFormat sd = new SimpleDateFormat("yyyyMMddHHmmss");
         String fineName = db+"-" + sd.format(new Date());
         String sqlName = fineName + Constant.FILE_SUFFIX_SQL;
         try {
-            File dir = new File(backUpDir);
+            File dir = new File(backupDir);
             if (!dir.exists()) {
                 dir.mkdir();
             }
-            String savePath= backUpDir+File.separator+sqlName;
+            String savePath= backupDir+File.separator+sqlName;
             StringBuffer sbs = new StringBuffer();
             sbs.append("mysqldump ");
             sbs.append(" -h ").append(host);
@@ -65,22 +65,22 @@ public class DbExportUtil {
      * @param table              表名，多个表名依空格隔开
      * @param user               账号
      * @param password           密码
-     * @param backUpDir          保存的目录
+     * @param backupDir          保存的目录
      * @return
      * mysqldump  -h 127.0.0.1 -P 3306 -uroot -proot --skip-lock-tables  db_admin admin_role admin_resource --result-file=E:/ttt\db_admin-table-20150703115203.sql --default-character-set=utf8
      */
-    public static String backUpTable(String host,Integer port,String user,String password,String db,String table,String backUpDir) {
+    public static String backupTable(String host,Integer port,String user,String password,String db,String table,String backupDir) {
 
         // 生成临时备份文件
         SimpleDateFormat sd = new SimpleDateFormat("yyyyMMddHHmmss");
-        String fineName = db+"-table-" + sd.format(new Date());
+        String fineName = db+"-table-" +table +"-"+ sd.format(new Date());
         String sqlName = fineName + Constant.FILE_SUFFIX_SQL;
         try {
-            File dir = new File(backUpDir);
+            File dir = new File(backupDir);
             if (!dir.exists()) {
                 dir.mkdir();
             }
-            String savePath= backUpDir+File.separator+sqlName;
+            String savePath= backupDir+File.separator+sqlName;
             StringBuffer sbs = new StringBuffer();
             sbs.append("mysqldump ");
             sbs.append(" -h ").append(host);
@@ -97,12 +97,14 @@ public class DbExportUtil {
             sbs.append(table);
             sbs.append(" --result-file=").append(savePath);
             sbs.append(" --default-character-set=utf8 ");
+            sbs.append(" --column-statistics=0 ");
             Runtime runtime = Runtime.getRuntime();
-            //System.out.println(sbs.toString());
+            System.out.println(sbs.toString());
             Process process = runtime.exec(sbs.toString());
             process.waitFor();
             process.destroy();
         } catch (Exception e) {
+            e.printStackTrace(System.out);
         }
         return sqlName;
     }
@@ -116,22 +118,22 @@ public class DbExportUtil {
      * @param condition          查询条件
      * @param user               账号
      * @param password           密码
-     * @param backUpDir          保存的目录
+     * @param backupDir          保存的目录
      * @return
      * mysqldump  -h 127.0.0.1 -P 3306 -uroot -proot --skip-lock-tables  db_admin  -w "id>1 and id<10" admin_role --result-file=E:/ttt\db_admin-table-20150703115203.sql --default-character-set=utf8
      */
-    public static String backUpTableWithCdn(String host,Integer port,String user,String password,String db,String table,String condition,String backUpDir) {
+    public static String backupTableWithCdn(String host,Integer port,String user,String password,String db,String table,String condition,String backupDir) {
 
         // 生成临时备份文件
         SimpleDateFormat sd = new SimpleDateFormat("yyyyMMddHHmmss");
         String fineName = db+"-table-" + sd.format(new Date());
         String sqlName = fineName + Constant.FILE_SUFFIX_SQL;
         try {
-            File dir = new File(backUpDir);
+            File dir = new File(backupDir);
             if (!dir.exists()) {
                 dir.mkdir();
             }
-            String savePath= backUpDir+File.separator+sqlName;
+            String savePath= backupDir+File.separator+sqlName;
             StringBuffer sbs = new StringBuffer();
             sbs.append("mysqldump ");
             sbs.append(" -h ").append(host);
@@ -158,6 +160,7 @@ public class DbExportUtil {
             process.waitFor();
             process.destroy();
         } catch (Exception e) {
+            e.printStackTrace(System.out);
         }
         return sqlName;
     }
@@ -170,22 +173,22 @@ public class DbExportUtil {
      * @param select             查询语句
      * @param user               账号
      * @param password           密码
-     * @param backUpDir          保存的目录
+     * @param backupDir          保存的目录
      * @return
      * mysql --default-character-set=utf8 -h 127.0.0.1 -P 3306 -uroot -proot --skip-lock-tables  db_admin  -e "select * from table" --result-file=E:/ttt\data.txt
      */
-    public static String backUpSelectResult(String host,Integer port,String user,String password,String db,String select,String backUpDir) {
+    public static String backupSelectResult(String host,Integer port,String user,String password,String db,String select,String backupDir) {
 
         // 生成临时备份文件
         SimpleDateFormat sd = new SimpleDateFormat("yyyyMMddHHmmss");
         String fineName = db+"-table-" + sd.format(new Date());
         String sqlName = fineName + Constant.FILE_SUFFIX_SQL;
         try {
-            File dir = new File(backUpDir);
+            File dir = new File(backupDir);
             if (!dir.exists()) {
                 dir.mkdir();
             }
-            String savePath= backUpDir+File.separator+sqlName;
+            String savePath= backupDir+File.separator+sqlName;
             StringBuffer sbs = new StringBuffer();
             sbs.append("mysql ");
             sbs.append(" --default-character-set=utf8 ");
@@ -209,16 +212,20 @@ public class DbExportUtil {
             process.waitFor();
             process.destroy();
         } catch (Exception e) {
+            e.printStackTrace(System.out);
         }
         return sqlName;
     }
 
     public static void main(String args [])
     {
-        //String rt = backUpDb("127.0.0.1",3306,"root","root","db_admin","E:/ttt");
+        //String rt = backupDb("127.0.0.1",3306,"root","root","db_admin","E:/ttt");
         //System.out.println(rt);
 
-        String rt =backUpSelectResult("127.0.0.1",3306,"root","tooy","db_admin","select id,name from db_table limit 10","E:/ttt");
+        String rt =backupSelectResult("127.0.0.1",3306,"root","root","db","SELECT * from table","D:/tmp");
         System.out.println(rt);
+//
+//        String rt =backupTable("127.0.0.1",3306,"root","root","db","table","D:/tmp");
+//        System.out.println(rt);
     }
 }

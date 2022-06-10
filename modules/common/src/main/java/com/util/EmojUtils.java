@@ -2,7 +2,12 @@ package com.util;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class EmojUtils {
+
+    private static Pattern patternEmoji = Pattern.compile("[\ud83c\udc00-\ud83c\udfff]|[\ud83d\udc00-\ud83d\udfff]|[\u2600-\u27ff]|[`~!@#～¥$%^&()+=|{}':;',\\\\[\\\\].<>/?~！@#￥%……&（）——+|{}【】‘；：”“’。，、？]");
 
     public static String filterEmoji(String source) {
         if (StringUtils.isBlank(source)) {
@@ -37,5 +42,27 @@ public class EmojUtils {
                 || ((codePoint >= 0x20) && (codePoint <= 0xD7FF))
                 || ((codePoint >= 0xE000) && (codePoint <= 0xFFFD))
                 || ((codePoint >= 0x10000) && (codePoint <= 0x10FFFF));
+    }
+
+    public static String replaceEmoji(String msg) {
+        String value = StringUtils.replace(msg,"️","");
+        if (StringUtils.isBlank(StringUtils.trim(msg))) {
+            return value;
+        }
+        String reStr = "";
+        Matcher emojiMatcher = patternEmoji.matcher(value);
+        if(emojiMatcher.find()){
+            value = emojiMatcher.replaceAll(reStr);
+        }
+        return value;
+    }
+
+    public static void main(String [] args ) {
+        String info ="直\uD83E\uDDDA\uD83C\uDFFC\u200D♀️播";
+        System.out.println(info);
+        System.out.println(replaceEmoji(info));
+        System.out.println(filterEmoji(info));
+        String rt = filterEmoji(replaceEmoji(info));
+        System.out.println(rt);
     }
 }
