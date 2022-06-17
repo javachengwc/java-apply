@@ -25,6 +25,7 @@ public class ResourceCategoryServiceImpl extends ServiceImpl<ResourceCategoryMap
             category.setName(query.getName());
         }
         queryWrapper.setEntity(category);
+        queryWrapper.orderByAsc("sort");
         List<ResourceCategory> list = this.list(queryWrapper);
         return list;
     }

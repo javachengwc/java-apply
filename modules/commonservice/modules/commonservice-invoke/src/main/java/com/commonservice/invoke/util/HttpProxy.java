@@ -131,13 +131,21 @@ public class HttpProxy {
             for (String key : params.keySet()) {
                 boolean valueExist = params.get(key) !=null;
                 if(valueExist) {
-                    ps.add(new BasicNameValuePair(key, params.get(key).toString()));
+                    Object valueObject = params.get(key);
+                    String value = valueObject.toString();
+                    if(valueObject instanceof Map) {
+                        logger.info("HttpProxy genGetUrl param {} is Object ",key);
+                        value = JsonUtil.obj2Json(valueObject);
+                    }
+                    ps.add(new BasicNameValuePair(key, value));
                 }
             }
             uriStr.append("?");
             uriStr.append(URLEncodedUtils.format(ps, UTF8));
         }
-        return uriStr.toString();
+        String rtUrl = uriStr.toString();
+        logger.info("HttpProxy genGetUrl rtUrl={}",rtUrl);
+        return rtUrl;
     }
 
     public static HttpPost genHttpPost(String url, Map<String,Object> params, String contentType) throws Exception {

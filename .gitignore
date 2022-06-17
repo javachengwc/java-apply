@@ -121,3 +121,4 @@ modules/netty/modules/netty3/target/
 modules/netty/modules/netty4/target/
 modules/datastore/modules/datastore-mysql/target/
 modules/datastore/modules/database-tool/target/
+modules/webapplication/modules/manageplat/target/
