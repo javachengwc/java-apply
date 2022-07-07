@@ -62,6 +62,13 @@ public class StringMain {
     }
 
     public static void main(String args []) throws Exception {
+      String rtt=org.apache.commons.lang3.StringUtils.rightPad("发", 3, "*");
+      System.out.println(rtt);
+      String mtt= org.apache.commons.lang3.StringUtils.leftPad(org.apache.commons.lang3.StringUtils.right("12345678901", 4), 11, "*");
+      System.out.println(mtt);
+
+
+
       String abcdef="abcdef";
       System.out.println(StringUtils.upperCase(abcdef));
 
