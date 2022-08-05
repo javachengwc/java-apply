@@ -8,6 +8,11 @@ public class NumberMain {
 	
 	public static void main(String args [])
 	{
+	    int d1=0;
+	    Integer d2=null;
+	    if(d1!=d2) {
+	        System.out.println("d1!=d2,ds is null");
+        }
         System.out.println(NumberUtils.isDigits("123"));
 
         BigDecimal bd1=new BigDecimal(2.01);
