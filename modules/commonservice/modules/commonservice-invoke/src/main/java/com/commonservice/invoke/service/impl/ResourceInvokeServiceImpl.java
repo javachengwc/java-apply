@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.commonservice.invoke.dao.ResourceInvokeMapper;
 import com.commonservice.invoke.dao.ext.ResourceInvokeDao;
 import com.commonservice.invoke.model.entity.AccessResource;
+import com.commonservice.invoke.model.entity.ResourceHeader;
 import com.commonservice.invoke.model.entity.ResourceInvoke;
 import com.commonservice.invoke.model.param.ResourceInvokeQuery;
 import com.commonservice.invoke.model.vo.InvokeVo;
 import com.commonservice.invoke.service.AccessResourceService;
+import com.commonservice.invoke.service.ResourceHeaderService;
 import com.commonservice.invoke.service.ResourceInvokeService;
 import com.commonservice.invoke.util.HttpProxy;
 import com.commonservice.invoke.util.HttpResponse;
@@ -20,9 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -35,10 +35,15 @@ public class ResourceInvokeServiceImpl extends ServiceImpl<ResourceInvokeMapper,
     @Autowired
     private AccessResourceService accessResourceService;
 
+    @Autowired
+    private ResourceHeaderService resourceHeaderService;
+
     //接口调用
     public Resp<Object> invoke(InvokeVo invokeVo) {
         Long resourceId = invokeVo.getResourceId();
         log.info("ResourceInvokeServiceImpl invoke start,resourceId={},invokeVo={}", resourceId, JsonUtil.obj2Json(invokeVo));
+        //准备header
+        this.prepareHeader(invokeVo);
         AccessResource accessResource= accessResourceService.getById(resourceId);
         String url = accessResource.getResourceLink();
         String httpMethod = accessResource.getHttpMethod();
@@ -50,7 +55,7 @@ public class ResourceInvokeServiceImpl extends ServiceImpl<ResourceInvokeMapper,
         ResourceInvoke invokeInfo = genResourceInvoke(accessResource,invokeVo);
         this.save(invokeInfo);
         try {
-            httpResponse = HttpProxy.invoke(url,httpMethod,invokeVo.getParams(),invokeVo.getHeaders(),contentType);
+            httpResponse = HttpProxy.invoke(url,httpMethod,invokeVo.getParams(),invokeVo.getHeaders(),invokeVo.getCookies(),contentType);
             resp.setData(httpResponse);
             log.info("ResourceInvokeServiceImpl invoke httpProxy end ,resourceId={},url={}",resourceId,url);
         } catch (Exception e) {
@@ -65,6 +70,43 @@ public class ResourceInvokeServiceImpl extends ServiceImpl<ResourceInvokeMapper,
         invokeResult.setId(invokeInfo.getId());
         this.updateById(invokeResult);
         return  resp;
+    }
+
+    //准备请求header
+    private void prepareHeader(InvokeVo invokeVo) {
+        Long resourceId = invokeVo.getResourceId();
+        List<ResourceHeader> rsHeaderList = resourceHeaderService.queryByResource(resourceId);
+        if(rsHeaderList == null || rsHeaderList.size()<=0) {
+            return;
+        }
+        Map<String,String> curHeaders = invokeVo.getHeaders();
+        Map<String,String> curCookies = invokeVo.getCookies();
+        for(ResourceHeader resourceHeader:rsHeaderList) {
+            int type = resourceHeader.getType();
+            String name = resourceHeader.getName();
+            if(type==0) {
+                //header
+                if(curHeaders==null) {
+                    curHeaders = new HashMap<String,String>();
+                    invokeVo.setHeaders(curHeaders);
+                }
+                if(!curHeaders.containsKey(name)) {
+                    //添加默认header
+                    curHeaders.put(name,resourceHeader.getDefaultValue());
+                }
+            }
+            if(type==1) {
+                //cookie
+                if(curCookies==null) {
+                    curCookies = new HashMap<String,String>();
+                    invokeVo.setCookies(curCookies);
+                }
+                if(!curCookies.containsKey(name)) {
+                    //添加默认header
+                    curCookies.put(name,resourceHeader.getDefaultValue());
+                }
+            }
+        }
     }
 
     private ResourceInvoke genResourceInvoke(AccessResource accessResource,InvokeVo invokeVo) {

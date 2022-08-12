@@ -18,6 +18,9 @@ public class InvokeVo implements Serializable {
     @ApiModelProperty("请求头")
     private Map<String,String> headers;
 
+    @ApiModelProperty("cookie")
+    private Map<String,String> cookies;
+
     @ApiModelProperty("请求参数")
     private Map<String,Object> params;
 

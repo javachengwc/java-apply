@@ -5,6 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -13,15 +14,19 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.*;
@@ -53,13 +58,13 @@ public class HttpProxy {
     }
 
     public static HttpResponse invoke(String url, String httpMethod,
-                                      Map<String, Object> params, Map<String, String> headers,
+                                      Map<String, Object> params, Map<String, String> headers,Map<String,String> cookies,
                                       String contentType) throws Exception {
-        return invoke(url,httpMethod,params,headers,contentType,UTF8);
+        return invoke(url,httpMethod,params,headers,cookies,contentType,UTF8);
     }
 
     public static HttpResponse invoke(String url, String httpMethod,
-                                       Map<String, Object> params, Map<String, String> headers,
+                                       Map<String, Object> params, Map<String, String> headers,Map<String,String> cookies,
                                        String contentType,Charset charset) throws Exception {
         HttpRequestBase req = null;
         if(GET_METHOD.equalsIgnoreCase(httpMethod)) {
@@ -76,8 +81,15 @@ public class HttpProxy {
 
         HttpResponse httpResponse = new HttpResponse();
         CloseableHttpResponse response= null;
+        CloseableHttpClient exeClient = httpClient;
+        if(cookies!=null && cookies.size()>0) {
+            CookieStore cookieStore = new BasicCookieStore();
+            exeClient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
+            logger.info("HttpProxy invoke has cookies,cookies="+JsonUtil.obj2Json(cookies)+" ,url=" +url);
+            appendCookie(req,cookieStore,cookies);
+        }
         try{
-            response = httpClient.execute(req);
+            response = exeClient.execute(req);
             int rtCode= (response==null)?0:response.getStatusLine().getStatusCode();
             httpResponse.setCode(rtCode);
             if( HttpStatus.SC_OK!=rtCode) {
@@ -186,4 +198,18 @@ public class HttpProxy {
         }
     }
 
+    public static void appendCookie(HttpRequestBase req,CookieStore cookieStore,Map<String,String> cookies) {
+        if(cookies==null || cookies.size()<=0) {
+            return ;
+        }
+        URI uri = req.getURI();
+        String host = uri.getHost();
+        for(Map.Entry<String,String> per: cookies.entrySet()) {
+            BasicClientCookie cookie = new BasicClientCookie(per.getKey(),per.getValue());
+            cookie.setDomain(host);
+            cookie.setPath("/");
+            cookie.setVersion(0);
+            cookieStore.addCookie(cookie);
+        }
+    }
 }

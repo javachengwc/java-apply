@@ -57,6 +57,7 @@ create table t_resource_header (
   id bigint(20) AUTO_INCREMENT,
   resource_id bigint comment '接口id',
   name varchar(50) default '' comment 'header名称',
+  type int default 0 comment '类型 0--header 1--cookie',
   default_value varchar(200) default '' comment '默认值',
   note varchar(200) default '' comment 'header备注',
   sort int default 1 comment '排序',

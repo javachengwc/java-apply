@@ -22,6 +22,9 @@ public class ResourceHeader implements Serializable {
     @TableField("name")
     private String name;
 
+    @TableField("type")
+    private Integer type;
+
     @TableField("default_value")
     private String defaultValue;
 
