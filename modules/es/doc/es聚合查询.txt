@@ -67,6 +67,17 @@ GET book/book/_search                       ------根据title分组，查询出�
      }
    }
 }
+GET book/book/_search
+{
+    "aggs": {
+        "queryTypes": {
+            "terms": {
+                "field": "title",
+                "size": 100                ------es聚合操作的size参数规定了最后返回的term个数(默认是10个)
+            }
+        }
+    }
+}
 GET book/book/_search                      ------根据author=wuming条件进行刷选，刷选后求saleCnt的平均值
 {
   "size": 0,

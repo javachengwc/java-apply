@@ -5,6 +5,10 @@ http://localhost:9200/_cat/nodes?v&h=name,fm,fcm,sm,qcm,im             ###查看
 ###filter_cache.memory_size (fcm)      ###过滤语句缓存占用内存
 ###segments.memory (sm)                ###每个分片包含的断占用内存
 
+GET /_stats/fielddata?fields=*                                   ###各个分片、索引的fielddata在内存中的占用情况
+GET /_nodes/stats/indices/fielddata?fields=*                     ###每个node的fielddata在内存中的占用情况
+GET /_nodes/stats/indices/fielddata?level=indices&fields=*       ###每个node中的每个索引的fielddata在内存中的占用情况
+
 1，节点查询缓存(Node Query Cache)，只缓存使用了Filter过滤器查询到的结果，也叫Filter Cache。
 节点查询缓存基于es节点级别的缓存，由节点上所有的分片所共享，主要缓存查询的结果集。
 实现了 LRU缓存清除策略，当缓存满了的时候，会清除最近最少使用的数据，为新数据腾出可用空间。
@@ -15,6 +19,7 @@ indices.queries.cache.count: 10000                   ###默认10000
 2，基于索引分片级别的缓存(Shard Rquest Cache)，es的请求发到一个协调节点，协调节点通过转发请求到实际的数据节点获取数据，并且将数据进行组装以后返回响应。
 每一个节点的分片都会将请求本地结果缓存起来，当访问命中时直接从缓存获取，不需要通过读取磁盘的方式，速度会提升很多。
 默认情况下，shard request cache只缓存hits.total, aggregations, suggestions类型的数据，并不会缓存hits的内容
+如果大多数查询是聚合查询，应该考虑分片查询缓存。分片查询缓存可以缓存聚合结果，以便Elasticsearch以低开销直接处理请求。
 index.requests.cache.enable: false                   ###禁用ShardRequestCache
 indices.requests.cache.size: 1%                      ###shard request缓存大小，默认1%
 
