@@ -1,9 +1,22 @@
 --------------------------------------es机器系统优化配置-------------------------------------------
 es一般部署在linux系统上，对linux系统的优化项如下:
 echo "* - nofile 655360" >> /etc/security/limits.conf                       ###设置可以打开的最大文件数
-echo "* - nproc 131072" >> /etc/security/limits.conf                        ###设置线程数
+echo "* - nproc 2056474" >> /etc/security/limits.conf                       ###设置线程数
 echo "vm.max_map_count = 655360" >> /etc/sysctl.conf                        ###设置可使用的最大map内存数量
-sysctl -p    ###生效设置
+echo "* - as unlimited" >>/etc/security/limits.conf                         ###设置内存地址空间
+echo "* - fsize unlimited" >>/etc/security/limits.conf                      ###设置文件大小
+echo "* - memlock unlimited" >>/etc/security/limits.conf                    ###设置锁定内存
+echo "net.ipv4.tcp_abort_on_overflow = 1" >>/etc/sysctl.conf                ###TCP全连接队列参数设置，以防止节点数较多（超过100）的es集群中，
+echo "net.core.somaxconn = 2048" >>/etc/sysctl.conf                         ###节点异常重启时全连接队列在启动瞬间打满，造成节点hang住，整个集群响应迟滞的情况
+echo 300 >/proc/sys/net/ipv4/tcp_keepalive_time                             ###降低tcp alive time，防止无效链接占用链接数
+sysctl -p                                                                   ###生效设置
+
 swapoff -a                                                                  ###关闭交换分区，防止内存置换降低性能
 sed -i '/swap/s/^/#/' /etc/fstab                                            ###将/etc/fstab 文件中包含swap的行注释掉
+
+mount -o noatime,data=writeback,barrier=0,nobh /dev/sda /es_data            ###es数据盘设置
+    noatime                    禁止记录访问时间戳，提高文件系统读写性能
+    data=writeback             不记录data journal，提高文件系统写入性能
+    barrier=0                  barrier保证journal先于data刷到磁盘，上面关闭了journal，这里的barrier也就没必要开启了
+    nobh                       关闭buffer_head，防止内核打断大块数据的IO操作
 --------------------------------------------------------------------------------------------------

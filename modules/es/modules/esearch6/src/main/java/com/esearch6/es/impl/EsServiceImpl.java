@@ -215,7 +215,7 @@ public class EsServiceImpl implements EsService {
         for(String perAgg:aggFieldList) {
              if(appCnt==0) {
                  //等价于 select count(*) as perAgg from table group by perAgg
-                 aggBuilder=AggregationBuilders.terms(perAgg).field(perAgg);
+                 aggBuilder=AggregationBuilders.terms(perAgg).field(perAgg).size(Integer.MAX_VALUE);
              }else {
                  aggBuilder.subAggregation(AggregationBuilders.terms(perAgg).field(perAgg));
              }

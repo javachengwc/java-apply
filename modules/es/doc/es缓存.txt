@@ -8,6 +8,13 @@ http://localhost:9200/_cat/nodes?v&h=name,fm,fcm,sm,qcm,im             ###查看
 GET /_stats/fielddata?fields=*                                   ###各个分片、索引的fielddata在内存中的占用情况
 GET /_nodes/stats/indices/fielddata?fields=*                     ###每个node的fielddata在内存中的占用情况
 GET /_nodes/stats/indices/fielddata?level=indices&fields=*       ###每个node中的每个索引的fielddata在内存中的占用情况
+POST /index1,index2/_cache/clear                                 ###清除多个索引缓存
+POST /_all/_cache/clear                                          ###清除所有所有缓存
+POST /_cache/clear
+POST /index1/_cache/clear?fielddata=true                         ###清楚指定类型索引缓存
+POST /index1/_cache/clear?query=true
+POST /index1/_cache/clear?request=true
+POST /index1/_cache/clear?fields=foo,bar                         ###清理特定字段的缓存
 
 1，节点查询缓存(Node Query Cache)，只缓存使用了Filter过滤器查询到的结果，也叫Filter Cache。
 节点查询缓存基于es节点级别的缓存，由节点上所有的分片所共享，主要缓存查询的结果集。

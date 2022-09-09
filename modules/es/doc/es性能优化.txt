@@ -69,9 +69,128 @@ pending_tasks（GET /_cluster/pending_tasks）
 如果元数据变动的次数比主节点能处理的还快，这会导致等待中的操作会累积成队列。这个时候可以通过pending_tasks api分析当前什么操作阻塞了es的队列，
 比如，集群异常时，会有大量的shard在recovery，如果集群在大量创建新字段，会出现大量的put_mappings的操作，所以正常情况下，需要禁用动态mapping。
 
+es节点优化
+1,适当增大写入buffer和bulk队列长度，提高写入性能和稳定性
+vim conf/elasticsearch.yml
+    indices.memory.index_buffer_size: 15%
+    thread_pool.bulk.queue_size: 2048
+2,在规模比较大的集群中，防止新建shard时扫描所有shard的元数据，提升shard分配速度
+    cluster.routing.allocation.disk.include_relocations: false
+3,设置内存熔断参数，防止写入或查询压力过高导致OOM
+    indices.breaker.total.limit: 30%
+    indices.breaker.request.limit: 6%
+    indices.breaker.fielddata.limit: 3%
+4,调整查询使用的cache，避免cache占用过多的jvm内存
+    indices.queries.cache.count: 500
+    indices.queries.cache.size: 5%
 
-
-
-
-
+es使用优化
+1,不需要索引source的情况下，可以关闭source,有update操作的index不能关闭source
+PUT index1
+{
+    "mappings": {
+        "index_type": {
+            "_source": {
+                "enabled": false
+            }
+        }
+    }
+}
+2,不需要docvalues的字段，关闭docvalues
+PUT index1
+{
+    "mappings": {
+        "index_type": {
+            "properties": {
+                "session_id": {
+                    "type": "keyword",
+                    "doc_values": false
+                }
+            }
+        }
+    }
+}
+3,es索引中all字段是一个特殊的字段，它是所有字段值拼接成一个字符串后，做分词，保存倒排索引，用于支持整个doc的全文检索。
+若无此需求，可关闭all字段
+PUT index1
+{
+    "mapping": {
+        "index_type": {
+            "_all": {
+                "enabled": false
+            }
+        }
+    }
+}
+4,开启最佳压缩,对于_source字段，可设置压缩算法，提高数据压缩率
+PUT /index1/_settings
+{
+    "index.codec": "best_compression"
+}
+5,写入数据时可使用bulk接口批量写入，提高写入效率。每个bulk请求的doc数量设定区间推荐为1k~1w。
+6,调整translog刷盘策略，通过命令调整 translog 持久化策略为异步周期性执行，并适当调整translog的刷盘周期。
+PUT index1
+{
+    "settings": {
+        "index": {
+           "translog": {
+              "sync_interval": "5s",
+              "durability": "async"
+           }
+        }
+    }
+}
+7,调整refresh_interval,es须通过refresh的过程把内存中的数据转换成Lucene的完整segment后，才可以被搜索。
+es默认1s写入的数据可以被查询到，会产生大量的segment，检索性能会受到影响。非实时的场景可以调大，以降低系统开销。
+8,merge并发控制，es的一个index由多个shard组成，而一个shard其实就是一个lucene的index，它又由多个segment组成，
+且Lucene会不断地把一些小的segment合并成一个大的segment，这个过程被称为段merge。
+index.merge.scheduler.max_thread_count控制并发的merge线程数,
+如果存储是并发性能较好的SSD，可以用系统默认的max(1, min(4, availableProcessors / 2))，
+PUT /index1/_settings
+{
+    "index.merge.scheduler.max_thread_count": 2
+}
+9,索引是类似增量日志记录的数据，写入数据时id自生成。
+如果写入数据时显示指定id，es会先发起查询来确定index中是否已经有相同id的doc存在，
+若有则先删除原有doc再写入新doc。这样每次写入时，es都会耗费一定的资源做查询
+10,适当使用routing，es会将routing相同的数据写入到同一个分片中（也可以是多个，由index.routingpartitionsize参数控制）。
+如果查询时指定routing，那么es只会查询routing指向的那个分片，可显著降低调度开销，提升查询效率。
+11,一些场景下，使用query-bool-filter组合取代普通query
+默认情况下，es通过一定的算法计算返回的每条数据与查询语句的相关度，并通过score字段来表征。
+对于非全文索引的使用场景，用户并不care查询结果与查询条件的相关度，只是想精确的查找目标数据。
+此时，可以通过query-bool-filter组合来让es不计算score，并且尽可能的缓存filter的结果集，供后续包含相同filter的查询使用，提高查询效率。
+//普通查询
+POST index1/_search
+{
+    "query": {
+        "term": {
+            "user": "aa"
+        }
+    }
+}
+// query-bool-filter查询
+POST index1/_search
+{
+    "query": {
+        "bool": {
+            "filter": {
+                "term": {
+                    "user": "aa"
+                }
+            }
+        }
+    }
+}
+12,分片数和副本数按需控制
+13,Segment Memory优化
+es底层采用lucene做存储，而Lucene的一个index又由若干segment组成，每个segment都会建立自己的倒排索引用于数据查询。
+lucene为了加速查询，为每个segment的倒排做了一层前缀索引，这个索引在lucene4.0以后采用的数据结构是FST (Finite State Transducer)。
+lucene加载segment的时候将其全量装载到内存中，加快查询速度。这部分内存被称为SegmentMemory， 常驻内存，占用heap，无法被GC。
+当jvm内存有限，可想办法降低SegmentMemory的使用量，常用方法有下面几个：
+    a,定期删除不使用的index
+    b,对于不常访问的index，可以通过close接口将其关闭，用到时再打开
+    c,通过force_merge接口强制合并segment，降低segment数量
+14,控制索引的大小，数据量过大的索引，都会带来一定的读写性能开销，
+可通过某种方式做分割，写入es的数据存入不同的index,比如按照日期滚动生成index。
+15,禁止动态mapping，动态mapping可能造成集群元数据一直变更，导致集群不稳定,业务不可控。
 ---------------------------------------------------------------------------------
