@@ -12,8 +12,6 @@
 	<modules>
         <module>modules/dubbo-server</module>
 		<module>modules/dubbo-client</module>
-        <module>modules/user-stub</module>
-		<module>modules/user-dubbo</module>
         <module>modules/dubbo-pseudocode</module>
 	</modules>
 
