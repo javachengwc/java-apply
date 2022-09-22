@@ -1,0 +1,75 @@
+-------------------------------dubbo配置-------------------------------
+###服务配置，用于暴露一个服务，定义服务的元信息
+<dubbo:service id="xxxService" interface="com.dubbo.service.XxxService"/>
+
+###引用服务配置，用于创建一个远程服务代理
+<dubbo:reference id="xxxService" interface="com.dubbo.service.XxxService"/>
+
+###协议配置，协议由提供方指定，消费方被动接受
+#dubbo.protocol.name=dubbo
+#dubbo.protocol.port=20100
+<dubbo:protocol name="${dubbo.protocol.name}" port="${dubbo.protocol.port}" />
+
+###应用配置，用于配置当前应用信息，不管该应用是提供者还是消费者
+#dubbo.application.name=dubbo-a
+#dubbo.application.owner=my
+#dubbo.application.organization=org
+#dubbo.application.logger=slf4j
+<dubbo:application name="${dubbo.application.name}" owner="${dubbo.application.owner}"
+organization="${dubbo.application.organization}" logger="${dubbo.application.logger}"/>
+
+###注册中心配置
+#dubbo.registry.address=zookeeper://192.168.1.1:2181
+<dubbo:registry address="${dubbo.registry.address}" />
+
+###监控中心配置
+<dubbo:monitor/>
+
+###服务提供方配置
+#dubbo.service.loadbalance=roundrobin
+#dubbo.service.retries=0                    ###重试次数默认2
+#dubbo.service.timeout=300000               ###超时时间，默认1000ms
+<dubbo:provider loadbalance="${dubbo.service.loadbalance}" retries="${dubbo.service.retries}" timeout="${dubbo.service.timeout}"/>
+
+###服务消费方配置
+#dubbo.consumer.timeout=300000              ###超时时间，默认1000ms
+#dubbo.consumer.retries=0                   ###重试次数默认2
+#dubbo.consumer.check=false                 ###启动时不检查依赖的服务是否可用，默认检查
+<dubbo:consumer group="g1" timeout="30000" check="false"/>
+服务配置以方法级优先，接口级次之，全局配置再次之。如果级别一样，则消费方优先，提供方次之。
+
+###令牌验证，防止消费者绕过注册中心访问提供者，在注册中心控制权限，以决定要不要下发令牌给消费者
+#全局设置开启令牌验证：
+<!--随机token令牌，使用UUID生成-->
+<dubbo:provider interface="com.dubbo.service.XxxService" token="true" />
+<!--固定token令牌，指定token-->
+<dubbo:provider interface="com.dubbo.api.service.XxxService" token="123" />
+#服务级别设置开启令牌验证：
+<dubbo:service interface="com.dubbo.api.service.XxxService" token="true" />
+<dubbo:service interface="com.dubbo.api.service.XxxService" token="123" />
+#协议级别设置开启令牌验证：
+<dubbo:protocol name="dubbo" token="true" />
+<dubbo:protocol name="dubbo" token="123" />
+
+###日志适配，缺省自动查找：log4j、slf4j、jcl、jdk
+<dubbo:application logger="log4j"/>
+<dubbo:protocol accesslog="true" />
+<dubbo:protocol accesslog="http://127.0.0.1/log/dubbo.log" />
+
+###配置Dubbo缓存文件
+<dubbo:registry file="${user.home}/output/dubbo.cache" />
+
+###直连服务提供者
+<dubbo:reference id="xxxService" interface="com.dubbo.service.XxxService"
+check="false" url="dubbo://127.0.0.1:20881"/>
+
+###服务分组或分版本，消费者就只会调用同一分组或同一版本的服务接口，实现服务兼容支持
+#consumer全局设group
+<dubbo:consumer group="g1" timeout="3000" check="false" />
+#reference引用单个指定group
+<dubbo:reference id="xxxService" interface="com.dubbo.service.XxxService" group="g2" timeout="3000" check="false"/>
+#dubbo服务提供方设版本
+<dubbo:service id="xxxService"interface="com.dubbo.service.XxxService" version="1.0.0"/>
+#reference引用指定版本
+<dubbo:reference id="xxxService"interface="com.dubbo.service.XxxService" version="1.0.0"/>
+-----------------------------------------------------------------------
