@@ -24,6 +24,14 @@ awk内置变量
     ORS 输出记录分隔符（默认值是一个换行符）。
     RS 记录分隔符（默认是一个换行符）。
 
+awk是以文件的一行为处理单位的，awk每接收文件的一行，就执行相应的命令。
+基本命令格式：
+awk '{pattern + action}'
+其中，pattern表示在数据中要查找的内容，action表示要执行的一系列命令。
+awk 通过指定分隔符，将一行分为多个字段，依次用 $1、$2 ... $n 表示第一个字段、第二个字段... 第n个字段。
+awk的默认分隔符是空格和制表符，若以冒号(:)和逗号(,)同时作为分隔符，命令如下：
+awk -F ':|,' '{print $1, $2}' xxx.log
+
 外部变量值传递给awk:
 1,-v选项，可以将外部值传递给awk
 $ ab=1000
@@ -216,6 +224,8 @@ $ awk 'BEGIN{t1=mktime("2016 6 6 7 7 7");t2=systime();print strftime("%Y-%m-%d %
 awk '/123|abc/' filename                                    ###awk或操作
 
 awk -F' \\| ' '{if($6>1){ print $0; }}' xxx.log             ###查看日志中响应时长$6大于1秒的访问记录
+cat xxx.log |awk -F',' '{match($2,/cost=([1-9][0-9]*)/,a);print a[1]}' |awk '{if($1>10){ print $0; }}'
+                                                            ###查看日志中各行cost=后面的数字大于10的记录
 cat xxx.log |awk '{match($1,/cost=([1-9][0-9]*)/,a);print a[1]}' |awk '{if($1>10){ print $0; }}' |wc -l
                                                             ###查看日志中各行cost=后面的数字大于10的行数
 cat xxx.log |awk -F',' '{if($2==1){ print $6; }}' | sort | uniq |wc -l
