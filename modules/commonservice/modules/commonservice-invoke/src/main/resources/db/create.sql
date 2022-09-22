@@ -25,7 +25,9 @@ create table t_resource_category (
 create table t_access_resource (
   id bigint(20) AUTO_INCREMENT,
   name varchar(50) default '' comment '接口名称',
+  path varchar(300) default '' comment '接口路径',
   note varchar(200) default '' comment '备注',
+  type int default '1' comment '接口类型 1--http,2--dubbo,3--task,4--方法,5--代码片段',
   sys_id bigint comment '系统id',
   cate_id bigint comment '类目id',
   http_method varchar(20) default 'GET' comment '接口httpMethod,GET,POST,PUT,DELETE,HEAD,PATCH',
@@ -89,6 +91,21 @@ create table t_resource_invoke (
   key idx_resource(resource_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='接口调用表';
 
+create table t_access_log (
+  id bigint(20) AUTO_INCREMENT,
+  sys_id bigint comment '系统id',
+  resource_id bigint comment '接口id',
+  resource_path varchar(300) default '' comment '接口路径',
+  invoke_time datetime comment '调用时间',
+  return_time datetime comment '返回时间',
+  cost bigint default 0 comment '耗时,毫秒',
+  create_time datetime,
+  modify_time datetime,
+  PRIMARY KEY (`id`),
+  key idx_sys_res(sys_id,resource_id),
+  key idx_invoke_res(invoke_time,resource_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='接口访问日志表';
+
 CREATE TABLE `t_menu` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '菜单id',
   `name` varchar(64) DEFAULT '' COMMENT '名称',
@@ -114,7 +131,6 @@ CREATE TABLE `t_menu` (
 INSERT INTO `t_menu` (`id`, `name`, `system_id`, `parent_id`, `status`, `level`, `icon`, `visible`, `type`, `path`, `component`, `query`, `out_link`, `perms`, `sort`, `create_time`, `modify_time`) VALUES (1, '系统管理', NULL, 0, 0, 1, 'system', 0, 0, 'system', NULL, '', 0, '', 1, '2022-04-28 03:06:50', '2022-04-28 03:06:50');
 INSERT INTO `t_menu` (`id`, `name`, `system_id`, `parent_id`, `status`, `level`, `icon`, `visible`, `type`, `path`, `component`, `query`, `out_link`, `perms`, `sort`, `create_time`, `modify_time`) VALUES (2, '系统监控', NULL, 0, 0, 1, 'monitor', 0, 0, 'monitor', NULL, '', 0, '', 2, '2022-04-28 03:12:18', '2022-04-28 03:12:18');
 INSERT INTO `t_menu` (`id`, `name`, `system_id`, `parent_id`, `status`, `level`, `icon`, `visible`, `type`, `path`, `component`, `query`, `out_link`, `perms`, `sort`, `create_time`, `modify_time`) VALUES (3, '系统工具', NULL, 0, 0, 1, 'tool', 0, 0, 'tool', NULL, '', 0, '', 3, '2022-04-28 03:12:18', '2022-04-28 03:12:18');
-INSERT INTO `t_menu` (`id`, `name`, `system_id`, `parent_id`, `status`, `level`, `icon`, `visible`, `type`, `path`, `component`, `query`, `out_link`, `perms`, `sort`, `create_time`, `modify_time`) VALUES (4, '接口管理', NULL, 0, 0, 1, 'component', 1, 0, 'resource', NULL, '', 0, '', 4, '2022-04-28 03:12:18', '2022-04-28 03:12:18');
 INSERT INTO `t_menu` (`id`, `name`, `system_id`, `parent_id`, `status`, `level`, `icon`, `visible`, `type`, `path`, `component`, `query`, `out_link`, `perms`, `sort`, `create_time`, `modify_time`) VALUES (100, '用户管理', NULL, 1, 0, 2, 'user', 1, 1, 'user', 'system/user/index', '', 0, 'system:user:list', 1, '2022-04-28 03:12:18', '2022-04-28 03:12:18');
 INSERT INTO `t_menu` (`id`, `name`, `system_id`, `parent_id`, `status`, `level`, `icon`, `visible`, `type`, `path`, `component`, `query`, `out_link`, `perms`, `sort`, `create_time`, `modify_time`) VALUES (101, '角色管理', NULL, 1, 0, 2, 'peoples', 1, 1, 'role', 'system/role/index', '', 0, 'system:role:list', 2, '2022-04-28 03:12:18', '2022-04-28 03:12:18');
 INSERT INTO `t_menu` (`id`, `name`, `system_id`, `parent_id`, `status`, `level`, `icon`, `visible`, `type`, `path`, `component`, `query`, `out_link`, `perms`, `sort`, `create_time`, `modify_time`) VALUES (102, '菜单管理', NULL, 1, 0, 2, 'tree-table', 1, 1, 'menu', 'system/menu/index', '', 0, 'system:menu:list', 3, '2022-04-28 03:12:18', '2022-04-28 03:12:18');
@@ -132,8 +148,6 @@ INSERT INTO `t_menu` (`id`, `name`, `system_id`, `parent_id`, `status`, `level`,
 INSERT INTO `t_menu` (`id`, `name`, `system_id`, `parent_id`, `status`, `level`, `icon`, `visible`, `type`, `path`, `component`, `query`, `out_link`, `perms`, `sort`, `create_time`, `modify_time`) VALUES (114, '表单构建', NULL, 3, 0, 2, 'build', 1, 1, 'build', 'tool/build/index', '', 0, 'tool:build:list', 1, '2022-04-28 03:15:49', '2022-04-28 03:15:49');
 INSERT INTO `t_menu` (`id`, `name`, `system_id`, `parent_id`, `status`, `level`, `icon`, `visible`, `type`, `path`, `component`, `query`, `out_link`, `perms`, `sort`, `create_time`, `modify_time`) VALUES (115, '代码生成', NULL, 3, 0, 2, 'code', 1, 1, 'gen', 'tool/gen/index', '', 0, 'tool:gen:list', 2, '2022-04-28 03:15:49', '2022-04-28 03:15:49');
 INSERT INTO `t_menu` (`id`, `name`, `system_id`, `parent_id`, `status`, `level`, `icon`, `visible`, `type`, `path`, `component`, `query`, `out_link`, `perms`, `sort`, `create_time`, `modify_time`) VALUES (116, '系统接口', NULL, 3, 0, 2, 'swagger', 1, 1, 'swagger', 'tool/swagger/index', '', 0, 'tool:swagger:list', 3, '2022-04-28 03:15:49', '2022-04-28 03:15:49');
-INSERT INTO `t_menu` (`id`, `name`, `system_id`, `parent_id`, `status`, `level`, `icon`, `visible`, `type`, `path`, `component`, `query`, `out_link`, `perms`, `sort`, `create_time`, `modify_time`) VALUES (117, '接口列表', NULL, 4, 0, 2, 'icon', 1, 1, 'api-list', 'interapi/access/index', '', 0, '', 1, '2022-04-28 12:07:23', '2022-04-28 12:07:23');
-INSERT INTO `t_menu` (`id`, `name`, `system_id`, `parent_id`, `status`, `level`, `icon`, `visible`, `type`, `path`, `component`, `query`, `out_link`, `perms`, `sort`, `create_time`, `modify_time`) VALUES (118, '接口调用记录', NULL, 4, 0, 2, 'list', 1, 1, 'api-invoke', 'interapi/invoke/index', '', 0, '', 2, '2022-04-28 12:07:23', '2022-04-28 12:07:23');
 INSERT INTO `t_menu` (`id`, `name`, `system_id`, `parent_id`, `status`, `level`, `icon`, `visible`, `type`, `path`, `component`, `query`, `out_link`, `perms`, `sort`, `create_time`, `modify_time`) VALUES (500, '操作日志', NULL, 108, 0, 2, 'form', 1, 1, 'operlog', 'monitor/operlog/index', '', 0, 'monitor:operlog:list', 1, '2022-04-28 03:15:49', '2022-04-28 03:15:49');
 INSERT INTO `t_menu` (`id`, `name`, `system_id`, `parent_id`, `status`, `level`, `icon`, `visible`, `type`, `path`, `component`, `query`, `out_link`, `perms`, `sort`, `create_time`, `modify_time`) VALUES (501, '登录日志', NULL, 108, 0, 2, 'logininfor', 1, 1, 'logininfor', 'monitor/logininfor/index', '', 0, 'monitor:logininfor:list', 2, '2022-04-28 03:15:49', '2022-04-28 03:15:49');
 INSERT INTO `t_menu` (`id`, `name`, `system_id`, `parent_id`, `status`, `level`, `icon`, `visible`, `type`, `path`, `component`, `query`, `out_link`, `perms`, `sort`, `create_time`, `modify_time`) VALUES (1001, '用户查询', NULL, 100, 0, 3, '#', 1, 2, '', '', '', 0, 'system:user:query', 1, '2022-04-28 03:15:49', '2022-04-28 03:15:49');
@@ -196,4 +210,11 @@ INSERT INTO `t_menu` (`id`, `name`, `system_id`, `parent_id`, `status`, `level`,
 INSERT INTO `t_menu` (`id`, `name`, `system_id`, `parent_id`, `status`, `level`, `icon`, `visible`, `type`, `path`, `component`, `query`, `out_link`, `perms`, `sort`, `create_time`, `modify_time`) VALUES (1058, '导入代码', NULL, 115, 0, 3, '#', 1, 2, '#', '', '', 0, 'tool:gen:import', 2, '2022-04-28 03:15:49', '2022-04-28 03:15:49');
 INSERT INTO `t_menu` (`id`, `name`, `system_id`, `parent_id`, `status`, `level`, `icon`, `visible`, `type`, `path`, `component`, `query`, `out_link`, `perms`, `sort`, `create_time`, `modify_time`) VALUES (1059, '预览代码', NULL, 115, 0, 3, '#', 1, 2, '#', '', '', 0, 'tool:gen:preview', 4, '2022-04-28 03:15:49', '2022-04-28 03:15:49');
 INSERT INTO `t_menu` (`id`, `name`, `system_id`, `parent_id`, `status`, `level`, `icon`, `visible`, `type`, `path`, `component`, `query`, `out_link`, `perms`, `sort`, `create_time`, `modify_time`) VALUES (1060, '生成代码', NULL, 115, 0, 3, '#', 1, 2, '#', '', '', 0, 'tool:gen:code', 5, '2022-04-28 03:15:49', '2022-04-28 03:15:49');
+
+INSERT INTO `t_menu` (`id`, `name`, `system_id`, `parent_id`, `status`, `level`, `icon`, `visible`, `type`, `path`, `component`, `query`, `out_link`, `perms`, `sort`, `create_time`, `modify_time`) VALUES (4, '接口管理', NULL, 0, 0, 1, 'component', 1, 0, 'resource', NULL, '', 0, '', 4, '2022-04-28 03:12:18', '2022-04-28 03:12:18');
+INSERT INTO `t_menu` (`id`, `name`, `system_id`, `parent_id`, `status`, `level`, `icon`, `visible`, `type`, `path`, `component`, `query`, `out_link`, `perms`, `sort`, `create_time`, `modify_time`) VALUES (117, '接口列表', NULL, 4, 0, 2, 'icon', 1, 1, 'api-list', 'interapi/access/index', '', 0, '', 1, '2022-04-28 12:07:23', '2022-04-28 12:07:23');
+INSERT INTO `t_menu` (`id`, `name`, `system_id`, `parent_id`, `status`, `level`, `icon`, `visible`, `type`, `path`, `component`, `query`, `out_link`, `perms`, `sort`, `create_time`, `modify_time`) VALUES (118, '接口调用记录', NULL, 4, 0, 2, 'list', 1, 1, 'api-invoke', 'interapi/invoke/index', '', 0, '', 2, '2022-04-28 12:07:23', '2022-04-28 12:07:23');
+INSERT INTO `t_menu` (`id`, `name`, `system_id`, `parent_id`, `status`, `level`, `icon`, `visible`, `type`, `path`, `component`, `query`, `out_link`, `perms`, `sort`, `create_time`, `modify_time`) VALUES (5, '接口日志', NULL, 0, 0, 1, 'component', 1, 0, 'resourcelog', NULL, '', 0, '', 5, now(), now());
+INSERT INTO `t_menu` (`id`, `name`, `system_id`, `parent_id`, `status`, `level`, `icon`, `visible`, `type`, `path`, `component`, `query`, `out_link`, `perms`, `sort`, `create_time`, `modify_time`) VALUES (119, '日志列表', NULL, 5, 0, 2, 'icon', 1, 1, 'api-log', 'interlog/log/index', '', 0, '', 1, now(), now());
+INSERT INTO `t_menu` (`id`, `name`, `system_id`, `parent_id`, `status`, `level`, `icon`, `visible`, `type`, `path`, `component`, `query`, `out_link`, `perms`, `sort`, `create_time`, `modify_time`) VALUES (120, '日志分析', NULL, 5, 0, 2, 'list', 1, 1, 'api-loganalysis', 'interlog/loganalysis/index', '', 0, '', 2, now(), now());
 

@@ -43,19 +43,19 @@
       <!--API接口数据-->
       <el-col :span="20" :xs="24">
         <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-          <el-form-item label="API名称" prop="name">
+          <el-form-item label="接口名称" prop="name">
             <el-input
               v-model="queryParams.entity.name"
-              placeholder="请输入API名称"
+              placeholder="请输入接口名称"
               clearable
               style="width: 240px"
               @keyup.enter.native="handleQuery"
             />
           </el-form-item>
-          <el-form-item label="API地址" prop="resourceLink">
+          <el-form-item label="接口地址" prop="resourceLink">
             <el-input
               v-model="queryParams.entity.resourceLink"
-              placeholder="请输入API地址"
+              placeholder="请输入接口地址"
               clearable
               style="width: 240px"
               @keyup.enter.native="handleQuery"
@@ -132,13 +132,13 @@
         <el-table v-loading="loading" :data="list" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="50" align="center" />
           <el-table-column label="ID" align="center" key="id" prop="id" v-if="columns[0].visible" width="60" />
-          <el-table-column label="API名称" align="center" key="name" prop="name" v-if="columns[1].visible" width="200" >
+          <el-table-column label="接口名称" align="center" key="name" prop="name" v-if="columns[1].visible" width="200" >
             <template slot-scope="scope" >
               <div style="color:#1890ff" @click="handleDetail(scope.row)">{{ scope.row.name }}</div>
             </template>
           </el-table-column>
           <el-table-column label="请求方式" align="center" key="httpMethod" prop="httpMethod" v-if="columns[2].visible" width="80" />
-          <el-table-column label="API地址" align="center" key="resourceLink" prop="resourceLink" v-if="columns[3].visible" :show-overflow-tooltip="true" />
+          <el-table-column label="接口地址" align="center" key="resourceLink" prop="resourceLink" v-if="columns[3].visible" :show-overflow-tooltip="true" />
           <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[4].visible" width="160">
             <template slot-scope="scope">
               <span>{{ parseTime(scope.row.createTime) }}</span>
@@ -219,7 +219,7 @@
       <el-form ref="form" :model="invoke.form" label-width="80px">
         <el-row>
           <el-col :span="24">
-            <el-form-item label="API名称" prop="name">
+            <el-form-item label="接口名称" prop="name">
               <div class="invoke-row-class">{{invoke.form.name }}</div>
             </el-form-item>
           </el-col>
@@ -232,7 +232,7 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-form-item label="API地址" prop="resourceLink">
+          <el-form-item label="接口地址" prop="resourceLink">
             <el-col :span="2" >
               <div style="width: 99%; display: inline-block; background: #f2f2f2; font-weight: 600; text-align: center;">{{invoke.form.httpMethod }}</div>
             </el-col>
@@ -382,9 +382,9 @@ export default {
       // 列信息
       columns: [
         { key: 0, label: `ID`, visible: true },
-        { key: 1, label: `API名称`, visible: true },
+        { key: 1, label: `接口名称`, visible: true },
         { key: 2, label: `请求方式`, visible: true },
-        { key: 3, label: `API地址`, visible: true },
+        { key: 3, label: `接口地址`, visible: true },
         { key: 4, label: `创建时间`, visible: true }
       ],
       // 表单校验

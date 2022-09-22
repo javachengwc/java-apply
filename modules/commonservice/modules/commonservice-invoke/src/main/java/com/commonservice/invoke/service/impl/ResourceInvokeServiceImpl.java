@@ -39,6 +39,7 @@ public class ResourceInvokeServiceImpl extends ServiceImpl<ResourceInvokeMapper,
     private ResourceHeaderService resourceHeaderService;
 
     //接口调用
+    @Override
     public Resp<Object> invoke(InvokeVo invokeVo) {
         Long resourceId = invokeVo.getResourceId();
         log.info("ResourceInvokeServiceImpl invoke start,resourceId={},invokeVo={}", resourceId, JsonUtil.obj2Json(invokeVo));
@@ -151,6 +152,7 @@ public class ResourceInvokeServiceImpl extends ServiceImpl<ResourceInvokeMapper,
         return resourceInvoke;
     }
 
+    @Override
     public PageVo<ResourceInvoke> page(ResourceInvokeQuery query) {
         log.info("ResourceInvokeServiceImpl page start ,query={}", JsonUtil.obj2Json(query));
         int pageNum = query.getPageNum();

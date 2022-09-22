@@ -18,6 +18,12 @@ public class AccessResource implements Serializable {
     @TableField("name")
     private String name;
 
+    @TableField("path")
+    private String path;
+
+    @TableField("type")
+    private Integer type;
+
     @TableField("note")
     private String note;
 

@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="系统名称" prop="sysName">
+      <el-form-item label="日志名称" prop="sysName">
         <el-select
           v-model="queryParams.sysId"
           placeholder="系统"
