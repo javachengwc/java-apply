@@ -75,8 +75,6 @@ public class InitDao {
 	// 品牌信息
 	private static Map<String, String> brandInfoMap = new HashMap<String, String>();
 	
-	private static final DateFormat currentDateFormat=new SimpleDateFormat("yyyy-MM-dd");
-	
 	private static final Map<String,String> activityMap=new HashMap<String,String>();
 	
 	private static List<GoodsIcon> iconList =new ArrayList<GoodsIcon>();
@@ -205,6 +203,7 @@ public class InitDao {
 		String url="";
 		Long nowTime=new Date().getTime();
 		activityMap.clear();
+		DateFormat currentDateFormat=new SimpleDateFormat("yyyy-MM-dd");
 		try {
            while (rs.next()) {
         	   url=rs.getString("url");
@@ -923,6 +922,7 @@ public class InitDao {
 		String url="";
 		Long nowTime=new Date().getTime();
 		List<GoodsIcon> tmpIconList= new ArrayList<GoodsIcon>();
+		DateFormat currentDateFormat=new SimpleDateFormat("yyyy-MM-dd");
 		try {
            while (rs.next()) {
         	   
