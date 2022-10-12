@@ -1,0 +1,30 @@
+#最大工作线程数，默认200
+server.tomcat.max-threads=200
+
+#最小工作线程数，默认10
+server.tomcat.min-spare-threads=100
+
+#最大连接数
+#BIO模式下默认最大连接数是它的最大线程数(缺省是200)，
+#NIO模式下默认是10000
+#APR模式下默认是8192
+server.tomcat.max-connections=10000
+
+#等待队列长度，默认100
+#maxConnections和acceptCount的关系为:当连接数达到最大值maxConnections后,系统会继续接收连接,进行排队，但不会超过acceptCount的值。
+#tomcat最大连接数取决于maxConnections加上acceptCount,当调用http请求数达到tomcat的最大连接数时,还有新的http请求到来,tomcat会将该请求放在等待队列中,
+#acceptCount就是指能够接受的最大等待数，默认100。如果等待队列被放满了，再来新的请求就会被Tomcat拒绝(connection refused)
+server.tomcat.accept-count=100
+
+#springboot tomcat配置
+server:
+  port: 8000
+  tomcat:
+    uri-encoding: UTF-8
+    max-threads: 800           #最大工作线程数
+    min-spare-threads: 20      #最小工作线程数
+    #max-connections: 10000    #最大连接数,表示最多可以有多少个socket连接到tomcat上
+    accept-count: 200          #等待队列长度
+
+
+

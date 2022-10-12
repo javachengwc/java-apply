@@ -1,0 +1,15 @@
+-----------------------------------------tomcat历史-----------------------------------
+1999年           tomcat3.x发布            sun将JavaWebServer容器的源代码贡献给ASF，使JavaWebServer和JServ两个项目合并为tomcat，
+                                          tomcat作为Sun的官方参考实现，也标志着它支持Servlet和JSP 的参考标准
+                                          tomcat3.x系列实现了Servlet2.2和JSPl.1标准，支持java版本：1.1及以上
+2001年           tomcat4.x发布            tomcat4.x系列实现了Servlet2.3和JSPl.2标准，支持java版本：1.3及以上
+2003年           tomcat5.0发布            tomcat5.0系列实现了Servlet2.4和JSP2.0标准，支持java版本：1.4及以上
+2004年           tomcat5.5发布            tomcat5.5系列实现了Servlet2.4和JSP2.0标准，支持java版本：1.4及以上
+2006年           tomcat6.x发布            tomcat6.x系列实现了Servlet2.5和JSP2.1标准，支持java版本：5及以上
+2011年           tomcat7.x发布            tomcat7.x系列实现了Servlet3.0和JSP2.2标准，支持java版本：6及以上
+2013年           tomcat8.0发布            tomcat8.0系列实现了Servlet3.1和JSP2.3标准，支持java版本：7及以上
+2015年           tomcat9.0发布            tomcat9.0系列实现了Servlet4.0和JSP2.3标准，支持java版本：8及以上
+2016年           tomcat8.5发布            主流使用版本，tomcat8.5系列实现了Servlet3.1和JSP2.3标准，支持java版本：7及以上,
+2020年           tomcat10.0发布           tomcat10.0系列实现了Servlet5.0和JSP3.0标准，支持java版本：8及以上
+2021年           tomcat10.1发布           tomcat10.1系列实现了Servlet6.4和JSP3.1标准，支持java版本：11及以上
+--------------------------------------------------------------------------------------

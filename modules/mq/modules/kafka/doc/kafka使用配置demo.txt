@@ -1,0 +1,21 @@
+kafka.producer.bootstrap.servers = xxx.com:9092
+#发送失败重试次数
+kafka.producer.retries = 3
+kafka.producer.linger.ms =  10
+#批处理缓冲区
+kafka.producer.buffer.memory = 40960
+#批处理条数
+kafka.producer.batch.size = 4096
+kafka.producer.key.serializer = org.apache.kafka.common.serialization.StringSerializer
+kafka.producer.value.serializer = org.apache.kafka.common.serialization.StringSerializer
+kafka.producer.defaultTopic = topic1
+
+kafka.consumers.connectionZk = xxx.com:2181
+kafka.consumers.defaultTopic = topic1
+kafka.consumers.groupName = group1
+kafka.consumers.zkSessionTimeout = 10000
+kafka.consumers.zkSyncTime = 10000
+kafka.consumers.autoCommitInterval = 2000
+kafka.consumers.rebalanceBackOff = 2000
+kafka.consumers.rebalanceMaxRetries = 10
+kafka.consumers.autoOffsetReset = smallest
