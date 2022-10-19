@@ -232,4 +232,23 @@ cat xxx.log |awk -F',' '{if($2==1){ print $6; }}' | sort | uniq |wc -l
 ###排重计数， 排重时一定要先排序在排重即 sort | uniq,
 因为uniq去重只对相邻的数据进行迭代处理，当遇到相邻的数据不重复时，就会该处的数据加一，进行新的迭代处理。
 所以对文件数据进行去重处理时，先对文件的数据进行排序，然后再进行去重处理。
+
+cat xxx.log |grep "cost" |awk -F',' '{x[$1]++;} END {for(i in x) print(i ":" x[i])}' |sort
+                                                            ###查看日志中耗时访问记录按第一段(时间)的分组数量
+cat access.log |awk '{split($7,b,"?");split($NF,c,"\""); printf"%s %f\n",b[1],c[2]}'|
+awk '{ printf"%s %f\n",$1,$2*1000}' | awk '{if($2>3000) print $1}'|sort |uniq -c |sort -nr -k 1|more
+                                                            ###查看所有接口耗时超过3秒统计,倒序排列
+cat xxx.log |grep 'aa cost' |awk -F',' '{split($4,b,"=");printf"%s,%s\n",$1,b[2]}' |
+awk -F',' '{if($2>1000) print$1" "$2}' | awk '{print$1" "$2" "$NF}' |sort -nr -k 3
+                                                            ###查看某个接口耗时超过1秒的访问，倒序排列
+cat access.log|awk '{​​​​​​​​split($7,b,"?");split($NF,c,"\""); printf"%s %f\n",b[1],c[2]}​​​​​​​​'|
+awk '{​​​​​​​​ printf"%s %f\n",$1,$2*1000}​​​​​​​​' |
+awk 'BEGIN{accc[$1]=0;count[$1]=0} {accc[$1]+=$2; count[$1]+=1}
+END{​​​​​​​​ for(d in accc){ if(accc[d]>0 && count[d]>0){​​​​​​​​print d ,accc[d]/count[d]}}}​​​​​​​​'|sort -nr -k 2|more
+                                                            ###统计接口平均耗时
+cat xxx.log |grep 'aa cost' |awk -F',' '{split($1,a,"(");split($4,b,"="); printf"%s,%s\n",a[2],b[2]}' |
+awk -F')' '{split($2,c,","); printf"%s %s\n",$1,c[2]}' |
+awk 'BEGIN{accc[$1]=0;count[$1]=0} {accc[$1]+=$2; count[$1]+=1}
+END{​​​​​​​​ for(d in accc){ if(accc[d]>0 && count[d]>0){​​​​​​​​print d ,accc[d]/count[d]}}}​​​​​​​​'|sort -nr -k 2|more
+                                                            ###统计某个接口平均耗时
 -----------------------------------------------------------------------
