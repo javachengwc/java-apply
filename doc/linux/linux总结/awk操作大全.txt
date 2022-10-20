@@ -244,11 +244,11 @@ awk -F',' '{if($2>1000) print$1" "$2}' | awk '{print$1" "$2" "$NF}' |sort -nr -k
 cat access.log|awk '{​​​​​​​​split($7,b,"?");split($NF,c,"\""); printf"%s %f\n",b[1],c[2]}​​​​​​​​'|
 awk '{​​​​​​​​ printf"%s %f\n",$1,$2*1000}​​​​​​​​' |
 awk 'BEGIN{accc[$1]=0;count[$1]=0} {accc[$1]+=$2; count[$1]+=1}
-END{​​​​​​​​ for(d in accc){ if(accc[d]>0 && count[d]>0){​​​​​​​​print d ,accc[d]/count[d]}}}​​​​​​​​'|sort -nr -k 2|more
+END{ for(d in accc){ if(accc[d]>0 && count[d]>0) {print d ,accc[d]/count[d]}}}'|sort -nr -k 2 |more
                                                             ###统计接口平均耗时
 cat xxx.log |grep 'aa cost' |awk -F',' '{split($1,a,"(");split($4,b,"="); printf"%s,%s\n",a[2],b[2]}' |
 awk -F')' '{split($2,c,","); printf"%s %s\n",$1,c[2]}' |
 awk 'BEGIN{accc[$1]=0;count[$1]=0} {accc[$1]+=$2; count[$1]+=1}
-END{​​​​​​​​ for(d in accc){ if(accc[d]>0 && count[d]>0){​​​​​​​​print d ,accc[d]/count[d]}}}​​​​​​​​'|sort -nr -k 2|more
+END{ for(d in accc){ if(accc[d]>0 && count[d]>0) {print d ,accc[d]/count[d]}}}'|sort -nr -k 2
                                                             ###统计某个接口平均耗时
 -----------------------------------------------------------------------
