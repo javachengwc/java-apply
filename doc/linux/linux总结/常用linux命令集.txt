@@ -30,7 +30,8 @@ df /df -h          ---磁盘挂在及容量,使用量,信息
 du /du -sh         ---当前目录下个文件及文件夹大小信息
 ----------------------------
 ps -aux            ---查看进程
-ps -mp pid -o THREAD,tid,time|sort -rn ---查看进程pid最耗cpu的线程   
+ps -mp pid -o THREAD,tid,time|sort -rn ---查看进程pid最耗cpu的线程
+ps -o lstart,etime -p pid              ---查看进程启动时间和运行时长
 ---------------------------
 jstat -gcutil pid  ---查看java进程垃圾回收状况
 jstat -gc pid      ---查看java进程内存占用情况
