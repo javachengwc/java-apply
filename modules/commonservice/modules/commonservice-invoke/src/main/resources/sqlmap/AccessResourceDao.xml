@@ -7,19 +7,21 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="note" jdbcType="VARCHAR" property="note" />
-    <result column="sys_id" jdbcType="INTEGER" property="sysId" />
-    <result column="cate_id" jdbcType="INTEGER" property="cateId" />
+    <result column="sys_id" jdbcType="BIGINT" property="sysId" />
+    <result column="cate_id" jdbcType="BIGINT" property="cateId" />
     <result column="http_method" jdbcType="VARCHAR" property="httpMethod" />
     <result column="content_type" jdbcType="VARCHAR" property="contentType" />
     <result column="resource_link" jdbcType="VARCHAR" property="resourceLink" />
     <result column="req_demo" jdbcType="VARCHAR" property="reqDemo" />
     <result column="resp_demo" jdbcType="VARCHAR" property="respDemo" />
+    <result column="analysis_flag" jdbcType="INTEGER" property="analysisFlag" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
   </resultMap>
 
   <select id="listPage" resultMap="BaseResultMap">
-    select a.id,a.name,a.note,a.sys_id,a.cate_id,a.http_method,a.content_type,a.resource_link,a.req_demo,a.resp_demo,a.create_time,a.modify_time
+    select a.id,a.name,a.note,a.sys_id,a.cate_id,a.http_method,a.content_type,a.resource_link,
+           a.req_demo,a.resp_demo,a.analysis_flag,a.create_time,a.modify_time
     from t_access_resource a
     left join t_resource_system s on s.id = a.sys_id
     <where>

@@ -1,5 +1,6 @@
 package com.commonservice.invoke.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.commonservice.invoke.dao.AccessResourceMapper;
 import com.commonservice.invoke.dao.ext.AccessResourceDao;
@@ -56,5 +57,15 @@ public class AccessResourceServiceImpl extends ServiceImpl<AccessResourceMapper,
         List<AccessResourceVo> voList = TransUtil.transListWithJson(list, AccessResourceVo.class);
         page.setList(voList);
         return page;
+    }
+
+    public List<AccessResource> queryAnalyResourceBySys(Long sysId) {
+        AccessResource cdn = new AccessResource();
+        cdn.setSysId(sysId);
+        cdn.setAnalysisFlag(1);
+        QueryWrapper queryWrapper =new QueryWrapper();
+        queryWrapper.setEntity(cdn);
+        List<AccessResource> list = this.list(queryWrapper);
+        return list;
     }
 }

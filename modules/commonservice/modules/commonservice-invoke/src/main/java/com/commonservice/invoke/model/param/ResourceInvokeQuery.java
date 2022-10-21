@@ -1,9 +1,11 @@
 package com.commonservice.invoke.model.param;
 
 import com.model.base.PageParam;
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 @Data
+@ApiModel(value = "resourceInvokeQuery", description = "调用查询参数")
 public class ResourceInvokeQuery extends PageParam {
 
     private Long id;

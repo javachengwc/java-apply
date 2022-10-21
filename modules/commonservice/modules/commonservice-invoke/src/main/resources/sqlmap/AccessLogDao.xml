@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.commonservice.invoke.dao.ext.AccessLogDao">
+
+    <resultMap id="BaseResultMap" type="com.commonservice.invoke.model.entity.AccessLog">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="sys_id" jdbcType="BIGINT" property="sysId" />
+        <result column="resource_id" jdbcType="BIGINT" property="resourceId" />
+        <result column="resource_path" jdbcType="VARCHAR" property="resourcePath" />
+        <result column="invoke_time" jdbcType="TIMESTAMP" property="invokeTime" />
+        <result column="return_time" jdbcType="TIMESTAMP" property="returnTime" />
+        <result column="cost" jdbcType="BIGINT" property="cost" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    </resultMap>
+
+    <select id="listPage" resultMap="BaseResultMap">
+        select id,sys_id,resource_id,resource_path,invoke_time,return_time,cost,create_time,modify_time
+        from t_access_log
+        <where>
+            <if test="sysId != null ">
+                and sys_id = #{sysId}
+            </if>
+            <if test="resourceId != null ">
+                and resource_id = #{resourceId}
+            </if>
+            <if test="resourcePath != null and resourcePath != '' ">
+                and resource_path = #{resourcePath}
+            </if>
+            <if test="invokeTimeBegin != null and invokeTimeBegin != '' ">
+                <![CDATA[ and invoke_time >= #{invokeTimeBegin} ]]>
+            </if>
+            <if test="invokeTimeEnd != null and invokeTimeEnd != '' ">
+                <![CDATA[ and invoke_time < #{invokeTimeEnd} ]]>
+            </if>
+            <if test="minCost != null ">
+                <![CDATA[ and cost >= #{minCost} ]]>
+            </if>
+            <if test="maxCost != null ">
+                <![CDATA[ and cost < #{maxCost} ]]>
+            </if>
+        </where>
+        <if test="orderBy != null and orderBy != '' and order != null and order != '' ">
+            order by #{orderBy} #{order}
+        </if>
+        <if test="orderBy == null or orderBy == '' ">
+            order by id desc
+        </if>
+        <if test="start != null and pageSize != null">
+            limit #{start},#{pageSize}
+        </if>
+    </select>
+
+    <select id="countPage" resultType="java.lang.Integer">
+        select count(*) as count
+        from t_access_log
+        <where>
+            <if test="sysId != null ">
+                and sys_id = #{sysId}
+            </if>
+            <if test="resourceId != null ">
+                and resource_id = #{resourceId}
+            </if>
+            <if test="resourcePath != null and resourcePath != '' ">
+                and resource_path = #{resourcePath}
+            </if>
+            <if test="invokeTimeBegin != null and invokeTimeBegin != '' ">
+                <![CDATA[ and invoke_time >= #{invokeTimeBegin} ]]>
+            </if>
+            <if test="invokeTimeEnd != null and invokeTimeEnd != '' ">
+                <![CDATA[ and invoke_time < #{invokeTimeEnd} ]]>
+            </if>
+            <if test="minCost != null ">
+                <![CDATA[ and cost >= #{minCost} ]]>
+            </if>
+            <if test="maxCost != null ">
+                <![CDATA[ and cost < #{maxCost} ]]>
+            </if>
+        </where>
+    </select>
+
+</mapper>

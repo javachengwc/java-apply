@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-@Api(description = "调用接口")
+@Api(description = "调用日志接口")
 @RestController
 @RequestMapping("/accesslog")
 @Slf4j

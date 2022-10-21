@@ -35,6 +35,7 @@ create table t_access_resource (
   resource_link varchar(200) default '' comment '接口链接',
   req_demo varchar(1000) default '' comment '请求参数例子',
   resp_demo varchar(1000) default '' comment '响应结果例子',
+  analysis_flag int(2) default 0 comment '日志分析标识 0--否  1--是',
   create_time datetime,
   modify_time datetime,
   PRIMARY KEY (`id`)

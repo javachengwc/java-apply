@@ -28,10 +28,10 @@ public class AccessResource implements Serializable {
     private String note;
 
     @TableField("sys_id")
-    private Integer sysId;
+    private Long sysId;
 
     @TableField("cate_id")
-    private Integer cateId;
+    private Long cateId;
 
     @TableField("http_method")
     private String httpMethod;
@@ -47,6 +47,9 @@ public class AccessResource implements Serializable {
 
     @TableField("resp_demo")
     private String respDemo;
+
+    @TableField("analysis_flag")
+    private Integer analysisFlag;
 
     @TableField("create_time")
     private Date createTime;

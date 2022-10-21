@@ -15,4 +15,6 @@ public interface AccessResourceService extends IService<AccessResource> {
 
     public PageVo<AccessResourceVo> page(AccessResourceQuery resourceQuery);
 
+    public List<AccessResource> queryAnalyResourceBySys(Long sysId);
+
 }

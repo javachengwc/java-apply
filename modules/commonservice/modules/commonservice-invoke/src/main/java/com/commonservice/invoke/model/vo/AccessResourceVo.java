@@ -19,11 +19,11 @@ public class AccessResourceVo implements Serializable {
 
     private String note;
 
-    private Integer sysId;
+    private Long sysId;
 
     private String sysName;
 
-    private Integer cateId;
+    private Long cateId;
 
     private String cateName;
 
@@ -32,6 +32,8 @@ public class AccessResourceVo implements Serializable {
     private String contentType;
 
     private String resourceLink;
+
+    private Integer analysisFlag;
 
     private String reqDemo;
 
