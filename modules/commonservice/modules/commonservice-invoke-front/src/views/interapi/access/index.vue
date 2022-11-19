@@ -511,7 +511,17 @@ export default {
       if(this.invoke.form.reqDemo == null || this.invoke.form.reqDemo.length<=0) {
         this.invoke.form.params = {};
       } else {
-        this.invoke.form.params = JSON.parse(this.invoke.form.reqDemo);
+        let paramsStr = this.invoke.form.reqDemo;
+        console.log(paramsStr);
+        let params;
+        try {
+           params =JSON.parse(paramsStr);
+        } catch (err) {
+           paramsStr =paramsStr.replace(/,\r/g,",").replace(/,\n/g,",").replace(/\n/g,"\\n").replace(/\r/g,"\\r");
+           console.log(paramsStr);
+           params =JSON.parse(paramsStr);
+        }
+        this.invoke.form.params = params;
       }
       let reqData = this.wrapReqData(this.invoke.form);
 
