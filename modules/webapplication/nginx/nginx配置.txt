@@ -49,8 +49,14 @@ http {
     gzip_disable "MSIE [1-6].";
 
     #设定请求缓冲
+    #设置客户端请求的Header头缓冲区大小，大部分情况1KB大小足够
     client_header_buffer_size    128k;
+    #设置客户端请求的Header头缓冲区大小
     large_client_header_buffers  4 128k;
+    #客户端能够上传的文件大小，默认为1m
+    client_max_body_size 10m;
+    #允许客户端请求的最大单个文件字节数
+    client_body_buffer_size 10K;
 
     #反向代理
     upstream proxyserver  {

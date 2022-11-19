@@ -40,7 +40,7 @@ public class ResourceInvokeServiceImpl extends ServiceImpl<ResourceInvokeMapper,
 
     //接口调用
     @Override
-    public Resp<Object> invoke(InvokeVo invokeVo) {
+    public Resp<HttpResponse> invoke(InvokeVo invokeVo) {
         Long resourceId = invokeVo.getResourceId();
         log.info("ResourceInvokeServiceImpl invoke start,resourceId={},invokeVo={}", resourceId, JsonUtil.obj2Json(invokeVo));
         //准备header
@@ -49,7 +49,7 @@ public class ResourceInvokeServiceImpl extends ServiceImpl<ResourceInvokeMapper,
         String url = accessResource.getResourceLink();
         String httpMethod = accessResource.getHttpMethod();
         String contentType = accessResource.getContentType();
-        Resp<Object> resp = new Resp<Object>();
+        Resp<HttpResponse> resp = new Resp<HttpResponse>();
         HttpResponse httpResponse = null;
         String errorMsg = null;
         //产生调用并保存
@@ -138,9 +138,12 @@ public class ResourceInvokeServiceImpl extends ServiceImpl<ResourceInvokeMapper,
         resourceInvoke.setReturnTime(now);
         resourceInvoke.setCost(now.getTime()-invokeTime.getTime());
 
-        String respData =( httpResponse==null || httpResponse.getBody()== null ) ? "" :
-                ( httpResponse.isJson() ? JsonUtil.obj2Json(httpResponse.getBody()) : httpResponse.getBody().toString());
-        respData= respData.length()>10000? respData.substring(0,10000): respData;
+        String respData="";
+        if(httpResponse!=null && !httpResponse.isBeFile()) {
+            respData = (httpResponse == null || httpResponse.getBody() == null) ? "" :
+                    (httpResponse.isJson() ? JsonUtil.obj2Json(httpResponse.getBody()) : httpResponse.getBody().toString());
+            respData = respData.length() > 10000 ? respData.substring(0, 10000) : respData;
+        }
         resourceInvoke.setRespData(respData);
 
         resourceInvoke.setRespCode(httpResponse==null? -1 :httpResponse.getCode());

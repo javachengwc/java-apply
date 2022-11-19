@@ -2,6 +2,7 @@ package com.commonservice.invoke.util;
 
 import com.util.JsonUtil;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
@@ -99,20 +100,57 @@ public class HttpProxy {
                 req.abort();
             } else {
                 httpResponse.setSuccess(true);
+
+                Header [] allHeaders = response.getAllHeaders();
+                Map<String,String> headerMap= new HashMap<String,String>();
+                if(allHeaders!=null) {
+                    for (Header per : allHeaders) {
+                        headerMap.put(per.getName(), per.getValue());
+                    }
+                }
+                //设置header头信息
+                httpResponse.setHeaders(headerMap);
+
+                Header [] contentTypeHeaders= response.getHeaders("Content-Type");
+                String respContentType = ( contentTypeHeaders==null || contentTypeHeaders.length<=0) ?"":contentTypeHeaders[0].getValue();
+                httpResponse.setContentType(respContentType);
+
+                Header [] contentDispositions= response.getHeaders("Content-Disposition");
+                String respContentDispositions = ( contentDispositions==null || contentDispositions.length<=0) ?"":contentDispositions[0].getValue();
+                //返回结果是否为文件
+                boolean respIsFile = StringUtils.isNotBlank(respContentDispositions) && respContentDispositions.startsWith("attachment");
+                httpResponse.setBeFile(respIsFile);
+
                 HttpEntity entity = response == null ? null : response.getEntity();
                 if (entity != null) {
-                    String returnStr = EntityUtils.toString(entity, charset);
-                    httpResponse.setBody(returnStr);
-                    EntityUtils.consume(entity);
-                    if(StringUtils.isNotBlank(returnStr)) {
-                        try {
-                            Object obj = JsonUtil.json2Obj(returnStr, Object.class);
-                            if(obj!=null) {
-                                httpResponse.setBody(obj);
-                                httpResponse.setJson(true);
+                    if(respIsFile) {
+                        //返回结果为文件
+                        String filename = "";
+                        int index = respContentDispositions.indexOf("filename=");
+                        if(index>=0) {
+                            filename =respContentDispositions.substring(index+"filename=".length());
+                        } else {
+                            Header [] filenameHeaders= response.getHeaders("filename");
+                            filename= ( filenameHeaders==null || filenameHeaders.length<=0) ?"":filenameHeaders[0].getValue();
+                        }
+                        httpResponse.setFilename(filename);
+                        byte[] data = EntityUtils.toByteArray(entity);
+                        httpResponse.setBody(data);
+                        logger.info("HttpProxy invoke rt is file, filename="+filename);
+                    } else {
+                        String returnStr = EntityUtils.toString(entity, charset);
+                        httpResponse.setBody(returnStr);
+                        EntityUtils.consume(entity);
+                        if (StringUtils.isNotBlank(returnStr)) {
+                            try {
+                                Object obj = JsonUtil.json2Obj(returnStr, Object.class);
+                                if (obj != null) {
+                                    httpResponse.setBody(obj);
+                                    httpResponse.setJson(true);
+                                }
+                            } catch (Exception ee) {
+                                logger.warn("HttpProxy invoke json2Obj returnStr fail ,", ee);
                             }
-                        } catch (Exception ee) {
-                            logger.warn("HttpProxy invoke json2Obj returnStr fail ,", ee);
                         }
                     }
                 }

@@ -2,6 +2,10 @@ package com.util.base;
 
 import com.util.date.DateUtil;
 import org.apache.commons.lang3.StringUtils;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -56,6 +60,22 @@ public class ObjectUtil {
             rt=Byte.parseByte(objStr);
         }
         return rt;
+    }
+
+    public static byte[] obj2ByteArray(Object obj) {
+        byte[] bytes = null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(bos);
+            oos.writeObject(obj);
+            oos.flush();
+            bytes = bos.toByteArray ();
+            oos.close();
+            bos.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return bytes;
     }
 
     //转成Short

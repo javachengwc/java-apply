@@ -48,6 +48,9 @@ public class AccessResource implements Serializable {
     @TableField("resp_demo")
     private String respDemo;
 
+    @TableField("file_flag")
+    private Integer fileFlag;
+
     @TableField("analysis_flag")
     private Integer analysisFlag;
 

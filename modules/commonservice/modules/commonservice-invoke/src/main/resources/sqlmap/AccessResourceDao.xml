@@ -15,13 +15,14 @@
     <result column="req_demo" jdbcType="VARCHAR" property="reqDemo" />
     <result column="resp_demo" jdbcType="VARCHAR" property="respDemo" />
     <result column="analysis_flag" jdbcType="INTEGER" property="analysisFlag" />
+    <result column="file_flag" jdbcType="INTEGER" property="fileFlag" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
   </resultMap>
 
   <select id="listPage" resultMap="BaseResultMap">
     select a.id,a.name,a.note,a.sys_id,a.cate_id,a.http_method,a.content_type,a.resource_link,
-           a.req_demo,a.resp_demo,a.analysis_flag,a.create_time,a.modify_time
+           a.req_demo,a.resp_demo,a.analysis_flag,a.file_flag,a.create_time,a.modify_time
     from t_access_resource a
     left join t_resource_system s on s.id = a.sys_id
     <where>

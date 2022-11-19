@@ -33,6 +33,9 @@ public class AccessResourceVo implements Serializable {
 
     private String resourceLink;
 
+    @ApiModelProperty("下载文件标识 0--否 1--是")
+    private Integer fileFlag;
+
     private Integer analysisFlag;
 
     private String reqDemo;

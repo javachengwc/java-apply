@@ -132,13 +132,13 @@
         <el-table v-loading="loading" :data="list" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="50" align="center" />
           <el-table-column label="ID" align="center" key="id" prop="id" v-if="columns[0].visible" width="60" />
-          <el-table-column label="接口名称" align="center" key="name" prop="name" v-if="columns[1].visible" width="200" >
+          <el-table-column label="接口名称" align="left" key="name" prop="name" v-if="columns[1].visible" width="200" >
             <template slot-scope="scope" >
               <div style="color:#1890ff" @click="handleDetail(scope.row)">{{ scope.row.name }}</div>
             </template>
           </el-table-column>
           <el-table-column label="请求方式" align="center" key="httpMethod" prop="httpMethod" v-if="columns[2].visible" width="80" />
-          <el-table-column label="接口地址" align="center" key="resourceLink" prop="resourceLink" v-if="columns[3].visible" :show-overflow-tooltip="true" />
+          <el-table-column label="接口地址" align="left" key="resourceLink" prop="resourceLink" v-if="columns[3].visible" :show-overflow-tooltip="true" />
           <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[4].visible" width="160">
             <template slot-scope="scope">
               <span>{{ parseTime(scope.row.createTime) }}</span>
@@ -299,12 +299,15 @@
 </template>
 
 <script>
+import axios from 'axios';
+import { saveAs } from 'file-saver';
 import { apiPage, getApiResource, addApiResource, updateApiResource, delApiResource } from "@/api/interapi/apiresource";
 import { listSystem } from "@/api/interapi/apisystem";
 import { apiInvoke } from "@/api/interapi/invokerecord";
 import { treeselect } from "@/api/interapi/apicategory";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+const baseURL = process.env.VUE_APP_BASE_API
 
 export default {
   name: "ApiResource",
@@ -511,10 +514,22 @@ export default {
         this.invoke.form.params = JSON.parse(this.invoke.form.reqDemo);
       }
       let reqData = this.wrapReqData(this.invoke.form);
-      apiInvoke(reqData).then(response => {
-          this.invoke.result = response;
-        }
-      );
+
+      if(1== this.invoke.form.fileFlag) {
+        axios({
+          method: 'post',
+          url: baseURL+'/resource/invoke/invoke',
+          data: reqData,
+          responseType: 'blob'
+        }).then(async (res) => {
+            const blob = new Blob([res.data]);
+            saveAs(blob, decodeURI(res.headers['filename']));
+        });
+      } else {
+        apiInvoke(reqData).then(response => {
+            this.invoke.result = response;
+          });
+      }
     },
     // 清除调用结果
     clearInvoke() {
