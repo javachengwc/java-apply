@@ -90,6 +90,8 @@ select * from information_schema.innodb_trx;             ---查看当前的事�
 kill id  #杀死sql线程
 select * from information_schema.INNODB_LOCKS;           ---查看当前锁定的事务
 select * from information_schema.INNODB_LOCK_WAITS;      ---查看当前等锁的事务
+select * from information_schema.PROCESSLIST
+where info is not null and info like "%ALTER%" order by time desc;
 
 通过检查table_locks_waited和table_locks_immediate状态变量来分析系统上的表锁定争夺
 show status like 'Table_locks%';

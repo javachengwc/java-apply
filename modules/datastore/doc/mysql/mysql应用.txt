@@ -141,6 +141,8 @@ select * from information_schema.innodb_trx;    ---查看当前的事务
 kill id/trx_mysql_thread_id  #杀死sql线程
 select * from information_schema.INNODB_LOCKS;  ---查看当前锁定的事务
 select * from information_schema.INNODB_LOCK_WAITS;  ---查看当前等锁的事务
+select * from information_schema.PROCESSLIST
+where info is not null and info like "%ALTER%" order by time desc;
 
 -----mysql锁
 
