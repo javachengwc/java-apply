@@ -1,0 +1,9 @@
+---------------------------------mongodb工具------------------------------
+MongoDB Shell          ---MongoDB自带的一个交互式JavaScript shell。
+MongoDB Database Tools ---命令行工具集合，包括导入、导出和诊断工具。
+MongoDB Atlas          ---基于云的Saas版服务器。
+MongoDB Charts         ---一个云工具，用于创建MongoDB数据的可视化表示。
+MongoDB Compass        ---可下载的GUI工具，用于连接MongoDB数据库和查询数据。
+MongoDB Connectors     ---为其他平台/工具提供的用于连接MongoDB的驱动程序。
+
+--------------------------------------------------------------------------

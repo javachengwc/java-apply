@@ -3,6 +3,35 @@ windows下安装，从官网上下载安装文件,直接执行点下一步到结
 默认安装路径为:C:\Program Files\MongoDB
 为便于后面在命令行执行mongo相关命令，在环境变量Path中添加mongo的bin目录路径:
 C:\Program Files\MongoDB\Server\3.4\bin
+-----------------------------------------
+在win10下配置并启动mongodb
+1,下载windows版本mongodb压缩文件
+wget https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-6.0.3.zip
+2, 解压到安装目录
+unzip mongodb-windows-x86_64-6.0.3.zip D:\soft\
+3，创建数据目录
+cd D:\soft\mongodb
+mkdir data\db
+mkdir data\log
+touch data\log\mongod.log
+4，创建配置文件
+touch bin\mongod.cfg
+vim bin\mongod.cfg
+    systemLog:
+        destination: file
+        logAppend: true
+        path: D:\soft\mongodb3\data\log\mongod.log
+    storage:
+        dbPath: D:\soft\mongodb3\data\db
+5，注册Mongodb服务
+在以管理员身份运行的命令行中(切到bin所在目录)执行：
+mongod --config "D:\soft\mongodb3\bin\mongod.cfg" --install
+可查看mongod.log日志查看执行结果
+正常情况下，在任务管理器--服务中，能看到MongoDB的服务
+6，启停服务
+net start MongoDB                   ------启动mongodb服务
+net stop  MongoDB                   ------停止mongodb服务
+------------------------------------------------------------------
 
 启动mongdb
 mongod --dbpath [数据存放path]          //基本启动
