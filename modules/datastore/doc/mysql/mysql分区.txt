@@ -1,0 +1,43 @@
+--------------------------------mysql分区----------------------------
+mysql默认支持表分区
+show plugins;                  ###查看表分区是否开启
+
+表分区的约束：如果表有主键（primary key）或者唯一键(unique key)，分区字段必须被包含于主键和唯一键字段的交集部分。
+表分区类型：
+1，RANGE表分区
+   范围表分区，按照一定的范围值来确定每个分区包含的数据
+   partition by range(id) partition p0 values less than()
+2，LIST表分区
+   列表表分区，按照一个一个确定的值来确定每个分区包含的数据
+   partition by list(id) partition p0 values in(1,2,3)
+3，HASH表分区
+   哈希表分区，按照一个自定义的函数返回值来确定每个分区包含的数据
+   partition by hash(id) partitions 3
+4，KEY表分区
+   key表分区，与哈希表分区类似，只是用MySql自己的HASH函数来确定每个分区包含的数据
+   partition by key() partitions 3
+5，多字段分区(range、list)
+   指定多个字段作为分区字段
+   partition by range columns(id,name)
+
+###创建表分区
+create table t_table(id int auto increment,name varchar(32),create_time datetime)
+partition by range(id)                     --根据表字段id来创建分区
+(
+  partition p1 values less than(100000),
+  partition p2 values less than(200000),
+  partition p3 values less than maxvalue
+)
+数据存储文件将根据分区被拆分成多份：*.ibd 。
+使用分区字段"id"做查询的时候只查询id所处的分区，否则查询所有分区。
+
+select * from t_table partition(p1);          ###指定分区进行查询
+
+###普通表修改成分区表
+alter table t_table drop primary key,add primary key (id,create_time);
+alter table t_table PARTITION BY RANGE (UNIX_TIMESTAMP(create_time))
+(PARTITION p2017 VALUES LESS THAN ('1514736000') ENGINE = InnoDB,
+ PARTITION p201801 VALUES LESS THAN ('1517414400') ENGINE = InnoDB,
+ PARTITION p201802 VALUES LESS THAN ('1519833600') ENGINE = InnoDB,
+ PARTITION pmax VALUES LESS THAN (MAXVALUE) ENGINE = InnoDB);
+---------------------------------------------------------------------

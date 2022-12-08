@@ -1,0 +1,129 @@
+------------------------------pt-online-schema-change使用----------------------------
+pt-online-schema-change是percona公司开发的一个工具，包含在在percona-toolkit包里，可以在线修改表结构。
+它首先会新建一张一模一样的表，表名一般是_new后缀，然后在这个新表执行更改字段操作
+再在原表上加三个触发器，DELETE/UPDATE/INSERT，将原表中要执行的语句也在新表中执行
+最后将原表的数据拷贝到新表中，然后替换掉原表。
+
+下载安装
+https://www.percona.com/downloads/percona-toolkit/LATEST
+
+###安装依赖
+yum install perl-DBI
+yum install perl-DBD-MySQL
+yum install perl-Time-HiRes
+yum install perl-IO-Socket-SSL
+###rpm方式安装
+rpm -ivh percona-toolkit-3.1.0-2.el7.x86_64.rpm
+###二进制方式安装
+tar –xvf percona-toolkit-3.0.11_x86_64.tar.gz
+cd percona-toolkit-3.0.11
+perl Makefile.PL
+make
+make install
+
+pt-online-schema-change使用
+ ./pt-online-schema-change --help                               ###查看使用帮助
+--user=                         连接mysql的用户名
+--password=                     连接mysql的密码
+--host=                         连接mysql的地址
+P=3306                          连接mysql的端口号
+D=                              连接mysql的库名
+t=                              连接mysql的表名
+--alter                         修改表结构的语句
+--execute                       执行修改表结构
+--charset=utf8                  使用utf8编码，避免中文乱码
+--no-version-check              不检查版本，在阿里云服务器中一般加入此参数，否则会报错
+
+###对表进行分区
+./pt-online-schema-change  --user=xxx --password=xxx --charset=utf8  D=db_a,t=t_a
+--alter "PARTITION BY RANGE  COLUMNS(CREATE_TIME)
+(PARTITION p2016 VALUES LESS THAN ('2017-01-01 00:00:00') ENGINE = InnoDB,
+ PARTITION p2017 VALUES LESS THAN ('2018-01-01 00:00:00') ENGINE = InnoDB,
+ PARTITION p201801 VALUES LESS THAN ('2018-02-01 00:00:00') ENGINE = InnoDB,
+ PARTITION p201802 VALUES LESS THAN ('2018-03-01 00:00:00') ENGINE = InnoDB,
+ PARTITION pmax VALUES LESS THAN (MAXVALUE) ENGINE = InnoDB)"
+ --recursion-method hosts --max-lag 600 --nodrop-old-table --print --statistics --execute
+
+###对表进行线上平滑变更
+./pt-online-schema-change --charset=utf8 --no-version-check --user=${cnn_user} --password=${cnn_pwd} --host=${cnn_host}
+P=3306,D=${cnn_db},t=$table --alter "${alter_conment}" --execute
+./pt-online-schema-change --charset=utf8 --no-version-check --user=${cnn_user} --password=${cnn_pwd} --host=${cnn_host}
+P=3306,D=${cnn_db},t=$table --alter "ADD COLUMN flag int(2) " --execute
+
+------------------------------------------------------------------
+percona-toolkit包中其他工具使用
+pt-kill工具
+pt-kill是一个简单而且很实用的查杀mysql线程和查询的工具，主要是为了防止一些大/复杂/长时间查询占用数据库及系统资源，而对线上业务造成影响的情况。
+pt-kill --busy-time=10 --victims all --print --kill-query                                 ###杀运行时间超过10s的SQL语句但保留线程
+pt-kill --match-host "10.100.50.29" --print --victims all --busy-time=20s                 ###查某IP来源且运行时间超过20s的会话
+pt-kill --match-command Sleep --victims all --interval 10 --kill --print                  ###每10秒检查一次，干掉状态为sleep的进程
+pt-kill --match-info "select|Select|SELECT"  --print  --victims all --busy-time 20s       ###查杀select大于20s的会话
+pt-kill --match-command Sleep --victims all  --idle-time=1h --print                       ###查状态为sleep的进程且时间超过1h
+pt-kill --match-user "test" --victims all  --print --kill                                 ###查杀访问某用户的会话
+pt-kill --match-command Query --match-state “Sorting result” --busy-time 10  --interval 10 --run-time 1  --print --kill --victims all
+                                                                                          ###杀掉正在进行filesort的sql
+pt-query-digest工具
+pt-query-digest可分析查询执行日志，并产生一个查询报告，为 MySQL、 PostgreSQL、memcached 过滤、重放或者转换语句
+pt-query-digest  /var/lib/mysql/log/mysql-slow.log                                        ###分析慢查询日志
+pt-query-digest  --since=12h  /var/lib/mysql/log/mysql-slow.log                           ###分析最近12小时内慢查询
+pt-query-digest /var/lib/mysql/log/mysql-slow.log --since '2022-11-27 09:30:00' --until '2022-11-27 10:00:00'
+                                                                                          ###分析指定时间范围内的慢查询
+pt-query-digest --filter '$event->{fingerprint} =~ m/^select/i' /var/lib/mysql/log/mysql-slow.log
+                                                                                          ###分析指含有select语句的慢查询
+pt-query-digest --filter '(($event->{Full_scan} || "") eq "yes") ||(($event->{Full_join} || "") eq "yes")' /var/lib/mysql/log/mysql-slow.log
+                                                                                          ###查询所有所有的全表扫描或full join的慢查询
+tcpdump -s 65535 -x -nn -q -tttt -i any -c 1000 port 3306 > mysql.tcp.txt
+pt-query-digest --type tcpdump mysql.tcp.txt                                              ###通过tcpdump抓取mysql的tcp协议数据，然后再分析
+mysqlbinlog mysql-bin.000093 > mysql-bin000093.sql
+pt-query-digest  --type=binlog  mysql-bin000093.sql > slow_report10.log                   ###分析binlog
+pt-query-digest  --type=genlog  localhost.log                                             ###分析general log
+
+pt-archiver工具
+pt-archiver是将MySQL数据库中的表数据归档到另外一个表或者文件，也可以直接进行记录的删除操作。
+常用参数                                 含义
+--source/--dest	                         源端/目标端
+h/D/t/u/p	                             主机IP/数据库名/表名/用户/密码
+--where	                                 操作条件
+--(no-)check-charset	                 检查连接的字符集与表的字符集是否一致.
+--limit  X	                             每次取X行数据用pt-archive处理
+--txn-size X	                         设置X行为一个事务提交一次
+--progress X	                         每处理X行输出一次处理信息
+--statistics	                         输出执行过程及最后的操作统计
+--bulk-delete	                         批量删除source上的旧数据
+--bulk-insert	                         批量插入数据到dest主机(实际LOAD DATA插入)
+--replace	                             将insert into 语句改成replace写入到dest库
+--purge	                                 删除source数据库的相关匹配记录
+--file
+                                         输出为本地文件
+                                         %d    Day of the month, numeric (01..31)
+                                         %H    Hour (00..23)
+                                         %i    Minutes, numeric (00..59)
+                                         %m    Month, numeric (01..12)
+                                         %s    Seconds (00..59)
+                                         %Y    Year, numeric, four digits
+                                         %D    Database name
+                                         %t    Table name
+--header                                 本地文件头部加入列名
+注：
+1. 归档表必须存在主键
+2. 需要配置client字符集为utf-8
+[client]
+default-character-set=utf8
+###导出到外部文件，但是不删除源表里的数据
+pt-archiver --source h=127.0.0.1,D=test,t=table1,u=root,p=123456 --where '1=1' --no-check-charset --no-delete --file="/tmp/archiver.dat"
+###全表归档到其他库
+pt-archiver --source h=127.0.0.1,D=test,t=table1,u=root,p=123456 --dest h=127.0.0.1,D=test,t=table2,u=root,p=123456 --where 'id<10000' --no-check-charset --no-delete --limit=1000 --commit-each --progress 2000 --statistics
+###根据条件归档到其他库,目标库需要开启load data local功能,SET GLOBAL local_infile = 1
+pt-archiver --source h=127.0.0.1,P=3306,u=backup,p='mysql',D=db,t=t_a
+--dest h=192.168.1.2,P=3306,u=backup,p='mysql',D=db,t=t_a
+--charset=UTF8 --where " id < 3835027 " --progress 10000 --limit=1000 --txn-size 10000 --bulk-insert --bulk-delete --statistics --purge
+
+--progress 10000 每处理10000行输出一次处理信息
+--limit=1000 每次取1000行数据给pt-archive处理
+--txn-size 10000 设置10000行为一个事务提交一次
+--bulk-insert 批量插入数据到dest主机
+--bulk-delete 批量删除source上的旧数据
+--statistics 输出统计信息
+--purge 删除source数据库的相关匹配记录
+
+------------------------------------------------------------------
