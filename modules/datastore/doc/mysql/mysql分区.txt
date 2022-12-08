@@ -31,13 +31,26 @@ partition by range(id)                     --根据表字段id来创建分区
 数据存储文件将根据分区被拆分成多份：*.ibd 。
 使用分区字段"id"做查询的时候只查询id所处的分区，否则查询所有分区。
 
+CREATE TABLE `t_ptest` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `create_time` datetime NOT NULL ,
+  `name` varchar(128) ,
+  PRIMARY KEY (`id`,`create_time`),
+  KEY `idx_createtime` (`create_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8
+PARTITION BY RANGE COLUMNS(create_time)
+(PARTITION p2019 VALUES LESS THAN ('2020-01-01 00:00:00') ENGINE = InnoDB,
+ PARTITION p2020 VALUES LESS THAN ('2021-01-01 00:00:00') ENGINE = InnoDB,
+ PARTITION pother VALUES LESS THAN MAXVALUE ENGINE = INNODB);
+
 select * from t_table partition(p1);          ###指定分区进行查询
 
 ###普通表修改成分区表
 alter table t_table drop primary key,add primary key (id,create_time);
 alter table t_table PARTITION BY RANGE (UNIX_TIMESTAMP(create_time))
-(PARTITION p2017 VALUES LESS THAN ('1514736000') ENGINE = InnoDB,
- PARTITION p201801 VALUES LESS THAN ('1517414400') ENGINE = InnoDB,
- PARTITION p201802 VALUES LESS THAN ('1519833600') ENGINE = InnoDB,
+(PARTITION p2017 VALUES LESS THAN (1514736000) ENGINE = InnoDB,
+ PARTITION p201801 VALUES LESS THAN (1517414400) ENGINE = InnoDB,
+ PARTITION p201802 VALUES LESS THAN (1519833600) ENGINE = InnoDB,
  PARTITION pmax VALUES LESS THAN (MAXVALUE) ENGINE = InnoDB);
+
 ---------------------------------------------------------------------
