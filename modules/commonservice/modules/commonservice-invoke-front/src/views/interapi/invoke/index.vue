@@ -54,24 +54,24 @@
     </el-form>
 
     <el-table ref="tables" v-loading="loading" :data="list" :default-sort="defaultSort" @sort-change="handleSortChange">
-      <el-table-column label="ID" align="center" prop="id" />
-      <el-table-column label="接口名称" align="center" prop="resourceName" />
-      <el-table-column label="请求类型" align="center" prop="httpMethod" />
-      <el-table-column label="接口路径" align="center" prop="resourceLink" width="300" :show-overflow-tooltip="true" />
-      <el-table-column label="调用结果" align="center" prop="isSuccess">
+      <el-table-column label="ID" align="left" prop="id" width="80" />
+      <el-table-column label="接口名称" align="left" prop="resourceName" width="200" />
+      <el-table-column label="请求类型" align="center" prop="httpMethod" width="80" />
+      <el-table-column label="接口路径" align="left" prop="resourceLink" :show-overflow-tooltip="true" />
+      <el-table-column label="调用结果" align="center" prop="isSuccess" width="80" >
         <template scope="scope">
           <div v-if="scope.row.isSuccess === 1">成功</div>
           <div v-if="scope.row.isSuccess === 0">失败</div>
         </template>
       </el-table-column>
-      <el-table-column label="调用时间" align="center" prop="invokeTime" sortable="custom" :sort-orders="['descending', 'ascending']" width="180">
+      <el-table-column label="调用时间" align="center" prop="invokeTime" sortable="custom" :sort-orders="['descending', 'ascending']" width="200">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.invokeTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="耗时(ms)" align="center" prop="cost" />
+      <el-table-column label="耗时(ms)" align="left" prop="cost" width="80" />
 
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="left" class-name="small-padding fixed-width" width="120">
         <template slot-scope="scope">
           <el-button
             size="mini"
