@@ -70,6 +70,13 @@ GET book/book/_search                                        ------按照评分�
     }
   }
 }
+GET book/book/_search                                        ------es提供profile查询性能分析功能，分析出查询时每一个步骤的耗时，帮助用户对DSL的性能进行剖析
+{
+  "profile": true,
+  "query" : {
+    "match" : { "title" : "solr" }
+  }
+}
 高亮查询
 es支持三个高亮器：unified，plain和fvh（快速向量高亮器）
 Unified高亮器---使用lucene统一高亮器。 它将文本分解为句子，并使用BM25算法对单个句子进行评分，就好像它们是文集中的文档一样。
