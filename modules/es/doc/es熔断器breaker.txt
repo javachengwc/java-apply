@@ -1,0 +1,41 @@
+---------------------------------------es熔断器breaker-----------------------------------
+es提供了堆内存保护机制--熔断器Circuit Breaker
+包含多种断路器，避免不合理操作引发的OOM，每个断路器可以指定内存使用的限制
+1，Parent circuit breaker                     ###设置所有的熔断器可以使用的内存的总量
+2，Fielddata circuit breaker                  ###加载fielddata所需的内存
+3，Request circuit breaker                    ###防止每个请求级数据结构超过一定的内存（例如聚合计算的内存）
+4，In flight circuit breaker                  ###Request请求体中的断路器
+5，Accounting request circuit breaker         ###请求结束后不能释放的对象所占用的内存
+
+Circuit Breaker熔断信息查看
+http://localhost:9200/_nodes/stats/breaker    ###查看节点熔断信息
+#Trippped大于0，说明有过熔断
+#Limit size与estimated size约接近，越可能引发熔断
+
+熔断器相关设置
+###总熔断器
+indices.breaker.total.use_real_memory: 默认true
+indices.breaker.total.limit: 当上面项true,默认堆95%，否则堆70%
+
+###field data 熔断器
+indices.breaker.fielddata.limit: 默认堆的40%
+
+###请求用于计算的内存，比如agg请求，使用内存超过阈值，就会熔断
+indices.breaker.request.limit: 默认堆的60%
+
+###请求体占用的内存
+network.breaker.inflight_requests.limit: 默认堆的100%
+
+###限制在请求完成时未释放的内存中保存的内容的内存使用
+indices.breaker.accounting.limit: 默认堆的100%
+
+###script（脚本）熔断器，脚本编译的次数限制
+script.max_compilations_rate: 默认值: 150/5m,表示5分钟内150次
+
+###正则表达式熔断器
+script.painless.regex.enabled
+    limited（默认），启用正则表达式，但使用 script.painless.regex.limit-factor 集群设置限制复杂性。
+    true，启用没有复杂性限制的正则表达式。禁用正则表达式断路器。
+    false，禁用正则表达式。任何包含正则表达式的 Painless 脚本都会返回错误。
+script.painless.regex.limit-factor
+-----------------------------------------------------------------------------------------

@@ -23,7 +23,7 @@ index.queries.cache.enabled: false                   ###禁用查询缓存,默�
 indices.queries.cache.size: 10%                      ###查询缓存大小，默认10%，可设置成百分比，也可设置成具体值，如256mb
 indices.queries.cache.count: 10000                   ###默认10000
 
-2，基于索引分片级别的缓存(Shard Rquest Cache)，es的请求发到一个协调节点，协调节点通过转发请求到实际的数据节点获取数据，并且将数据进行组装以后返回响应。
+2，基于索引分片级别的缓存(Shard Request Cache)，es的请求发到一个协调节点，协调节点通过转发请求到实际的数据节点获取数据，并且将数据进行组装以后返回响应。
 每一个节点的分片都会将请求本地结果缓存起来，当访问命中时直接从缓存获取，不需要通过读取磁盘的方式，速度会提升很多。
 默认情况下，shard request cache只缓存hits.total, aggregations, suggestions类型的数据，并不会缓存hits的内容
 如果大多数查询是聚合查询，应该考虑分片查询缓存。分片查询缓存可以缓存聚合结果，以便Elasticsearch以低开销直接处理请求。
@@ -34,6 +34,7 @@ indices.requests.cache.size: 1%                      ###shard request缓存大�
 主要用于对字段进行排序或聚合 ,它将所有的Field data聚合后的结果加载到内存中，以提供快速的访问。
 Fielddata Cache十分消耗内存，因为一般用于排序或者聚合的数据较大，需要有足够多的内存。
 从5.0 版本开始，text 字段默认关闭了 Fielddata 功能，当对一个text类型的字段进行sort、aggregation时会抛异常，需要进行此字段属性"fielddata": true设置。
+需要控制indices.fielddata.cache.size，避免产生GC（默认无限制）
 indices.fielddata.cache.size: 10%
 
 4，文件系统缓存

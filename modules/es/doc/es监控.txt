@@ -6,6 +6,9 @@ http://localhost:9200/_cluster/pending_tasks?pretty
 http://localhost:9200/_cluster/allocation/explain     ---查看分片未分配原因，5.0版本以上支持
 http://localhost:9200/_nodes/stats                    ---查看各节点状态，信息周全且详细
 http://localhost:9200/_nodes/thread_pool              ---查看各节点线程池情况
+http://localhost:9200/_nodes/stats/indices?pretty     ---查看各节点索引信息
+http://localhost:9200/_nodes/stats/breaker            ---查看节点熔断信息
+
 
 ###使用_cat查看es状态，每个命令都支持使用?v参数，来显示详细的信息，每个命令都支持使用?help参数，来输出可以显示的列：
 http://localhost:9200/_cat/health?v                   ---查看es健康状态
@@ -33,4 +36,7 @@ http://localhost:9200/_cat/plugins                    ---查看es安装的插件
 /_cat/nodeattrs
 /_cat/repositories
 /_cat/snapshots/{repository}
+/_cat/nodes?v&h=name.queryCacheMemory,queryCacheEvictions,requestCacheMemory,requestCacheHitCount,request_cache.miss_count
+/_cat/nodes?h=name,port,segments,memory,segments.index_write_memory,fielddata.memory_size,query_cache.memory_size,request_cache.memory_size&v
+
 ---------------------------------------------------------------------------

@@ -73,4 +73,18 @@ threadpool:
         queue: 1000                        ###默认200
         reject_policy: caller              ###默认abort
 
+5，es节点内存溢出,full gc
+a,Segments个数过多，导致full GC
+集群整体响应缓慢，也没有特别多的数据读写。但是发现节点在持续进行Full GC,查看es的内存使用，发现segments.memory占用很大空间。
+通过force merge，把segments合并成一个，对于不再写入和更新的索引，可以将其设置成只读。同时，进行force_merge操作。
+如果问题依然存在，则需要考虑扩容。此外，对索引进行force_merge，还可以减少对global_oridinals数据结果的结构，减少对fielddata cache的开销。
+b,Field data cache过大，导致full GC
+集群整体响应缓存，也没有特别多的数据读写。但是发现节点在持续进行Full GC,查看es的内存使用，发现fielddata.memory.size占用很大空间。
+可将indices.fielddata.cache.size设小，重启节点，堆内存恢复正常,Field data cache的构建比较重，es不会主动释放，此值应该设置的保守一些。
+如果业务上确实有所需要，可以通过增加节点，扩容解决。
+c,复杂的嵌套查询，导致建full GC
+节点响应缓慢，持续进行full GC,导出Dump分析，发现内存中有大量bucket对象，查看日志，发现复杂的嵌套聚合
+在大量数据集上进行嵌套聚合查询，需要用到很大的堆内存来完成。如果业务场景确实需要。则需要增加硬件进行扩展。
+同时，为了避免这类查询影响整个集群，需要设置Circuit Breaker和search.max_buckets的数值。
+
 ---------------------------------------------------------------------------
