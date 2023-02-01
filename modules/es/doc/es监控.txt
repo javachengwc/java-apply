@@ -38,5 +38,6 @@ http://localhost:9200/_cat/plugins                    ---查看es安装的插件
 /_cat/snapshots/{repository}
 /_cat/nodes?v&h=name.queryCacheMemory,queryCacheEvictions,requestCacheMemory,requestCacheHitCount,request_cache.miss_count
 /_cat/nodes?h=name,port,segments,memory,segments.index_write_memory,fielddata.memory_size,query_cache.memory_size,request_cache.memory_size&v
+/_cat/thread_pool?v&h=host,name,type,size,active,largest,rejected,completed,queue,queue_size
 
 ---------------------------------------------------------------------------

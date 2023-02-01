@@ -34,6 +34,8 @@ translog 其实也是先写入 os cache 的，默认每隔 5 秒刷一次到磁�
 refresh-->es接收数据请求时先存入内存中，默认每隔一秒会从内存buffer中将数据写入filesystem cache，这个过程叫做refresh；
 fsync-->translog会每隔5秒或者在一个变更请求完成之后执行一次fsync操作，将translog从缓存刷入磁盘，这个操作比较耗时，如果对数据一致性要求不是跟高时建议将索引改为异步，如果节点宕机时会有5秒数据丢失;
 flush-->es默认每隔30分钟会将filesystem cache中的数据刷入磁盘同时清空translog日志文件，这个过程叫做flush。
+merge-->es的一个 index 由多个 shard 组成，而一个 shard 其实就是一个 Lucene 的 index ，它又由多个 segment 组成，
+且 Lucene 会不断地把一些小的 segment 合并成一个大的 segment ，这个过程被称为merge。
 
 es删除/更新数据底层原理
 如果是删除操作，commit 的时候会生成一个 .del 文件，里面将某个 doc 标识为 deleted 状态，那么搜索的时候根据 .del 文件就知道这个 doc 是否被删除了。
