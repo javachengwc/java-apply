@@ -13,8 +13,6 @@ import java.util.Map;
 
 /**
  * excel文件操作器
- * @author yangshuya
- *
  */
 
 public class ExcelOperator {
