@@ -5,6 +5,7 @@ import org.apache.commons.lang.math.NumberUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -62,6 +63,7 @@ public class StringMain {
     }
 
     public static void main(String args []) throws Exception {
+      System.out.println(UUID.randomUUID().toString());
       String rtt=org.apache.commons.lang3.StringUtils.rightPad("发", 3, "*");
       System.out.println(rtt);
       String mtt= org.apache.commons.lang3.StringUtils.leftPad(org.apache.commons.lang3.StringUtils.right("12345678901", 4), 11, "*");

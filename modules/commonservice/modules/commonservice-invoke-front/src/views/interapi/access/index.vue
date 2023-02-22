@@ -259,7 +259,7 @@
       </el-form>
       <div style="padding-top: 10px;">
         <div><el-tag size="medium" type="info">响应结果</el-tag></div>
-        <div class="result_show"> {{invoke.result }} </div>
+        <div><textarea class="result_show" name="result_text" readonly>{{invoke.result }} </textarea> </div>
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button @click="invoke.open = false">关  闭</el-button>
@@ -526,6 +526,7 @@ export default {
       let reqData = this.wrapReqData(this.invoke.form);
 
       if(1== this.invoke.form.fileFlag) {
+        // 下载文件
         axios({
           method: 'post',
           url: baseURL+'/resource/invoke/invoke',
@@ -536,7 +537,13 @@ export default {
             saveAs(blob, decodeURI(res.headers['filename']));
         });
       } else {
+        // 通常的接口调用
         apiInvoke(reqData).then(response => {
+            try{
+                response=JSON.stringify(response, null, '\t');
+            } catch( e) {
+                console.log("解析结果异常:"+ e);
+            }
             this.invoke.result = response;
           });
       }
