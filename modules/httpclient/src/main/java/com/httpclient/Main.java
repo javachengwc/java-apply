@@ -7,6 +7,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.ClientContext;
@@ -14,8 +15,10 @@ import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
@@ -29,11 +32,22 @@ import java.util.List;
 
 public class Main {
 
-    public static void main(String args []) throws Exception
-    {
+    public static void main(String args []) throws Exception {
+        testAccess();
         System.out.println(getHtml("http://www.baidu.com/"));
-
         downloadFile("http://c.hiphotos.baidu.com/image/pic/item/f2deb48f8c5494ee0a23a2182ff5e0fe99257eaa.jpg");
+    }
+
+    public static void testAccess() throws Exception {
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        HttpPost httpPost=new HttpPost("http://localhost:8081/resource/category/page");
+        String jsonStr="{\"data\": {\"entity\": {\"sysId\": 15},\"pageNo\": 1,\"pageSize\": 10},\"header\": {\"app\": \"string\"}}";
+        StringEntity entity = new StringEntity(jsonStr,"UTF-8");
+        httpPost.setEntity(entity);
+        httpPost.setHeader("Content-Type","application/json;charset=utf8");
+        CloseableHttpResponse response = httpClient.execute(httpPost);
+        System.out.println(response.getStatusLine());
+        System.out.println(EntityUtils.toString(response.getEntity()));
     }
 
     public static String getHtml(String url) throws Exception {

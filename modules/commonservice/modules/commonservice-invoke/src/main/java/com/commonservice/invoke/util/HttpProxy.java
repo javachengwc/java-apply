@@ -78,6 +78,7 @@ public class HttpProxy {
             throw new RuntimeException("不支持["+httpMethod+"]方法调用");
         }
         appendHeader(req,headers,contentType);
+        logger.info("HttpProxy invoke headers ="+JsonUtil.obj2Json(req.getAllHeaders()));
         req.setConfig(genRequestConfig());
 
         HttpResponse httpResponse = new HttpResponse();
@@ -205,7 +206,10 @@ public class HttpProxy {
         }
         if(StringUtils.isNotBlank(contentType) && contentType.startsWith(CONTENT_TYPE_JSON )) {
             String bodyJsonStr = JsonUtil.obj2Json(params);
-            post.setEntity(new StringEntity(bodyJsonStr, UTF8));
+            logger.info("HttpProxy genHttpPost bodyJsonStr="+bodyJsonStr);
+            //StringEntity entity = new StringEntity(bodyJsonStr, ContentType.APPLICATION_JSON);
+            StringEntity entity = new StringEntity(bodyJsonStr, "UTF-8");
+            post.setEntity(entity);
             return post;
         }
         List<NameValuePair> list = new ArrayList<NameValuePair>();
