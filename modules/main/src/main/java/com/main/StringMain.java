@@ -63,6 +63,11 @@ public class StringMain {
     }
 
     public static void main(String args []) throws Exception {
+      String msg ="Accounting Document NUMBER:22ccc";
+      String info = msg.substring("Accounting Document Number:".length());
+      String keyy = info.indexOf(" ")>0 ? info.substring(0,info.indexOf(" ")):"ya";
+      System.out.println(info+" || "+keyy);
+
       System.out.println(UUID.randomUUID().toString());
       String rtt=org.apache.commons.lang3.StringUtils.rightPad("发", 3, "*");
       System.out.println(rtt);

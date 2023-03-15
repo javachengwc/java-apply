@@ -1,0 +1,2 @@
+1, 由TransactionSynchronization的使用导致的SQLException: connection closed或SQLException: connection holder is null异常
+解决方法就是不使用TransactionSynchronization，它的使用可能带来数据库连接上的诡异的问题，在取消掉TransactionSynchronization的使用后，恢复正常。

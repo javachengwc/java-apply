@@ -7,6 +7,7 @@ kubectl get pods                                                        ###查�
 kubectl get pod --all-namespaces                                        ###查看集群所有Pod，包含集群自身使用的。
 kubectl get pod -o wide
 kubectl get pod --show-all                                              ###查看所有状态下的Pod
+kubectl get pod -n product -o wide
 kubectl get services                                                    ###查看容器服务端口映射
 kubectl get deployments                                                 ###查看应用副本数
 kubectl get deployment xxx                                              ###查看应用xxx副本信息
