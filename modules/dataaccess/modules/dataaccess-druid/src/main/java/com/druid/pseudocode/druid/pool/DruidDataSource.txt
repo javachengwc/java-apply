@@ -84,7 +84,8 @@ import com.alibaba.druid.util.Utils;
 import com.alibaba.druid.wall.WallFilter;
 import com.alibaba.druid.wall.WallProviderStatValue;
 
-public class DruidDataSource extends DruidAbstractDataSource
+public class DruidDataSource
+        extends DruidAbstractDataSource
         implements DruidDataSourceMBean
         , ManagedDataSource
         , Referenceable
