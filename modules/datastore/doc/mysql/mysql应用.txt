@@ -21,6 +21,11 @@ drop table #tmpp;
 b.如果有id主键(数字,自增1的那种)
 
 delete from tableA where id not in (select min(id) from tableA group by name);
+-- mysql 删除子查询带同样的表会报错，需要把子查询再套一层，变成原来表的子子查询
+delete from tableA where id not in (
+select md from (
+select min(id) md from tableA group by name ) d
+);
 
 -----mysql获取名次
 
