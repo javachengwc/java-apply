@@ -9,6 +9,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+//线程池submit()方法可提交Runnable类型任务和Callable类型任务，任务执行的异常会被捕获并吞掉，在通过Future的get方法将任务执行时的异常重新抛出。
+//线程池execute()方法只可提交Runnable类型任务，任务执行的异常会直接抛出，线程池会创建一个新的线程供使用。
 public class ThreadException {
 
     public static void main(String [] args) {

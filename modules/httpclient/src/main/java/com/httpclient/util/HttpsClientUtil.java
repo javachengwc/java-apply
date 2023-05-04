@@ -14,12 +14,11 @@ import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.conn.ssl.AbstractVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLContexts;
-import org.apache.http.conn.ssl.X509HostnameVerifier;
+import org.apache.http.conn.ssl.*;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
@@ -337,4 +336,20 @@ public class HttpsClientUtil {
         return requestConfig;
     }
 
+    /**
+     * 获取忽略证书验证的client
+     */
+    public static CloseableHttpClient getIgnoeSSLClient() throws Exception {
+        SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, new TrustStrategy() {
+            @Override
+            public boolean isTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+                return true;
+            }
+        }).build();
+
+        //创建httpClient
+        CloseableHttpClient client = HttpClients.custom().setRedirectStrategy(new LaxRedirectStrategy())
+                .setSSLContext(sslContext).setSSLHostnameVerifier(new NoopHostnameVerifier()).build();
+        return client;
+    }
 }
