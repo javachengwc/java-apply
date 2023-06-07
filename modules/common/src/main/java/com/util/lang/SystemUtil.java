@@ -62,5 +62,23 @@ public class SystemUtil {
 
     public static void main(String args []) {
         printSystemProp();
+        exit();
     }
+
+    //system.exit（0）:正常退出，程序正常执行结束退出
+    //它在虚拟机在退出前会执行两个清除任务
+    // 1，执行所有通过Runtime.addShutdownHook注册的shutdown hooks
+    // 2，执行清除任务，运行相关的finalizer方法终结对象
+    //system.exit(1)  :非正常退出,或者说非0表示非正常退出程序
+    public static void exit() {
+        try{
+            System.out.println("work doing");
+            //System.exit方法会导致当前运行线程停止并使其它线程都终止，
+            //因此这里的finally代码块不会被执行
+            System.exit(1);
+        } finally {
+            System.out.println("work finish");
+        }
+    }
+
 }
