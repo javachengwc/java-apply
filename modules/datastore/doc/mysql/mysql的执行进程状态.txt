@@ -1,0 +1,41 @@
+-----------------------------------mysql的执行进程状态---------------------------------------
+通过show processlist查看mysql的执行进程状态， state列状态值如下：
+After create                    --- 在创建表的函数末尾创建表（包括内部临时表）时，会发生这种情况
+Analyzing                       --- 对表的统计信息做分析
+altering table                  --- 正在执行in-place ALTER TABLE
+checking permissions            --- 检查服务器是否具有所需的权限来执行语句
+Checking table                  --- 正在执行表检查操作
+cleaning up                     --- 该线程已经处理了一个命令，并准备释放内存并重置某些状态变量
+closing tables                  --- 正在将内部临时表从MEMORY表转换为磁盘表
+copy to tmp table               --- 正在处理一个ALTER TABLE语句
+Copying to group table          --- 如果语句具有不同的条件ORDER BY和 GROUP BY标准，则按组对行进行排序并将其复制到临时表中
+Copying to tmp table            --- 正在复制到内存中的临时表
+Copying to tmp table on disk    --- 正在复制到磁盘上的临时表，当临时结果集变得太大，线程程会将临时表从内存更改为基于磁盘的格式以节省内存
+Creating index                  --- 正在为一个MyISAM表处理ALTER TABLE ... ENABLE KEYS
+Creating sort index             --- 正在处理使用内部临时表解析的SELECT线程
+creating table                  --- 正在创建一个表， 这包括建立临时表
+Creating tmp table              --- 正在内存或磁盘上创建临时表。
+                                    如果表在内存中创建但稍后转换为磁盘表，则该操作期间的状态将为Copying to tmp table on disk
+committing alter table to storage engine  --- 服务器已完成 “in-place” ALTER TABLE并正在提交结果
+deleting from main table        --- 正在执行多表删除的第一部分
+deleting from reference tables  --- 正在执行多表删除的第二部分，从其他表中删除匹配的行
+discard_or_import_tablespace    --- 正在处理ALTER TABLE ... DISCARD TABLESPACE或ALTER TABLE ... IMPORT TABLESPACE语句
+end                             --- 发生在最后的清理工作，有ALTER TABLE , CREATE VIEW , DELETE , INSERT , SELECT或UPDATE语句
+executing                       --- 正在执行语句
+Execution of init_command       --- 正在执行init_command系统变量值中的语句
+freeing items                   --- 释放已执行的命令一些在这种状态下完成的项目，涉及的查询缓存
+Flushing tables                 --- 正在执行FLUSH TABLES ，等待所有线程关闭其表
+FULLTEXT initialization         --- 正准备执行自然语言全文搜索
+init                            --- ALTER TABLE， DELETE， INSERT， SELECT，或 UPDATE语句的初始化之前出现这种情况。
+                                    服务器在此状态下执行的操作包括刷新二进制日志和InnoDB日志
+Killed                          --- 有人KILL 向线程发送了一个语句，它应该在下次检查kill标志时中止
+Locking system tables           --- 线程正在尝试锁定系统表
+logging slow query              --- 该线程正在向慢查询日志写一条语句
+login                           --- 连接线程的初始状态，直到客户端成功通过身份验证
+manage keys                     --- 服务器正在启用或禁用表索引
+NULL                            --- 该状态用于SHOW PROCESSLIST状态
+Opening system tables           --- 线程正在尝试打开系统表
+Opening tables                  --- 正在尝试打开一个表
+optimizing                      --- 服务器正在对查询执行初始优化
+preparing                       --- 在查询优化期间发生此状态
+---------------------------------------------------------------------------------------------
