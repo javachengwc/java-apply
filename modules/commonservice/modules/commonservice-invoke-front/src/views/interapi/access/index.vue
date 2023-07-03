@@ -554,15 +554,8 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.reset();
-      this.getTreeselect();
-      getUser().then(response => {
-        this.postOptions = response.posts;
-        this.roleOptions = response.roles;
-        this.open = true;
-        this.title = "添加用户";
-        this.form.password = this.initPassword;
-      });
+      this.invoke.open = true;
+      this.invoke.form = row;
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
