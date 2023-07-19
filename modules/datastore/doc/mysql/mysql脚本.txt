@@ -21,6 +21,9 @@ create table monit_image
 -- 修改表名称
 alter table users rename to ecs_users;
 
+-- 修改视图名称
+rename table xx to yy;
+
 -- 删除表
 drop table account_info2
 

@@ -123,3 +123,5 @@ modules/datastore/modules/datastore-mysql/target/
 modules/datastore/modules/database-tool/target/
 modules/webapplication/modules/manageplat/target/
 modules/dataaccess/modules/dataaccess-druid/target/
+modules/erp/erp-web-demo/target/
+modules/erp/erp-web-core/target/
