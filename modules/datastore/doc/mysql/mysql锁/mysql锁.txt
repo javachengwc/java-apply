@@ -93,4 +93,7 @@ show status like 'innodb_row_lock%';
 set global innodb_status_output_locks=ON;                ---开启锁监控
 set global innodb_status_output=ON;                      ---开启标准监控
 set global innodb_print_all_deadlocks=ON;                ---开启死锁监控
+show status like 'table_locks_immediate';                ---查看立即获得的表的锁的次数
+show status like 'table_locks_waited';                   ---查看不能立即获得的表的锁的次数
+
 ------------------------------------------------------------------------

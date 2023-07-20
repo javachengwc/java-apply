@@ -30,6 +30,7 @@ init                            --- ALTER TABLE， DELETE， INSERT， SELECT，
                                     服务器在此状态下执行的操作包括刷新二进制日志和InnoDB日志
 Killed                          --- 有人KILL 向线程发送了一个语句，它应该在下次检查kill标志时中止
 Locking system tables           --- 线程正在尝试锁定系统表
+Locked                          --- 被其他查询锁住了
 logging slow query              --- 该线程正在向慢查询日志写一条语句
 login                           --- 连接线程的初始状态，直到客户端成功通过身份验证
 manage keys                     --- 服务器正在启用或禁用表索引
@@ -38,4 +39,19 @@ Opening system tables           --- 线程正在尝试打开系统表
 Opening tables                  --- 正在尝试打开一个表
 optimizing                      --- 服务器正在对查询执行初始优化
 preparing                       --- 在查询优化期间发生此状态
+Removing duplicates             --- 正在执行一个SELECT DISTINCT方式的查询
+Reopen table                    --- 重新打开数据表
+Repair by sorting               --- 修复指令正在排序以创建索引
+Repair with keycache            --- 修复指令正在利用索引缓存一个一个地创建新索引
+Searching rows for update       --- 正在将符合条件的记录找出来以备更新
+Sending data                    --- 正在处理SELECT查询的记录，同时正在把结果发送给客户端
+Sleeping                        --- 等待客户端发送新请求
+Sorting for group               --- 正在为GROUP BY做排序
+Sorting for order               --- 正在为ORDER BY做排序
+System lock                     --- 正在等待取得一个外部的系统锁
+Upgrading lock                  --- 正在尝试取得一个锁表以插入新记录
+Updating                        --- 正在修改记录
+User Lock                       --- 正在等待GET_LOCK()
+Waiting for tables              --- 该线程得到通知，数据表结构已经被修改了，需要重新打开数据表以取得新的结构
+
 ---------------------------------------------------------------------------------------------
