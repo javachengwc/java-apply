@@ -58,6 +58,7 @@
 		<module>modules/webcloud2</module>
 		<module>modules/sharding-dbtable</module>
 		<module>modules/erp</module>
+		<module>modules/tmp</module>
 		<!--
 		<module>modules/bigdata</module>
 		-->
