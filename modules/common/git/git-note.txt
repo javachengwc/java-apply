@@ -88,10 +88,10 @@ git tag -a v0.1.0 49e0cd22f6bd9510fe65084e023d9c11    ###给指定的commit打�
 标签只会保存在本地，暂存区对象也是只保存在本地，在推送仓库的时候不会推送到远程服务器上，
 标签可以推送到远程服务器，需要通过显式命令才能将标签签到远程仓库，其命令方式犹如推送分支，
 运行git push origin tagname,推送本地所有标签 --tags,其它人在拉取数据的时候也会看到对推送到服务器的标签。
-
+git push [remote] [tag]         ###提交指定tag
 git push origin v0.1.0          ###将v0.1.0标签提交到git服务器
 git push origin –tags          ###将本地所有标签一次性提交到git服务器
-
+git checkout -b [branch] [tag]  ###新建一个分支，指向某个tag
 ------------------------------------------------------------------------
 git status   查看当前项目下所有文的状态
 
@@ -100,14 +100,14 @@ git branch -r 列出远程分支
 git branch -a 列出本地分支和远程分支
 
 git branch 创建一个新的本地分支，需要注意，此处只是创建分支，不进行分支切换
- eg:#git branch newbranch2
+    eg:
+    #git branch newbranch2
     #git branch
     * master
     newbranch
     newbranch2
-
     当前的分支依然是master，不进行切换
-
+git branch --track [branch] [remote-branch]  新建一个分支，与指定的远程分支建立追踪关系
 git branch -m | -M oldbranch newbranch 重命名分支，如果newbranch名字分支已经存在，则需要使用-M强制重命名，否则，使用-m进行重命名
 git branch -d | -D branchname 删除branchname分支
 git branch -d -r branchname   删除远程branchname分支
@@ -120,7 +120,6 @@ git branch -d -r branchname   删除远程branchname分支
    第三行符合git branch <branchname> [<start-point>]的格式，即以v2.6.14为start-point，创建新的本地分支branchname
 
 ------------------------------------------------------------
-
 git remote 不带参数，列出已经存在的远程分支，
     eg:
     #git remote
@@ -140,7 +139,6 @@ git remote show name 必须要带name，否则git remote show的作用就是git 
 git remote show origin           ###查看远程仓库信息
 
 ------------------------------------------------------------
-
 git push origin master  推送到master分支
 git push <远程主机名> <本地分支名>:<远程分支名>
    eg:git push origin locala:remoteb  推送本地locala分支到远程remoteb分支
@@ -149,17 +147,17 @@ git fetch origin           取得远程更新，这里可以看做是准备要�
 git fetch <远程主机名>     将某个远程主机的更新，全部取回本地
 git fetch <远程主机名> <分支名>  取回o远程主机的某个分支
 
-git merge origin/master    把更新的内容合并到本地分支/master
+git merge [branch]         合并指定分支到当前分支
 
 git pull                   取回远程主机某个分支的更新，再与本地的指定分支合并
 git pull <远程主机名> <远程分支名>:<本地分支名>
    eg:git pull origin next:master  取回origin主机的next分支，与本地的master分支合并
-      git pull origin next         取回origin/next分支，再与当前分支合并。实质上，这等同于先做git fetch，再做git merge
+      git pull origin next         取回origin/next分支，再与当前分支合并。
+                                   实质上，这等同于先做git fetch，再做git merge
 
 git checkout -b newBrach origin/master 在origin/master的基础上，创建一个新分支
-
+git cherry-pick [commit]           选择一个commit，合并进当前分支
 -------------------------------------------------------------
-
 git reflog show 分支                     查看分支提交历史
 git log -p filename                      查看某文件的历史版本信息
 git log --pretty=oneline  filename       显示每个版本都修改了那些文件
@@ -180,15 +178,8 @@ git tag            ---列出所有tag
 git tag v1         ---创建一个tag在当前commit
 git tag -a "v2" -m "cc"
                    ---创建一个tag为v2
-
+git cherry-pick commitid   ---将commitid提交合到当前分支
 -------------------------------------------------------------
-
-创建新仓库
-
-    创建新文件夹，打开，然后执行
-    git init
-    以创建新的 git 仓库
-
 创建一个本地仓库的克隆版本
     git clone /path/to/repository
     如果是远端服务器上的仓库，你的命令会是这个样子：
@@ -196,80 +187,50 @@ git tag -a "v2" -m "cc"
     ep: https://e.coding.net/xx/aa.git   -->  git clone https://username:passward@e.coding.net/xx/aa.git
     如果用户名或密码包含@符号,需要转义成%40，否则会与仓库地址前面的@造成冲突。
 
-工作流
-
 本地仓库由 git 维护的三棵“树”组成。
     第一个是工作目录，它持有实际文件；
     第二个是 缓存区（Index），它像个缓存区域，临时保存你的改动；
     最后是 HEAD，指向你最近一次提交后的结果。
 
 添加与提交
-
-    你可以计划改动（把它们添加到缓存区），使用如下命令：
-    git add <filename>
+    git add <filename>            ###添加内容
     git add *
-    git add .   //（.）点表示当前目录下的所有内容,它会监控工作区的状态树，使用它会把工作时的所有变化提交到暂存区，
-                //包括文件内容修改(modified)以及新文件(new)，但不包括被删除的文件。
-    git add -u  //它仅监控已经被add的文件（即tracked file），它会将被修改的文件提交到暂存区。（git add --update的缩写）
-    git add -A  //是上面两个功能的合集（git add --all的缩写）
-    git rm 删除内容
-    git rm work -r -f    //删除目录work
-    git rm删除后，需要使用git commit -am "abc" 提交才会将删除文件的操作提交上去。
-    这是 git 基本工作流程的第一步；
-    使用如下命令以实际提交改动：
-    git commit -m "代码提交信息"
-    现在，你的改动已经提交到了 HEAD，但是还没到你的远端仓库。
-    推送改动
-
-    你的改动现在已经在本地仓库的 HEAD 中了。
-    执行如下命令以将这些改动提交到远端仓库：
-    git push origin master
-    可以把 master 换成你想要推送的任何分支。
-
-    如果你还没有克隆现有仓库，并欲将你的仓库连接到某个远程服务器，你可以使用如下命令添加：
+    git add .                     ###点表示当前目录下的所有内容,它会监控工作区的状态树，使用它会把工作时的所有变化提交到暂存区，
+                                     包括文件内容修改(modified)以及新文件(new)，但不包括被删除的文件。
+    git add -u                    ###它仅监控已经被add的文件（即tracked file），将被修改的文件提交到暂存区。
+                                     （git add --update的缩写）
+    git add -A                    ###上面两个功能的合集（git add --all的缩写）
+    git rm                        ###删除内容
+    git rm work -r -f             ###删除目录work
+    git mv [file-original] [file-renamed]    ###改名文件，并且将这个改名放入暂存区
+    git commit -m "代码提交信息"   ###改动已经提交到了 HEAD，但是还没到远端仓库。
+    git push origin master        ###改动提交到远端仓库
+    如果还没有克隆现有仓库，并欲将仓库连接到某个远程服务器，可以使用如下命令添加：
     git remote add origin <server>
-    如此你就能够将你的改动推送到所添加的服务器上去了。
 
 分支
-
     分支是用来将特性开发绝缘开来的。
     在你创建仓库的时候，master 是“默认的”。
     在其他分支上进行开发，完成后再将它们合并到主分支上。
-
-    创建一个叫做“feature_x”的分支，并切换过去：
-    git checkout -b feature_x
-    切换回主分支：
-    git checkout master
-    再把新建的分支删掉：
-    git branch -d feature_x
-    除非你将分支推送到远端仓库，不然该分支就是 不为他人所见的：
-    git push origin <branch>
+    git checkout -b feature_x     ###创建一个叫做“feature_x”的分支，并切换过去
+    git checkout master           ###切换回主分支
+    git branch -d feature_x       ###删除新建的分支
 
 更新与合并
-
-    要更新你的本地仓库至最新改动，执行：
-    git pull
-    以在你的工作目录中 获取（fetch） 并 合并（merge） 远端的改动。
-    要合并其他分支到你的当前分支（例如 master），执行：
-    git merge <branch>
-    两种情况下，git 都会尝试去自动合并改动。
-    不幸的是，自动合并并非次次都能成功，并可能导致 冲突（conflicts）。
-    这时候就需要你修改这些文件来人肉合并这些 冲突（conflicts） 了。
-    改完之后，你需要执行如下命令以将它们标记为合并成功：
-    git add <filename>
-    在合并改动之前，也可以使用如下命令查看：
+    git pull                      ###更新本地仓库至最新改动
+    git merge <branch>            ###合并其他分支到当前分支
+    git会尝试去自动合并改动。有可能出现冲突（conflicts）。需要人为修改冲突文件来解决冲突。
+    在合并改动之前，可以使用如下命令查看差异：
     git diff <source_branch> <target_branch>
-
-假如做错事（自然，这是不可能的），可以使用如下命令替换掉本地改动：
-git checkout -- <filename>
-此命令会使用 HEAD 中的最新内容替换掉工作目录中的文件。已添加到缓存区的改动，以及新文件，都不受影响
-
-假如你想要丢弃你所有的本地改动与提交，可以到服务器上获取最新的版本并将你本地主分支指向到它：
-git fetch origin
-git reset --hard origin/master
-
-某个提交从A分支复制到B分支
-在B分支下执行git cherry-pick commitid(A分支的提交id)
+    如果误操作，可以使用如下命令替换掉本地改动：
+    git checkout -- <filename>
+    此命令会使用 HEAD 中的最新内容替换掉工作目录中的文件。
+    已添加到缓存区的改动，以及新文件，都不受影响
+    假如想要丢弃你所有的本地改动与提交，可以到服务器上获取最新的版本并将本地主分支指向到它：
+    git fetch origin
+    git reset --hard origin/master
+    某个提交从A分支复制到B分支
+    在B分支下执行git cherry-pick commitid(A分支的提交id)
 -----------------------------------------------------
 在idea中使用git需要
 1,配置git  file-->settings-->git
