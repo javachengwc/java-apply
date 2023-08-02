@@ -1,0 +1,17 @@
+---------------------------------kafka消费者配置--------------------------------
+fetch.min.bytes             ###每次fetch请求时，server应该返回的最小字节数。
+                               如果没有足够的数据返回，请求会等待，直到足够的数据才会返回。
+fetch.message.max.bytes     ###每次fetch请求时，能拉取的最大消息字节数，必须大于等于Kafka运行的最大消息
+auto.commit.enable          ###提交方式，true--自动提交，consumer会周期性的把当前消费的offset值保存到zookeeper。
+                               false--手动提交
+auto.commit.interval.ms     ###自动提交offset到zookeeper的时间间隔
+rebalance.max.retries       ###消费均衡的重试次数
+                               当新的consumer加入到consumer  group时，consumers集合试图重新平衡分配到每个consumer的partitions数目。
+                               如果consumers集合改变了，当分配正在执行时(正在做负载均衡时，consumer的数目变化了)，
+                               这个重新平衡会失败并重新负载均衡
+rebalance.backoff.ms        ###消费均衡重试之间的时间间隔
+auto.offset.reset           ###取值smallest|largeset，新的consumer加入进来的时候，从最新的消息消费，还是从最早的消息开始消费
+zookeeper.session.timeout.ms    ###zookeeper会话的超时时间
+                               如果consumer在这段时间内没有向zookeeper发送心跳信息，则它会被认为挂掉了，并且reblance将会产生
+zookeeper.connection.timeout.ms ###zookeeper连接的超时时间
+--------------------------------------------------------------------------------
