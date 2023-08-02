@@ -121,4 +121,8 @@ redis-cli -h 127.0.0.1 -a password -n 1 keys "*" | xargs -I {} redis-cli -h 127.
 redis-cli -h 127.0.0.1 -p 6381  -a redispass info replication
 ---查看redis主从情况
 
+redis-cli -h 127.0.0.1 -p 6379 -c --bigkeys  或
+redisTools/redis-cli-new -h 127.0.0.1 -p 6379 --bigkeys --bigkey-numb 10
+---通过redisTools工具(需安装),列出最大的前n个key
+
 -----------------------------------------------------------------------------------------------
