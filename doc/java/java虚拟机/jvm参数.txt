@@ -27,6 +27,13 @@
     -XX:MaxMetaspaceSize=256m
 class
     -verbose:class                                   ------打印类加载和卸载信息
+jmx
+    -Djava.rmi.server.hostname=127.0.0.1             ------java程序的ip
+    -Dcom.sun.management.jmxremote
+    -Dcom.sun.management.jmxremote.port=90           ------开启jmx连接端口，可通过JConsole连接查看管理mbean
+    -Dcom.sun.management.jmxremote.authenticate=false   ---是否启用认证，如果启用，需在在$JAVA_HOME/jre/lib/management目录下
+                                                           创建文件jmxremote.password，并设置账号和密码，可参考jmxremote.password.template
+    -Dcom.sun.management.jmxremote.ssl=false
 对象进入年老代
     -XX:MaxTenuringThreshold=10                      ------对象复制过10次后进入老年代
     -XX:PretenureSizeThreshold=10000                 ------大于10000字节的对象直接进入年老代

@@ -3,5 +3,10 @@
 这个时候的ssh公钥用git gui来打开再放到github上去或则直接用git gui来生成密钥放上去就没问题了。
 右键-->git gui-->帮助-->Show SSH Key
 
+2,git 报错：unable to update local ref
+一般是远程分支有被他人删除，而本地分支保留了此远程分支并做了跟踪，
+此时只需要执行git remote prune origin即可移除已过时的分支。
+git remote show origin
+git remote prune origin
 
 -----------------------------------------------------------------------------------

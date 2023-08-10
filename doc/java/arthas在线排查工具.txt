@@ -21,6 +21,7 @@ java -jar arthas-boot.jar                              ---启动
         logger --name ROOT --level debug               ---更新logger level
         logger --include-no-appender                   ---查看包括没有appender的logger的信息
     mbean                                              ---查看mbean的信息
+        mbean -i 1000 -E com.alibaba.druid:type=DruidDataSource ActiveCount|PoolingCount
     getstatic
     ognl                                               ---执行ognl表达式
         ognl '@aa.bb.cc.Class@method'                  ---获取某静态类的某静态字段

@@ -137,6 +137,7 @@ git remote add origin git@github.com:defnngj/hibernate-demo.git
 
 git remote show name 必须要带name，否则git remote show的作用就是git remote，给出remote name的信息
 git remote show origin           ###查看远程仓库信息
+git remote prune origin          ###更新本地分支与远程分支的关系，解决unable to update local ref问题
 
 ------------------------------------------------------------
 git push origin master  推送到master分支
