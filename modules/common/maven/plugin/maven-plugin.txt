@@ -38,7 +38,7 @@ yuicompressor-maven-plugin    yuicompressor-maven-plugin是YUI Compressor Maven�
 
 maven-shade-plugin            用于生成可执行的jar包,如java -jar xx.jar, 它可以配置Main-Class的值，然后在打包的时候将值填入/META-INF/MANIFEST.MF文件。
                               关于jar包的依赖，它将依赖的jar文件全部解压后，再将得到的.class文件连同当前项目的.class文件一起合并到最终的jar包中。
-
+maven-scm-plugin              使用 maven scm 插件来标记发布
 ------------------------------------------------------------
 <plugins>
     <plugin>

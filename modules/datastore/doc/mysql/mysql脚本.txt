@@ -112,6 +112,7 @@ where a.id in (1,2,3)
 
 1,从数据表a中把那些id值在数据表b里有匹配的记录删除
 delete a from a,b where a.id=b.aid
+delete a from a join b on a.id=b.aid
 
 2,从数据表a中把在数据表b里没有匹配的记录删除
 delete a from a left join b on a.id=b.aid where b.aid is null
