@@ -13,6 +13,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
     <dependencyManagement>
@@ -47,24 +50,23 @@
             <version>3.1</version>
         </dependency>
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.22</version>
+            <groupId>com.common</groupId>
+            <artifactId>common-model</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-dbcp2</artifactId>
-            <version>2.1.1</version>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <!--mysql数据库版本5.*,连接驱动包版本用5.*, 数据库版本8.*,连接驱动包版本用8.* -->
+            <version>5.1.46</version>
+            <!--<version>8.0.22</version>-->
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid</artifactId>
+            <!--mysql数据库版本5.*,druid版本1.0.*, 数据库版本8.*,druid版本1版本用1.2.8 -->
             <version>1.0.18</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
-            <version>3.4.0</version>
+            <!--<version>1.2.8</version>-->
         </dependency>
         <dependency>
             <groupId>org.mybatis</groupId>
@@ -75,6 +77,11 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
             <version>4.2.4.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-dbutils</groupId>
+            <artifactId>commons-dbutils</artifactId>
+            <version>1.6</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -112,6 +119,23 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>1.5.0.RELEASE</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.mybatis.generator</groupId>
+                <artifactId>mybatis-generator-maven-plugin</artifactId>
+                <version>1.4.0</version>
+                <configuration>
+                    <configurationFile>src/main/resources/mybatis-generator.xml</configurationFile>
+                    <overwrite>true</overwrite>
+                </configuration>
             </plugin>
         </plugins>
     </build>

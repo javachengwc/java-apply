@@ -8,6 +8,10 @@ public class NumberMain {
 	
 	public static void main(String args [])
 	{
+        BigDecimal preTaxAmount=new BigDecimal("96226.42");
+        BigDecimal taxTate=new BigDecimal("6.00");
+        BigDecimal checkTax = preTaxAmount.multiply(taxTate).divide(new BigDecimal(100)).setScale(2,BigDecimal.ROUND_DOWN);
+        System.out.println(checkTax);
 	    int d1=0;
 	    Integer d2=null;
 	    if(d1!=d2) {
