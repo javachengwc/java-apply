@@ -7,8 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-public class CalendarUtil
-{
+public class CalendarUtil {
 	/**
 	 * 取得当前日期是多少周
 	 * 

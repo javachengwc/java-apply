@@ -1,4 +1,6 @@
 package com.main;
+import org.apache.commons.lang.StringUtils;
+
 import java.util.*;
 
 /**
@@ -6,12 +8,19 @@ import java.util.*;
  */
 public class ListMain2 {
 
+    //这里类型一定是要包装类Integer, 不然Arrays.asList...contain始终返回false,会有问题
+    public static final Integer [] intArrays = {1, 2};
+
 	public static void main(String args [])
 	{
+        System.out.println(Arrays.asList(intArrays).contains(1));
+	    String ids =",";
+        List<String> idList= Arrays.asList(StringUtils.split(ids,","));
+	    System.out.println(idList.size());
 
 //	    List<Object> emptyList = Collections.EMPTY_LIST;
 //	    emptyList.add(0,"ddd");
-//        System.out.println(emptyList==null);
+//      System.out.println(emptyList==null);
 //	    System.out.println(emptyList.size());
 
 	    List<Object> a=null;
