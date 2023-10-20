@@ -1,0 +1,24 @@
+---------------------------------mysql查询优化器
+一条sql在mysql中执行流程主要包含：SQL解析、基于语法树的准备工作、优化器的逻辑变化、优化器的代价准备工作、基于代价模型的优化、进行额外的优化和运行执行计划等部分。
+对于优化器来说，执行一条sql有各种各样的方案可供选择，如表是否用索引、选择哪个索引、是否使用范围扫描、多表Join的连接顺序和子查询的执行方式等。优化器就是从这些可选方案中选出评估耗时最短的方案。
+评估耗时(代价模型)将操作分为Server层和Engine（存储引擎）层两类，Server层主要是CPU代价，Engine层主要是IO代价，
+比如mysql从磁盘读取一个数据页的代价io_block_read_cost为1，计算符合条件的行代价为row_evaluate_cost为0.2。除此之外还有：
+    memory_temptable_create_cost (default 2.0)        内存临时表的创建代价。
+    memory_temptable_row_cost (default 0.2)           内存临时表的行代价。
+    key_compare_cost (default 0.1)                    键比较的代价，例如排序。
+    disk_temptable_create_cost (default 40.0)         内部myisam或innodb临时表的创建代价。
+    disk_temptable_row_cost (default 1.0)             内部myisam或innodb临时表的行代价。
+一般评估耗时(代价模型)代价模型的计算过程：
+    全表扫描的代价：io_cost + cpu_cost = （数据页个数 * io_block_read_cost）+ (数据行数 * row_evaluate_cost + 1.1) = （data_length / block_size + 1）+ (rows * 0.2 + 1.1)
+    索引idx_xxx的代价：io_cost + cpu_cost = (预估范围行数 * io_block_read_cost + 1) + (数据行数 * row_evaluate_cost + 0.01) = (rows * 1 + 1) + (rows * 0.2 + 0.01)
+    #data_length可查询information_schema.tables，block_size默认16K。
+
+mysql追踪优化器Trace功能
+select * from INFORMATION_SCHEMA.OPTIMIZER_TRACE;
+通过查询OPTIMIZER_TRACE表，可以看到优化器选择索引的过程，对比各个索引的查询代价，选择代价cost最小的索引。
+
+
+##查看表统计数据，如表的行数、表数据大小、索引大小
+select * from infromation_schema.tables
+##查看索引的统计数据
+select * from mysql.innodb_index_stats
