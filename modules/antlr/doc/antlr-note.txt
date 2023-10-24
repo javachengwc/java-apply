@@ -3,3 +3,11 @@ antlr解析过程:
 第一阶段的过程叫词法分析（lexical analysis），对应的分析程序叫做lexer，负责将符号（token）分组成符号类（token class or token type）。
 第二阶段就是真正的parser，默认ANTLR会构建出一棵分析树（parse tree）或叫语法树（syntax tree）
 
+###安装antlr
+curl -O https://www.antlr.org/download/antlr-4.9-complete.jar
+###建议将下述命令写在 .bash_profile 中
+export CLASSPATH=".:/usr/local/lib/antlr-4.9-complete.jar:$CLASSPATH"
+alias antlr4='java -Xmx500M -cp "/usr/local/lib/antlr-4.9-complete.jar:$CLASSPATH" org.antlr.v4.Tool'
+alias grun='java -Xmx500M -cp "/usr/local/lib/antlr-4.9-complete.jar:$CLASSPATH"   org.antlr.v4.gui.TestRig'
+###运行antlr生成java代码
+antlr4 -Dlanguage=Java Excel.g4
