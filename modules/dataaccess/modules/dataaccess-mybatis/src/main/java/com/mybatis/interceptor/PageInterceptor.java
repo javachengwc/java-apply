@@ -22,7 +22,6 @@ import java.util.Properties;
         @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class, CacheKey.class, BoundSql.class}),
     }
 )
-
 public class PageInterceptor implements Interceptor {
 
     private String default_dialect_class = "com.github.pagehelper.PageHelper";

@@ -10,6 +10,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
+/**
+ * type指明拦截对象的类型，method是拦截的方法，args是method执行的参数
+ */
 @Intercepts({
     @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class }) })
 public class MyInterceptor implements Interceptor {
@@ -25,7 +28,6 @@ public class MyInterceptor implements Interceptor {
         //String namespace = sqlId.substring(0, sqlId.indexOf('.'));
         //Executor executor = (Executor) invocation.getTarget();
         String methodName = invocation.getMethod().getName();
-
         if (methodName.equals("query")) {
             //Object parameter = invocation.getArgs()[1];
             RowBounds rowBounds = (RowBounds) invocation.getArgs()[2];
@@ -43,6 +45,7 @@ public class MyInterceptor implements Interceptor {
         return boundSql.getSql();
     }
 
+    @Override
     public Object plugin(Object target) {
         return Plugin.wrap(target, this);
     }
