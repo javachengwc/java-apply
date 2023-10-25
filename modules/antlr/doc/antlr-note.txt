@@ -1,7 +1,26 @@
+antlr是可以根据输入自动生成语法树并可视化的显示出来的开源语法分析器。
+它供了一个通过语法描述来自动构造自定义语言的识别器（recognizer），编译器（parser）和解释器（translator）的框架。
+
+词法分析器（Lexer）
+程序设计语言通常由关键字和严格定义的语法结构组成。编译的最终目的是将程序设计语言的高层指令翻译成物理机器或虚拟机可以执行的指令。
+词法分析器的工作是分析量化那些本来毫无意义的字符流，将它们翻译成离散的字符组（也就是一个一个的Token），包括关键字，标识符，符号（symbols）和操作符供语法分析器使用。
+
+语法分析器（Parser）
+语法分析器将收到的Tokens组织起来，并转换成为目标语言语法定义所允许的序列。
+无论是Lexer还是Parser都是一种识别器，Lexer是字符序列识别器而Parser是Token序列识别器。
+它们在本质上是类似的东西，而只是在分工上有所不同而已。
+
+树分析器 (tree parser)
+树分析器可以用于对语法分析生成的抽象语法树进行遍历，并能执行一些相关的操作。
+
+抽象语法树（Abstract Syntax Tree）,
+抽象语法树是一种用来描述程序代码语法结构的树形表示方式，语法树的的每一个节点都代表着一个语法结构。
+
+antrl4通过 .g4文件生成了6个基础文件，分别为词法分析器、语法分析器、监听接口、Listener默认实现、Visitor 接口以及Visitor 默认实现。
 antlr解析过程:
-为了简单起见，将解析分为两个阶段，当读到一个句子时，在第一阶段，将字符组成单词，然后像查词典一样识别出它们的意思。在第二阶段，根据已识别的单词去识别句子的结构。
-第一阶段的过程叫词法分析（lexical analysis），对应的分析程序叫做lexer，负责将符号（token）分组成符号类（token class or token type）。
-第二阶段就是真正的parser，默认ANTLR会构建出一棵分析树（parse tree）或叫语法树（syntax tree）
+antlr将解析简单的分为两个阶段，当读到一个句子时，在第一阶段，将字符组成单词，然后像查词典一样识别出它们的意思。在第二阶段，根据已识别的单词去识别句子的结构。
+第一阶段的过程叫词法分析（lexical analysis），对应的分析程序叫做lexer，负责将符号（token）分组成符号类（token class or token type）,生成Token序列。
+第二阶段就是真正的parser，默认ANTLR会构建出一棵分析树（parse tree）或叫语法树（syntax tree）,将Token序列串联成AST抽象语法树；通过Visitor模式遍历AST解析结构。
 
 ###安装antlr
 curl -O https://www.antlr.org/download/antlr-4.9-complete.jar
