@@ -16,7 +16,9 @@ antlr是可以根据输入自动生成语法树并可视化的显示出来的开
 抽象语法树（Abstract Syntax Tree）,
 抽象语法树是一种用来描述程序代码语法结构的树形表示方式，语法树的的每一个节点都代表着一个语法结构。
 
-antrl4通过 .g4文件生成了6个基础文件，分别为词法分析器、语法分析器、监听接口、Listener默认实现、Visitor 接口以及Visitor 默认实现。
+antlr通过 .g4文件生成了4个基础文件，分别为词法分析器、语法分析器、监听接口、Listener默认实现。
+如果在生成命令加上参数 -visitor,会生成Visitor 接口以及Visitor 默认实现。
+
 antlr解析过程:
 antlr将解析简单的分为两个阶段，当读到一个句子时，在第一阶段，将字符组成单词，然后像查词典一样识别出它们的意思。在第二阶段，根据已识别的单词去识别句子的结构。
 第一阶段的过程叫词法分析（lexical analysis），对应的分析程序叫做lexer，负责将符号（token）分组成符号类（token class or token type）,生成Token序列。
@@ -30,3 +32,5 @@ alias antlr4='java -Xmx500M -cp "/usr/local/lib/antlr-4.9-complete.jar:$CLASSPAT
 alias grun='java -Xmx500M -cp "/usr/local/lib/antlr-4.9-complete.jar:$CLASSPATH"   org.antlr.v4.gui.TestRig'
 ###运行antlr生成java代码
 antlr4 -Dlanguage=Java Excel.g4
+###生成访问者模式相关的类和接口
+antlr4 -Dlanguage=Java -visitor Excel.g4
