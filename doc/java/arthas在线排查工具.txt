@@ -23,8 +23,11 @@ java -jar arthas-boot.jar                              ---启动
     mbean                                              ---查看mbean的信息
         mbean -i 1000 -E com.alibaba.druid:type=DruidDataSource ActiveCount|PoolingCount
     getstatic
-    ognl                                               ---执行ognl表达式
-        ognl '@aa.bb.cc.Class@method'                  ---获取某静态类的某静态字段
+    ognl                                               ---执行ognl表达式,arthas执行ognl表达式可能出现 ClassNotFoundException，请指定类加载器
+        ognl '@aa.bb.cc.Class@method'                  ---获取类的某静态方法
+        ognl -c classloader '@aa.bb.cc.Class@field'    ---指定类加载器获取类的静态字段
+        ognl -c classloader '#c=@aa.bb.cc.Impl@class,#f=#c.getDeclaredField("staticfield"),#f.setAccessible(true),#f.set(#c,30)'
+                                                       ---修改类的静态变量
     sc                                                 ---查看JVM已加载的类信息
         sc aa.bb.*                                     ---查看包aa.bb下的类
         sc -d aa.bb.Class                              ---显示此类的详情
