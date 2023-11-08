@@ -28,9 +28,11 @@ java -jar arthas-boot.jar                              ---启动
         ognl -c classloader '@aa.bb.cc.Class@field'    ---指定类加载器获取类的静态字段
         ognl -c classloader '#c=@aa.bb.cc.Impl@class,#f=#c.getDeclaredField("staticfield"),#f.setAccessible(true),#f.set(#c,30)'
                                                        ---修改类的静态变量
+        ognl -c classloader '#c=@aa.bb.cc.Impl@class,#f=#c.getDeclaredField("staticfield"),#f.setAccessible(true),#f.set(#c,#{ "key":"value", "kk" : "\u503c"} )'
+                                                       ---修改类的静态变量，静态变量是一个hashmap,如果值是中文，需要把中文转换成unicode编码
     sc                                                 ---查看JVM已加载的类信息
         sc aa.bb.*                                     ---查看包aa.bb下的类
-        sc -d aa.bb.Class                              ---显示此类的详情
+        sc -d aa.bb.Class                              ---显示此类的详情，包括加载此类的类加载器
     sm                                                 ---查询JVM已加载的类的方法信息
         sm -d java.lang.String toString
     dump                                               ---dump 已加载类的 bytecode 到指定目录
