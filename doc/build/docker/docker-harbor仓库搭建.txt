@@ -1,0 +1,61 @@
+---------------------------------------harbor仓库搭建--------------------------------------
+harbor是开源的企业级Docker Registry项目。它以Docker公司开源的Registry为基础，原生支持中文，每个组件以Docker容器的形式构建的，使用docker-compose对它进行部署。
+1,安装docker, docker-compose
+###安装docker
+yum -y install docker
+###安装docker-compose,使用pip安装(python2用pip,python3用pip3)
+pip3 install docker-compose -i https://mirrors.aliyun.com/pypi/simple/
+
+2,安装harbor
+wget https://github.com/goharbor/harbor/releases/download/v2.9.0/harbor-ofline-installer-v2.9.0.tgz
+tar -zxvf harbor-ofline-installer-v2.9.0.tgz
+cp harbor.yml.tmpl harbor.yml
+vim harbor.yml
+    hostname: 192.168.100.100
+    port: 80
+    #https:  //如果不只是https，需要注释掉
+./install.sh
+docker-compose up -d            ###启动docker-compose
+
+3,访问测试
+浏览器访问 http://192.168.100.100
+默认用户名和登录密码: admin/Harbor12345 见harbor.yml
+注意:
+harbor的日志目录 /var/log/harbor，当报错时可查看报错日志
+比如出现permission denied报错，需要将对应目录权限改大，然后重启docker-compose
+docker-compose down             ###关闭docker-compose
+docker-compose up -d            ###启动docker-compose
+docker-compose ps               ###查看运行的容器列表，(都是up状态才表示harbor服务都正常)
+
+4,docker连通私服harbor
+由于harbor采用http服务，而docker仓库默认采用https,对私服harbor采用
+login,pull,push等命令操作非https的docker regsitry会报错，所以需要在docker的配置文件中
+将harbor私服地址配置到insecure-registry作为不安全的地址运行访问。
+vim /etc/docker/daemon.json
+{
+    "insecure-registries": ["192.168.100.100:80"]
+}
+###重启docker
+systemctl daemon-reload && systemctl restart docker
+docker info                     ###查看docker配置私服地址是否成功
+###登录docker镜像仓库,用harbor账号能登录成功表示docker连通私服harbor
+docker login 192.168.100.100:80 -u admin -p
+
+5,上传镜像到harbor
+push到harbor的镜像的命名必须按照此规则: {Harbor地址}:{端口}/{Harbor项目名}/{自定义镜像名}:{自定义tag}
+a,通过harbor页面添加用户ccc
+b,通过harbor页面新建项目test, 访问级别为公开。
+c,页面点击test项目，成员增加ccc,角色为开发者，开发者只能push/pull，访客只能pull
+d,操作上传镜像
+docker tag ccc/image_test:v1.0.0 192.168.100.100:80/test/image_test:v1.0.0
+docker push 192.168.100.100:80/test/image_test:v1.0.0
+###push成功后，在harbor的主机的/data/registry/docker/registry/v2/目录下可查看镜像的存储位置
+
+6,从harbor拉镜像
+###确保机器和私服harbor互通，并且将私服harbor ip地址添加到docker的不安全仓库地址配置文件中
+docker pull 192.168.100.100:80/test/image_test:v1.0.0
+###对于公开项目不需要login就可以访问到私服的用户拉取和上传
+###对于私有项目需要login才能进行操作
+
+
+-------------------------------------------------------------------------------------------
