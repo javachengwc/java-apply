@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>state-simple</title>
+    <title>state的简写方式</title>
 </head>
 <body>
 <!-- 准备好一个容器 -->
@@ -21,6 +21,7 @@
             state = {isHot:false,wind:'微风'}
 
             render() {
+                console.log(this)
                 //读取状态
                 const {isHot,wind} = this.state
                 return <h1 onClick={this.changeWeather}>今天天气{isHot ? '炎热': '凉爽'},{wind}</h1>
