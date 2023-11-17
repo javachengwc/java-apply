@@ -1,0 +1,19 @@
+#基于一个基础镜像
+From dockerhub.xxx.xxx/common/dubbo:jdk8
+
+#避免 SkyWalking agent 对某些不需要追踪的文件进行不必要的处理
+ENV SW_AGENT_IGNORE_SUFFIX=".jpg,.jpeg,.js,.css,.png,.bmp,.gif,.ico,.mp3,.mp4,.html,.svg,.jsp" \
+SW_AGENT_CACHE_CLASS="true" \
+SW_AGENT_CLASS_CACHE_MODE="FILE" \
+#SkyWalking的后端服务地址
+SW_AGENT_COLLECTOR_BACKEND_SERVICES="127.0.0.1:11800"
+
+COPY target/third_jars/ /data/service/lib
+ADD target/${archiveDir} /data/service/
+
+COPY target/shell /data
+RUN chmod +x /data/start-dubbo.sh
+
+EXPOSE 8000
+#启动服务
+ENTRYPOINT /data/entrypoint.sh
