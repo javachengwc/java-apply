@@ -1,5 +1,7 @@
 package com.dubbo.server;
 
+import com.alibaba.dubbo.config.ApplicationConfig;
+import com.dubbo.util.SpringContextUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -21,6 +23,8 @@ public class DubboServer {
         //System.out.println("dubbo server is running");
 
         logger.info("dubbo server is running now! Press 'quit' to quit!");
+        ApplicationConfig applicationConfig = SpringContextUtil.getBean(ApplicationConfig.class);
+        logger.info("dubbo server application name={}", applicationConfig.getName());
         terminalSession();
         logger.info("dubbo server is quited!");
     }
