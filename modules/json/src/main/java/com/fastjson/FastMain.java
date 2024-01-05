@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.model.SiteAccessInfo;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -14,6 +15,12 @@ public class FastMain {
 
     public static void main(String args [])
     {
+        String []aacc =  {"aa"};
+        String content = JSONObject.toJSONString(aacc);
+        System.out.println(content);
+        List<String> ccl= JSON.parseArray(content, String.class);
+        System.out.println(ccl.size()+ ccl.get(0));
+
         System.out.println("-----------fast json main start-----");
         Map<String,Double> sd = new HashMap<String,Double>();
         sd.put("a",1.1D);

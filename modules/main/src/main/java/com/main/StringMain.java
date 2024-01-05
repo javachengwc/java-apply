@@ -62,7 +62,15 @@ public class StringMain {
         System.out.println("a==c is "+ (a==c));
     }
 
+    //验证数字和字符
+    public static boolean checkDC(String blankSpace) {
+        String regex="^[a-zA-Z0-9]+$";
+        return Pattern.matches(regex,blankSpace);
+    }
+
     public static void main(String args []) throws Exception {
+      String dc="12300Abcdefg111HIJ";
+      System.out.println(checkDC(dc));
       String msg ="Accounting Document NUMBER:22ccc";
       String info = msg.substring("Accounting Document Number:".length());
       String keyy = info.indexOf(" ")>0 ? info.substring(0,info.indexOf(" ")):"ya";
