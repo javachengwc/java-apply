@@ -125,3 +125,6 @@ modules/webapplication/modules/manageplat/target/
 modules/dataaccess/modules/dataaccess-druid/target/
 modules/erp/erp-web-demo/target/
 modules/erp/erp-web-core/target/
+modules/otd/otd-spring/otd-web-demo/target/
+modules/otd/otd-boot/otdboot-web-demo/target/
+modules/otd/otd-spring/otd-web-core/target/

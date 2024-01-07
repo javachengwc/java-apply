@@ -57,7 +57,7 @@
 		<module>modules/webcloud</module>
 		<module>modules/webcloud2</module>
 		<module>modules/sharding-dbtable</module>
-		<module>modules/erp</module>
+		<module>modules/otd</module>
 		<module>modules/tmp</module>
 		<!--
 		<module>modules/bigdata</module>

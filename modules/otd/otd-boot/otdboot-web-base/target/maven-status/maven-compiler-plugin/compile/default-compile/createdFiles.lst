@@ -1,0 +1,10 @@
+com\otd\boot\web\base\config\WebBaseConfig.class
+com\otd\boot\web\base\ApplicationStarter.class
+com\otd\boot\web\base\config\WebBaseConfig$1.class
+com\otd\boot\web\base\controller\BaseController.class
+com\otd\boot\web\base\model\vo\Req.class
+com\otd\boot\web\base\common\WebCode.class
+com\otd\boot\web\base\config\SwaggerConfig.class
+com\otd\boot\web\base\config\WebMvcConfig.class
+com\otd\boot\web\base\exception\ExceptionAdvice.class
+com\otd\boot\web\base\model\vo\Resp.class
