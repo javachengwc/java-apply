@@ -1,0 +1,6 @@
+server:
+  port: 8085
+
+logging:
+  path: /data/logs
+  filePrefix: otdboot-portal

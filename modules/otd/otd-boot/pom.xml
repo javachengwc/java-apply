@@ -13,6 +13,13 @@
     <module>otdboot-web-parent</module>
     <module>otdboot-web-base</module>
 	<module>otdboot-web-demo</module>
+	<module>otdboot-portal</module>
+    <module>otdboot-oms</module>
+    <module>otdboot-tms</module>
+	<module>otdboot-wms</module>
+	<module>otdboot-vat</module>
+    <module>otdboot-finance</module>
+	<module>otdboot-report</module>
   </modules>
 
 </project>

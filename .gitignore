@@ -128,3 +128,10 @@ modules/erp/erp-web-core/target/
 modules/otd/otd-spring/otd-web-demo/target/
 modules/otd/otd-boot/otdboot-web-demo/target/
 modules/otd/otd-spring/otd-web-core/target/
+modules/otd/otd-boot/otdboot-oms/target/
+modules/otd/otd-boot/otdboot-portal/target/
+modules/otd/otd-boot/otdboot-report/target/
+modules/otd/otd-boot/otdboot-finance/target/
+modules/otd/otd-boot/otdboot-tms/target/
+modules/otd/otd-boot/otdboot-vat/target/
+modules/otd/otd-boot/otdboot-wms/target/

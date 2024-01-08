@@ -1,0 +1,6 @@
+server:
+  port: 8086
+
+logging:
+  path: /data/logs
+  filePrefix: otdboot-report

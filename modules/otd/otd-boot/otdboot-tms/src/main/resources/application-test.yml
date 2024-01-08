@@ -1,0 +1,6 @@
+server:
+  port: 8087
+
+logging:
+  path: /data/logs
+  filePrefix: otdboot-tms
