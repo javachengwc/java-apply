@@ -135,3 +135,5 @@ modules/otd/otd-boot/otdboot-finance/target/
 modules/otd/otd-boot/otdboot-tms/target/
 modules/otd/otd-boot/otdboot-vat/target/
 modules/otd/otd-boot/otdboot-wms/target/
+modules/otd/otd-boot/otdboot-demo-redis/target/
+modules/otd/otd-boot/otdboot-web-base/target/

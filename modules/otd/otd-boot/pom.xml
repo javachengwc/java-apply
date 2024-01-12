@@ -13,6 +13,7 @@
     <module>otdboot-web-parent</module>
     <module>otdboot-web-base</module>
 	<module>otdboot-web-demo</module>
+    <module>otdboot-demo-redis</module>
 	<module>otdboot-portal</module>
     <module>otdboot-oms</module>
     <module>otdboot-tms</module>
