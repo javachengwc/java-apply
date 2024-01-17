@@ -19,29 +19,35 @@
         <property name="testWhileIdle" value="true"></property>
     </bean>
 
-    <bean id="redisStandaloneConfiguration" class="org.springframework.data.redis.connection.RedisStandaloneConfiguration">
-        <property name="port" value="6379"></property>
-        <property name="hostName" value="127.0.0.1"></property>
-        <!-- <property name="username" value=""></property> -->
-        <!--<property name="password" value="foobared"></property>-->
-        <property name="database" value="0"></property>
-    </bean>
-
-    <bean id="mutableJedisClientConfiguration"
-          class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory$MutableJedisClientConfiguration">
-        <property name="poolConfig" ref="jedisPool"></property>
+    <bean id="sentinelConfiguration" class="org.springframework.data.redis.connection.RedisSentinelConfiguration">
+        <property  name="master">
+            <bean class="org.springframework.data.redis.connection.RedisNode">
+                <constructor-arg name="host" value=""></constructor-arg>
+                <constructor-arg name="port" value=""></constructor-arg>
+                <property name="name" value=""></property>
+            </bean>
+        </property>
+        <property name="sentinels">
+            <set>
+                <bean class="org.springframework.data.redis.connection.RedisNode">
+                    <constructor-arg name="host" value=""></constructor-arg>
+                    <constructor-arg name="port" value=""></constructor-arg>
+                </bean>
+            </set>
+        </property>
     </bean>
 
     <bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
-        <constructor-arg name="standaloneConfig" ref="redisStandaloneConfiguration"></constructor-arg>
-        <constructor-arg name="clientConfig" ref="mutableJedisClientConfiguration"></constructor-arg>
+        <constructor-arg name="poolConfig" ref="jedisPool"></constructor-arg>
+        <constructor-arg name="sentinelConfig" ref="sentinelConfiguration"/>
+        <property name="password" value="" />
     </bean>
 
     <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
         <property name="connectionFactory" ref="jedisConnectionFactory"></property>
         <property name="keySerializer">
             <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
-        </property>
+        </property> 
         <property name="valueSerializer">
             <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
         </property>
@@ -50,7 +56,7 @@
         </property>
         <property name="hashValueSerializer">
             <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
-        </property>
+        </property> 
     </bean>
 
 </beans>
