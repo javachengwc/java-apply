@@ -1,0 +1,10 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: otdboot-demo-jsp
+  mvc:
+    view:
+      prefix: /WEB-INF/
+      suffix: .jsp
+    static=path-pattern: /resources/**

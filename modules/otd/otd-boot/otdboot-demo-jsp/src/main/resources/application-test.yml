@@ -1,0 +1,6 @@
+server:
+  port: 8083
+
+logging:
+  path: /data/logs
+  filePrefix: otdboot-demo-jsp

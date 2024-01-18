@@ -10,6 +10,11 @@
                                                             servlet 3.1及以上
                                                        内置 tomcat 9.0/servlet 4.0
                                                             jetty 9.4/servlet 3.1
+                                2.4.13版本             支持 java 8 - java 16
+                                                            spring 5.3.13及以上
+                                                            servlet 3.1及以上
+                                                       内置 tomcat 9.0/servlet 4.0
+                                                            jetty 9.4/servlet 3.1
 2021-05-20                      2.5.x版本
                                 2.5.0版本              支持 java 8 - java 16
                                                             spring 5.3.7及以上

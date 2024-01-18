@@ -137,3 +137,4 @@ modules/otd/otd-boot/otdboot-vat/target/
 modules/otd/otd-boot/otdboot-wms/target/
 modules/otd/otd-boot/otdboot-demo-redis/target/
 modules/otd/otd-boot/otdboot-web-base/target/
+modules/otd/otd-boot/otdboot-demo-jsp/target/
