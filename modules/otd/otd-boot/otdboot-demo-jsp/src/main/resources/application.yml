@@ -7,4 +7,4 @@ spring:
     view:
       prefix: /WEB-INF/
       suffix: .jsp
-    static=path-pattern: /resources/**
+    static-path-pattern: /resources/**
