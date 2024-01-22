@@ -16,7 +16,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <springboot.version>2.4.13</springboot.version>
-    <mysql.version>5.1.21</mysql.version>
+    <spring.log4j.version>1.3.8.RELEASE</spring.log4j.version>
+    <mysql.version>8.0.22</mysql.version>
     <druid.version>1.2.8</druid.version>
     <mybatis.boot.version>2.3.2</mybatis.boot.version>
     <mybatis.version>3.5.14</mybatis.version>
@@ -32,6 +33,8 @@
     <itext.version>2.0.8</itext.version>
     <dom4j.version>1.6.1</dom4j.version>
     <poi.version>3.17</poi.version>
+    <hibernate-validator.version>5.1.0.Final</hibernate-validator.version>
+    <validation-api.version>2.0.1.Final</validation-api.version>
     <swagger.version>2.7.0</swagger.version>
     <lombok.version>1.16.22</lombok.version>
     <junit.version>4.12</junit.version>
@@ -49,8 +52,8 @@
       </dependency>
       <dependency>
         <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-data-redis</artifactId>
-        <version>${springboot.version}</version>
+        <artifactId>spring-boot-starter-log4j</artifactId>
+        <version>${spring.log4j.version}</version>
       </dependency>
       <dependency>
         <groupId>org.mybatis.spring.boot</groupId>
@@ -131,6 +134,16 @@
         <groupId>dom4j</groupId>
         <artifactId>dom4j</artifactId>
         <version>${dom4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>${hibernate-validator.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.validation</groupId>
+        <artifactId>validation-api</artifactId>
+        <version>${validation-api.version}</version>
       </dependency>
       <dependency>
         <groupId>org.projectlombok</groupId>

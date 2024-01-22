@@ -1,0 +1,15 @@
+java.lang.NoSuchMethodError错误可能的原因：
+1、有这个类，该类没有这个方法
+2、类冲突、jar包冲突、jar包版本冲突
+3、有这个类（A），类中也有方法，但在B类中引用了A类，并调用A类的方法，后面修改A类，把该A类的方法返回值类型改变（如将方法返回类型由void类型改成String类型），
+只部署A类，没有重新部署B类，将导致NoSuchMethodError错误。解决方法：需要把引用到A类的代码都重新打包。
+
+Redis报错NoSuchMethodError RedisTemplate.delete(Ljava/lang/Object;)V
+有一种情况的原因是 RedisTemplate类的delete方法 在spring-data-redis 1.*包的定义 与 spring-data-redis 2.*的定义发生了变化，
+spring-data-redis 1.*       public void delete(K key)
+spring-data-redis 2.*       public Boolean delete(K key)
+如果项目有独立的包依赖了spring-data-redis ，调用了RedisTemplate.delete方法， 当项目对redis升级，
+spring-data-redis 从1.* 升到2.*时， 如果此独立包不基于升级的spring-data-redis 2.* 重新打包，
+项目在使用到RedisTemplate.delete方法时，就会报NoSuchMethodError RedisTemplate.delete(Ljava/lang/Object;)V ,
+解决此情况的方法，是对此独立包基于spring-data-redis 2.*的依赖重新打包。
+

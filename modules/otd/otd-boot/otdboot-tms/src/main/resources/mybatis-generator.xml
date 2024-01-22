@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+
+    <classPathEntry location="D:\repo\mysql\mysql-connector-java\8.0.22\mysql-connector-java-8.0.22.jar"/>
+
+    <context id="db-otd" targetRuntime="MyBatis3" introspectedColumnImpl="org.mybatis.generator.api.IntrospectedColumn">
+        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
+                        connectionURL="jdbc:mysql://127.0.0.1/db_otd?useUnicode=true&amp;characterEncoding=utf8&amp;serverTimezone=Asia/Shanghai"
+                        userId="root"
+                        password="root">
+        </jdbcConnection>
+
+        <javaModelGenerator targetPackage="com.otd.boot.tms.model.entity" targetProject="src\main\java">
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+
+        <!-- mybatis xml file path -->
+        <sqlMapGenerator targetPackage="sqlmap" targetProject="src\main\resources">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+
+        <javaClientGenerator type="MIXEDMAPPER" targetPackage="com.otd.boot.tms.dao.mapper"
+                             targetProject="src\main\java">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+
+
+        <!--保持原表字段来定义model的例子
+        <table tableName="entity" domainObjectName="Entity">
+            <property name="useActualColumnNames" value="true" />
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        -->
+
+        <!-- 添加需要生成的表，以及生成方式 -->
+        <table tableName="tms_delivery_plan" >
+        </table>
+    </context>
+
+</generatorConfiguration>
