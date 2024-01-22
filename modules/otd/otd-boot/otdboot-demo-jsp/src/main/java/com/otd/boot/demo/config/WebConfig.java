@@ -26,7 +26,7 @@ public class WebConfig  implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**").addResourceLocations("classpath:/META-INF/resources/");
-        //registry.addResourceHandler("/WEB-INF/**").addResourceLocations("classpath:/META-INF/WEB-INF/");
+        registry.addResourceHandler("/WEB-INF/**").addResourceLocations("classpath:/META-INF/WEB-INF/");
         registry.addResourceHandler("/static/**").addResourceLocations("/static/");
     }
 }

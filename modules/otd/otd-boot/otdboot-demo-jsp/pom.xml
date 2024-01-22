@@ -65,8 +65,8 @@
         <filtering>true</filtering>
       </resource>
       <resource>
-        <directory>src/main/webapp/resources</directory>
-        <targetPath>META-INF/resources</targetPath>
+        <directory>src/main/webapp</directory>
+        <targetPath>META-INF</targetPath>
         <includes>
           <include>**/**</include>
         </includes>
