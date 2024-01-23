@@ -1,0 +1,43 @@
+springboot 2.*整合jsp
+1, application.yml配置
+spring:
+  mvc:
+    view:
+      prefix: /WEB-INF/
+      suffix: .jsp
+    static-path-pattern: /resources/**
+2, pom.xml配置
+a,WEB-INF目录中的jsp必须移到META-INF/resources/WEB-INF下
+<resource>
+    <directory>src/main/webapp</directory>
+    <targetPath>META-INF/resources</targetPath>
+    <includes>
+        <include>**/**</include>
+    </includes>
+</resource>
+b,编译jsp和标签依赖包
+<dependency>
+  <groupId>org.apache.tomcat.embed</groupId>
+  <artifactId>tomcat-embed-jasper</artifactId>
+  <scope>provided</scope>
+</dependency>
+<dependency>
+  <groupId>javax.servlet</groupId>
+  <artifactId>jstl</artifactId>
+  <version>1.2</version>
+  <scope>provided</scope>
+</dependency>
+c,静态资源及jsp访问路径配置
+@Configuration
+public class WebConfig  implements WebMvcConfigurer {
+    //添加静态资源
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/resources/**").addResourceLocations("classpath:/META-INF/resources/");
+        registry.addResourceHandler("/WEB-INF/**").addResourceLocations("classpath:/META-INF/WEB-INF/");
+        registry.addResourceHandler("/static/**").addResourceLocations("/static/");
+    }
+}
+d,解决springboot中request.getServletContext().getRealPath("/")是临时目录问题
+在springboot项目resource目录下创建public或者static的文件夹，
+那么通过 request.getServletContext().getRealPath("/")会得到public或者static的路径
