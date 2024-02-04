@@ -1,7 +1,7 @@
 package com.otd.boot.vat.controller;
 
-import com.otd.boot.web.base.model.vo.Req;
-import com.otd.boot.web.base.model.vo.Resp;
+import com.model.base.Req;
+import com.model.base.Resp;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;

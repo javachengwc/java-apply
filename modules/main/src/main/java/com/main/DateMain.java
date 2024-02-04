@@ -28,6 +28,7 @@ public class DateMain {
 
 	    Date defDate =new Date(0);
 	    System.out.println(DateUtil.formatDate(defDate,DateUtil.FMT_YMD_HMS));
+        System.out.println(DateUtil.formatDate(defDate,DateUtil.FMT_YYMMDD));
 
 		DateTime now = new DateTime();
 		System.out.println(now.toString("yyyy/MM/dd"));

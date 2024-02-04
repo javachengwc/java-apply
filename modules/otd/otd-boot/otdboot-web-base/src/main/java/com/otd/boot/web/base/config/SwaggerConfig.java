@@ -23,7 +23,7 @@ import java.util.List;
  * swagger配置
  */
 @Configuration
-//@EnableSwagger2 与 springboot 2.6以上不兼容
+@EnableSwagger2
 @Slf4j
 public class SwaggerConfig {
 
@@ -42,7 +42,6 @@ public class SwaggerConfig {
     ApiInfo apiInfo = new ApiInfoBuilder().title(projectName)
         .description(projectName + " swagger接口")
         .termsOfServiceUrl("http://localhost")
-        .contact("ccc")
         .version("1.0").build();
     return new Docket(DocumentationType.SWAGGER_2)
         .apiInfo(apiInfo)

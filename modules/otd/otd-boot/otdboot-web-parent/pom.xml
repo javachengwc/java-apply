@@ -8,10 +8,30 @@
     <artifactId>otdboot-dependencies</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
+
   <groupId>com.otd.boot</groupId>
   <artifactId>otdboot-web-parent</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>otdboot-web-parent</name>
+
+  <properties>
+    <common-model.version>1.0.0-SNAPSHOT</common-model.version>
+    <otdboot-util.version>1.0.0-SNAPSHOT</otdboot-util.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.common</groupId>
+        <artifactId>common-model</artifactId>
+        <version>${common-model.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.otd.boot</groupId>
+        <artifactId>otdboot-component-util</artifactId>
+        <version>${otdboot-util.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
 </project>

@@ -3,3 +3,6 @@ spring:
     active: dev
   application:
     name: otdboot-tms
+
+logging:
+  config: classpath:log4j.properties

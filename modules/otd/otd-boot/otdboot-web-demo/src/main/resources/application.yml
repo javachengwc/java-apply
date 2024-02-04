@@ -3,3 +3,6 @@ spring:
     active: dev
   application:
     name: otdboot-web-demo
+
+logging:
+  config: classpath:log4j.properties

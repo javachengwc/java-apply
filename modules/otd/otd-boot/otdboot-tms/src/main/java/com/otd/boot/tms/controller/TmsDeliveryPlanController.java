@@ -1,8 +1,10 @@
 package com.otd.boot.tms.controller;
 
+import com.model.base.Resp;
+import com.otd.boot.component.util.TransUtil;
 import com.otd.boot.tms.model.entity.TmsDeliveryPlan;
+import com.otd.boot.tms.model.vo.TmsDeliveryPlanVo;
 import com.otd.boot.tms.service.TmsDeliveryPlanService;
-import com.otd.boot.web.base.model.vo.Resp;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -31,12 +33,13 @@ public class TmsDeliveryPlanController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "deliveryNo", value = "deliveryNo", required = true, dataType = "String", paramType = "query")
     })
-    public Resp<TmsDeliveryPlan> queryByDeliveryNo(@RequestParam(value = "deliveryNo", required = true) String deliveryNo) {
+    public Resp<TmsDeliveryPlanVo> queryByDeliveryNo(@RequestParam(value = "deliveryNo", required = true) String deliveryNo) {
         log.info("TmsDeliveryPlanController queryByDeliveryNo start,deliveryNo={}",deliveryNo);
         TmsDeliveryPlan tmsDeliveryPlan =tmsDeliveryPlanService.queryByDeliveryNo(deliveryNo);
         if(tmsDeliveryPlan==null) {
             return Resp.error("无配送计划");
         }
-        return Resp.data(tmsDeliveryPlan);
+        TmsDeliveryPlanVo vo = TransUtil.transEntity(tmsDeliveryPlan,TmsDeliveryPlanVo.class);
+        return Resp.data(vo);
     }
 }
