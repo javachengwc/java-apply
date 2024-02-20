@@ -44,7 +44,8 @@
     <validation-api.version>2.0.1.Final</validation-api.version>
     <servlet-api.version>3.1.0</servlet-api.version>
     <jsp-api.version>2.1</jsp-api.version>
-    <swagger.version>3.0.0</swagger.version>
+    <swagger.version>1.5.22</swagger.version>
+    <springfox.version>3.0.0</springfox.version>
     <lombok.version>1.16.22</lombok.version>
     <junit.version>4.12</junit.version>
   </properties>
@@ -200,19 +201,29 @@
         <version>${lombok.version}</version>
       </dependency>
       <dependency>
+        <groupId>io.swagger</groupId>
+        <artifactId>swagger-annotations</artifactId>
+        <version>${swagger.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.swagger</groupId>
+        <artifactId>swagger-models</artifactId>
+        <version>${swagger.version}</version>
+      </dependency>
+      <dependency>
         <groupId>io.springfox</groupId>
         <artifactId>springfox-swagger2</artifactId>
-        <version>${swagger.version}</version>
+        <version>${springfox.version}</version>
       </dependency>
       <dependency>
         <groupId>io.springfox</groupId>
         <artifactId>springfox-swagger-ui</artifactId>
-        <version>${swagger.version}</version>
+        <version>${springfox.version}</version>
       </dependency>
       <dependency>
         <groupId>io.springfox</groupId>
         <artifactId>springfox-boot-starter</artifactId>
-        <version>${swagger.version}</version>
+        <version>${springfox.version}</version>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>

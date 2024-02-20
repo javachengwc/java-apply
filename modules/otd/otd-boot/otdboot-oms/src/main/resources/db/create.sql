@@ -1,0 +1,26 @@
+CREATE TABLE `base_product` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `product_code` varchar(20) DEFAULT '' COMMENT '产品编码',
+  `product_name` varchar(128) DEFAULT '' COMMENT '产品名称',
+  `physical_flag` int DEFAULT '1' COMMENT '是否实物，0-非实物；1-实物,默认',
+  `gift_flag` int DEFAULT '0' COMMENT '是否赠品，0-非赠品,默认；1-赠品',
+  `self_product_flag` int DEFAULT '1' COMMENT '是否自身系列产品，0-否；1-是,默认',
+  `volume` decimal(18,5) COMMENT '体积',
+  `weight` decimal(18,5) COMMENT '重量',
+  `product_type` varchar(36) DEFAULT '' COMMENT '产品类型',
+  `need_scan` int DEFAULT '1' COMMENT '是否需要扫描，0-不需要；1-需要,默认',
+  `on_sale` int DEFAULT '1' COMMENT '是否在售 0-不在售, 1-在售',
+  `tax_code` varchar(20) DEFAULT '' COMMENT '税分类编码',
+  `tax_rate` decimal(10,2) COMMENT '税率',
+  `specifications` varchar(50) DEFAULT '' COMMENT '规格参数',
+  `barcode_remark` varchar(100) DEFAULT '' COMMENT '条码备注',
+  `benchmark_price` decimal(15,4) COMMENT '基准价格',
+  `code69` varchar(20) DEFAULT '' COMMENT '69条码',
+  `create_time` datetime  COMMENT '创建时间',
+  `create_by` varchar(32) DEFAULT '' COMMENT '创建人',
+  `update_time` datetime  COMMENT '修改时间',
+  `update_by` varchar(32) DEFAULT '' COMMENT '修改人',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `udx_product_code` (`product_code`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3 COMMENT='产品基础表';
+
