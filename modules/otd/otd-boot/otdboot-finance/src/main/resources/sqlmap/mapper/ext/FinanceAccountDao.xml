@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.otd.boot.finance.dao.FinanceAccountDao">
+
+    <select id="queryFinanceAccount"
+            resultMap="com.otd.boot.finance.dao.mapper.FinanceAccountMapper.BaseResultMap"
+            parameterType="com.otd.boot.finance.model.vo.FinanceAccountSearch">
+        select id, batch_id, document_number, cust_no, payment_type, doc_type, comefrom, state, need_certify,
+            amount, tax_amount, pre_tax_amount, currency, document_date, posting_date, company_code, fiscal_year,
+            item_text, fail_info, create_time, create_by
+        from finance_account
+        where delete_flag = 0
+        <if test="custNo!=null and custNo!=''">
+            and cust_no = #{custNo}
+        </if>
+        <if test="paymentType!=null ">
+            and payment_type = #{paymentType}
+        </if>
+        <if test="docType!=null and docType!=''">
+            and doc_type = #{docType}
+        </if>
+        <if test="comefrom!=null">
+            and comefrom = #{comefrom}
+        </if>
+        <if test="state!=null">
+            and state = #{state}
+        </if>
+        <if test="batchId!=null and batchId!=''">
+            and batch_id = #{batchId}
+        </if>
+        <if test="documentNumber!=null and documentNumber!=''">
+            and document_number = #{documentNumber}
+        </if>
+        <if test="createTimeBegin!=null and createTimeBegin!=''">
+            and create_time &gt;= #{createTimeBegin}
+        </if>
+        <if test="createTimeEnd!=null and createTimeEnd!=''">
+            and create_time &lt; #{createTimeEnd}
+        </if>
+        order by create_time desc
+    </select>
+</mapper>

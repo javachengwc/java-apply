@@ -1,6 +1,2 @@
 server:
   port: 8082
-
-logging:
-  path: /data/logs
-  filePrefix: otdboot-finance
