@@ -1,0 +1,6 @@
+server:
+  port: 8082
+
+es:
+  cluster-name: search-dev
+  cluster-nodes: 127.0.0.1:9300

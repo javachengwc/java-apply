@@ -23,15 +23,15 @@ import java.util.List;
  * swagger配置
  * 访问地址：http://localhost:port/swagger-ui/index.html
  */
-@Configuration
-@EnableSwagger2
+//@Configuration
+//@EnableSwagger2
 @Slf4j
 public class SwaggerConfig {
 
-  @Value("${spring.application.name}")
+  //@Value("${spring.application.name}")
   private String projectName;
 
-  @Bean
+  //@Bean
   public Docket createRestApi() {
 
     log.info("SwaggerConfig createRestApi start");

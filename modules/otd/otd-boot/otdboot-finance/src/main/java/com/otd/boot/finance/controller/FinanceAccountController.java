@@ -23,7 +23,7 @@ public class FinanceAccountController {
     @Autowired
     private FinanceAccountService financeAccountService;
 
-    @RequestMapping(value = "/queryPage", method = RequestMethod.POST)
+    @RequestMapping(value = "/queryPage", method = RequestMethod.GET)
     @ApiOperation("分页查询财务记账")
     public PageVo<FinanceAccountVo> queryPage(FinanceAccountSearch search) {
         PageHelper.startPage(search.getPageNum(), search.getPageSize());

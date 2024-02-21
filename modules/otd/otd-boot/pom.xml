@@ -15,6 +15,7 @@
 	<module>otdboot-component-util</module>
 	<module>otdboot-web-demo</module>
     <module>otdboot-demo-redis</module>
+	<module>otdboot-demo-es</module>
 	<module>otdboot-demo-jsp</module>
 	<module>otdboot-portal</module>
     <module>otdboot-oms</module>
