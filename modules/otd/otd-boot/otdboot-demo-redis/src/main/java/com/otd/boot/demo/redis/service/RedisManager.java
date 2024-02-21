@@ -25,6 +25,8 @@ public class RedisManager implements InitializingBean,ApplicationContextAware {
 
     private RedisTemplate<String, Session> redisTemplate;
 
+    private RedisTemplate<String, String> stringRedisTemplate;
+
     private  String KEY = "KEY:";
 
     private Integer expire =30 * 60 ;
@@ -34,6 +36,10 @@ public class RedisManager implements InitializingBean,ApplicationContextAware {
 
     public RedisTemplate<String, Session> getRedisTemplate() {
         return redisTemplate;
+    }
+
+    public RedisTemplate<String, String> getStringRedisTemplate() {
+        return stringRedisTemplate;
     }
 
     private String getKey(String key) {
@@ -94,6 +100,14 @@ public class RedisManager implements InitializingBean,ApplicationContextAware {
         redisTemplate.setHashValueSerializer(new JdkSerializationRedisSerializer());
         redisTemplate.setConnectionFactory(redisConnectionFactory);
         redisTemplate.afterPropertiesSet();
+
+        stringRedisTemplate = new RedisTemplate<String, String>();
+        stringRedisTemplate.setKeySerializer(new StringRedisSerializer());
+        stringRedisTemplate.setValueSerializer(new StringRedisSerializer());
+        stringRedisTemplate.setHashKeySerializer(new StringRedisSerializer());
+        stringRedisTemplate.setHashValueSerializer(new StringRedisSerializer());
+        stringRedisTemplate.setConnectionFactory(redisConnectionFactory);
+        stringRedisTemplate.afterPropertiesSet();
         logger.info("RedisManager afterPropertiesSet end....");
     }
 

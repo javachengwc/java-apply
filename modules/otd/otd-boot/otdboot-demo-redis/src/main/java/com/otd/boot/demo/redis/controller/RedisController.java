@@ -35,7 +35,9 @@ public class RedisController {
   })
   public Resp<String> getDemo(@RequestParam(value = "id", required = true) Integer id) {
     redisManager.getRedisTemplate().delete("cc");
-    Object aa = redisManager.getRedisTemplate().opsForValue().get("cc");
+    Object cc = redisManager.getRedisTemplate().opsForValue().get("cc");
+    log.info("RedisController getDemo cc="+cc);
+    Object aa = redisManager.getStringRedisTemplate().opsForValue().get("aa");
     log.info("RedisController getDemo aa="+aa);
     return Resp.success("" + id);
   }
