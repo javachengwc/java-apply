@@ -8,3 +8,5 @@ spring:
       prefix: /WEB-INF/
       suffix: .jsp
     static-path-pattern: /resources/**
+    pathmatch:
+      matching-strategy: ant_path_matcher

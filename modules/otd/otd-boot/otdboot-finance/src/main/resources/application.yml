@@ -3,6 +3,10 @@ spring:
     active: dev
   application:
     name: otdboot-finance
+  mvc:
+    pathmatch:
+      use-suffix-pattern: true
+      matching-strategy: ant_path_matcher
 
 logging:
   config: classpath:log4j.properties
