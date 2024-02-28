@@ -23,5 +23,7 @@ public interface CommonRegex {
     String REG_EXP_OF_CONTAINS_IP = "((?s).*?)([1-9]|[1-9]\\d|1\\d{2}|2[0-1]\\d|25[0-5])(\\.(\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])){3}((?s).*?)";
     //数组和字母
     String REG_DC="^[a-zA-Z\\d]+$";
+    //分割符
+	String CUTOFF= "[\\|\\s;,.\r\n]";
 
 }

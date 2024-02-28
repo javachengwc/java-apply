@@ -1,5 +1,6 @@
 package com.util.regex;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
@@ -74,5 +75,19 @@ public final class RegexUtil {
         String regex = "\\s+";
         return Pattern.matches(regex,blankSpace);
     }
+
+    //分隔符分割
+	public static String[] splitString(String string){
+		if (StringUtils.isEmpty(string)){
+			return null;
+		}
+		Pattern pattern = Pattern.compile(CommonRegex.CUTOFF);
+		Matcher matcher = pattern.matcher(string.trim());
+		if (matcher.find()){
+			return string.split(CommonRegex.CUTOFF);
+		}else {
+			return new String[]{string};
+		}
+	}
 
 }
