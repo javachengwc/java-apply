@@ -13,6 +13,7 @@
     <module>otdboot-web-parent</module>
     <module>otdboot-web-base</module>
 	<module>otdboot-component-util</module>
+    <module>otdboot-component-velocity</module>
 	<module>otdboot-web-demo</module>
     <module>otdboot-demo-redis</module>
 	<module>otdboot-demo-es</module>
