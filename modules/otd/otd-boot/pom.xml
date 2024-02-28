@@ -19,6 +19,7 @@
 	<module>otdboot-demo-es</module>
 	<module>otdboot-demo-jsp</module>
 	<module>otdboot-portal</module>
+    <module>otdboot-plat</module>
     <module>otdboot-oms</module>
     <module>otdboot-tms</module>
 	<module>otdboot-wms</module>

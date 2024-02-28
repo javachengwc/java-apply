@@ -1,0 +1,11 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: otdboot-plat
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+logging:
+  config: classpath:log4j.properties
