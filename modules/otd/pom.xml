@@ -10,7 +10,6 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>otd-spring</module>
     <module>otd-boot</module>
   </modules>
 
