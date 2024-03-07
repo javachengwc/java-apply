@@ -2,9 +2,9 @@ package com.otd.boot.plat.controller;
 
 import com.model.base.Resp;
 import com.otd.boot.component.util.TransUtil;
-import com.otd.boot.plat.model.entity.Factory;
-import com.otd.boot.plat.model.vo.FactoryVo;
-import com.otd.boot.plat.service.FactoryService;
+import com.otd.boot.plat.model.entity.Warehouse;
+import com.otd.boot.plat.model.vo.WarehouseVo;
+import com.otd.boot.plat.service.WarehouseService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -20,26 +20,26 @@ import org.springframework.web.bind.annotation.RestController;
  * 仓库接口
  */
 @RestController
-@RequestMapping("/factory")
+@RequestMapping("/warehouse")
 @Api(value = "仓库接口", description = "仓库接口")
 @Slf4j
 public class WarehouseController {
 
     @Autowired
-    private FactoryService factoryService;
+    private WarehouseService warehouseService;
 
-    @GetMapping("/queryByFactoryNo")
-    @ApiOperation("根据工厂编号查询工厂")
+    @GetMapping("/queryByWarehouseCode")
+    @ApiOperation("根据仓库code查询仓库")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "factoryNo", value = "factoryNo", required = true, dataType = "String", paramType = "query")
+            @ApiImplicitParam(name = "warehouseCode", value = "warehouseCode", required = true, dataType = "String", paramType = "query")
     })
-    public Resp<FactoryVo> queryByFactoryNo(@RequestParam(value = "factoryNo", required = true) String factoryNo) {
-        log.info("FactoryController queryByFactoryNo start,factoryNo={}",factoryNo);
-        Factory factory =factoryService.queryByFactoryNo(factoryNo);
-        if(factory==null) {
-            return Resp.error("查无工厂");
+    public Resp<WarehouseVo> queryByWarehouseCode(@RequestParam(value = "warehouseCode", required = true) String warehouseCode) {
+        log.info("WarehouseController queryByWarehouseCode start,warehouseCode={}",warehouseCode);
+        Warehouse warehouse =warehouseService.queryByWarehouseCode(warehouseCode);
+        if(warehouse==null) {
+            return Resp.error("查无仓库");
         }
-        FactoryVo vo = TransUtil.transEntity(factory,FactoryVo.class);
+        WarehouseVo vo = TransUtil.transEntity(warehouse, WarehouseVo.class);
         return Resp.data(vo);
     }
 }

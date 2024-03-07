@@ -38,7 +38,7 @@
         -->
 
         <!-- 添加需要生成的表，以及生成方式 -->
-        <table tableName="warehouse" >
+        <table tableName="storage" >
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
     </context>
