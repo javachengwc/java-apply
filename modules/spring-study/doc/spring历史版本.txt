@@ -4,7 +4,7 @@
 2007年11月                      spring 2.5版本                         支持java 6
 2009年12月                      spring 3.0版本
 2012年12月                      spring 4.0版本                         支持java 8
-2017-9-28                       spring 5,0版本                         支持servlet 3.1
+2017-9-28                       spring 5.0版本                         支持servlet 3.1
 2018-09-21                      spring 5.1.x版本
 2019-09-30                      spring 5.2.x版本
 2020-10-27                      spring 5.3.x版本
