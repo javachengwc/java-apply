@@ -4,6 +4,13 @@
 docker run -p 2801:2801 -t aa/bb          #启动名为aa/bb的镜像
 docker run -it docker.io/centos:v2        #启动并进入容器
 docker run -p 8761:8761 -t -d aa          #依后台进程启动容器
+docker run -d \
+           -p 3307:3306 \
+           -v /data/mysql/slave/conf:/etc/mysql/conf.d \
+           -v /data/mysql/slave/data:/var/lib/mysql \
+           -e MYSQL_ROOT_PASSWORD=123456 \
+           --name mysql-slave \
+           mysql:8.0.29                   #启动mysql服务，并做了容器内mysql的配置和数据目录映射到宿主机目录。
 docker ps                                 #查看所有运行中的容器
 docker ps -a                              #查看所有容器，包括运行中的，停止的
 docker stop xxx                           #停止运行容器（xxx表示CONTAINER ID，容器id）
