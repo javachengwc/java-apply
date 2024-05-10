@@ -1,0 +1,4 @@
+1，jdk,jre,jvm的区别
+jdk是java开发包，包括开发，编译和运行java程序所需要类库，工具和资源，包括java编译器，java运行时环境，以及常用java类库等。
+jre是java运行环境，用于运行java字节码文件。jre包括了jvm和jvm运行所需的类库。
+jvm是java虚拟机，是jre的一部分，负责运行字节码文件。

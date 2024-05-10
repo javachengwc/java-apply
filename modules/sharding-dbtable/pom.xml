@@ -12,5 +12,6 @@
 	<modules>
         <module>modules/sharding-springboot-demo</module>
         <module>modules/sharding-spring-demo</module>
+        <module>modules/shardingboot-junior</module>
 	</modules>
 </project>

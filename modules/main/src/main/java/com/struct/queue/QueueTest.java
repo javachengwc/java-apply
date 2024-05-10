@@ -14,6 +14,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 //take       移除并返回队列头部的元素         如果队列为空，则阻塞
 //队列只允许在表的前端（front）进行删除操作，而在表的后端（rear）进行插入操作
 //Queue是单向队列，只能在一端插入数据，另一端删除数据
+//Queue通常应用是广度优先算法BFS
 public class QueueTest {
 
     public static void main(String [] args ) {

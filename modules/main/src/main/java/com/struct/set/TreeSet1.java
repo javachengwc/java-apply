@@ -1,4 +1,8 @@
 package com.struct.set;
 
-public class TreeSet1 {
+import java.util.TreeSet;
+
+public class TreeSet1 extends TreeSet {
+
+
 }

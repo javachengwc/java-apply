@@ -7,7 +7,7 @@ public class ZheBanSearch {
 
 	public static int[] data = { 12, 16, 19, 22, 25, 32, 39, 48, 55, 57, 58,
 			63, 68, 69, 70, 78, 84, 88, 90, 97 }; // 数据数组
-	public static int counter = 1; // 计数器
+	public static int counter = 0; // 计数器
 
 	public static void main(String args[]) {
 		int keyValue = 22;
@@ -28,11 +28,13 @@ public class ZheBanSearch {
 	// ---------------------------------------------------
 	public static boolean binarySearch(int keyValue) {
 		int left = 0; // 左边界变量
-		int right = data.length - 1; // 右边界变量
+		int right = data.length -1; // 右边界变量
 		int middle; // 中位数变量
 
 		while (left <= right) {
 			middle = (left + right) / 2;
+			System.out.println(middle+"->"+data[middle]);
+			counter++;
 			if (keyValue < data[middle])
 			{   // 欲查找值较小 查找前半段
 				right = middle - 1;
@@ -46,7 +48,6 @@ public class ZheBanSearch {
 				System.out.println("data[" + middle + "] = " + data[middle]);
 				return true;
 			}
-			counter++;
 		}
 		return false;
 	}

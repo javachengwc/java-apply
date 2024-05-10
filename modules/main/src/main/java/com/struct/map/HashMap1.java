@@ -3,7 +3,7 @@ package com.struct.map;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HashMap1 {
+public class HashMap1 extends HashMap {
 
     public static void main(String [] args) {
 

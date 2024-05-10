@@ -1,4 +1,6 @@
 package com.struct.list;
 
-public class ArrayList1 {
+import java.util.ArrayList;
+
+public class ArrayList1 extends ArrayList {
 }

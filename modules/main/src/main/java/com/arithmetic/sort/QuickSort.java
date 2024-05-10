@@ -53,6 +53,13 @@ public class QuickSort {
 				low++;
 			}
 			a[high] = a[low];
+
+			System.out.println("--------进行中-------,low="+low+",high="+high);
+			for (int i = 0; i < a.length; i++)
+			{
+				System.out.print(a[i] + " ");
+			}
+			System.out.println("......");
 		}
 		a[low] = temp;
 		System.out.println("temp="+temp+",inputLow="+inputLow+",inputHigh="+inputHigh+",low="+low+",high="+high);

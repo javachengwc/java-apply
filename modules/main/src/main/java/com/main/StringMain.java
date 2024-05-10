@@ -12,7 +12,9 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 /**
  * string format 转义符是%
- * @author cheng
+ * String是常量(final)字符串，内部结构是 final char [],是不可变的。如果改变，会生成一个新的字符串对象。
+ * StringBuilder是可变的，是线程不安全的。
+ * StringBuffer是可变的，是线程安全的。
  *
  */
 public class StringMain {
@@ -70,6 +72,8 @@ public class StringMain {
 
     public static void main(String args []) throws Exception {
       String dc="12300Abcdefg111HIJ";
+      System.out.println(dc.length());
+      System.out.println(dc.substring(0,dc.length()-1));
       System.out.println(checkDC(dc));
       String msg ="Accounting Document NUMBER:22ccc";
       String info = msg.substring("Accounting Document Number:".length());

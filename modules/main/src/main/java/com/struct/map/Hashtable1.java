@@ -1,4 +1,6 @@
 package com.struct.map;
 
-public class Hashtable1 {
+import java.util.Hashtable;
+
+public class Hashtable1 extends Hashtable {
 }

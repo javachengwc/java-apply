@@ -10,6 +10,7 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
 		<module>modules/common-model</module>
+	    <module>modules/common-tool</module>
         <module>modules/common</module>
         <module>modules/config</module>
 		<module>modules/concurrent</module>

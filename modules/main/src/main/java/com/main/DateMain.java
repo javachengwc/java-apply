@@ -9,17 +9,14 @@ import java.util.Date;
 
 public class DateMain {
 
+    private static long diffDay(Date d1,Date d2) {
+        long t1 = d1.getTime();
+        long t2 = d2.getTime();
+        long diff = (t1-t2)/(1000*60*60*24);
+        return diff;
+    }
 
-
-  private static long diffDay(Date d1,Date d2) {
-    long t1 = d1.getTime();
-    long t2 = d2.getTime();
-    long diff = (t1-t2)/(1000*60*60*24);
-    return diff;
-  }
-
-	public static void main(String args [])
-	{
+	public static void main(String args []) {
 
 	    Date now2 = new Date();
 	    String date2Str = "2020-01-17 00:00:00";

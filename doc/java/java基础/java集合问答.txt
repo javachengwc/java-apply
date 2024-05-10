@@ -1,0 +1,12 @@
+1，ArrayList和LinkedList的区别
+a,底层数据结构不同，ArrayList是基于数组实现的，适合随机查找，
+LinkedList基于链表实现，更适合添加，删除。
+b,LinkedList实现了Deque接口，可以当作队列来实现。
+
+2，CopyOnWriteArrayList的底层原理
+CopyOnWriteArrayList是一个线程安全的列表，内部数据结构是个数组。
+在添加元素时，先加锁，复制一个新数组，把元素添加到新数组中，列表的数组引用指向新的数组，再解锁。
+在写操作的同时，如果有其他线程读取CopyOnWriteArrayList数据，会在原数组中进行。适合读多写少的场景。
+但CopyOnWriteArrayList在写操作时比较占内存，读到数据可能不是实时最新数据，所以不适合实时性要求很高的场景。
+
+

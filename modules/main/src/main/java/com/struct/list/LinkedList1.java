@@ -1,4 +1,6 @@
 package com.struct.list;
 
-public class LinkedList1 {
+import java.util.LinkedList;
+
+public class LinkedList1 extends LinkedList {
 }

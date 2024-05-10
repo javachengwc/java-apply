@@ -20,7 +20,7 @@ import java.util.concurrent.LinkedBlockingDeque;
  *
  *   element(),add(),remove()一般不被使用
  *
- * BlockingDeque 阻塞栈
+ * BlockingDeque 阻塞队列
  */
 public class BlockPrg {
 

@@ -1,4 +1,6 @@
 package com.struct.map;
 
-public class TreeMap1 {
+import java.util.TreeMap;
+
+public class TreeMap1 extends TreeMap {
 }

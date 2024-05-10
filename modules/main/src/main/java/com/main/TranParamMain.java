@@ -56,6 +56,7 @@ public class TranParamMain {
     }
 
     private static void objectDo(Entity entity) {
+        //entity= new Entity(3,"test");
         entity.setId(2);
     }
 }
