@@ -2,6 +2,7 @@ package com.concurrent.atomic;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -13,6 +14,12 @@ import java.util.concurrent.locks.ReentrantLock;
 public class AtomicPrg {
 
     public static void main(String[] args) {
+        AtomicInteger ai =new AtomicInteger(0);
+        System.out.println(ai.getAndSet(1));
+        System.out.println(ai.get());
+        System.out.println(ai.compareAndSet(0,1));
+        System.out.println(ai.compareAndSet(1,2));
+        System.out.println(ai.get());
         ExecutorService pool = Executors.newFixedThreadPool(2);
         Lock lock = new ReentrantLock(false);
 

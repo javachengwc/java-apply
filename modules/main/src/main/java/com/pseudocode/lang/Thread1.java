@@ -291,11 +291,14 @@ public class Thread1  implements Runnable {
         interrupt0();
     }
 
+    //当前线程是否中断，并将清除线程的中断状态。也就是说，当连续调用两次该方法，如果是中断线程，
+    //第一次调用会返回true，并清除中断状态，第二次调用时由于中断状态已经被清除，将返回false。
+    //注意与isInterrupted()方法的区别
     public static boolean interrupted() {
         return currentThread().isInterrupted(true);
     }
 
-    //判断线程是否被中断
+    //线程是否被中断,仅仅查询中断状态来判断是否发生中断并返回true或者false。
     public boolean isInterrupted() {
         return isInterrupted(false);
     }

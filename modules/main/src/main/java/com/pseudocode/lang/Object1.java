@@ -39,10 +39,18 @@ public class Object1 {
 
     }
 
+//     //notify()唤醒当前对象阻塞队列里的任一线程。
+//     //只有当执行唤醒工作的线程离开同步块，即释放锁之后，被唤醒线程才能去竞争锁。
+//     //notify()，notifyAll方法必须与synchronized同步块或同步方法中使用。
+//     //因wait()而导致阻塞的线程是放在阻塞队列中的，因锁竞争失败导致的阻塞是放在同步队列中的，
+//     //notify()/notifyAll()实质上是把阻塞队列中的线程放到同步队列中去。
 //     public final native void notify();
 //
 //     public final native void notifyAll();
 //
+//     //wait()方法释放当前对象锁，并进入阻塞队列。
+//     //wait()方法必须与synchronized同步块或同步方法中使用，因为它依赖于当前的锁进行等待/通知操作。
+//     //如果尝试在没有锁的情况下调用wait()，就会抛出IllegalMonitorStateException异常。
 //     public final native void wait(long timeout) throws InterruptedException;
 //
 //     public final void wait(long timeout, int nanos) throws InterruptedException {

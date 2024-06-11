@@ -1,6 +1,7 @@
 package com.util.base;
 
 import java.util.*;
+import java.util.stream.IntStream;
 
 public class RandomUtil {
 	
@@ -100,6 +101,17 @@ public class RandomUtil {
 
     public static void main(String args[])
     {
+        Random rdm = new Random();
+        System.out.println(rdm.nextInt());
+        System.out.println(rdm.nextInt());
+        System.out.println(rdm.nextInt(8));
+        System.out.println(rdm.nextBoolean());
+        System.out.println(rdm.nextLong());
+        IntStream is = rdm.ints(3);
+        System.out.println(Arrays.toString(is.toArray()));
+        IntStream is2 = rdm.ints(3,1,10);
+        System.out.println(Arrays.toString(is2.toArray()));
+        System.out.println("----------------------------------------");
         System.out.println(nextRandomInt(1,100));
         System.out.println(nextRandomInt(1,100));
         System.out.println(randomHit(2, 5));

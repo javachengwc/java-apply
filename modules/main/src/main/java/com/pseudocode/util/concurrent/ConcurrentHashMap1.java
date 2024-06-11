@@ -143,7 +143,7 @@ public class ConcurrentHashMap1<K,V> {
     //table存储数据的底层数组，volatile修饰，读可见
     transient volatile ConcurrentHashMap1.Node<K,V>[] table;
 
-    ////仅当扩容时不为空，其他时候都为空。扩容完成自动为null
+    //仅当扩容时不为空，其他时候都为空。扩容完成自动为null
     private transient volatile ConcurrentHashMap1.Node<K,V>[] nextTable;
 
     //元素个数的基础计数，加上counterCells数组所有元素的value值总和 即为所有元素个数

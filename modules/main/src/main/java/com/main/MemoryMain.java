@@ -20,7 +20,7 @@ public class MemoryMain {
 	}
 
 	public static void main(String args[]) {
-		
+
 		System.out.println("size of object ="+sizeOf(new Object()));
 		
 		System.out.println("size of string ="+sizeOf("a"));

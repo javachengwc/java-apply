@@ -1,0 +1,9 @@
+park和unpark是java中的两个线程同步工具，用于线程的阻塞和唤醒操作。
+park方法是线程阻塞的方法，可以使当前线程进入等待状态，直到被其他线程唤醒。
+unpark方法是线程唤醒的方法，可以唤醒指定的线程。
+1，wait & notify和 notifyAll必须配合 Object Monitor 一起使用，
+   而 park & unpark不需要。
+2，park & unpark是以线程为单位来阻塞和唤醒线程（唤醒的时候可以传一个线程作为参数），
+   而 notify只能随机唤醒一个等待线程，notifyAll是唤醒所有等待线程。
+3，park & unpark可以先 park再 unpark 或则先 unpark再 park，park和unpark是成对出现，可以不分先后。
+   而wait & notify不能先 notify。

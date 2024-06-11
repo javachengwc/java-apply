@@ -3,11 +3,21 @@ package com.main;
 import org.apache.commons.lang.math.NumberUtils;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 
 public class NumberMain {
 	
 	public static void main(String args [])
 	{
+	    int aaa = 0x22;
+	    System.out.println(aaa);
+        DecimalFormat df = new DecimalFormat();
+        // 设置负数前缀为 "(-" 和 ")"，负数将被括号包围
+        df.setNegativePrefix("(-");
+        df.setNegativeSuffix(")");
+        String formattedNumber = df.format(-1357.67);
+        System.out.println(formattedNumber); // 输出: (-1,357.67)
+
         BigDecimal preTaxAmount=new BigDecimal("96226.42");
         BigDecimal taxTate=new BigDecimal("6.00");
         BigDecimal checkTax = preTaxAmount.multiply(taxTate).divide(new BigDecimal(100)).setScale(2,BigDecimal.ROUND_DOWN);
