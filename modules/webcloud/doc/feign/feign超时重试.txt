@@ -1,0 +1,18 @@
+Feign默认支持Ribbon，二者的重试机制有冲突，所以源码关闭了Feign的重试机制，使用Ribbon的重试机制。
+Feign在整合Ribbon的时候，为了统一配置，就默认将自己的超时时间交由Ribbon管理
+所以，在默认情况下，Feign的超时时间可以由Ribbon配置，Ribbon默认连接和读超时时间只有1s，
+所以，在默认情况下，Feign的超时时间只有1s。
+Hystrix是在Feign的基础上调用后进行熔断降级操作，所以Hystrix的超时时间要大于Feign调用的总超时时间，
+也就是Ribbon的总超时时间，否则重试机制就没有任何意义。
+
+配置超时重试
+### application.yml
+feign:
+  client:
+    default-to-properties: true
+    connect-timeout: 5000
+    read-timeout: 5000
+    logger-level: full
+    max-auto-retries: 0              #对当前实例的最大重试次数
+    max-auto-retries-next-server: 0  #切换实例的最大重试次数
+

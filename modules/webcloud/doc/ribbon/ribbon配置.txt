@@ -1,0 +1,10 @@
+Ribbon默认超时为1000ms,重试1次。
+###Ribbon超时重试配置
+ribbon:
+  ConnectTimeout: 20000             #毫秒      连接超时时间
+  ReadTimeout: 20000                #毫秒      逻辑处理超时时间
+  OkToRetryOnAllOperations: true    # 是否对所有操作都进行重试,默认在get请求下会重试，其他情况不会重试
+  MaxAutoRetries: 2                 # 对当前实例的最大重试次数
+  MaxAutoRetriesNextServer: 1       # 切换实例的最大重试次数
+
+Ribbon超时重试次数（总的请求次数）:（MaxAutoRetries+1）*（MaxAutoRetriesNextServer+1）

@@ -1,0 +1,17 @@
+Dubbo默认超时时间是1000毫秒，重试次数是2次。
+
+配置消费方超时重试:
+###application.properties
+# 设置服务消费方的超时时间（毫秒）
+dubbo.consumer.timeout=3000
+# 设置服务消费方的重试次数
+dubbo.consumer.retries=2
+或
+###application.xml
+<dubbo:reference interface="com.dubbo.XxxService" retries="2" timeout="3000"/>
+或
+###DubboServiceFactory.java
+@Reference(retries = 2, timeout = 3000)
+private XxxService xxxService;
+
+

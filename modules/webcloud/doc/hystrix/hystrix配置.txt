@@ -1,4 +1,8 @@
 --------------------------------------hystrix配置------------------------------------
+Hystrix的默认的超时时间只有1秒，一般都需要修改这个超时时间。
+Hystrix默认不开启，但是如果开启了hystrix，因为hystrix是在Ribbon外面，所以超时时间需要符合下面规则：
+hystrix超时 >= (MaxAutoRetries + 1) * (1 + MaxAutoRetriesNextServer)*(ribbon ConnectTimeout + ribbon ReadTimeout)
+
 HystrixCommand配置在HystrixCommandProperties中,构造HystrixCommand时通过Setter进行配置
 具体配置如下:
     static final Integer default_metricsRollingStatisticalWindow = Integer.valueOf(10000);
