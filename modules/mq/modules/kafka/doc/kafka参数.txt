@@ -137,7 +137,7 @@ zookeeper.sync.time.ms = 2000
 # smallest ：重置为最小值
 # largest:重置为最大值
 # anything else：抛出异常给consumer
-auto.offset.reset = largest
+auto.offset.reset = latest
 
 # socket的超时时间，实际的超时时间为max.fetch.wait + socket.timeout.ms.
 socket.timeout.ms= 30 * 1000
@@ -448,8 +448,13 @@ bin/kafka-topics.sh --zookeeper localhost:2181 --alter --topic my-topic --delete
 ## zookeeper的follower同leader的同步时间
  zookeeper.sync.time.ms = 2000
 
-## 当zookeeper中没有初始的offset时候的处理方式 。smallest ：重置为最小值 largest:重置为最大值 anything else：抛出异常
- auto.offset.reset = largest
+## auto.offset.reset定义当无法获取消费分区的位移时从何处开始消费。
+auto.offset.reset 默认是latest
+earliest 选项意味着，当Kafka的分区中存在已提交的偏移量（offset）时，消费者将从这些已提交的偏移量处开始消费数据；
+如果分区中没有已提交的偏移量，消费者将从该分区的起始位置开始消费数据。
+latest 选项则表示，当Kafka的分区中存在已提交的偏移量时，消费者同样从这些已提交的偏移量处开始消费数据；
+如果分区中没有已提交的偏移量，消费者将开始消费该分区新产生的数据，而不是从分区的起始位置开始。
+提交过offset，latest和earliest没有区别，但是在没有提交offset情况下，用latest直接会导致无法读取旧数据。
 
 ## socket的超时时间，实际的超时时间是：max.fetch.wait + socket.timeout.ms.
  socket.timeout.ms= 30 * 1000

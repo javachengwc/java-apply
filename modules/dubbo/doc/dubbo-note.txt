@@ -1,4 +1,96 @@
 --------------------dubbo笔记------------------
+Dubbo总体分为业务层(Biz)，RPC层，Remote层。每一层继续做细分，可分为10层。
+这些层在服务暴露和调用过程中没有逐层调用的关系。与其说是10层，也可以说是10个组件。
+业务层是服务的接口和实现类，完成业务逻辑。
+    1，服务接口层(Service)：服务的接口定义和实现，是开发人员实现对外提供的dubbo接口。
+RPC层是Dubbo框架的核心，提供透明化的服务发布和服务引用，可细分为6层
+    2，config配置层，使用@注解，xml配置等方法来配置发布的服务或引用的服务。
+       主要配置类是ServiceConfig和ReferenceConfig。
+    3，proxy代理层，生成服务的客户端Stub和服务器端Skeleton。
+       扩展接口为ProxyFactory。
+       Consumer端生成客户端的代理的调用过程：
+       ReferenceConfig.get()-->ReferenceConfig.init()-->ReferenceConfig.createProxy(map)-->
+       AbstractProxyFactory.getProxy(invoker)-->JavassistProxyFactory.getProxy(invoker,interfaces);
+       Provider端生成服务端的代理的调用过程：
+       ServiceConfig.doExport()-->ServiceConfig.doExportUrls()-->ServiceConfig.doExportUrlsFor1Protocol()-->
+       ServiceConfig.exportLocal(url)-->StubProxyFactoryWrapper.getInvoker(proxy,type,url)-->
+       JavassistProxyFactory.getInvoker(proxy,type,url);
+    4，registry注册层，完成服务地址的注册与发现。
+       在服务暴露过程中，将服务地址发布到注册中心上。
+       在服务引用过程中，对注册中心进行监听与订阅，发现注册中心上面的所有服务地址，
+       并且在服务地址发生变动时能及时地通知服务消费端更新服务引用Invoker。
+       扩展接口为RegistryFactory、Registry和RegistryService。
+       Consumer端服务消费者向注册中心写入自己的元数据信息:
+       ReferenceConfig.createProxy()-->RegistryProtocol.refer()-->RegistryProtocol.doRefer()-->
+       FailbackRegistry.register(url);
+       Consumer端服务消费者向注册中心订阅服务:
+       RegistryProtocol.doRefer()-->FailbackRegistry.subscribe();
+       Provider端注册服务到注册中心：
+       ServiceConfig.doExport()-->ServiceConfig.doExportUrls()-->ServiceConfig.doExportUrlsFor1Protocol()-->
+       RegistryProtocol.export(originInvoker)-->FailbackRegistry.register(url);
+    5，cluster集群层，主要是将相同的服务封装成集群。
+       该层主要是消费端使用，在服务引用过程中，将相同的服务封装成集群对象，
+       当调用服务时，该集群对象负责进行路由选择和负载均衡策略逻辑处理，
+       从服务引用Invoker列表中选择一个Invoker对象发起远程服务调用。
+       扩展接口为Cluster、Directory、Router和LoadBalance。
+    6，monitor监控层，RPC调用次数和调用时间监控，发送数据到monitor监控中心。
+       在服务暴露和服务引用时，为Invoker添加过滤器链时将MonitorFilter过滤器放入过滤器链中，
+       从而将服务名称、服务方法、调用耗时、并发数等信息记录下来，
+       其中服务消费端记录服务提供者的信息，服务提供端记录服务消费者的信息。
+       扩展接口为MonitorFactory、Monitor和MonitorService。
+    7，protocol远程调用层，封装RPC调用，抽象各种协议，
+       目前支持的协议有dubbo、mock、injvm、rmi、hessian、thrift、memcached、redis、rest等。
+       Protocol是服务域，它是Invoker暴露和引用的主功能入口，它负责Invoker的生命周期管理。
+       Invoker是实体域，它是Dubbo的核心模型，其它模型都向它靠扰，或转换成它，它代表一个可执行体，
+       可向它发起invoke调用，它有可能是一个本地的实现，也可能是一个远程的实现，也可能一个集群实现。
+       Provider端服务的创立:
+       ServiceConfig.doExport()-->ServiceConfig.doExportUrls()-->ServiceConfig.doExportUrlsFor1Protocol()-->
+       RegistryProtocol.export(originInvoker)-->RegistryProtocol.doLocalExport()-->DubboProtocol.export()-->
+       DubboProtocol.openServer()-->DubboProtocol.createServer(url);
+       Consumer端获取共享连接:
+       ReferenceConfig.createProxy()-->RegistryProtocol.refer()-->RegistryProtocol.doRefer()-->
+       DubboProtocol.refer()-->DubboProtocol.getClients()-->DubboProtocol.getSharedClient();
+       扩展接口为 Protocol、Invoker、Exporter。
+Remoting层主要实现dubbo协议，具体细分为3层：
+    8，exchange信息交换层，封装请求响应模式，同步转异步，封装Request-Response语义。
+       在这一层主要有两个类HeaderExchangeServer和HeaderExchangeClient，进行消息的发送和接收。
+       扩展接口为Exchanger、ExchangeChannel、ExchangeClient和ExchangeServer。
+    9，transport网络传输层，抽象mina和netty为统一接口，以Message为中心。
+       Provider端生成一个NettyServer:
+       ServiceConfig.doExport()-->ServiceConfig.doExportUrls()-->ServiceConfig.doExportUrlsFor1Protocol()-->
+       RegistryProtocol.export(originInvoker)-->RegistryProtocol.doLocalExport()-->DubboProtocol.export()-->
+       DubboProtocol.openServer()-->DubboProtocol.createServer(url)-->NettyTrasporter.bind();
+       另对于provider端的线程池是FixedThreadPool，默认线程是200。
+       Consumer端生成一个NettyClient:
+       ReferenceConfig.createProxy()-->RegistryProtocol.refer()-->RegistryProtocol.doRefer()-->
+       DubboProtocol.refer()-->DubboProtocol.getClients()-->DubboProtocol.getSharedClient()-->NettyTransporter.connect();
+       另对于consumer端的线程池是CachedThreadPool，默认线程存活时间是1分钟。
+       扩展接口为Channel、Transporter、Client、Server和Codec。
+    10，serialize数据序列化层，将请求消息或响应消息进行序列化之后发送到通信线路上，
+       对收到的消息进行反序列化之后提供给上层进行处理。比如使用第三方序列化框架hession。
+       扩展接口为Serialization、 ObjectInput、ObjectOutput和ThreadPool。
+
+Dubbo服务暴露过程:
+首先，服务提供者在框架启动时，读取服务配置，初始化服务实例，通过Proxy组件使用具体协议(Protocol),
+把服务端暴露的接口封装成Invoker(AbstractProxyInvoker),
+然后，转换成Exporter,框架打开服务端口。最后通过Registry把服务注册到注册中心。
+Dubbo服务发现过程:
+服务消费者在启动时，读取服务配置，初始化服务引用，创建Proxy引用代理，把调用接口封装成Invoker。
+通过Registry向注册中心写入自己的元数据信息，并订阅服务提供者，路由和配置元数据信息。
+订阅时会获取全量的数据，后续通过监听器事件进行更新。
+服务消费者调用服务的过程:
+首先，调用过程从一个Proxy代理开始，Proxy持有一个Invoker对象，触发invoke调用。
+在invoke调用过程中，需要使用Cluster，Cluster负责容错，如调用失败的重试。
+Cluster在调用之前会通过Directory获取所有可以调用的远程服务Invoker列表。
+由于可以调用的远程服务有很多，如果用户配置了路由规则，会根据路由规则将Invoker列表过滤一遍。
+然后，继续通过LoadBalance做负载均衡，最终选出一个可以调用的远程Invoker。
+这个Invoker在调用之前会经过一个过滤器链，处理上下文，限流，计数等。
+接着，使用Client做数据传输，比如netty client, 传输之前需要做一些数据协议的构造，会用到Codec接口。
+构造完后，对数据包做序列化(Serialization)，然后传输到服务提供方。
+服务提供方接收到数据包后，也会使用Codec处理协议等，处理完后再对数据报文做反序列化处理。
+随后，反序列化得到的Request会被分配到线程池中进行处理。Server根据Request请求查找对应的Exporter(内部持有Invoker)，
+Invoker是被用装饰器模式一层一层套了很多Filter的。因此在调用最终实现类前，会经过一个个服务提供方的过滤器。
+最终，得到具体接口的实现类并调用，再原路返回结果。
 
 dubbo的连接数据量限制上限为8m左右，超过这样的数据量会报错
 java.io.IOException: Data length too large: 15144823, max payload: 8388608, channel: NettyChannel

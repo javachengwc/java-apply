@@ -10,7 +10,7 @@ rebalance.max.retries       ###消费均衡的重试次数
                                如果consumers集合改变了，当分配正在执行时(正在做负载均衡时，consumer的数目变化了)，
                                这个重新平衡会失败并重新负载均衡
 rebalance.backoff.ms        ###消费均衡重试之间的时间间隔
-auto.offset.reset           ###取值smallest|largeset，新的consumer加入进来的时候，从最新的消息消费，还是从最早的消息开始消费
+auto.offset.reset           ###取值latest / earliest
 zookeeper.session.timeout.ms    ###zookeeper会话的超时时间
                                如果consumer在这段时间内没有向zookeeper发送心跳信息，则它会被认为挂掉了，并且reblance将会产生
 zookeeper.connection.timeout.ms ###zookeeper连接的超时时间

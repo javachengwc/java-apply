@@ -28,14 +28,13 @@ Producer将消息发布到它指定的topic中,并负责决定发布到哪个分
 
 Consumers
 发布消息通常有两种模式：队列模式（queuing）和发布-订阅模式(publish-subscribe)。
-队列模式中，consumers可以同时从服务端读取消息，每个消息只被其中一个consumer读到；发布-订阅模式中消息被广播到所有的consumer中。
-Consumers可以加入一个consumer 组，共同竞争一个topic，topic中的消息将被分发到组中的一个成员中。同一组中的consumer可以在不同的程序中，也可以在不同的机器上。
+队列模式中，consumers可以同时从服务端读取消息，每个消息只被其中一个consumer读到；发布-订阅模式中消息被广播到所有的consumer group中。
+topic中的消息将被分发到组中的一个成员中。同一组中的consumer可以在不同的程序中，也可以在不同的机器上。
 如果所有的consumer都在一个组中，这就成为了传统的队列模式，在各consumer中实现负载均衡。
-如果所有的consumer都不在不同的组中，这就成为了发布-订阅模式，所有的消息都被分发到所有的consumer中。
+如果所有的consumer都在不同的组中，这就成为了发布-订阅模式，所有的消息都被分发到所有的consumer中。
 更常见的是，每个topic都有若干数量的consumer组，每个组都是一个逻辑上的“订阅者”，为了容错和更好的稳定性，每个组由若干consumer组成。
 这其实就是一个发布-订阅模式，只不过订阅者是个组而不是单个consumer。
 Kafka的consumer是以pull的形式获取消息数据的。不同于队列和发布-订阅模式，kafka采用了consumer group的模式。
-通常的，一般采用一个consumer中的一个group对应一个业务，配合多个producer提供数据。
 
 相比传统的消息系统，Kafka可以一定程度上保证有序性。
 传统的队列在服务器上保存有序的消息，如果多个consumers同时从这个服务器消费消息，服务器就会以消息存储的顺序向consumer分发消息。
@@ -43,11 +42,11 @@ Kafka的consumer是以pull的形式获取消息数据的。不同于队列和发
 为了避免故障，这样的消息系统通常使用“专用consumer”的概念，其实就是只允许一个消费者消费消息，当然这就意味着失去了并发性。
 
 在这方面Kafka通过分区的概念，可以在多个consumer组并发的情况下提供较好的有序性和负载均衡。
-将每个分区只分发给一个consumer组，这样一个分区就只被这个组的一个consumer消费，就可以顺序的消费这个分区的消息。
-因为有多个分区，依然可以在多个consumer组之间进行负载均衡。注意consumer组的数量不能多于分区的数量，也就是有多少分区就允许多少并发消费。
+将每个分区分发给一个consumer组，这样一个分区就只被这个组的一个consumer消费，就可以顺序的消费这个分区的消息。
+因为有多个分区，依然可以consumer组中多个consumer之间进行负载均衡。
+注意consumer组的consumer数量不能多于分区的数量，也就是有多少分区就允许多少并发消费。
 Kafka只能保证一个分区之内消息的有序性，在不同的分区之间是不可以的，这可以满足大部分应用的需求。
-如果需要topic中所有消息的有序性，那就只能让这个topic只有一个分区，当然也就只有一个consumer组消费它。
-
+如果需要topic中所有消息的有序性，那就只能让这个topic只有一个分区，当然也就只有一个consumer消费它。
 
 kafka是通过log(日志)来记录消息发布的.每当产生一个消息,kafka会记录到本地的log文件中,这个log和平时的log有一定的区别.
 这个log文件默认的位置在config/server.properties中指定的.默认的位置是log.dirs=/tmp/kafka-logs,linux不用说,windows的话就在你对应磁盘的根目录下.

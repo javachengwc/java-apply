@@ -3,7 +3,7 @@ es为提升查询效率，提供了多种查询缓存
 http://localhost:9200/_cat/nodes?v&h=name,fm,fcm,sm,qcm,im             ###查看es缓存使用情况
 ###fielddata.memory_size (fm)          ###字段缓存占用内存
 ###filter_cache.memory_size (fcm)      ###过滤语句缓存占用内存
-###segments.memory (sm)                ###每个分片包含的断占用内存
+###segments.memory (sm)                ###每个分片包含的段占用内存
 
 GET /_stats/fielddata?fields=*                                   ###各个分片、索引的fielddata在内存中的占用情况
 GET /_nodes/stats/indices/fielddata?fields=*                     ###每个node的fielddata在内存中的占用情况
