@@ -1,0 +1,76 @@
+Kafka的事务机制是一种保证消息系统中一组相关操作要么全部成功，要么全部失败的机制。
+它旨在提供端到端的一次语义（End-to-End Exactly-Once Semantics），确保消息在传输过程中不会被重复、丢失或不一致。
+Kafka 的事务机制为分布式消息系统提供了一种可靠的方式，确保消息的一致性和可靠性，
+适用于需要确保端到端处理的原子性操作的场景。
+
+Kafka的事务引入了两个关键的组件：Transaction Coordinator（事务协调器）和 Transaction Log（事务日志）。
+Transaction Coordinator（事务协调器）:
+Transaction Coordinator 是一个运行在每个 Kafka Broker 上的模块，
+Transaction Coordinator 的主要责任是协调和管理事务的生命周期,
+它与 Producer 和 Consumer 之间进行通信，主要负责分配PID，记录事务状态等操作，
+确保事务的正确执行,每个事务协调器负责一组Partition的事务协调工作。
+
+Transaction Log（事务日志）:
+Transaction Log 是 Kafka 的一个内部 Topic，
+Transaction Log 由多个Partition组成，每个​Partition有一个 Leader。每个 Leader 对应于一个 Kafka Broker，
+该 Broker 上的 Transaction Coordinator 负责管理这些分区的写操作。
+通过内部的复制协议和选举机制，Kafka 确保 Transaction Coordinator 的可用性和 Transaction State 的持久性，
+确保了即使其中一个 Broker 发生故障，事务仍然可以正确进行。
+Transaction Log Topic 内部存储的是事务的最新状态和相关的元数据信息，而不是存储原始消息。
+事务状态包括 "Ongoing"（进行中）、"Prepare commit"（准备提交）和 "Completed"（已完成）。
+Kafka Producer 生产的原始消息仍然存储在 Producer 指定的目标 Topic 中，
+Transaction Log Topic 主要用于跟踪和管理事务的状态，确保它们的一致性和可靠性。
+
+Kafka事务执行流程：
+1，查找 Transaction Coordinator：
+    Producer 通过向任意一个 Broker 发送 FindCoordinatorRequest 请求，获取 Transaction Coordinator 的地址，
+    Transaction Coordinator 负责协调和管理事务的生命周期。
+2，初始化事务（initTransaction）：
+    Producer 发送 InitPidRequest 给 Transaction Coordinator，获取 PID（Producer ID）。
+    Transaction Coordinator 记录 PID 和 Transaction ID 的映射关系，并执行一些额外的初始化工作，
+    包括恢复之前未完成的事务和递增 PID 对应的 epoch。
+3，开始事务（beginTransaction）：
+    Producer 执行 beginTransaction() 操作，本地记录该事务的状态为开始。
+    此时，Transaction Coordinator 尚未被通知，只有在 Producer 发送第一条消息后，Transaction Coordinator 才认为事务已经开启。
+4，Read-Process-Write 流程：
+    当Producer 开始发送消息，Transaction Coordinator 将消息存储于 Transaction Log 中，并将其状态标记为 BEGIN。
+    如果该事务是第一个消息，Transaction Coordinator 还会启动事务的计时器（每个事务都有自己的超时时间）。
+    注册到 Transaction Log 后，Producer 继续发送消息，即使事务未提交，消息已经保存在 Broker 上。
+    即使后续执行了事务回滚，消息也不会删除，只是状态字段标记为 abort。
+5，事务提交或终结（commitTransaction/abortTransaction）：
+    在 Producer 执行 commitTransaction 或 abortTransaction 时，Transaction Coordinator 执行两阶段提交：,
+    第一阶段，将 Transaction Log 中该事务的状态设置为 PREPARE_COMMIT 或 PREPARE_ABORT。
+    第二阶段，将 Transaction Marker 写入事务涉及到的所有消息，即将消息标记为 committed 或 aborted。
+    这一步 Transaction Coordinator 会发送给每个事务涉及到的 Leader。
+    Broker 收到请求后，将对应的 Transaction Marker 控制信息写入日志。
+    一旦 Transaction Marker 写入完成，Transaction Coordinator 将最终的
+    COMPLETE_COMMIT 或 COMPLETE_ABORT 状态写入 Transaction Log，标明该事务结束。
+Consumer消费：
+    Consumer 在 read_committed 模式下只需做一些消息的过滤，即过滤掉回滚了的事务和处于 open 状态的事务的消息。
+    过滤这些消息时，Consumer 利用消息中的元数据信息，不需要与 Transactional Coordinator 进行 RPC 交互。
+
+//生产者（Transactional Producer）启动事务
+public class KafkaTransactionalProducerService {
+
+    @Autowired
+    private KafkaTemplate&lt;String, String&gt; kafkaTemplate;
+
+    @Transactional
+    public void produceMessagesInTransaction() {
+        //在事务中发送多个消息到多个 topic 和 partition
+        kafkaTemplate.send("topic1", "key", "msg1");
+        kafkaTemplate.send("topic2", "key", "msg2");
+    }
+}
+
+//消费者（Transactional Consumer）启动事务
+@Service
+public class KafkaTransactionalConsumerService {
+
+    @KafkaListener(topics = "topic1")
+    @Transactional
+    public void consumeMessage(String message) {
+        // 在事务中处理消息
+        System.out.println("Received message: " + message);
+    }
+}

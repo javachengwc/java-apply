@@ -1,0 +1,10 @@
+Kafka Producer 的幂等性指的是当发送同一条消息时，数据在 Server 端只会被持久化一次，数据不丟不重。
+Kafka为了实现幂等性，引入了ProducerID和SequenceNumbe。
+Producer ID(下称PID)，它唯一标识一个producer。
+SequenceNumbe序列号字段标识某个PID producer发送的消息。seq number从0开始计数并严格单调增加。
+当Producer发送消息给Broker时，Broker接收到消息并将其追加到消息流中。
+此时，Broker返回Ack信号给Producer时，发生异常导致Producer接收Ack信号失败。
+对于Producer来说，会触发重试机制，将消息再次发送，
+但由于引入了幂等性，在每条消息中附带了PID（ProducerID）和SequenceNumber。
+相同的PID和SequenceNumber发送给Broker，而之前Broker缓存过之前发送的相同的消息，
+那么在消息流中的消息就只有一条，不会出现重复发送的情况。
