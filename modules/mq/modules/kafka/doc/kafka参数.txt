@@ -148,8 +148,8 @@ fetch.message.max.bytes = 1024 * 1024
 
 # true时，Consumer会在消费消息后将offset同步到zookeeper，这样当Consumer失败后，新的consumer就能从zookeeper获取最新的offset
 auto.commit.enable = true
-# 自动提交的时间间隔
-auto.commit.interval.ms = 60 * 1000
+# 自动提交的时间间隔，默认5秒钟
+auto.commit.interval.ms = 5 * 1000
 
 # 用于消费的最大数量的消息块缓冲大小，每个块可以等同于fetch.message.max.bytes中数值
 queued.max.message.chunks = 10
@@ -469,7 +469,7 @@ latest 选项则表示，当Kafka的分区中存在已提交的偏移量时，�
  auto.commit.enable = true
 
 ## 自动提交的时间间隔
- auto.commit.interval.ms = 60 * 1000
+ auto.commit.interval.ms = 5 * 1000
 
 ## 用来处理消费消息的块，每个块可以等同于fetch.message.max.bytes中数值
  queued.max.message.chunks = 10

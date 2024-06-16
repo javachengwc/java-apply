@@ -7,7 +7,7 @@ kafka消息传递的三种语义：
 producer ack确认机制：
     Ack=0，相当于异步发送，意味着producer不等待broker同步完成，消息发送完毕继续发送下一批信息。当服务器发生故障时很可能发生数据丢失。
     Ack=1，producer要等待leader成功收到消息并确认，才发送下一条message。提供较低的延迟性以及较好的持久性。但是如果partition下的leader死亡，而follower尚未复制数据，数据就会丢失。
-    Ack=-1，leader收到所有消息，且follower同步完数据，才发送下一条数据。延迟性最差，持久性最好（即可靠性最好）。
+    Ack=-1，leader收到所有消息，且指定个数的follower(min.insync.replicas)同步完数据，才发送下一条数据。延迟性最差，持久性最好（即可靠性最好）。
 
 幂等producer指producer.send的逻辑是幂等的，即发送相同的Kafka消息，broker端不会重复写入消息。同一条消息Kafka保证底层日志中只会持久化一次，既不会丢失也不会重复。、
 等性可以极大地减轻下游consumer系统实现消息去重的工作负担，因此是非常实用的功能。值得注意的是，幂等producer提供的语义保证是有条件的：

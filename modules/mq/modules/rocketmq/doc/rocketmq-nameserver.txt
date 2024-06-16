@@ -1,0 +1,7 @@
+NameServer在RocketMQ中是提供到Broker的路由功能。
+路由中心的功能，在所有的MQ中都是需要的。
+Kafka是用ZooKeeper和一个作为Controller的Broker一起来提供路由服务。
+RabbitMQ是由每一个Broker来提供路由服务。
+RocketMQ把这个路由中心单独抽取了出来，并独立部署，这就是NameServer。
+当NameServer全部挂了后，生产者和消费者就无法工作。
+

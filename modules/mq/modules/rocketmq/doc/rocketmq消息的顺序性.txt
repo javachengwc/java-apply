@@ -1,0 +1,8 @@
+RocketMQ支持消息的顺序发送。
+RocketMQ发送者发送消息时，会通过MessageQueue轮询的方式保证消息尽量均匀的分布到所有的MessageQueue上，
+而MessageQueue是RocketMQ存储消息的最小单元，它们之间的消息都是互相隔离的，在这种情况下，是无法保证消息有序的。
+要保证消息顺序发送，只需要将有序的一组消息都存入同一个MessageQueue里就可以。
+RocketMQ中，可以在发送者发送消息时指定一个MessageSelector对象，让这个对象来决定消息发入哪一个MessageQueue。
+这样就可以保证一组有序的消息能够发到同一个MessageQueue里。
+通常保证Topic全局消息有序的方式，就是将Topic配置成只有一个MessageQueue队列(默认是4个)。就能保证消息全局有序。
+但这种方式对整个Topic的消息吞吐影响很大。

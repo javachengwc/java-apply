@@ -1,0 +1,26 @@
+kafka的顺序性的特性:
+    1,kafka中，写入一个partion分片中的数据是一定有顺序的。
+    2,kafka中一个消费者消费一个partion的数据，消费者取出数据时，也是有顺序的。
+Producer生产端的顺序性:
+    1,一个Topic（主题）只创建一个Partition(分区)，
+这样生产者的所有数据都发送到了一个Partition(分区)，保证了消息的消费顺序。
+也可以生产者在发送消息的时候指定要发送的Partition(分区)。
+    2,要保障消息的有序性，对消息的可靠性也有要求，
+    a,如果消息发送的重试次数retries设置为大于0，
+在没开启消息幂等性的情况下，需要设置单个请求发送数量max_in_flight_requests_per_connection=1，
+这样即使重新发送消息，也可以保证发送的顺序和写入的顺序一致。但这会导致消息的吞吐量大大降低。
+    b,Producer消息的幂等性,也可以解决重试机制引起的消息乱序的问题
+设置enable.idempotence=true，开启Producer消息的幂等性，
+并且允许max_in_flight_requests_per_connection设置大于1。
+开启幂等后，Producer发送消息的每个<Topic, Partition>都对应一个单调递增的Sequence Number。
+同样，Broker端也会为每个<PID, Topic, Partition>维护一个序号，并且每Commit一条消息时将其对应序号递增。
+对于接收的每条消息，如果其序号比Broker维护的序号）大一，则Broker会接受它；
+如果消息序号比Broker维护的序号差值比一大，说明中间有数据尚未写入，即乱序，此时Broker拒绝该消息，
+Producer抛出InvalidSequenceNumber。发送失败后会重试，这样可以保证每个消息都被发送到broker。
+Consumer消费端的顺序性:
+    只要保证只有一个消费者消费一个partion的数据，消费者取出数据时，也是有顺序的。
+
+
+
+
+

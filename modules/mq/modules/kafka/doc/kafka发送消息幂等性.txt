@@ -1,4 +1,5 @@
 Kafka Producer 的幂等性指的是当发送同一条消息时，数据在 Server 端只会被持久化一次，数据不丟不重。
+设置enable.idempotence=true，开启生产者的幂等性。
 Kafka为了实现幂等性，引入了ProducerID和SequenceNumbe。
 Producer ID(下称PID)，它唯一标识一个producer。
 SequenceNumbe序列号字段标识某个PID producer发送的消息。seq number从0开始计数并严格单调增加。
@@ -8,3 +9,10 @@ SequenceNumbe序列号字段标识某个PID producer发送的消息。seq number
 但由于引入了幂等性，在每条消息中附带了PID（ProducerID）和SequenceNumber。
 相同的PID和SequenceNumber发送给Broker，而之前Broker缓存过之前发送的相同的消息，
 那么在消息流中的消息就只有一条，不会出现重复发送的情况。
+Broker端也会为每个<PID, Topic, Partition>维护一个序号，并且每Commit一条消息时将其对应序号递增。
+对于接收的每条消息，如果其序号比Broker维护的序号）大一，则Broker会接受它。
+如果消息序号比Broker维护的序号差值比一大，说明中间有数据尚未写入，即乱序，
+此时Broker拒绝该消息，Producer抛出InvalidSequenceNumber。
+如果消息序号小于等于Broker维护的序号，说明该消息已被保存，即为重复消息，
+Broker直接丢弃该消息，Producer抛出DuplicateSequenceNumberSender。
+发送失败后会重试，这样可以保证每个消息都被发送到broker。

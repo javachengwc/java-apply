@@ -1,0 +1,8 @@
+RocketMQ默认提供了消息轨迹的功能，提供了MQ消息轨迹数据的关键信息。
+traceTopicEnable=true，打开消息轨迹功能，默认值是false。
+默认情况下，消息轨迹数据是存于一个系统级别的Topic ,RMQ_SYS_TRACE_TOPIC。
+这个Topic在Broker节点启动时，会自动创建出来。也支持客户端自定义轨迹数据存储的Topic。
+在客户端的两个核心对象 DefaultMQProducer和DefaultMQPushConsumer，
+它们的构造函数中，都有两个可选的参数来打开消息轨迹存储。
+    enableMsgTrace：是否打开消息轨迹。默认是false。
+    customizedTraceTopic：配置将消息轨迹数据存储到用户指定的Topic。

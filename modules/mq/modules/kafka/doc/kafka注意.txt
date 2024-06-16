@@ -1,3 +1,0 @@
-在程序中consumer消费掉kafka的消息后，offset更新到zookeeper会有一定的延迟时间，通过参数auto.commit.interval.ms指定延迟时间，默认是1分钟。
-如果在延迟时间到达之前重启程序，consumer会重复消费之前的kafka消息。为了避免此种情况，可以在创建Consumer的时候，设定此参数为一个比较小的值。
-

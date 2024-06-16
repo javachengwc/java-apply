@@ -1,0 +1,24 @@
+kafka消息不丢失
+1，Producer生产端ack确认机制，ack=-1或all并设置发送失败重试次数。
+   发送的消息是leader收到消息，需要等待配置个数的follower(min.insync.replicas)都成功写入。
+   才确认收到消息，发送放才能发送下一条数据。这种策略会保证只要有一个副本存活就不会丢失数据。
+   但如果min.insync.replicas=1,则可能丢消息，此设置跟ack=1的情况一样。
+   开启重试后，可对发送失败的消息进行重发送，但如果重试次数用完，消息也没发送成功，
+   需要有兜底措施，比如保存发送失败的消息到表中，定时重新触发消息发送。
+2，kafka服务端，设置刷盘策略，flush.messages设置每次刷盘多少条消息，flush.ms设置刷盘间隔时间。
+   保证ISR中有3个follower，leader需要所有ISR的follower确认，才给生产者返回发送成功，ack=-1或all。
+3，Consumer消费端消费消息如下：
+   如果Consumer消费端consumer消费数小于partition_num分区数
+   比如partiton_num=2，而只有1个consumer进程订阅这个topic，对应的，stream_num设为2，也就是说启两个线程并行处理message。
+   如果auto.commit.enable=true，当consumer fetch了一些数据但还没有完全处理掉的时候，刚好到commit interval出发了提交offset操作，接着consumer crash掉了。
+   这时已经fetch的数据还没有处理完成但已经被commit掉，因此没有机会再次被处理，数据丢失。
+   如果auto.commit.enable=false，假设consumer的两个fetcher各自拿了一条数据，并且由两个线程同时处理，这时线程t1处理完partition1的数据，手动提交offset，
+   当手动执行commit的时候，实际上是对这个consumer进程所占有的所有partition进行commit，kafka暂时还没有提供更细粒度的commit方式，
+   也就是说，即使t2没有处理完partition2的数据，offset也被t1提交掉了。如果这时consumer crash掉，t2正在处理的这条数据就丢失了。
+   Consumer消费端能够严格的不丢数据，解决办法有两个：
+   a，手动commit offset，并针对partition_num启同样数目的consumer进程，
+   这样就能保证一个consumer进程占有一个partition，commit offset的时候不会影响别的partition的offset。
+   b，手动commit offset，另外在consumer端再将所有fetch到的数据缓存到queue里，
+   当把queue里所有的数据处理完之后，再批量提交offset，这样就能保证只有处理完的数据才被commit。
+
+
