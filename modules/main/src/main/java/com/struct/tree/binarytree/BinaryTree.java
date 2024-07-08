@@ -173,6 +173,7 @@ public class BinaryTree<T extends Comparable<T>> {
 	}
 
 	//层序遍历
+	//广度优先
 	public void levelOrder(TreeNode<T> node) {
 		if (node == null) {
 			return;
@@ -193,6 +194,7 @@ public class BinaryTree<T extends Comparable<T>> {
 	}
 
 	//二叉树的层次遍历
+	//广度优先
 	public static <T> List<List<T>> levelEvery(TreeNode<T> node){
 		List<List<T>> result = new ArrayList<List<T>>();
 		if(node == null){
@@ -219,6 +221,25 @@ public class BinaryTree<T extends Comparable<T>> {
 		}
 		System.out.println(result);
 		return result;
+	}
+
+	//深度优先
+	public void dfs(TreeNode<T> node) {
+		if (node == null) {
+			return;
+		}
+		Stack<TreeNode> stack = new Stack<>();
+		stack.push(node);
+		while (!stack.isEmpty()) {
+			TreeNode cur = stack.pop();
+			System.out.print(cur.getData() + " ");
+			if (cur.right != null) {
+				stack.push(cur.right);
+			}
+			if (cur.left != null) {
+				stack.push(cur.left);
+			}
+		}
 	}
 
 }
