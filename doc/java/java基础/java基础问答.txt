@@ -1,7 +1,7 @@
 1，hashCode()与equals()方法的关系
 hashCode()方法得到对象的哈希值，相当于对象指纹信息，可以使用hashcode做一些提前预判。
     如果两个对象hashcode不相同，那这两个对象一定是不同的对象。
-    如果连个对象hashcode相同，不表示两个对象一定是同一个对象，有可能是两个对象。
+    如果两个对象hashcode相同，不表示两个对象一定是同一个对象，有可能是两个对象。
     如果两个对象相等，那么它们的hashcode就一定相等。
 java中一些集合类（map）实现中，比较两个对象是否相等，会先调用对象hashCode()得到hashcode，先比较hashcode,
 如果hashcode不相同，就直接认为两个对象不相同；如果hashcode相等，再进行equals()方法调用，来确定两个对象

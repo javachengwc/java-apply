@@ -32,7 +32,7 @@ public class ConcurrentHashMap1<K,V> {
     //转红黑树的最小容量
     static final int MIN_TREEIFY_CAPACITY = 64;
 
-    //扩容时数据前移的步长，默认最小为16
+    //扩容线程每次最少要迁移16个hash桶
     private static final int MIN_TRANSFER_STRIDE = 16;
 
     //扩容位数标识，主要用于扩容时生成一个巨大负数使用(第32位的标志位与 16位为1左移16位)
@@ -149,10 +149,27 @@ public class ConcurrentHashMap1<K,V> {
     //元素个数的基础计数，加上counterCells数组所有元素的value值总和 即为所有元素个数
     private transient volatile long baseCount;
 
-    //扩容指数：为0 是默认值，为负数则正在扩容，为正数代表临界值(阈值)
+    //jdk8采用多线程扩容，扩容过程中，通过CAS设置sizeCtl，transferIndex等变量协调多个线程进行并发扩容
+    //sizeCtl=0：表示没有指定初始容量
+    //sizeCtl>0：表示初始容量
+    //sizeCtl=-1,标记作用，告知其他线程，正在初始化
+    //sizeCtl=0.75*n ,扩容阈值，正常状态
+    //sizeCtl < 0 : 表示有其他线程正在执行扩容
+    //sizeCtl = (resizeStamp(n) << RESIZE_STAMP_SHIFT) + 2 :表示此时只有一个线程在执行扩容
     private transient volatile int sizeCtl;
 
-    //标识扩容时还未被分配迁移数据的个数
+    //扩容索引，表示已经分配给扩容线程的table数组索引位置。
+    //主要用来协调多个线程，并发安全地获取迁移任务（hash桶）。
+    //扩容开始时transferindex=table.length
+    //扩容线程A以cas的方式修改transferindex=transferindex-stride,比如32-16=16 ,
+    //然后按照降序迁移table[31]--table[16]这个区间的hash桶。
+    //stride为扩容线程每次迁移的桶个数，最小值是MIN_TRANSFER_STRIDE = 16;
+    //如果线程2访问到了ForwardingNode节点，线程2执行的put或remove等写操作，那么就会先帮其扩容。
+    //如果线程2执行的是get等读方法，则会调用ForwardingNode的find方法，去nextTable里面查找相关元素。
+    //如果准备加入扩容的线程，发现以下情况，将放弃扩容。
+    //1，发现transferIndex=0,即所有桶扩容均已分配
+    //2，发现扩容线程已经达到最大扩容线程数
+    //transferIndex=0表示扩容分配完成
     private transient volatile int transferIndex;
 
     //用于判断counterCells是否正在被使用，0为可使用，1为当前有线程正在使用
@@ -454,7 +471,8 @@ public class ConcurrentHashMap1<K,V> {
         return (n < 0L) ? 0L : n; // ignore transient negative values
     }
 
-    //ForwardingNode 继承 Node，扩容时使用，标志当前节点正在移位
+    //ForwardingNode 继承 Node，扩容时使用，表示其他线程正在扩容，并且此节点已经扩容完毕
+    //ForwardingNode关联了nextTable,扩容期间可以通过find方法，访问已经迁移到了nextTable中的数据
     static final class ForwardingNode<K,V> extends ConcurrentHashMap1.Node<K,V> {
         final ConcurrentHashMap1.Node<K,V>[] nextTable;
         ForwardingNode(ConcurrentHashMap1.Node<K,V>[] tab) {
@@ -541,10 +559,12 @@ public class ConcurrentHashMap1<K,V> {
                             || (nt = nextTable) == null || transferIndex <= 0)
                         break;
                     if (U.compareAndSwapInt(this, SIZECTL, sc, sc + 1))
+                        //调用transfer()扩容
                         transfer(tab, nt);
                 }
                 else if (U.compareAndSwapInt(this, SIZECTL, sc,
                         (rs << RESIZE_STAMP_SHIFT) + 2))
+                    //调用transfer()扩容
                     transfer(tab, null);
                 s = sumCount();
             }
@@ -570,7 +590,7 @@ public class ConcurrentHashMap1<K,V> {
         return table;
     }
 
-    //调整数组的的大小
+    //调整数组的的大小,协调多个线程如何调用transfer方法进行hash桶的迁移
     private final void tryPresize(int size) {
         int c = (size >= (MAXIMUM_CAPACITY >>> 1)) ? MAXIMUM_CAPACITY : tableSizeFor(size + (size >>> 1) + 1);
         int sc;
@@ -614,9 +634,10 @@ public class ConcurrentHashMap1<K,V> {
     //扩容,参数tab表示旧的哈希表，参数nextTab表示构造的新哈希表，要么传入ConcurrentHashMap的nextTable属性，要么传入null。
     private final void transfer(ConcurrentHashMap1.Node<K,V>[] tab, ConcurrentHashMap1.Node<K,V>[] nextTab) {
         int n = tab.length, stride;
-        //stride决定一个线程最大处理的哈希桶数量
+        //stride决定一个线程处理的哈希桶数量
         //n >>> 3 表示表长度除以8
         if ((stride = (NCPU > 1) ? (n >>> 3) / NCPU : n) < MIN_TRANSFER_STRIDE)
+            //确保每次迁移的node个数不少于16个
             stride = MIN_TRANSFER_STRIDE; // subdivide range
         if (nextTab == null) {            // initiating
             try {

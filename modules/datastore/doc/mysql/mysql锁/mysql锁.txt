@@ -78,6 +78,7 @@ Next-key锁（LOCK_ORNIDARY）        ------ 临键锁= Gap Lock + Record Lock,�
 监控和分析事务及可能存在的锁问题涉及的相关表：
 show engine innodb status;                               ---查看最近死锁情况(如果发生过死锁)
 select * from information_schema.innodb_trx;             ---查看当前的事务
+select * from performance_schema.data_locks;             ---查看当前的锁情况
 kill id  #杀死sql线程
 select * from information_schema.INNODB_LOCKS;           ---查看当前锁定的事务
 select * from information_schema.INNODB_LOCK_WAITS;      ---查看当前等锁的事务
