@@ -23,8 +23,8 @@ public class GeneralMath {
         System.out.println(Math.cbrt(27));
         //log10
         System.out.println(Math.log10(100));
-        //log
-        System.out.println(Math.log(2));
+        //Math.log默认以e为底，约等于2.71828
+        System.out.println("log="+Math.log(2));
 
         BigDecimal cc = new BigDecimal("25.25");
         DecimalFormat format = new DecimalFormat("#.#");

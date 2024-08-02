@@ -35,28 +35,34 @@ public class MergeSort {
 	}
 
 	private static void merge(int[] a, int left, int middle, int right) {
-		int[] tmpArr = new int[a.length];
-		int mid = middle + 1; // 右边的起始位置
-		int tmp = left;
-		int third = left;
-		while (left <= middle && mid <= right) {
+		int[] tmpArray = new int[a.length];
+		int tmpIndex = left;
+
+		int aIndex = left;
+
+		int leftStart=left;
+		int leftEnd =middle;
+		int rightStart = middle + 1; // 右边的起始位置
+		int rightEnd = right;
+		while (leftStart <= leftEnd && rightStart <= rightEnd) {
 			// 从两个数组中选取较小的数放入中间数组
-			if (a[left] <= a[mid]) {
-				tmpArr[third++] = a[left++];
+			if (a[leftStart] <= a[rightStart]) {
+				tmpArray[tmpIndex++] = a[leftStart++];
 			} else {
-				tmpArr[third++] = a[mid++];
+				tmpArray[tmpIndex++] = a[rightStart++];
 			}
 		}
 		// 将剩余的部分放入中间数组
-		while (left <= middle) {
-			tmpArr[third++] = a[left++];
+		while (leftStart <= leftEnd) {
+			tmpArray[tmpIndex++] = a[leftStart++];
 		}
-		while (mid <= right) {
-			tmpArr[third++] = a[mid++];
+		while (rightStart <= rightEnd) {
+			tmpArray[tmpIndex++] = a[rightStart++];
 		}
 		// 将中间数组复制回原数组
-		while (tmp <= right) {
-			a[tmp] = tmpArr[tmp++];
+		while (aIndex <= right) {
+			a[aIndex] = tmpArray[aIndex];
+			aIndex++;
 		}
 	}
 }
