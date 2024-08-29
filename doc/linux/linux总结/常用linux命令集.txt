@@ -4,6 +4,7 @@
                  shared：共享内存，一般系统不会用到。 buffers：系统分配但未被使用的buffers 数量。 cached：系统分配但未被使用的cache 数量。buffer 与cache 的区别见后面。 total = used + free   
      第2行   -/+ buffers/cached：used：也就是第一行中的used - buffers-cached   也是实际使用的内存总量。 free：未被使用的buffers 与cache 和未被分配的内存之和，这就是系统当前实际可用内存。
  echo 1 > /proc/sys/vm/drop_caches        ---释放内存
+ echo 3 > /proc/sys/vm/drop_caches        ---释放缓存
 ----------------------------
 查看进程占用内存(比较准确的方式)
 echo 0 $(awk '/TYPE/ {print "+", $2}' /proc/pid/smaps) | bc

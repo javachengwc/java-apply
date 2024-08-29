@@ -1,0 +1,49 @@
+# 配置文件中redis公共配置
+spring:
+  redis:
+    enable: true             #是否启用缓存
+    impl: redisson           #redis客户端的实现方式，包含ctgjedis，jedis，redisson三个值，默认edisson。
+    keyPrefix: dc            #key的前缀
+    cluster:
+      nodes: ${redisAddr}    #集群模式下节点的地址
+    password: ${redisPwd}    #密码
+    database: 0              #使用的数据库
+
+# redisson配置
+spring:
+  redisson:
+    mode: single                 #缓存模式，有三种single，cluster，MasterSlave
+    single: ${redisAddr}         #mode=signle时指定该参数，表示节点地址
+    master: ${redisAddr}         #mode=MasterSlave时指定该参数，表示主节点地址
+    slave: ${redisAddr}          #mode=MasterSlave时指定该参数，表示从节点地址，逗号隔开
+    readMode: MASTER             #设置读操作的节点，默认是slave节点
+    scanInterval: 1000           #redis扫描间隔，单位毫秒
+    masterConnectionMinimumIdleSize: 10   #redis主节点最小的空闲连接数
+    slaveConnectionMinimumIdleSize: 10    #redis从节点最小的空闲连接数
+    masterConnectionPoolSize: 500         #redis主节点连接池大小
+    slaveConnectionPoolSize: 500          #redis每个从节点连接池大小
+    timeout: 30000                        #redis服务响应超时时间，命令发送成功开始计时，单位毫秒
+    connectTimeout: 30000                 #连接超时时间，单位毫秒
+    idleConnectionTimeout: 10000          #空闲连接超时时间，单位毫秒
+    pingConnectionInterval: 30000         #每个连接到redis的ping命令发送间隔时间，单位毫秒
+    retryAttempts: 3                      #redis命令重试次数
+    retryInterval: 1500                   #重试间隔时间，单位毫秒
+    failedSlaveCheckInterval: 1500        #从节点失联重试间隔时间，单位毫秒
+    failedSlaveReconnectionInterval: 1500 #从节点失联重连间隔时间，单位毫秒
+
+#jedis的配置
+spring:
+  jedis:
+    mode: single           #缓存模式，有single，cluster两种模式
+    single: ${redisAddr}   #mode=signle时指定该参数，表示节点地址
+    maxTotal: 10           #最大连接数
+    maxIdle: 10            #最大空闲链接数
+    minIdle: 3             #最小空闲连接数
+    maxWaitMillis: 3000    #最大等待毫秒数
+
+#ctgjedis的配置
+spring:
+  ctgjedis:
+    username: ${username}            #用户名
+    password: ${password}            #密码
+    database: 0                      #指定使用的数据库

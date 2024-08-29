@@ -1,0 +1,19 @@
+表在进行多次 delete 、update 和 insert 后，表空间会出现碎片。
+定期进行表空间整理，消除碎片可以提高访问表的性能。
+analyze table tb1;                     ###分析收集表的统计信息
+show table status like 'tb1'\G         ###查看表的状态信息
+system ls -l /var/lib/mysql/db1/tb1.*  ###查看表的文件信息
+如果命令show table status和从操作系统上看到的数据文件大小一致，这时的data_free为零。
+alter table tb1 force;                 ###进行表空间整理
+使用alter table force 进行表空间整理和OPTIMIZE TABLE命令的作用一样，这个命令适用于InnoDB,MyISAM和ARCHIVE三种引擎的表。
+但对于InnoDB的表，不支持OPTIMIZE TABLE命令，可以用alter table tb1 engine=innodb代替
+
+select table_name,round(data_length/1024/1024) as data_length_mb,
+round(data_free/1024/1024) as data_free_mb
+from information_schema.tables
+where round(data_free/1024/1024) > 1000
+order by data_free_mb desc limit 20;
+###找出表空间中可释放空间超过1000M的最大20个表
+mysqlcheck -o db1 tb1                  ###使用mysql自带的工具mysqlcheck的-o选项进行表空间优化
+mysqlcheck -o db1                      ###对数据库中的所有表进行表空间优化
+mysqlcheck -o --all-databases          ###对整个实例的所有数据库进行表空间优化

@@ -18,6 +18,8 @@ public class StreamMain {
         List<String> list = new ArrayList<String>();
         list.add("aa");
         list.add("11");
+
+        System.out.println(String.join(",", list));
         Stream<String> listStream = list.stream();
         //计数
         long count = list.stream().count();
