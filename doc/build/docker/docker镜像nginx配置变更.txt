@@ -1,0 +1,25 @@
+在docker中，镜像nginx在容器运行中如果修改了nginx配置，需要能保存这些更改，可以遵循以下步骤：
+1，创建一个本地目录并准备nginx配置文件（通常是nginx.conf）。
+2，启动nginx docker镜像，并将上面的配置文件挂载到容器中的nginx配置目录。
+3，修改配置文件。
+4，通过docker commit命令提交容器更改，创建一个新的镜像。
+5，使用新创建的镜像启动新的容器，它将包含变更后的配置。
+
+
+#创建本地目录并编辑nginx配置文件
+mkdir -p /path/to/nginx-conf
+echo "server { listen 80; server_name localhost; location / { root /usr/share/nginx/html; index index.html index.htm; } }" > /path/to/nginx-conf/nginx.conf
+ 
+#启动nginx容器并挂载配置目录
+docker run --name my-nginx -v /path/to/nginx-conf/nginx.conf:/etc/nginx/nginx.conf -d nginx
+ 
+#修改配置（直接在宿主机上修改/path/to/nginx-conf/nginx.conf即可）
+ 
+#提交更改后的容器为新的镜像
+docker commit my-nginx my-custom-nginx
+ 
+#使用新的镜像启动新的容器
+docker run --name my-new-nginx -v /path/to/nginx-conf/nginx.conf:/etc/nginx/nginx.conf -p 8080:80 -d my-custom-nginx
+
+#/path/to/nginx-conf是本地存放nginx配置文件的目录
+#my-custom-nginx是创建的新镜像的名字

@@ -12,5 +12,11 @@ docker rmi docker.io/centos:v22           #删除镜像文件
 docker save xxx > /home/install/aa.tar    #将image文件保存到磁盘目录
 docker load < /home/install/centos-v2.tar #将磁盘的镜像文件导入到docker中
 docker build -t discovery-eureka .        #根据当前目录下的Dockerfile构建镜像
+docker build -f ./Dockerfile -t <私有仓库地址>:<端口>/<命名空间>/<镜像名>:<标签> .
 
+docker login <私有仓库地址>:<端口>
+# 打标签
+docker tag <原镜像名>:<标签> <私有仓库地址>:<端口>/<命名空间>/<镜像名>:<标签>
+# 推送镜像
+docker push <私有仓库地址>:<端口>/<命名空间>/<镜像名>:<标签>
 ------------------------------------------------------------------------

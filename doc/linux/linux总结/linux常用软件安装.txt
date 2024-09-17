@@ -6,6 +6,9 @@ yum -y install gcc-c++                                ---安装gcc-c++
 ---------------telnet vim
 yum -y install telnet vim
 
+---------------unzip
+ yum -y install unzip
+
 ---------------scp
 scp不直接安装,通过安装openssh-clients来安装scp
 yum install openssh-clients

@@ -29,7 +29,7 @@ alter user rootroot@'%' IDENTIFIED BY 'rootroot';
 kill -TERM mysqld
 
 2.使用skip-grant-tables这个选项启动MySQL
-mysql_safe --skip-grant-tables
+mysqld_safe --skip-grant-tables
 
 3.登录修改密码
 mysql -u root -p
@@ -41,7 +41,7 @@ mysql>flush privileges;
 mysqladmin -u root -p shutdown
 
 5.启动MySQL
-mysql_safe --user=mysql &
+mysqld_safe --user=mysql &
 
 --------------------mysql授权-----------------------
 

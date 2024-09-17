@@ -10,8 +10,8 @@ $ uname -r
 $ yum update
   yum makecache fast
   yum search docker                      #搜索docker
-  如果有直接安装
-  yum install -y docker                  #安装docker
+  wget -O /etc/yum.repos.d/docker-ce.repo https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+  yum -y install docker-ce               #安装docker
 
 #如果没有，手动安装
 $ vim /etc/yum.repos.d/docker.repo        #增加yum仓库

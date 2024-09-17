@@ -4,12 +4,13 @@ nginx的源码编译安装
 
 nginx的前置依赖
     1,编译器(一般linux都自带安装了编译器)
-    rpm -qa gcc make automake autoconf libtool             ---检查这些软件是否安装
+    rpm -qa gcc make automake autoconf libtool gcc-c++     ---检查这些软件是否安装
     yum -y install gcc make automake autoconf libtool      ---安装gcc make automake autoconf libtool
     yum -y install gcc-c++                                 ---安装gcc-c++
 
     2,pcre:支持地址重写rewrite功能
-    yum install -y pcre pcre-devel
+    rpm -qa pcre pcre-devel                                ---检查这些软件是否安装
+    yum install -y pcre pcre-devel                         ---安装pcre pcre-devel
     或者源码安装
     wget ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.39.tar.gz
     tar -zxvf pcre-8.39.tar.gz
@@ -23,7 +24,8 @@ nginx的前置依赖
     pcre-config --version                               ---查看pcre版本
 
     3,zlib:gzip模块，需要zlib库支持
-    yum install -y zlib
+    rpm -qa zlib                                        ---检查zlib是否安装
+    yum install -y zlib                                 ---安装zlib是否安装
     或者源码安装
     wget http://zlib.net/zlib-1.2.11.tar.gz
     tar -zxvf zlib-1.2.11.tar.gz
@@ -33,6 +35,7 @@ nginx的前置依赖
     make install
 
     4,openssl:nginx提供ssl功能
+    rpm -qa openssl openssl-devel
     yum -y install openssl openssl-devel
     或者源码安装
     wget http://www.openssl.org/source/openssl-1.0.1c.tar.gz
@@ -53,9 +56,9 @@ nginx的前置依赖
     id nginx
 
 安装nginx
-    wget http://nginx.org/download/nginx-1.12.0.tar.gz
-    tar -zxvf nginx-1.12.0.tar.gz
-    cd nginx-1.12.0
+    wget http://nginx.org/download/nginx-1.18.0.tar.gz
+    tar -zxvf nginx-1.18.0.tar.gz
+    cd nginx-1.18.0
 
     ./configure --user=nginx --group=nginx --with-http_ssl_module
     ##下面三选项可不要

@@ -1,4 +1,8 @@
 --------------------------------node安装---------------------------------
+直接安装
+yum install nodejs
+yum install npm
+
 访问http://nodejs.cn/download/下载相应的node包并减压到相应目录
 设置环境变量path=%path;D:\soft\node-v10.3.0-win-x64
     NODE_PATH=D:\soft\node-v10.3.0-win-x64\node_modules
