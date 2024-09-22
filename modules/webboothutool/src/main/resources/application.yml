@@ -1,0 +1,28 @@
+server:
+  port: 8088
+
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/webbootmp?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+    max-active: 60
+    min-idle: 6
+    max-wait: 20000
+
+#mybatisplus插件
+mybatis-plus:
+  typeAliasesPackage: com.boothu.model
+  mapper-locations: classpath*:sqlmap/**/*.xml
+  global-config:
+    db-config:
+      id-type: 0
+      logic-delete-value: 0
+      logic-not-delete-value: 1
+      table-prefix:
+  configuration:
+    map-underscore-to-camel-case: true
+
+logging.level.com.boothu.dao: debug

@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: webcloudali-gateway
+  cloud:
+    nacos:
+      username: nacos
+      password: nacos
+      config:
+        shared-configs:
+          - data-id: share-config.yaml
+        server-addr: 127.0.0.1:8848
+        file-extension: yaml
+        namespace: 51u4w6g3-c233-677-9283-fwqq12t3f6w6

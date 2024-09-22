@@ -53,10 +53,12 @@
 		<module>modules/mountain</module>
 		<module>modules/webboot</module>
 		<module>modules/webbootmp</module>
+		<module>modules/webboothutool</module>
 		<module>modules/websocket</module>
 		<module>modules/webrest</module>
 		<module>modules/webcloud</module>
 		<module>modules/webcloud2</module>
+		<module>modules/webcloudali</module>
 		<module>modules/sharding-dbtable</module>
 		<module>modules/otd</module>
 		<module>modules/tmp</module>

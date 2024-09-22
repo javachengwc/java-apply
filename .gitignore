@@ -143,3 +143,4 @@ modules/otd/otd-boot/otdboot-demo-es/target/
 modules/otd/otd-boot/otdboot-plat/target/
 modules/sharding-dbtable/modules/shardingboot-junior/target/
 modules/common-tool/target/
+modules/webboothutool/target/
