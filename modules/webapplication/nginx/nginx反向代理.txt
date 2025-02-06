@@ -60,6 +60,8 @@ proxy_redirect http:// https://;  ###http重定向到https
 配置块：http、server、location
 此配置项表示当向一台上游服务器转发请求出现错误时，继续换一台上游服务器处理这个请求。上游服务器一旦开始发送应答，Nginx反向代理服务器会立刻把应答包转发给客户端。
 因此，一旦Nginx开始向客户端发送响应包，之后的过程中若出现错误也是不允许换下一台上游服务器继续处理的。这样才可以更好地保证客户端只收到来自一个上游服务器的应答。
+在默认配置下，如果Nginx遇到网络错误或超时，它会将请求重试到集群中的下一个服务器。
+但需要注意，默认情况下，HTTP状态码如500、502等并不会触发重试机制，除非显式地在proxy_next_upstream指令中包含这些状态码。
 proxy_next_upstream的参数用来说明在哪些情况下会继续选择下一台上游服务器转发请求。
 error：当向上游服务器发起连接、发送请求、读取响应时出错。
 timeout：发送请求或读取响应时发生超时。
@@ -69,7 +71,14 @@ http_502：上游服务器返回的HTTP响应码是502。
 http_503：上游服务器返回的HTTP响应码是503。
 http_504：上游服务器返回的HTTP响应码是504。
 http_404：上游服务器返回的HTTP响应码是404。
-off：关闭proxy_next_upstream功能—出错就选择另一台上游服务器再次转发。
+off：关闭proxy_next_upstream功能—禁用将请求传递给下一个服务器。
+当请求类型是POST时，nginx默认不会失败重试，如果想让POST请求也会失败重试，需要如下追加 non_idemponent 参数项。
+proxy_next_upstream error timeout non_idemponent;
+
+proxy_next_upstream_timeout       ###设置重试最大超时(截止)时间，默认0-表示不限制
+proxy_next_upstream_tries         ###设置重试的最大次数，默认0-表示不限制
+proxy_next_upstream_timeout 6s;
+proxy_next_upstream_tries 3;      ###这2行设置表示在6秒内允许重试3次
 
 nginx的反向代理模块还有很多其他配置，如设置连接的超时时间、临时文件存储，以及缓存上游服务器响应等功能。
 这些都是ngx_http_proxy_module模块的功能，关于nginx的反向代理相关设置请访问http://nginx.org/en/docs/http/ngx_http_proxy_module.html

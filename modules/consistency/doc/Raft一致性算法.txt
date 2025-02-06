@@ -1,5 +1,6 @@
 -----------------------------Raft一致性算法--------------------------------
-Raft是以易懂（Understandability）为目标设计的一致性算法，现在已有的Raft算法实现框架，较为出名的有etcd，Google的Kubernetes也是用了etcd作为他的服务发现框架。
+Raft是以易懂（Understandability）为目标设计的一致性算法，现在已有的Raft算法实现框架，较为出名的有etcd，Google的Kubernetes也是用了etcd作为他的服务发现框架；
+还有蚂蚁金服的 JRaft、Zookeeper 的 ZAB、Consul 的 Raft、百度的 braft、Apache Ratis。
 Raft与Paxos不同,Raft强调的是易懂（Understandability），Raft和Paxos一样只要保证n/2+1节点正常就能够提供服务；
 Raft也使用了分而治之的思想把算法流程分为三个子问题：选举（Leader election）、日志复制（Log replication）、安全性（Safety）三个子问题；
 Raft开始时在集群中选举出Leader负责日志复制的管理，Leader接受来自客户端的事务请求（日志）（如果client连接的是follower则follower转发给leader），

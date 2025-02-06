@@ -16,4 +16,6 @@ zookeeper.session.timeout.ms    ###zookeeper会话的超时时间
 zookeeper.connection.timeout.ms ###zookeeper连接的超时时间
 receive.buffer.bytes        ###读取数据时使用的TCP接收缓冲区（SO_RCVBUF）的大小，默认值为32768字节=32KB。
                             如果设置为-1，则将使用操作系统的默认值。
+max.poll.interval.ms        ###两次poll()之间的最大间隔，默认值为5分钟
+max.poll.records            ###poll()方法最多可以返回多少条消息，默认值为500
 --------------------------------------------------------------------------------

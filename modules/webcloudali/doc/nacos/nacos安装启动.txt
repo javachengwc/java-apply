@@ -1,0 +1,41 @@
+nacos依赖环境
+1，64 bit OS，支持 Linux/Unix/Mac/Windows。
+2，64 bit JDK 1.8+；
+
+首先通过官网或github下载nacos发行包
+unzip nacos-server-$version.zip          ###解压压缩包
+或
+tar -xvf nacos-server-$version.tar.gz    ###解压压缩包
+cd nacos/bin
+sh startup.sh -m standalone              ###单机模式启动nacos
+sh shutdown.sh                           ###关闭nacos
+
+http://127.0.0.1:8848/nacos              ###打开nacos控制台页面，账号密码:nacos/nacos
+
+###docker安装启动nacos
+(依赖docker和docker compose)
+git clone https://github.com/nacos-group/nacos-docker.git    ###拉取nacos-docker项目
+cd nacos-docker
+docker-compose -f example/standalone-derby.yaml up           ###启动nacos
+docker logs -f $container_id                                 ###查看nacos服务启动日志
+
+###kubernetes安装启动nacos
+(依赖kubernetes)
+git clone https://github.com/nacos-group/nacos-k8s.git       ###拉取nacos-k8s项目
+cd nacos-k8s
+chmod +x quick-startup.sh
+./quick-startup.sh                                           ###k8s快速启动nacos
+kubectl logs -f $pod_name                                    ###查看nacos服务启动日志
+
+###服务注册
+curl -X POST 'http://127.0.0.1:8848/nacos/v1/ns/instance?serviceName=com.xxx.XxxServiceName&ip=192.168.1.10&port=8080'
+
+###服务发现
+curl -X GET 'http://127.0.0.1:8848/nacos/v1/ns/instance/list?serviceName=com.xxx.XxxServiceName'
+
+###发布配置
+curl -X POST "http://127.0.0.1:8848/nacos/v1/cs/configs?dataId=common.config&group=test&content=HelloWorld"
+
+###获取配置
+curl -X GET "http://127.0.0.1:8848/nacos/v1/cs/configs?dataId=common.config&group=test"
+

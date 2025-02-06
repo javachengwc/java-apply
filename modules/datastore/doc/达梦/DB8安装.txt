@@ -1,0 +1,107 @@
+安装DM数据库之前需要检查或修改操作系统的配置，以保证DM数据库能够正确安装和运行。
+信创环境安装部署需注意CPU和操作系统对应的DM数据库版本。
+操作系统	            CPU	            数据库
+CentOS7	            x86	            dm8_20240116_x86_rh7_64
+----------------------------------------------------------------
+1,创建dmdba用户
+安装前创建dmdba用户，禁止使用root用户安装数据库。
+groupadd dinstall
+useradd -G dinstall -m -d /home/dmdba -s /bin/bash dmdba
+passwd dmdba                 ###修改密码
+
+2，修改文件打开最大数
+使用 root 用户打开 /etc/security/limits.conf 文件进行修改
+vi /etc/security/limits.conf
+dmdba  soft      nice       0
+dmdba  hard      nice       0
+dmdba  soft      as         unlimited
+dmdba  hard      as         unlimited
+dmdba  soft      fsize      unlimited
+dmdba  hard      fsize      unlimited
+dmdba  soft      nproc      65536
+dmdba  hard      nproc      65536
+dmdba  soft      nofile     65536
+dmdba  hard      nofile     65536
+dmdba  soft      core       unlimited
+dmdba  hard      core       unlimited
+dmdba  soft      data       unlimited
+dmdba  hard      data       unlimited
+修改配置文件后重启服务器永久生效。
+切换到 dmdba 用户，查看是否生效
+su dmdba
+ulimit -a
+
+3，准备数据库目录
+mkdir -p /dmdata/data         ###实例保存目录
+mkdir -p /dmdata/arch         ###归档保存目录
+mkdir -p /dmdata/dmbak        ###备份保存目录
+chown -R dmdba:dinstall /dmdata/data
+chown -R dmdba:dinstall /dmdata/arch
+chown -R dmdba:dinstall /dmdata/dmbak
+chmod -R 755 /dmdata/data
+chmod -R 755 /dmdata/arch
+chmod -R 755 /dmdata/dmbak
+
+4,DB8安装
+切换到 root 用户，将 DM 数据库的 iso 安装包保存在任意位置
+su
+cd /opt
+mount -o loop dm8_20240116_x86_rh7_64.iso /mnt       ###挂载镜像
+切换至 dmdba 用户下，在 /mnt 目录下使用命令行安装数据库程序
+su dmdba
+cd /mnt
+./DMInstall.bin -i                                   ###命令行安装
+按需求选择安装语言，时区按需求选择一般选择 “21”，安装类型选择“1”，没有 key 文件选择 "n"，安装目录按实际情况配置
+数据库安装完成后，需要切换至 root 用户执行命令 /home/dmdba/dmdbms/script/root/root_installer.sh 创建 DmAPService，否则会影响数据库备份。
+数据库安装完成后还需注册实例才能使用数据库。
+
+5,兼容模式配置
+在实际使用中，初始化实例时建议提前设置好 COMPATIBLE_MODE 的参数值，便于更好的兼容其他数据库。
+参数说明：是否兼容其他数据库模式。
+0：不兼容，
+1：兼容 SQL92 标准，
+2：部分兼容 ORACLE，
+3：部分兼容 MS SQL SERVER，
+4：部分兼容 MYSQL，
+5：兼容 DM6，
+6：部分兼容 TERADATA，
+7：部分兼容 POSTGRES
+修改配置文件$DM_HOME/conf/dm.conf，设置compatible_mode参数为'mysql'
+vi $DM_HOME/conf/dm.conf
+    COMPATIBLE = 'mysql'
+或数据库执行
+SET GLOBAL compatible_mode='mysql';
+select compatible from V$DATABASE;             ###查看兼容模式
+
+6,配置实例
+使用 dmdba 用户配置实例，进入到 DM 数据库安装目录下的 bin 目录中
+su - dmdba
+cd /home/dmdba/dmdbms/bin
+使用 dminit 命令初始化实例，dminit 命令可设置多种参数，可执行./dminit help查看可配置参数
+./dminit path=/dmdata/data PAGE_SIZE=32 EXTENT_SIZE=32 CASE_SENSITIVE=n
+CHARSET=1 DB_NAME=db_test INSTANCE_NAME=dbs PORT_NUM=5237
+###设置页大小为 32 KB，簇大小为 32 KB，大小写不敏感，字符集为 utf_8，数据库名为 db_test，实例名为 dbs，端口为 5237
+注: 页大小 (page_size)、簇大小 (extent_size)、大小写敏感 (case_sensitive)、字符集 (charset) 、
+空格填充模式 (BLANK_PAD_MODE) 、页检查模式（PAGE CHECK） 等部分参数，一旦确定无法修改，在初始化实例时确认需求后谨慎设置。
+case_sensitive： 标识符大小写敏感。当大小写敏感时，小写的标识符应用""括起，否则被系统自动转换为大写；
+当大小写不敏感时，系统不会转换标识符的大小写，系统比较函数会将大写字母全部转为小写字母再进行比较。
+取值：Y、y、1 表示敏感；N、n、0 表示不敏感。缺省值为 Y，表示默认大小写敏感。
+此参数在数据库创建成功后无法修改，可通过系统函数 SF_GET_CASE_SENSITIVE_FLAG()或 CASE_SENSITIVE()查询设置的参数置。
+
+7，注册服务
+使用 root 用户进入数据库安装目录的 /script/root 下
+cd /home/dmdba/dmdbms/script/root/
+./dm_service_installer.sh -t dmserver -dm_ini /dmdata/data/DMSERVER/dm.ini -p DMSERVER
+进入数据安装目录下 bin 目录中可以看到已经注册好的服务 DmServiceDMSERVER
+cd /home/dmdba/dmdbms/bin
+ll DmServiceDMSERVER
+./DmServiceDMSERVER start         ###启用DB8
+./DmServiceDMSERVER stop          ###停用DB8
+./DmServiceDMSERVER status        ###查看状态
+
+
+
+
+
+
+

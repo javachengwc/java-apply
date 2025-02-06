@@ -1,5 +1,5 @@
 ---------------------------------zookeeper的一致性算法------------------------------------
-zooKeeper实现的一致性的算法是ZAB协议,全称是ZooKeeper Atomic Broadcast protocol。
+zooKeeper的一致性是基于Paxos算法的ZAB协议实现的。ZAB协议,全称是ZooKeeper Atomic Broadcast protocol。
 分成如下4个阶段：
     1,Leader election
         leader选举过程，electionEpoch自增，在选举的时候lastProcessedZxid越大，越有可能成为leader
@@ -26,3 +26,7 @@ zxid：事务请求的唯一标记，由leader服务器负责进行分配。由2
       由zxid就可以知道该请求是哪个轮次的，并且是该轮次的第几个请求。
 lastProcessedZxid：最后一次commit的事务请求的zxid
 ------------------------------------------------------------------------------------------
+zookeeper集群（3、5个节点）在写性能上能达到上万的tps。
+但由于zookeeper一致性是基于Paxos，是单点写，存在单点瓶颈，限制了zookeeper集群的规模，在集群扩展性上不具备优势。
+集群扩展性的另一个方面是多地域部署和容灾的支持。比如双机房容灾，基于Leader写的协议不做改造是无法支持的，
+这意味着zookeeper不能在没有人工干预的情况下做到双机房容灾。zookeeper的单点写模式就会有断网恢复后的数据对账问题。

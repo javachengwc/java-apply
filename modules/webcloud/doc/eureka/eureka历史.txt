@@ -1,0 +1,13 @@
+2012年09月       Eureka 1.1.2       Netflix于2012年将Eureka正式开源
+2014-2015       Eureka 1.4.x
+2015年                              Eureka2.0架构升级方案公布
+2018年           Eureka 1.9.3       与spring cloud深度整合，
+                                    spring cloud Edgware对应Eureka 1.8.7
+                                    spring cloud Hoxton对应Eureka 1.9.x
+2018年                              Eureka 2.0架构升级宣布停止
+2020年           Eureka 1.10.x
+
+
+
+
+

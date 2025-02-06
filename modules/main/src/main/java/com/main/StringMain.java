@@ -70,7 +70,20 @@ public class StringMain {
         return Pattern.matches(regex,blankSpace);
     }
 
+    public static String filterOrgCode(String orgCode) {
+        for (int i = orgCode.length(); i > 0; i -= 2) {
+            if (i - 2 >= 0) {
+                String substring = orgCode.substring(i - 2, i);
+                if (Integer.valueOf(substring) > 0) {
+                    return orgCode.substring(0, i);
+                }
+            }
+        }
+        return orgCode;
+    }
+
     public static void main(String args []) throws Exception {
+        System.out.println(filterOrgCode("510000"));
       String dc="12300Abcdefg111HIJ";
       System.out.println(dc.length());
       System.out.println(dc.substring(0,dc.length()-1));
@@ -80,11 +93,11 @@ public class StringMain {
       String keyy = info.indexOf(" ")>0 ? info.substring(0,info.indexOf(" ")):"ya";
       System.out.println(info+" || "+keyy);
 
-      System.out.println(UUID.randomUUID().toString());
-      String rtt=org.apache.commons.lang3.StringUtils.rightPad("发", 3, "*");
-      System.out.println(rtt);
-      String mtt= org.apache.commons.lang3.StringUtils.leftPad(org.apache.commons.lang3.StringUtils.right("12345678901", 4), 11, "*");
-      System.out.println(mtt);
+//      System.out.println(UUID.randomUUID().toString());
+//      String rtt=org.apache.commons.lang3.StringUtils.rightPad("发", 3, "*");
+//      System.out.println(rtt);
+//      String mtt= org.apache.commons.lang3.StringUtils.leftPad(org.apache.commons.lang3.StringUtils.right("12345678901", 4), 11, "*");
+//      System.out.println(mtt);
 
 
 
