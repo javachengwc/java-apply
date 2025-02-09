@@ -55,7 +55,7 @@ ${project.build.finalName}:项目打包输出文件的名称，默认为${projec
 
 ------------------------------------------------------
 maven配置pom.xml或settings.xml中的元素说明
-1,元素标签optional的作用,不如项目A的pom依赖包含如下
+1,元素标签optional的作用,比如项目A的pom依赖包含如下
 <dependency>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-devtools</artifactId>
@@ -65,5 +65,18 @@ maven配置pom.xml或settings.xml中的元素说明
 当其他项目通过pom依赖项目A的时候，spring-boot-devtools不会被传递依赖进来
 当依赖某工程很庞大或很可能与自身或其他工程的jar包有冲突的时候建议加上该选项,减少依赖冲突
 
+2，元素标签classifier的作用，
+maven中的<classifier>是一个可选的元素，用于区分同一artifact的不同版本或变种。‌
+在maven的坐标系统中，一个artifact通常由groupId、artifactId和version三个基本元素确定。
+然而，在某些情况下，可能需要为同一个artifact创建多个不同的版本或变种，比如源代码包、文档包或特定平台的二进制文件等。
+这时，<classifier>就派上了用场。通过为artifact添加<classifier>属性，可以为同一个artifact创建多个不同的附件，
+每个附件都有一个唯一的<classifier>值，用于区分它们,这样，可以在Maven仓库中存储和管理这些不同的artifact变种。
+比如可以为不同JDK版本生成jar包，例如json-lib-2.2.2-jdk15.jar和json-lib-2.2.2-jdk13.jar
+<dependency>
+    <groupId>net.sf.json-lib</groupId>
+    <artifactId>json-lib</artifactId>
+    <version>2.2.2</version>
+    <classifier>jdk15</classifier>
+</dependency>
 ------------------------------------------------------
 

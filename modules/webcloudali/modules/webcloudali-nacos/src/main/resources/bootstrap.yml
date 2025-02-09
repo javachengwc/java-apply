@@ -1,0 +1,19 @@
+spring:
+  profiles:
+    active: @spring.profile@
+  application:
+    name: webcloudali-nacos
+  cloud:
+    nacos:
+      username: @nacos.server.username@
+      password: @nacos.server.password@
+      config:
+        shared-configs:
+          - data-id: common-config.yaml
+          - data-id: nacos-config.yaml
+        server-addr: @nacos.server.address@
+        file-extension: yaml
+        namespace: @nacos.config.namespace@
+      discovery:
+        group: @nacos.discovery.group@
+        namespace: @nacos.discovery.namespace@

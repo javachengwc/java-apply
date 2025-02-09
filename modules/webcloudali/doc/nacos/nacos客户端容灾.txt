@@ -1,0 +1,18 @@
+nacos在客户端开启本地容灾，用来应对nacos服务端出现问题时，保证客户端的数据和接口稳定性。
+这里有两个使用场景：
+1，在nacos服务端发布的时候，主动把nacos客户端的容灾打开，这样客户端只使用本地容灾数据，
+nacos服务的数据抖动或者数据错误都不会影响客户端，在Nacos服务端升级完成并且数据验证没问题后再关闭容灾；
+2，在nacos运行期间，突然出现接口不可用或者数据异常，可以快速的开启nacos客户端容灾，
+让客户端使用容灾数据，减小服务受影响的窗口，等nacos服务端恢复后再关闭容灾；
+nacos客户端的查询服务实例的请求都会先经过FailoverReactor，如果FailoverReactor有数据，则直接使用，
+从而忽略掉nacos server返回的数据；如果FailoverReactor里面没有数据，则走正常流程。
+FailoverReactor里的数据可以使用不同的数据源，默认的数据源为磁盘。
+默认的磁盘容灾文件目录为：{user.home}/nacos/naming/{namespace}/failover
+如果设置了-D参数：-DJM.SNAPSHOT.PATH=/mypath，
+则容灾磁盘文件目录变为：/mypath/nacos/naming/{namespace}/failover
+容灾开关存放在磁盘容灾文件目录下的一个文件里，具体文件名为：00-00---000-VIPSRV_FAILOVER_SWITCH-000---00-00
+文件里存放一个数字0或者1，0--代表关闭容灾，1--代表打开容灾
+容灾的数据分成多个文件，都是存放在磁盘容灾文件目录下，每一个文件存储一个单独的服务的容灾数据，每个文件的文件名格式如下：
+{group.name}%40%40{service.name}，里面的内容为客户端的ServiceInfo类的JSON序列化字符串。
+
+

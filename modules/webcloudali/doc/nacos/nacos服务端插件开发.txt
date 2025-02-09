@@ -1,0 +1,81 @@
+鉴权插件
+Nacos从2.1.0版本开始，支持通过SPI的方式注入鉴权相关插件，并在application.properties配置文件中选择某一种插件实现作为实际鉴权服务
+开发Nacos服务端鉴权插件步骤
+1，在插件项目中依赖插件API
+<dependency>
+    <groupId>com.alibaba.nacos</groupId>
+    <artifactId>nacos-auth-plugin</artifactId>
+    <version>${project.version}</version>
+</dependency>
+${project.version} 为开发插件所对应的Nacos版本
+2，实现com.alibaba.nacos.plugin.auth.spi.server.AuthPluginService接口， 并将实现类添加到SPI的services当中
+3，加载服务端插件--插件开发完成后，需要打包成jar/zip，放置到nacos服务端的classpath中，
+如果不知道如何修改classpath，直接放置到${nacos-server.path}/plugins下。
+放置后，需要修改${nacos-server.path}/conf/application.properties中的以下配置
+    ### 所启用的Nacos的鉴权插件的名称，与`com.alibaba.nacos.plugin.auth.spi.server.AuthPluginService`的`getAuthServiceName`返回值对应
+    nacos.core.auth.system.type=${authServiceName}
+    ### 开启鉴权功能
+    nacos.core.auth.enabled=true
+4，重启nacos集群，从${nacos-server.path}/logs/nacos.log中能看到如下日志：
+[AuthPluginManager] Load AuthPluginService(xxxx) AuthServiceName(xxx) successfully.
+
+在nacos的java客户端默认自带两个鉴权实现：
+    使用username，password和accessToken的简易鉴权实现；
+    使用accessKey和secretKey的阿里云鉴权实现；
+nacos的Java客户端同样可以使用SPI方式注入对应的插件实现。
+开发Nacos客户端鉴权插件步骤
+1，项目需要依赖鉴权插件API
+<dependency>
+    <groupId>com.alibaba.nacos</groupId>
+    <artifactId>nacos-auth-plugin</artifactId>
+    <version>${project.version}</version>
+</dependency>
+2，实现com.alibaba.nacos.plugin.auth.spi.client.ClientAuthService接口， 并将实现添加到SPI的services当中。
+也可以选择继承AbstractClientAuthService，该父类默认实现了setServerList和setNacosRestTemplate。
+3，将开发完成的客户端插件打包成jar/zip，放到应用的classpath中即可自动生效。
+--------------------------------------------------------------------------------
+多数据源插件
+Nacos从2.2.0版本开始,可通过SPI机制注入多数据源实现插件,
+在引入对应数据源实现后,可在Nacos启动时通过读取application.properties配置文件中
+spring.datasource.platform配置项选择加载对应多数据源插件.
+开发Nacos多数据源插件步骤
+1，插件项目引入nacos-datasource-plugin依赖
+2，实现com.alibaba.nacos.plugin.datasource.mapper包下数据表对应Mapper接口中的特殊SQL方法，
+主要是涉及分页等方言差别，可参考com.alibaba.nacos.plugin.datasource.impl下Derby以及MySQL的实现，只需实现对应接口即可
+3，编写SPI配置文件，其名字为com.alibaba.nacos.plugin.datasource.mapper.Mapper，写入实现Mapper接口的类，
+可参考config模块中Derby与MySQL配置文件。
+4，编译打包插件--插件开发完成后，编译打包成jar/zip，放置到nacos服务端的classpath中，
+如果不知道如何修改classpath，直接放置到${nacos-server.path}/plugins下。
+编译插件之前需要先编译nacos并安装至本地仓库：
+    git clone git@github.com:alibaba/nacos.git
+    cd nacos && mvn -B clean package install -Dmaven.test.skip=true
+    #若出现revision变量无法解析,请更新maven至最新版本
+    git clone #{对应数据源插件实现Git地址}
+    mvn install
+5，需要修改${nacos-server.path}/conf/application.properties中的配置，
+将spring.datasource.platform修改为对应的数据源名称，并配置数据源相关参数；nacos默认提供Derby以及MySQL的实现。
+6，重启nacos集群，对应数据源插件生效。
+------------------------------------------------------------------------------
+配置变更插件
+Nacos在2.3.0版本后，支持通过SPI注入配置变更插件，
+允许用户通过自定义插件的方式，对配置变更前，和变更完成后分别执行一些自定义逻辑，如格式校验，白名单校验，webhook等。
+Nacos配置中心能在配置发生变更时，通知一些特定系统，用于发送记录、警告等审计功能。
+Nacos的配置变更插件，参考了面向切面编程AOP的设计思想，
+将配置的变更操作（如新增，更新，删除）作为切点（PointCut)，并在这些切点前(Before)和后(After)织入插件。
+
+开发Nacos服务端配置变更插件步骤
+1，在插件项目中依赖插件API
+ <dependency>
+    <groupId>com.alibaba.nacos</groupId>
+    <artifactId>nacos-config-plugin</artifactId>
+    <version>${project.version}</version>
+</dependency>
+${project.version} 为开发插件所对应的Nacos版本
+2，实现com.alibaba.nacos.plugin.config.spi.ConfigChangePluginService接口， 并将实现类添加到SPI的services当中
+3，加载服务端插件--插件开发完成后，需要打包成jar/zip，放置到nacos服务端的classpath中，
+如果不知道如何修改classpath，直接放置到${nacos-server.path}/plugins下。
+放置后，需要修改${nacos-server.path}/conf/application.properties中的以下配置
+    ### 所启用的Nacos的配置变更插件的名称，与com.alibaba.nacos.plugin.config.spi.ConfigChangePluginService 的getServiceType 返回值对应
+    nacos.core.config.plugin.${configChangePluginName}.enabled=true
+4，重启nacos集群，从${nacos-server.path}/logs/nacos.log中能看到如下日志：
+[ConfigChangePluginManager] Load ${className}(${classFullName}) ConfigChangeServiceName(${configChangePluginName}) successfully.

@@ -1,0 +1,84 @@
+nacos与springcloud整合
+
+1，项目maven中添加依赖
+<dependency>
+    <groupId>com.alibaba.cloud</groupId>
+    <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+    <version>${latest.version}</version>
+</dependency>
+<dependency>
+    <groupId>com.alibaba.cloud</groupId>
+    <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+    <version>{latest.version}</version>
+</dependency>
+注意：版本 2.1.x.RELEASE 对应的是 Spring Boot 2.1.x 版本。
+
+2，在 bootstrap.properties或 bootstrap.yml中配置 Nacos server 的地址和应用名
+spring.cloud.nacos.config.server-addr=127.0.0.1:8848
+spring.cloud.nacos.discovery.server-addr=127.0.0.1:8848
+spring.application.name=example
+server.port=8070
+
+在 Nacos Spring Cloud 中，dataId 的默认完整格式：${prefix}-${spring.profiles.active}.${file-extension}
+prefix 默认为 spring.application.name 的值，也可以通过配置项 spring.cloud.nacos.config.prefix来配置。
+spring.profiles.active 即为当前环境对应的 profile，spring.profiles.active 为空时，对应的连接符 - 也将不存在，dataId 的拼接格式变成 ${prefix}.${file-extension}
+file-exetension 为配置内容的数据格式，可以通过配置项 spring.cloud.nacos.config.file-extension 来配置。目前只支持 properties 和 yaml 类型。
+但实际使用中一般没按照这样的格式命名dataId。
+
+3，通过 Spring Cloud 原生注解 @RefreshScope 实现配置自动更新：
+@RestController
+@RequestMapping("/config")
+@RefreshScope
+public class ConfigController {
+
+    @Value("${useLocalCache:false}")
+    private boolean useLocalCache;
+
+    @RequestMapping("/get")
+    public boolean get() {
+        return useLocalCache;
+    }
+}
+
+4，通过 Spring Cloud 原生注解 @EnableDiscoveryClient 开启服务注册发现功能
+//服务提供者
+@SpringBootApplication
+@EnableDiscoveryClient
+public class NacosProviderApplication {
+
+  public static void main(String[] args) {
+    SpringApplication.run(NacosProviderApplication.class, args);
+  }
+}
+
+5，通过 Spring Cloud 原生注解 @EnableDiscoveryClient 开启服务注册发现功能。
+给 RestTemplate 实例添加 @LoadBalanced 注解，开启 @LoadBalanced 与 Ribbon 的集成：
+//服务消费者
+@SpringBootApplication
+@EnableDiscoveryClient
+public class NacosConsumerApplication {
+
+    @LoadBalanced
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(NacosConsumerApplication.class, args);
+    }
+
+    @RestController
+    public class TestController {
+
+        private final RestTemplate restTemplate;
+
+        @Autowired
+        public TestController(RestTemplate restTemplate) {this.restTemplate = restTemplate;}
+
+        @RequestMapping(value = "/echo/{str}", method = RequestMethod.GET)
+        public String echo(@PathVariable String str) {
+            return restTemplate.getForObject("http://service-provider/echo/" + str, String.class);
+        }
+    }
+}

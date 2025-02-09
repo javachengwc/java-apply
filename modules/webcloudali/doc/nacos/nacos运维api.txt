@@ -1,0 +1,33 @@
+nacos默认搭载了一整套专为管理控制台和运维人员设计的运维api，赋予运维专家更多的配置权限、更广阔的数据检索能力等
+api接口参见：https://nacos.io/docs/latest/manual/admin/admin-api
+
+###获取当前节点连接,可以获取连接到当前nacos server节点中的grpc连接详情
+curl -X GET 'http://127.0.0.1:8848/nacos/v2/core/loader/current'
+
+###获取nacos集群连接概览信息,可查看nacos server集群中各节点的连接数概览。
+curl -X GET 'http://127.0.0.1:8848/nacos/v2/core/loader/cluster'
+
+###获取集群中当前节点信息
+curl -X GET 'http://127.0.0.1:8848/nacos/v2/core/cluster/node/self'
+
+###获取集群所有节点信息
+curl -X GET 'http://127.0.0.1:8848/nacos/v2/core/cluster/node/list'
+
+###查询本节点健康状态
+curl -X GET 'http://127.0.0.1:8848/nacos/v2/core/cluster/node/list'
+
+###动态修改nacos core相关日志级别,可以在不重启nacos server的情况下，动态修改nacos core相关日志级别的配置。
+curl -X PUT -H 'Content-Type:application/json' 'http://127.0.0.1:8848/nacos/v2/core/ops/log'
+-d '{"logName":"core-distro","logLevel":"DEBUG"}'
+
+###查看服务注册(Naming)模块的相关开关
+curl -X GET 'http://127.0.0.1:8848/nacos/v2/ns/ops/switches'
+
+###修改服务注册(Naming)模块的相关开关,参数entry是修改的开关或配置名称
+curl -X PUT 'http://127.0.0.1:8848/nacos/v2/ns/ops/switches?entry=pushEnabled&value=false'
+
+###查询nacos节点当前数据指标，比如服务数量，实例数量，订阅数量，raft通知任务数量，客户端数量，连接数量，cpu，负载，内存，
+curl -X GET 'http://127.0.0.1:8848/nacos/v2/ns/operator/metrics'
+
+###查询指定命名空间下的配置列表
+curl -X GET 'http://127.0.0.1:8848/nacos/v2/cs/history/configs?namespaceId='

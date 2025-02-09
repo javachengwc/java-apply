@@ -2,6 +2,24 @@ nacos依赖环境
 1，64 bit OS，支持 Linux/Unix/Mac/Windows。
 2，64 bit JDK 1.8+；
 
+Nacos2.X版本新增了grpc的通信方式，因此需要增加2个端口。
+新增端口是在配置的主端口(server.port，默认8848)基础上，进行一定偏移量自动生成，
+具体端口如下：
+端口	    与主端口的偏移量	描述
+9848	1000	        客户端gRPC请求服务端端口，用于客户端向服务端发起连接和请求
+9849	1001	        服务端gRPC请求服务端端口，用于服务间同步等
+7848	-1000	        Jraft请求服务端端口，用于处理服务端间的Raft相关请求
+对外暴露端口时，只需要暴露主端口（默认8848）和gRPC端口（默认9848），其他端口为服务端之间的通信端口。
+如果客户端和服务端之前存在端口转发，或防火墙时，需要对端口转发配置和防火墙配置做相应的调整。
+使用VIP/nginx请求时，需要配置成TCP转发，不能配置http2转发，否则连接会被nginx断开。
+
+nacos支持三种部署模式：
+单机模式---  又称单例模式，主要用于测试和单机试用。可以使用内置Derby数据库（默认）和外置数据库进行存储。
+集群模式---  主要用于生产环境，确保高可用。默认采用外置数据库进行存储，但也可以通过内置数据库进行存储。
+多集群模式--  用于多数据中心场景。
+
+------------------------------------------------------------
+nacos单机部署：
 首先通过官网或github下载nacos发行包
 unzip nacos-server-$version.zip          ###解压压缩包
 或
@@ -15,9 +33,20 @@ http://127.0.0.1:8848/nacos              ###打开nacos控制台页面，账号�
 ###docker安装启动nacos
 (依赖docker和docker compose)
 git clone https://github.com/nacos-group/nacos-docker.git    ###拉取nacos-docker项目
-cd nacos-docker
+cd nacos-docker                                              ###可根据需要基于nacos-docker项目中的Dockerfile自行构建镜像
 docker-compose -f example/standalone-derby.yaml up           ###启动nacos
 docker logs -f $container_id                                 ###查看nacos服务启动日志
+
+###通过对nacos的配置文件application.properties进行挂卷定义的方式，将自定义配置导入nacos容器中启动nacos
+docker run --name nacos-standalone -e MODE=standalone
+-v /path/application.properties:/home/nacos/conf/application.properties
+-p 8848:8848 -d -p 9848:9848  nacos/nacos-server:latest
+
+###通过指定系统参数-镜像环境变量的方式进行配置启动nacos
+docker run --name nacos-standalone-auth -e MODE=standalone
+-e NACOS_AUTH_ENABLE=true -e NACOS_AUTH_TOKEN=${customToken}
+-e NACOS_AUTH_IDENTITY_KEY=${customKey} NACOS_AUTH_IDENTITY_VALUE=${customValue}
+-p 8848:8848 -d -p 9848:9848  nacos/nacos-server:latest
 
 ###kubernetes安装启动nacos
 (依赖kubernetes)
@@ -29,13 +58,104 @@ kubectl logs -f $pod_name                                    ###查看nacos服�
 
 ###服务注册
 curl -X POST 'http://127.0.0.1:8848/nacos/v1/ns/instance?serviceName=com.xxx.XxxServiceName&ip=192.168.1.10&port=8080'
-
 ###服务发现
 curl -X GET 'http://127.0.0.1:8848/nacos/v1/ns/instance/list?serviceName=com.xxx.XxxServiceName'
-
 ###发布配置
 curl -X POST "http://127.0.0.1:8848/nacos/v1/cs/configs?dataId=common.config&group=test&content=HelloWorld"
-
 ###获取配置
 curl -X GET "http://127.0.0.1:8848/nacos/v1/cs/configs?dataId=common.config&group=test"
 
+-----------------------------------------------------------------------------------------
+nacos集群搭建推荐用户把nacos所有服务节点放到一个vip下面，然后挂到一个域名下面
+<http://nacos.com:port/openAPI> 域名 + SLB模式(内网SLB，不可暴露到公网，以免带来安全风险)，可读性好，而且换ip方便。
+在使用vip时，需要开放nacos服务的主端口(默认8848)以及gRPC端口(默认9848)、
+如果对nacos的主端口有所修改的话，需要对vip中的端口映射作出配置。
+注：derby数据库为本地内置数据库，本身不支持集群模式，nacos通过raft协议将各个节点的derby数据库组成逻辑集群，
+因此如果使用derby数据库部署nacos集群，需要对raft协议较为熟悉，能够进行问题排查、恢复等，
+故建议使用mysql数据库进行nacos部署。
+nacos集群部署参看：https://nacos.io/docs/latest/manual/admin/deployment/deployment-cluster
+nacos集群部署：
+1，nacos的环境准备、发行版的下载
+使用mysql(版本要求：5.6.5+)数据源部署nacos，初始化mysql数据库，数据库初始化文件：mysql-schema.sql
+2，配置集群配置文件
+在nacos的解压目录nacos/的conf目录下，有配置文件cluster.conf，配置类似如下：
+192.168.9.16:8848
+192.168.9.17:8848
+192.168.9.18:8848
+3，配置各节点配置文件
+修改${nacos.home}/conf/application.properties文件，
+增加支持mysql数据源配置，添加mysql数据源的url、用户名和密码。
+spring.sql.init.platform=mysql
+db.num=1
+db.url.0=jdbc:mysql://${mysql_host}:${mysql_port}/${nacos_database}?characterEncoding=utf8&
+         connectTimeout=1000&socketTimeout=3000&autoReconnect=true
+db.user=${mysql_user}
+db.password=${mysql_password}
+3.1，开启默认鉴权插件（可选，推荐）
+修改${nacos.home}/conf/application.properties文件，设置鉴权
+nacos.core.auth.enabled=true
+nacos.core.auth.system.type=nacos
+nacos.core.auth.plugin.nacos.token.secret.key=${自定义，保证所有节点一致}
+nacos.core.auth.server.identity.key=${自定义，保证所有节点一致}
+nacos.core.auth.server.identity.value=${自定义，保证所有节点一致}
+4，启动nacos集群,在每个节点上，逐台或同时启动nacos节点,执行如下命名:
+sh startup.sh
+
+###docker安装启动nacos集群
+(依赖docker和docker compose)
+git clone https://github.com/nacos-group/nacos-docker.git    ###拉取nacos-docker项目
+cd nacos-docker
+docker-compose -f example/cluster-hostname.yaml up           ###启动nacos集群(使用mysql数据库)
+docker-compose -f example/cluster-embedded.yaml up           ###启动nacos集群(使用derby数据库)
+docker logs -f $container_id                                 ###查看nacos服务启动日志
+###通过指定系统参数-镜像环境变量开启鉴权启动nacos集群
+docker run --name nacos-cluster-auth -e MODE=cluster -e NACOS_AUTH_ENABLE=true
+-e NACOS_AUTH_TOKEN=${customToken} -e NACOS_AUTH_IDENTITY_KEY=${customKey} NACOS_AUTH_IDENTITY_VALUE=${customValue}
+-p 8848:8848 -d -p 9848:9848  nacos/nacos-server:latest
+
+###通过对nacos配置文件进行挂卷定义的方式，启动nacos集群
+###如果仍然无法满足自定义需求，可以基于nacos-docker项目中的Dockerfile自行构建镜像
+docker run --name nacos-cluster -e MODE=cluster
+-v /path/application.properties:/home/nacos/conf/application.properties
+-v /path/cluster.conf:/home/nacos/conf/cluster.conf
+-p 8848:8848 -d -p 9848:9848  nacos/nacos-server:latest
+
+###kubernetes安装启动nacos
+###部署的nacos集群如果没有使用持久化卷的,可能存在数据丢失风险；因此推荐使用PVC持久卷方式进行部署，这里将使用的是NFS来使用PVC。
+(依赖kubernetes)
+git clone https://github.com/nacos-group/nacos-k8s.git       ###拉取nacos-k8s项目
+cd nacos-k8s
+1，部署NFS
+kubectl create -f deploy/nfs/rbac.yaml                       ###创建角色
+如果的k8s命名空间不是default，在部署rbac之前执行以下脚本:
+    $ NS=$(kubectl config get-contexts|grep -e "^\*" |awk '{print $5}')
+    $ NAMESPACE=${NS:-default}
+    $ sed -i'' "s/namespace:.*/namespace: $NAMESPACE/g" ./deploy/nfs/rbac.yaml
+kubectl create -f deploy/nfs/deployment.yaml                 ###创建ServiceAccount和部署NFS-Client Provisioner
+kubectl create -f deploy/nfs/class.yaml                      ###创建 NFS StorageClass
+kubectl get pod -l app=nfs-client-provisioner                ###验证NFS部署成功
+2，部署数据库
+cd nacos-k8s
+kubectl create -f deploy/mysql/mysql-nfs.yaml                ###部署数据库
+kubectl get pod                                              ###查看mysql pod启动是否成功
+执行数据库初始化语句，数据库初始化语句位置 mysql-schema.sql
+3，部署nacos
+a，修改 deploy/nacos/nacos-pvc-nfs.yaml
+data:
+  mysql.host: "数据库地址"
+  mysql.db.name: "数据库名称"
+  mysql.port: "端口"
+  mysql.user: "用户名"
+  mysql.password: "密码"
+b，创建启动nacos
+kubectl create -f nacos-k8s/deploy/nacos/nacos-pvc-nfs.yaml
+kubectl get pod                                              ###查看nacos pod启动是否成功
+
+###查看k8s pod中的nacos集群配置文件信息
+for i in 0 1; do echo nacos-$i; kubectl exec nacos-$i cat conf/cluster.conf; done
+kubectl scale sts nacos --replicas=3                         ###使用kubectl scale对nacos动态扩容
+###查看扩容后的nacos集群配置信息
+for i in 0 1 2; do echo nacos-$i; kubectl exec nacos-$i cat conf/cluster.conf; done
+###使用kubectl exec执行nacos api在每台节点上获取当前leader是否一致
+for i in 0 1 2; do echo nacos-$i; kubectl exec nacos-$i
+curl -X GET "http://localhost:8848/nacos/v1/ns/raft/state"; done

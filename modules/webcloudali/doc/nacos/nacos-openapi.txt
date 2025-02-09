@@ -1,0 +1,139 @@
+nacos openapi提供的restful接口，接口定义参见：
+https://nacos.io/docs/latest/manual/user/open-api
+nacos 2.X 版本兼容 nacos1.X 版本的openapi
+api 统一返回体格式：
+{
+  "code": 0,              ###0--成功，非0代表执行失败的某一种情况
+  "message": "success",
+  "data": {}
+}
+
+###登录nacos获取accessToken
+curl -X POST 'http://127.0.0.1:8848/nacos/v1/auth/login' -d 'username=nacos&password=nacos'
+返回：{"accessToken":"xxx","tokenTtl":18000,"globalAdmin":true}
+
+###发布配置
+curl -X POST "http://127.0.0.1:8848/nacos/v1/cs/config?dataId=example.properties&group=DEFAULT_GROUP&content=useLocalCache=true"
+curl -X POST 'http://127.0.0.1:8848/nacos/v2/cs/config'
+  -d 'dataId=nacos.example' \
+  -d 'group=DEFAULT_GROUP' \
+  -d 'namespaceId=public' \
+  -d 'content=contentTest'
+
+###获取配置
+curl -X GET 'http://127.0.0.1:8848/nacos/v2/cs/config?accessToken=xxx&namespaceId=xxx&dataId=nacos.example.1&group=nacos_group'
+curl -X GET 'http://127.0.0.1:8848/nacos/v2/cs/config?dataId=nacos.example&group=DEFAULT_GROUP&namespaceId=public'
+
+###删除配置
+curl -X DELETE 'http://127.0.0.1:8848/nacos/v2/cs/config?dataId=nacos.example&group=DEFAULT_GROUP&namespaceId=public'
+
+###查询配置历史列表
+curl -X GET 'http://127.0.0.1:8848/nacos/v2/cs/history/list?dataId=nacos.example&group=com.alibaba.nacos&namespaceId=public'
+
+###查询具体版本的历史配置，参数nid是历史配置id
+curl -X GET 'http://127.0.0.1:8848/nacos/v2/cs/history?dataId=nacos.example&group=com.alibaba.nacos&namespaceId=&nid=203'
+
+###获取指定配置的上一版本信息,参数id是配置id
+curl -X GET 'http://127.0.0.1:8848/nacos/v2/cs/history/previous?id=xxx&dataId=nacos.example&group=com.alibaba.nacos&namespaceId='
+
+###nacos v2的注册实例的openapi，更多的是给予持久化服务实例进行注册；
+###非持久化实例的注册，建议采用nacos2.0客户端进行，获取更高的性能及更灵敏的变化感知能力
+###服务注册
+curl -X POST 'http://127.0.0.1:8848/nacos/v2/ns/instance?accessToken=xxx&healthy=true&ip=192.168.11.22&port=8008&serviceName=nacos.test.3'
+curl -X POST 'http://127.0.0.1:8848/nacos/v2/ns/instance'
+  -d 'serviceName=test_service' \
+  -d 'ip=127.0.0.1' \
+  -d 'port=8090' \
+  -d 'weight=0.9' \
+  -d 'ephemeral=true'
+
+###服务注销
+curl -X DELETE 'http://127.0.0.1:8848/nacos/v2/ns/instance'
+  -d 'serviceName=test_service' \
+  -d 'ip=127.0.0.1' \
+  -d 'port=8090' \
+  -d 'weight=0.9' \
+  -d 'ephemeral=true'
+
+###更新实例，通过该接口更新的元数据拥有更高的优先级，且具有记忆能力；会在对应实例删除后，依旧存在一段时间，
+###如果在此期间实例重新注册，该元数据依旧生效；
+###可以通过nacos.naming.clean.expired-metadata.expired-time
+###及nacos.naming.clean.expired-metadata.interval对记忆时间进行修改
+curl -X PUT 'http://127.0.0.1:8848/nacos/v2/ns/instance'
+-d 'serviceName=test_service' \
+  -d 'ip=127.0.0.1' \
+  -d 'port=8090' \
+  -d 'weight=0.9' \
+  -d 'ephemeral=true'
+
+###查询服务实例
+curl -X GET 'http://127.0.0.1:8848/nacos/v2/ns/instance?namespaceId=public&groupName=&serviceName=test_service&ip=127.0.0.1&port=8080'
+
+###服务发现，查询指定服务的实例列表
+curl -X GET 'http://127.0.0.1:8848/nacos/v2/ns/instance/list?serviceName=com.xxx.XxxServiceName'
+curl -X GET 'http://127.0.0.1:8848/nacos/v2/ns/instance/list?serviceName=test_service'
+
+###批量更新服务实例元数据
+curl -X PUT 'http://127.0.0.1:8848/nacos/v2/ns/instance/metadata/batch'
+  -d 'serviceName=test_service' \
+  -d 'consistencyType=ephemeral' \
+  -d 'instances=[{"ip":"3.3.3.3","port": "8080","ephemeral":"true","clusterName":"xxxx-cluster"},{"ip":"2.2.2.2","port":"8080","ephemeral":"true","clusterName":"xxxx-cluster"}]' \
+  -d 'metadata={"age":"20","name":"cocolan"}'
+
+###批量删除服务实例元数据
+curl -X DELETE 'http://127.0.0.1:8848/nacos/v2/ns/instance/metadata/batch'
+  -d 'serviceName=test_service' \
+  -d 'consistencyType=ephemeral' \
+  -d 'instances=[{"ip":"3.3.3.3","port": "8080","ephemeral":"true","clusterName":"xxxx-cluster"},{"ip":"2.2.2.2","port":"8080","ephemeral":"true","clusterName":"xxxx-cluster"}]' \
+  -d 'metadata={"age":"20","name":"cocolan"}'
+
+###查询客户端列表
+###对于不同版本的nacos client，建立客户端的方式不同。
+###对于1.x版本，每个实例会建立两个基于ip+port的客户端，分别对应实例注册与服务订阅，clientId格式为 ip:port#ephemeral
+###对于2.x版本的nacos client, 每个实例会建立一个RPC连接，对应一个基于RPC连接的客户端，兼具注册与订阅功能，clientId 格式为time_ip_port
+curl -X GET 'http://127.0.0.1:8848/nacos/v2/ns/client/list'
+
+###查询客户端信息
+curl -X GET 'http://127.0.0.1:8848/nacos/v2/ns/client?clientId=xxx'
+
+###查询客户端的注册信息
+curl -X GET 'http://127.0.0.1:8848/nacos/v2/ns/client/publish/list?clientId=xxx'
+
+###查询客户端的订阅信息
+curl -X GET 'http://127.0.0.1:8848/nacos/v2/ns/client/subscribe/list?clientId=xxx'
+
+###查询注册指定服务的客户端信息
+curl -X GET 'http://127.0.0.1:8848/nacos/v2/ns/client/service/publisher/list?serviceName=nacos.test.1&ip=&port='
+
+###查询订阅指定服务的客户端信息
+curl -X GET 'http://127.0.0.1:8848/nacos/v2/ns/client/service/subscriber/list?serviceName=nacos.test.1&ip=&port='
+
+###查询命令空间列表
+curl -X GET 'http://127.0.0.1:8848/nacos/v2/console/namespace/list'
+
+###查询命名空间详情
+curl -X GET 'http://127.0.0.1:8848/nacos/v2/console/namespace?namespaceId=test_namespace'
+
+###创建命名空间
+curl -X POST 'http://127.0.0.1:8848/nacos/v2/console/namespace'
+  -d 'namespaceId=test_namespace' \
+  -d 'namespaceName=test'
+
+###修改命名空间
+curl -X PUT 'http://127.0.0.1:8848/nacos/v2/console/namespace'
+  -d 'namespaceId=test_namespace' \
+  -d 'namespaceName=test.nacos'
+
+###删除命名空间
+curl -X DELETE 'http://127.0.0.1:8848/nacos/v2/console/namespace'
+  -d 'namespaceId=test_namespace'
+
+
+
+
+
+
+
+
+
+

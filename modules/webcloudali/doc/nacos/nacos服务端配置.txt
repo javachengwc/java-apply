@@ -1,0 +1,361 @@
+nacos提供了丰富的可配置项，帮助调整nacos的性能、控制nacos提供的功能能力，例如鉴权、监控、数据库、连接、日志等
+对于nacos server端，一般是设置在{nacos.home}/conf/application.properties里，
+如果参数名后标注了(-D)的，则表示是 JVM 的参数，需要在{nacos.home}/bin/startup.sh里进行相应的设置。
+若没有标注(-D)的参数，则同时可以在{nacos.home}/conf/application.properties里和JVM参数中配置，
+如果同时配置了JVM参数和{nacos.home}/conf/application.properties，那么JVM参数的优先级更高。
+
+1，基础配置参数
+参数名		                              默认值
+###nacos server的根目录
+nacos.home(-D)                            nacos安装的目录
+###是否单机模式 true/false
+nacos.standalone(-D)			          false
+###启动模式，支持只启动某一个模块，不设置时所有模块都会启动,config/naming/空
+nacos.functionMode(-D)		              空
+###nacos服务端的ip，优先级比nacos.inetutils.ip-address更高，如果配置了该参数，则nacos.inetutils.ip-address不再生效
+nacos.server.ip(-D)	                      null
+###节点优先使用hostname作为本机ip，若为true时，cluster.conf里是否应该填hostname
+nacos.inetutils.prefer-hostname-over-ip	  false
+###本机ip，该参数设置后，将会使用这个ip去cluster.conf里进行匹配，请确保这个ip的值在cluster.conf里是存在的
+nacos.inetutils.ip-address	              null
+###指定服务端的处理器个数，用于部分虚拟化场景，防止读取CPU个数时读取到错误的值，导致线程数过多或过少
+nacos.core.sys.basic.processors	          CPU个数
+###nacos server topN 监控统计能力开关,true/false
+nacos.core.monitor.topn.enabled	          true
+###nacos server topN 监控统计 top的个数，如配置为10，表示top10的配置和服务
+nacos.core.monitor.topn.count	          10
+###nacos server的雪花算法snowflake的 workerId
+nacos.core.snowflake.worker-id	          -1
+###nacos server参数校验能力开关，开启后将会校验请求时的参数是否符合规范，不符合将被拦截
+nacos.core.param.check.enabled	          true
+###nacos server的端口
+server.port                               8848
+###nacos server 的servlet上下文路径
+server.servlet.context-path	              /nacos
+###nacos server的额外配置文件路径，
+###除{nacos.home}/conf/application.properties外，用户可以添加额外的配置文件，多个文件路径用逗号分隔
+spring.config.additional-location	      null
+
+2，数据库配置参数
+当前数据库配置支持多数据源。通过db.num来指定数据源个数，db.url.index为对应的数据库的链接。
+db.user以及db.password没有设置index时,所有的链接都以db.user和db.password用作认证。
+如果不同数据源的用户名称或者用户密码不一样时，可以通过符号,来进行切割。
+nacos从1.3版本开始使用HikariCP连接池，但在1.4.1版本前，连接池配置由系统默认值定义，无法自定义配置。
+在1.4.1后，提供了一个方法能够配置HikariCP连接池。db.pool.config为配置前缀，xxx为实际的hikariCP配置，
+如db.pool.config.connectionTimeout或db.pool.config.maximumPoolSize等
+参数名	                                  默认值
+###nacos server使用的数据库类型，取值mysql/空
+###指定为空时会根据nacos.standalone判断使用derby数据库还是mysql数据库；
+###在使用数据源插件时，可以指定为插件对应的数据库值，比如oracle或postgresql
+spring.sql.init.platform	              null
+###nacos server使用的数据库类型，将被废弃，请使用spring.sql.init.platform代替
+spring.datasource.platform	              null
+###数据库数目
+db.num		                              0
+###第一个数据库的URL
+db.url.0		                          空
+###第二个数据库的URL，当db.num=2时生效
+db.url.1	                              空
+###数据库连接的用户名
+db.user	                                  空
+###数据库连接的密码
+db.password	                              空
+###数据库连接池参数，使用的是hikari连接池，参数与hikari连接池相同，
+###如db.pool.config.connectionTimeout或db.pool.config.maximumPoolSize
+db.pool.config.xxx	                      同hikariCp对应默认配置
+
+3，grpc相关配置参数
+参数名	                                                    默认值
+###nacos server grpc能接收的单次最大客户端请求大小，单位byte
+nacos.remote.server.grpc.sdk.max-inbound-message-size	    10 * 1024 * 1024
+###nacos server grpc能接收的单次最大集群间请求大小，单位byte
+nacos.remote.server.grpc.cluster.max-inbound-message-size	10 * 1024 * 1024
+###nacos server grpc线程池监控能力开关,取值true/false
+nacos.metric.grpc.server.executor.enabled	                true
+###nacos server grpc线程池的间隔时间，单位为毫秒
+nacos.metric.grpc.server.executor.interval	                15000
+###nacos server grpc长连接监控能力开关，取值true/false
+nacos.metric.grpc.server.connection.enabled	                true
+###nacos server grpc长连接的间隔时间，单位为秒
+nacos.metric.grpc.server.connection.interval	            15
+###服务端处理请求的线程池大小的倍数, 例如配置为2，表示线程池大小为2 * CPU
+remote.executor.times.of.processors(-D)	                    16
+###服务端处理请求的线程池队列大小
+remote.executor.queue.size(-D)	                            16384
+
+4，集群相关配置参数
+参数名                                                       默认值
+###nacos server地址列表，在cluster.conf不存在时生效,ip1:port1,ip2:port2
+nacos.member.list	                                        null
+###nacos server集群节点变更事件队列的大小，当集群节点通过cluster.conf或地址服务器变更时，会将变更事件放入该队列，
+###该队列会异步通知server中的一些机制，比如distro/raft协议。
+nacos.member-change-event.queue.size                        128
+###nacos server集群节点的发现方式，支持配置文件cluster.conf和地址服务器模式,取值file/address-server
+nacos.core.member.lookup.type	                            file
+###当nacos.core.member.lookup.type指定为address-server时生效，请求地址服务器的重试次数，
+###超过重试次数后不再尝试从地址服务器获取nacos server的集群列表
+nacos.core.address-server.retry	                            5
+###当nacos.core.member.lookup.type指定为address-server时生效，地址服务器的域名
+address.server.domain	                                    jmenv.tbsite.net
+###当nacos.core.member.lookup.type指定为address-server时生效，地址服务器的端口
+address.server.port		                                    8080
+###当nacos.core.member.lookup.type指定为address-server时生效，地址服务器的url
+address.server.url                                          /serverlist
+
+5，distro协议相关配置参数
+参数名	                                                    默认值
+###distro协议同步数据的延迟时间，同一份数据处于延迟时间内多次变更时，会被合并为一次同步，单位为毫秒
+nacos.core.protocol.distro.data.sync.delayMs	            1000
+###distro协议同步数据的超时时间，同步到目标节点时超过该时间，则会认为同步失败，进行延迟后重试，单位为毫秒
+nacos.core.protocol.distro.data.sync.timeoutMs	            3000
+###distro协议同步数据的重试间隔，当数据同步到目标节点失败时，进行该值时间的延迟后再重试，避免同步重试风暴，单位为毫秒
+nacos.core.protocol.distro.data.sync.retryDelayMs	        3000
+###distro协议数据验证的间隔，已经同步过的数据，会定期进行数据有效性验证，验证失败会重新发起该数据的同步，单位为毫秒
+nacos.core.protocol.distro.data.verify.intervalMs	        5000
+###distro协议数据验证的超时时间，单位为毫秒
+nacos.core.protocol.distro.data.verify.timeoutMs	        3000
+###distro协议快照数据加载的重试间隔，在节点刚启动时生效，单位为毫秒
+nacos.core.protocol.distro.data.load.retryDelayMs	        30000
+###distro协议快照数据加载的超时时间，超过该时间未读取到其他节点的快照数据，则认为加载快照失败，单位为毫秒
+nacos.core.protocol.distro.data.load.timeoutMs		        30000
+
+6，raft协议相关配置参数
+参数名	                                                    默认值
+###raft协议选举超时时间，单位ms
+nacos.core.protocol.raft.election_timeout_ms	            5000
+###raft协议快照写入间隔时间，单位s
+nacos.core.protocol.raft.snapshot_interval_secs		        3600
+###raft协议的核心线程数，用于处理raft同步的请求线程数
+nacos.core.protocol.raft.core_thread_num	                8
+###raft协议的核心线程数，用于发起raft同步数据的请求线程数
+nacos.core.protocol.raft.cli_service_thread_num	         	4
+###raft协议请求的超时时间
+nacos.core.protocol.raft.rpc_request_timeout_ms	            5000
+###raft协议单次请求最大字节数
+nacos.core.protocol.raft.max_byte_count_per_rpc	            128 * 1024
+###raft协议单个日志的最大个数
+nacos.core.protocol.raft.max_entries_size	                1024
+###raft协议发送日志的最大body大小
+nacos.core.protocol.raft.max_body_size	                    512 * 1024
+###raft协议日志存储缓冲区最大大小
+nacos.core.protocol.raft.max_append_buffer_size	            256 * 1024
+###raft协议选举的最大随机间隔，选举定时器间隔会在指定时间之外随机的最大范围
+nacos.core.protocol.raft.max_election_delay_ms	            1000
+###从2.4.2版本开始支持，raft的启动校验是否采用严格模式，开启后，当raft无法选举时，引擎的readiness接口将返回500
+nacos.core.protocol.raft.strict_mode	                    false
+
+7，服务注册(naming模块)相关配置参数
+参数名	                                                    默认值
+###是否自动摘除临时实例,取值true/false
+nacos.naming.expireInstance	                                true
+###从2.4.2版本开始支持，是否在启动时校验数据是否预热，开启可能造成server的readiness接口返回500，需要等待预热完成，启动时间变长
+nacos.naming.data.warmup	                                false
+###naming模块的空服务清理间隔，单位毫秒
+nacos.naming.clean.empty-service.interval	                60 * 1000
+###naming模块的空服务过期时间，过期的空服务会被清理，单位毫秒
+nacos.naming.clean.empty-service.expired-time		        60 * 1000
+###naming模块的元数据清理间隔，单位毫秒
+nacos.naming.clean.expired-metadata.interval	            5000
+###naming模块的元数据过期时间，过期的元数据会被清理，单位毫秒
+nacos.naming.clean.expired-metadata.expired-time		    60 * 1000
+###临时client对应数据的过期时间，当distro协议停止对该client的数据进行续约且时间超过该值时，
+###该client数据将被删除，主要应对nacos server之间断网的场景，单位毫秒
+nacos.naming.client.expired.time	                        3 * 60 * 1000
+###服务数据推送的延迟时间，同一个人服务处于延迟时间内多次变更时，会被合并为一次推送，单位为毫秒
+nacos.naming.push.pushTaskDelay	                            500
+###服务数据推送的超时时间，超过该时间未收到客户端的确认，将延迟后重试，单位为毫秒
+nacos.naming.push.pushTaskTimeout		                    5000
+###服务数据推送失败后的重试间隔时间，单位为毫秒
+nacos.naming.push.pushTaskRetryDelay		                1000
+
+8，配置中心(config模块)相关配置参数
+参数名	                                                    默认值
+###配置变更数据推送的延迟时间，同一个人配置处于延迟时间内多次变更时，会被合并为一次推送，单位为毫秒
+nacos.config.push.maxRetryTime	                            50
+###nacos配置中心配置变更历史保留天数，超过该时间的配置变更历史会被删除	正整数
+nacos.config.retention.days	                                30
+###nacos配置中心，根据配置内容查找配置功能的最大队列个数，
+###由于基于内容的检索十分消耗性能，因此对该功能的并发进行限制，最大不可超过32
+nacos.config.search.max_capacity	                        4
+###根据配置内容查找配置功能的最大线程数，最大并发数，最大不可超过16
+nacos.config.search.max_thread	                            2
+###根据配置内容查找配置功能的等待超时时间，超过等待时间的查找任务会直接失败丢弃，单位毫秒
+nacos.config.search.wait_timeout	                        8000
+###当使用derby数据库作为存储时，是否开启derby的相关运维接口,取值true/false
+nacos.config.derby.ops.enabled	                            false
+###当使用derby数据库作为存储时,限制derby数据库可执行的SQL范围为DML和部分DDL，从2.4.1版本开始支持,取值true/false
+nacos.persistence.sql.derby.limit.enabled	                true
+
+9，CMDB模块配置参数
+参数名	                                                    默认值
+###是否打开CMDB，取值true/false
+nacos.cmdb.loadDataAtStart	                                false
+###全量dump的间隔，单位为秒
+nacos.cmdb.dumpTaskInterval	                                3600
+###变更事件的拉取间隔，单位为秒
+nacos.cmdb.eventTaskInterval	                            10
+###标签集合的拉取间隔，单位为秒
+nacos.cmdb.labelTaskInterval	                            300
+
+10，istio模块配置参数
+参数名	                                                    默认值
+###是否加载istio模块，取值true/false
+nacos.extension.naming.istio.enabled	                    false
+###是否开启Istio MCP协议，取值true/false
+nacos.istio.mcp.server.enabled	                            false
+###Istio MCP协议监听端口
+nacos.istio.mcp.server.port	                                18848
+
+11，鉴权模块配置参数
+###鉴权效验功能默认不开启，在用户开启鉴权后，控制台才需要进行登录访问
+###鉴权开关是修改之后立马生效的，不需要重启服务端
+###nacos 2.4.0版本开始，nacos构建时不再提供管理员用户nacos的默认密码，
+###需要在首次开启鉴权后，通过nacos控制台进行管理员用户nacos的密码初始化
+nacos.core.auth.enabled=false
+nacos.core.auth.system.type=nacos
+###默认登录会话保持时间为30分钟。30分钟后需要重新登录认证
+nacos.core.auth.plugin.nacos.token.expire.seconds=1800
+### 如果开启鉴权，需要配置用于生成JWT令牌的密钥(Base64 String)，无默认值，密钥需要保持节点间一致
+### 推荐将配置项设置为Base64编码的字符串，且原始密钥长度不得低于32字符：
+nacos.core.auth.default.token.secret.key=$custom_base64_token_secret_key
+### 如果开启鉴权，需要配置自定义身份识别的key（不可为空）和value（不可为空）
+### 身份识别信息保持节点间一致，长时间不一致可能导致节点见数据不一致。
+nacos.core.auth.server.identity.key=$custom_server_identity_key
+nacos.core.auth.server.identity.value=$custom_server_identity_value
+### 鉴权token缓存功能开启，
+### 在开启token缓存功能之前，服务端对每一个携带用户名密码访问login接口的请求都会生成新的token
+### 在开启Token缓存功能之后，服务端对每一个携带用户名密码访问login接口的请求，会先检查缓存中是否存在该用户名对应的token。
+### 若不存在，生成新的token，插入缓存再返回；若存在，返回该token，
+### 此时tokenTtl字段的值为配置文件中设置的值减去该token在缓存中存留的时长。
+nacos.core.auth.plugin.nacos.token.cache.enable=true
+### 鉴权token缓存时间
+nacos.core.auth.plugin.nacos.token.expire.seconds=18000
+###开启或关闭nacos默认控制台，默认为开启
+nacos.console.ui.enabled=true
+--------------------------------------------------------------------
+插件模块配置
+1，鉴权插件配置参数
+参数名	                                                    默认值
+###nacos是否开启鉴权，取值true/false
+nacos.core.auth.enabled	                                    false
+###nacos鉴权插件的类型	nacos/ldap/自定义插件类型
+nacos.core.auth.system.type	                                nacos
+###nacos server节点身份信息的key，用于server节点之间通信的识别，当开启鉴权时为必填项
+nacos.core.auth.server.identity.key	                        null
+###nacos server节点身份信息的value，用于server节点之间通信的识别，当开启鉴权时为必填项
+nacos.core.auth.server.identity.value	                    null
+###nacos server使用UserAgent来进行server节点之间通信的识别，
+###在1.4.1版本后仅作为升级时的兼容，开启后会存在安全问题，后续版本将移除该参数，取值true/false
+nacos.core.auth.enable.userAgentAuthWhite	                false
+
+2,数据源插件配置参数
+参数名	                                                    默认值
+###nacos server使用的数据库类型,取值mysql/空，
+###指定为空时会根据nacos.standalone判断使用derby数据库还是mysql数据库；
+###在使用数据源插件时，可以指定为插件对应的数据库值，比如oracle或postgresql
+spring.sql.init.platform	                                null
+###nacos server是否开启SQL日志打印，开启后会打印每一次执行的SQL，方便进行插件开发时的问题排查，取值true/false
+nacos.plugin.datasource.log.enabled                         false
+
+3，环境变量插件配置参数
+参数名	                                                    默认值
+###nacos server是否开启环境变量插件，取值true/false
+nacos.custom.environment.enabled                            false
+
+4，反脆弱插件配置参数
+参数名	                                                    默认值
+###nacos反脆弱插件的类型，取值nacos/其他自定义插件类型
+nacos.plugin.control.manager.type	                        null
+###nacos反脆弱插件，反脆弱规则外部存储类型，需要自行实现
+nacos.plugin.control.rule.external.storage	                null
+###nacos反脆弱插件，反脆弱规则本地存储目录
+nacos.plugin.control.rule.local.basedir	                    ${nacos.home}/data/
+
+5，配置变更插件配置参数
+参数名	                                                    默认值
+###nacos server是否开启配置变更插件，取值true/false,默认值false
+nacos.core.config.plugin.${configChangePluginName}.enabled=true
+###配置变更插件的配置项
+nacos.core.config.plugin.${configChangePluginName}.${propertyKey}=${propertyValue}
+------------------------------------------------------------------------
+docker镜像环境变量
+属性名称	                                                    选项
+###系统启动方式: 集群/单机，对应nacos.standalone
+MODE	                                                    cluster/standalone 默认 cluster
+###集群地址，对应nacos.member.list
+NACOS_SERVERS		                                        p1空格ip2空格ip3
+###支持IP还是域名模式，对应nacos.inetutils.prefer-hostname-over-ip
+PREFER_HOST_MODE		                                    hostname/ip 默认IP
+###nacos运行端口，对应server.port
+NACOS_SERVER_PORT	                                        默认8848
+###多网卡模式下可以指定IP，对应nacos.server.ip
+NACOS_SERVER_IP
+###单机模式下支持MYSQL数据库，对应spring.sql.init.platform
+SPRING_DATASOURCE_PLATFORM	                                mysql / 空 默认:空
+###数据库连接地址
+MYSQL_SERVICE_HOST
+###数据库端口
+MYSQL_SERVICE_PORT	                                        默认 : 3306
+###数据库库名
+MYSQL_SERVICE_DB_NAME
+###数据库用户名
+MYSQL_SERVICE_USER
+###数据库用户密码
+MYSQL_SERVICE_PASSWORD
+###数据库连接参数
+MYSQL_SERVICE_DB_PARAM		                                默认:characterEncoding=utf8&connectTimeout=1000
+                                                            &socketTimeout=3000&autoReconnect=true&useSSL=false
+###数据库个数
+MYSQL_DATABASE_NUM		                                    默认:1
+###-Xms
+JVM_XMS		                                                默认 :1g
+###-Xmx
+JVM_XMX		                                                默认 :1g
+###-Xmn
+JVM_XMN		                                                512m
+###- XX
+JVM_MS                                                      默认 :128m
+###-XX
+JVM_MMS	                                                    默认 :320m
+###是否开启远程DEBUG，取值y/n
+NACOS_DEBUG
+###server.tomcat.accesslog.enabled
+TOMCAT_ACCESSLOG_ENABLED
+###鉴权类型选择,目前只支持nacos类型
+NACOS_AUTH_SYSTEM_TYPE
+###是否开启权限系统，对应nacos.core.auth.enabled
+NACOS_AUTH_ENABLE
+###登录会话token保持时间
+NACOS_AUTH_TOKEN_EXPIRE_SECONDS	                            默认 :18000
+###token,该环境变量的默认值在Nacos 2.2.1版本中已移除，开启鉴权时需要指定
+NACOS_AUTH_TOKEN
+###权限缓存开关,开启后权限缓存的更新默认有15秒的延迟
+NACOS_AUTH_CACHE_ENABLE	                                    默认 : false
+###通过环境变量的方式设置集群地址
+MEMBER_LIST		                                            例子:192.168.16.101:8847?raft_port=8807,
+                                                            192.168.16.101?raft_port=8808,
+                                                            192.168.16.101:8849?raft_port=8809
+###是否开启集群嵌入式存储模式
+EMBEDDED_STORAGE	 	                                    embedded 默认 : none
+###nacos.core.auth.caching.enabled
+NACOS_AUTH_CACHE_ENABLE	                                    default : false
+###nacos.core.auth.enable.userAgentAuthWhite
+NACOS_AUTH_USER_AGENT_AUTH_WHITE_ENABLE	                 	default : false
+###nacos.core.auth.server.identity.key
+###注意：该环境变量的默认值在Nacos 2.2.1版本中已移除，开启鉴权时需要指定
+NACOS_AUTH_IDENTITY_KEY
+###nacos.core.auth.server.identity.value
+###注意：该环境变量的默认值在Nacos 2.2.1版本中已移除，开启鉴权时需要指定
+NACOS_AUTH_IDENTITY_VALUE
+###nacos.security.ignore.urls
+NACOS_SECURITY_IGNORE_URLS	                                default : /,/error,/**/*.css,/**/*.js,
+                                                            /**/*.html,/**/*.map,/**/*.svg,/**/*.png,/**/*.ico,
+                                                            /console-fe/public/**,/v1/auth/**,/v1/console/health/**,
+                                                            /actuator/**,/v1/console/server/**
+###数据库连接池超时时间，单位为毫秒
+DB_POOL_CONNECTION_TIMEOUT		                            默认 : 30000
+###nacos.console.ui.enabled
+NACOS_CONSOLE_UI_ENABLED	                                default : true
+###nacos.core.param.check.enabled
+NACOS_CORE_PARAM_CHECK_ENABLED	                            default : true
+

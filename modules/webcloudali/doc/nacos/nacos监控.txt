@@ -1,0 +1,35 @@
+nacos支持通过暴露metrics数据接入第三方监控系统监nacos运行状态，目前支持prometheus、elastic search和influxdb。
+nacos-sync 同样支持了第三方监控系统，能通过metrics数据观察nacos-Sync服务的运行状态，提升了nacos-sync的在生产环境的监控能力
+nacos结合prometheus和grafana的监控nacos运行状态,
+参看：https://nacos.io/docs/latest/manual/admin/monitor
+1，开启nacos集群metrics数据暴露
+在nacos配置文件application.properties文件配置:management.endpoints.web.exposure.include=prometheus 暴露metrics数据,
+访问{ip}:8848/nacos/actuator/prometheus，即可访问到nacos集群的metrics数据。
+2，搭建prometheus采集nacos metrics数据
+需要将prometheus的配置文件prometheus.yml关于采集目标相关的配置，修改为如下内容
+ metrics_path: '/nacos/actuator/prometheus'
+    static_configs:
+      - targets: ['{nacos.ip1}:8848','{nacos.ip2}:8848','{nacos.ip3}:8848',...]
+搭建并启动完成prometheus后，即可通过浏览器访问http://{prometheus_ip}:9090/graph可以看到prometheus的采集数据，
+在搜索栏搜索nacos_monitor可以搜索到nacos数据说明采集数据成功。
+3，搭建grafana图形化展示nacos metrics数据
+部署grafana后在浏览器中访问 http://{grafana_ip}:3000
+然后参考Configure Prometheus，将prometheus作为grafana的数据源。
+随后参考Import dashboards导入nacos grafana监控模版,导入后可看见nacos监控模版。
+nacos监控模版中主要分为三个模块:
+    a，nacos overview: 展示nacos集群当前的概览信息，如节点个数，服务数，服务提供者数、配置数、连接数，CPU使用率等。
+    b，nacos core monitor: 展示nacos集群核心的监控指标，如服务提供者数，配置数，ops，rt等，并能够查看一定时间内的变化趋势。
+    c，nacos basic monitor: 展示nacos集群基础的监控指标，如CPU使用率，内存使用率，线程池使用情况等，并能够查看一定时间内的变化趋势。
+4，配置nacos集群告警
+参考Configure Grafana-managed alert rules，配置自定义的nacos相关告警。
+参考Configure contact points 来配置grafana告警时的通知方式。例如配置邮件通知、钉钉WebHook通知等。
+----------------------------------------------------------
+nacos系统基础资源指标
+指标	                        含义
+system_cpu_usage	        CPU使用率
+system_load_average_1m	    load
+jvm_memory_used_bytes	    JVM内存使用字节，包含各种内存区
+jvm_memory_max_bytes	    JVM内存最大字节，包含各种内存区
+jvm_gc_pause_seconds_count	gc次数，包含各种gc
+jvm_gc_pause_seconds_sum	gc耗时，包含各种gc
+jvm_threads_daemon	        线程数

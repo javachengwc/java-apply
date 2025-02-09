@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <springProperty scope="context" name="ServerIP" source="spring.cloud.client.ipAddress" defaultValue="0.0.0.0"/>
+    <springProperty scope="context" name="ServerPort" source="server.port" defaultValue="0000"/>
+    <springProperty scope="context" name="SpringAppName" source="spring.application.name"/>
+    <springProperty scope="context" name="LOG_HOME" source="logback.home" defaultValue="logs"/>
+    <springProperty scope="context" name="LOG_FILENAME" source="logback.filename" defaultValue="${SpringAppName}"/>
+    <springProperty scope="context" name="LOG_FILESIZE" source="logback.filesize" defaultValue="50MB"/>
+    <springProperty scope="context" name="LOG_FILEMAXDAY" source="logback.filemaxday" defaultValue="15"/>
+
+    <!-- 彩色日志 -->
+    <!-- 彩色日志依赖的渲染类 -->
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+    <conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
+
+    <!-- 彩色日志格式 -->
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${ServerIP}:${ServerPort}){magenta} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta}
+                     %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wex}"/>
+    <property name="CONSOLE_LOG_PATTERN_NO_COLOR"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} ${ServerIP}:${ServerPort} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%15.15t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wex}"/>
+
+    <!-- 控制台日志 -->
+    <appender name="StdoutAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <withJansi>true</withJansi>
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 每天常规日志文件 -->
+    <appender name="FileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_HOME}/${LOG_FILENAME}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${LOG_HOME}/${LOG_FILENAME}.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+            <!--保留时间,单位:天-->
+            <maxHistory>${LOG_FILEMAXDAY}</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- or whenever the file size reaches 10MB -->
+                <maxFileSize>${LOG_FILESIZE}</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN_NO_COLOR}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+        </filter>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="StdoutAppender"/>
+    </root>
+
+    <logger name="org" level="info" additivity="false">
+        <appender-ref ref="StdoutAppender"/>
+        <appender-ref ref="FileAppender"/>
+    </logger>
+
+    <logger name="com" level="info" additivity="false">
+        <appender-ref ref="StdoutAppender"/>
+        <appender-ref ref="FileAppender"/>
+    </logger>
+
+</configuration>
