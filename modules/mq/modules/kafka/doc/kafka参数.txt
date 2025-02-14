@@ -1,25 +1,26 @@
 ############################# System #############################
-#唯一标识在集群中的ID，要求是正数。
+##唯一标识在集群中的ID，要求是正数。在改变IP地址，不改变broker.id的话不会影响consumers
 broker.id=0
-#服务端口，默认9092
+##服务端口，默认9092
 port=9092
-#监听地址，不设为所有地址
+##broker的主机地址，若是设置了，那么会绑定到这个地址上，
+##若是没有，会绑定到所有的接口上，并将其中之一发送到ZK，一般不设置
 host.name=debugo01
 
-# 处理网络请求的最大线程数
+##broker处理消息的最大线程数
 num.network.threads=2
-# 处理磁盘I/O的线程数
+##broker处理磁盘I/O的线程数
 num.io.threads=8
-# 一些后台线程数
+##一些后台任务处理的线程数，例如过期消息文件的删除等
 background.threads = 4
-# 等待IO线程处理的请求队列最大数
+##等待IO线程处理的请求队列最大数，若是等待IO的请求超过这个数值，那么会停止接受外部消息
 queued.max.requests = 500
 
-#  socket的发送缓冲区（SO_SNDBUF）
+##socket的发送缓冲区（SO_SNDBUF）
 socket.send.buffer.bytes=1048576
-# socket的接收缓冲区 (SO_RCVBUF)
+##socket的接收缓冲区 (SO_RCVBUF)
 socket.receive.buffer.bytes=1048576
-# socket请求的最大字节数。为了防止内存溢出，message.max.bytes必然要小于
+##socket请求中可以接收的最大字节数。默认100m，为了防止内存溢出，message.max.bytes必须要小于它
 socket.request.max.bytes = 104857600
 
 ############################# Topic #############################
@@ -29,19 +30,29 @@ num.partitions=2
 auto.create.topics.enable =true
 # 一个topic ，默认分区的replication个数 ，不能大于集群中broker的个数。
 default.replication.factor =1
-# 消息体的最大大小，单位是字节
+# Kafka broker接收的最大消息的大小，单位是字节，默认值约1MB，如果消息的大小超过了这个限制，那么在发送消息时会导致失败。
 message.max.bytes = 1000000
 
+部分配置是可以被每个topic自身的配置所代替，例如
+新增配置
+bin/kafka-topics.sh --zookeeper localhost:2181 --create --topic my-topic --partitions 1 --replication-factor 1 --config max.message.bytes=64000 --config flush.messages=1
+修改配置
+bin/kafka-topics.sh --zookeeper localhost:2181 --alter --topic my-topic --config max.message.bytes=128000
+删除配置 ：
+bin/kafka-topics.sh --zookeeper localhost:2181 --alter --topic my-topic --deleteConfig max.message.bytes
+
 ############################# ZooKeeper #############################
-# Zookeeper quorum设置。如果有多个使用逗号分割
+##zookeeper集群的地址，可以是多个，多个之间用逗号分割
 zookeeper.connect=aa:2181,bb:2181
-# 连接zk的超时时间
-zookeeper.connection.timeout.ms=1000000
-# ZooKeeper集群中leader和follower之间的同步实际
+##zooKeeper的会话超时时间，就是心跳的间隔
+zookeeper.session.timeout.ms=6000
+##zooKeeper的连接超时时间
+zookeeper.connection.timeout.ms=6000
+#zooKeeper集群中leader和follower之间的同步实际
 zookeeper.sync.time.ms = 2000
 
 ############################# Log #############################
-#日志存放目录，多个目录使用逗号分割
+#kafka数据的存放地址，多个地址的话用逗号分割 /tmp/kafka-logs-1，/tmp/kafka-logs-2
 log.dirs=/var/log/kafka
 
 # 当达到下面的消息数量时，会将数据flush到日志文件中。默认10000
@@ -51,37 +62,57 @@ log.dirs=/var/log/kafka
 # 检查是否需要将日志flush的时间间隔
 log.flush.scheduler.interval.ms = 3000
 
-# 日志清理策略（delete|compact）
+# 用于启用或禁用日志清理功能的开关，默认true
+log.cleaner.enable=true
+## 日志清理的线程数
+log.cleaner.threads =1
+# 日志清理策略（delete|compact），delete是默认清楚策略
 log.cleanup.policy = delete
 # 日志保存时间 (hours|minutes)，默认为7天（168小时）。超过这个时间会根据policy处理数据。bytes和minutes无论哪个先达到都会触发。
 log.retention.hours=168
-# 日志数据存储的最大字节数。超过这个时间会根据policy处理数据。
+# 单个分区中日志数据的最大字节数。默认值为 -1，表示没有大小限制。超过这个数据量会根据policy处理数据。
 #log.retention.bytes=1073741824
 
-# 控制日志segment文件的大小，超出该大小则追加到一个新的日志segment文件中（-1表示没有限制）
-log.segment.bytes=536870912
-# 当达到下面时间，会强制新建一个segment
+# 控制日志segment文件的大小，默认为1G，超出该大小则追加到一个新的日志segment文件中（-1表示没有限制）
+# 在 Kafka 中，日志文件会被切分成多个日志段（segment），以便于管理和清理。
+log.segment.bytes=1024 * 1024 * 1024
+# 配置日志滚动周期时间的参数，单位为小时‌，当达到指定的时间周期时，Kafka 会强制生成一个新的日志段segment。
 log.roll.hours = 24*7
-# 日志片段文件的检查周期，查看它们是否达到了删除策略的设置（log.retention.hours或log.retention.bytes）
-log.retention.check.interval.ms=60000
+##日志片段文件的检查周期，默认5分钟，查看是否达到了删除策略的设置（log.retention.hours或log.retention.bytes）
+log.retention.check.interval.ms=300000
 
-# 是否开启压缩
-log.cleaner.enable=false
-# 对于压缩的日志保留的最长时间
-log.cleaner.delete.retention.ms = 1 day
-
-# 对于segment日志的索引文件大小限制
+# 日志索引文件最大大小
+# 在Kafka 中，每个分区（partition）的日志数据都会被分割成多个段（segment），每个段包含一个日志数据文件和一个索引文件。
+# 索引文件用于快速定位日志数据文件中的记录，从而提高数据检索的效率。
+# log.index.size.max.bytes 参数就是用来设置这些索引文件的最大大小的。
 log.index.size.max.bytes = 10 * 1024 * 1024
-#y索引计算的一个缓冲区，一般不需要设置。
+# 配置Kafka写入索引文件的频率，默认4kb。
+# 每当Kafka向日志数据文件中写入了指定大小（即 log.index.interval.bytes 的值）的日志时，
+# 它会在索引文件中记录一个索引项。这个索引项用于快速定位日志数据文件中的记录，从而提高数据检索的效率。
 log.index.interval.bytes = 4096
 
+## 日志压缩时候处理的最大大小
+log.cleaner.io.max.bytes.per.second=None
+## 日志压缩去重时候的缓存空间 ，在空间允许的情况下，越大越好
+log.cleaner.dedupe.buffer.size=500*1024*1024
+## 日志清理时候用到的IO块大小 一般不需要修改
+log.cleaner.io.buffer.size=512*1024
+## 日志清理中hash表的扩大因子 一般不需要修改
+log.cleaner.io.buffer.load.factor = 0.9
+## 检查是否进行日志清理的间隔
+log.cleaner.backoff.ms =15000
+## 日志清理的频率控制，越大意味着更高效的清理，同时会存在一些空间上的浪费，会被topic创建时的指定参数覆盖
+log.cleaner.min.cleanable.ratio=0.5
+# 此参数主要用于日志压缩场景中，当Kafka使用日志压缩策略（Log Compaction）时，它会保留每个 key 的最新值，并删除旧的值。
+# log.cleaner.delete.retention.ms 参数就是用来设置这些标记在日志中保留的时间，默认1天
+log.cleaner.delete.retention.ms = 86400000
+
 ############################# replica #############################
-# partition management controller 与replicas之间通讯的超时时间
+# 设置控制器（controller）与 broker 之间进行通信时的 socket 超时时间
+# 控制器（controller）是 Kafka 集群中的一个特殊 broker，负责管理和监控集群的状态。
 controller.socket.timeout.ms = 30000
 # controller-to-broker-channels消息队列的尺寸大小
 controller.message.queue.size=10
-# replicas响应leader的最长等待时间，若是超过这个时间，就将replicas排除在管理之外
-replica.lag.time.max.ms = 10000
 # 是否允许控制器关闭broker ,若是设置为true,会关闭所有在这个broker上的leader，并转移到其他broker
 controlled.shutdown.enable = false
 # 控制器关闭的尝试次数
@@ -89,9 +120,13 @@ controlled.shutdown.max.retries = 3
 # 每次关闭尝试的时间间隔
 controlled.shutdown.retry.backoff.ms = 5000
 
-# 如果relicas落后太多,将会认为此partition relicas已经失效。而一般情况下,因为网络延迟等原因,总会导致replicas中消息同步滞后。
-#如果消息严重滞后,leader将认为此relicas网络延迟较大或者消息吞吐能力有限。在broker数量较少,或者网络不足的环境中,建议提高此值.
+##replicas响应partition leader的最长等待时间，默认10秒。
+##若是超过这个时间，则认为该follower副本已经失效，会被踢出ISR集合
+replica.lag.time.max.ms = 10000
+## 在 Kafka 0.10.0 及之前的版本中,定义如果某个副本落后超过指定的消息数量，则该副本将被视为不同步。
+## 从 Kafka 0.10.0 版本开始，这个参数被正式移除
 replica.lag.max.messages = 4000
+
 #leader与relicas的socket超时时间
 replica.socket.timeout.ms= 30 * 1000
 # leader复制的socket缓存大小
@@ -104,7 +139,7 @@ replica.fetch.wait.max.ms = 500
 replica.fetch.min.bytes =1
 # leader中进行复制的线程数，增大这个数值会增加relipca的IO
 num.replica.fetchers = 1
-# 每个replica将最高水位进行flush的时间间隔
+# 每个replica检查将最高水位进行flush的时间间隔
 replica.high.watermark.checkpoint.interval.ms = 5000
 
 # 是否自动平衡broker之间的分配策略
@@ -113,60 +148,57 @@ auto.leader.rebalance.enable = false
 leader.imbalance.per.broker.percentage = 10
 # 检查leader是否不平衡的时间间隔
 leader.imbalance.check.interval.seconds = 300
-# 客户端保留offset信息的最大空间大小
-offset.metadata.max.bytes = 1024
+# 用于限制消费者提交的偏移量元数据（offset metadata）的最大字节数‌,默认值是 4096（即 4KB）。
+offset.metadata.max.bytes = 4096
 
 #############################Consumer #############################
 # Consumer端核心的配置是group.id、zookeeper.connect
-# 决定该Consumer归属的唯一组ID，By setting the same group id multiple processes indicate that they are all part of the same consumer group.
+# consumer归属的组ID
 group.id
 # 消费者的ID，若是没有设置的话，会自增
 consumer.id
 # 一个用于跟踪调查的ID ，最好同group.id相同
 client.id = <group_id>
-
 # 对于zookeeper集群的指定，必须和broker使用同样的zk配置
 zookeeper.connect=aa:2182,bb:2182,cc:2182
-# zookeeper的心跳超时时间，查过这个时间就认为是无效的消费者
+# zookeeper的心跳超时时间，超过这个时间就认为是无效的消费者
 zookeeper.session.timeout.ms = 6000
 # zookeeper的等待连接时间
 zookeeper.connection.timeout.ms = 6000
 # zookeeper的follower同leader的同步时间
 zookeeper.sync.time.ms = 2000
-# 当zookeeper中没有初始的offset时，或者超出offset上限时的处理方式 。
-# smallest ：重置为最小值
-# largest:重置为最大值
-# anything else：抛出异常给consumer
+
+# 当zookeeper中没有初始的offset时，取值latest--从最新产生的消息开始消费 / earliest--从最早的消息开始消费
+# 在有已提交的offset记录的情况下，earliest和latest的行为相同，都会从提交的offset处继续消费‌
 auto.offset.reset = latest
 
 # socket的超时时间，实际的超时时间为max.fetch.wait + socket.timeout.ms.
 socket.timeout.ms= 30 * 1000
 # socket的接收缓存空间大小
 socket.receive.buffer.bytes=64 * 1024
-#从每个分区fetch的消息大小限制
+#消费者每次从 Kafka 分区中提取消息的最大字节数‌，默认值通常是 1MB
 fetch.message.max.bytes = 1024 * 1024
 
-# true时，Consumer会在消费消息后将offset同步到zookeeper，这样当Consumer失败后，新的consumer就能从zookeeper获取最新的offset
+# ###提交方式，true--自动提交，consumer会周期性的把当前消费的offset值保存到zookeeper。false--手动提交
 auto.commit.enable = true
 # 自动提交的时间间隔，默认5秒钟
 auto.commit.interval.ms = 5 * 1000
 
-# 用于消费的最大数量的消息块缓冲大小，每个块可以等同于fetch.message.max.bytes中数值
-queued.max.message.chunks = 10
-
-# 当有新的consumer加入到group时,将尝试reblance,将partitions的消费端迁移到新的consumer中, 该设置是尝试的次数
-rebalance.max.retries = 4
+# 消费者内部缓存拉回来的消息到一个队列中的最大块数‌，每个块可以等同于fetch.message.max.bytes中数值
+queued.max.message.chunks = 2
+## 当有新的consumer加入到group时,将会reblance,此后将会有partitions的消费端迁移到新
+## 的consumer上,如果一个consumer获得了某个partition的消费权限,那么它将会向zk注册
+## "Partition Owner registry"节点信息,但是有可能此时旧的consumer尚没有释放此节点,
+## 此值用于控制,注册节点的重试次数.
+ rebalance.max.retries = 4
 # 每次reblance的时间间隔
 rebalance.backoff.ms = 2000
 # 每次重新选举leader的时间
 refresh.leader.backoff.ms
-
-# server发送到消费端的最小数据，若是不满足这个数值则会等待直到满足指定大小。默认为1表示立即接收。
+# 消费者在一次拉取请求中能从 Kafka 中拉取的最小数据量，若是不满足这个数值则会等待直到满足指定大小。默认为1表示立即接收。
 fetch.min.bytes = 1
 # 若是不满足fetch.min.bytes时，等待消费端请求的最长等待时间
 fetch.wait.max.ms = 100
-# 如果指定时间内没有新消息可用于消费，就抛出异常，默认-1表示不受限
-consumer.timeout.ms = -1
 
 #############################Producer#############################
 # 核心的配置包括：
@@ -186,7 +218,7 @@ request.required.acks = 0
 
 # 消息发送的最长等待时间
 request.timeout.ms = 10000
-# socket的缓存大小
+# 发送数据时使用的TCP发送缓冲区（SO_SNDBUF）的大小，默认值为131072字节=128KB
 send.buffer.bytes=100*1024
 # key的序列化方式，若是没有设置，同serializer.class
 key.serializer.class
@@ -194,364 +226,40 @@ key.serializer.class
 partitioner.class=kafka.producer.DefaultPartitioner
 # 消息的压缩模式，默认是none，可以有gzip和snappy
 compression.codec = none
-# 可以针对默写特定的topic进行压缩
+# 可以针对特定的topic进行压缩
 compressed.topics=null
 # 消息发送失败后的重试次数
 message.send.max.retries = 3
 # 每次失败后的间隔时间
 retry.backoff.ms = 100
-# 生产者定时更新topic元信息的时间间隔 ，若是设置为0，那么会在每个消息发送后都去更新数据
+# Kafka 生产者每隔多久时间（以毫秒为单位）会主动获取一次主题的元数据，默认值是 600000 毫秒（即 10 分钟）
 topic.metadata.refresh.interval.ms = 600 * 1000
 # 用户随意指定，但是不能重复，主要用于跟踪记录消息
 client.id=""
 
-# 异步模式下缓冲数据的最大时间。例如设置为100则会集合100ms内的消息后发送，这样会提高吞吐量，但是会增加消息发送的延时
+---------------老版本的配置，现已弃用-----------------------------------------
+## 【弃用】生产者的类型 async:异步执行消息的发送 sync：同步执行消息的发送
+## 在较新版本的 Kafka 中已经不再使用，其默认行为已经统一为异步发送模式‌
+producer.type=sync
+
+## 【弃用】异步模式下，那么就会在设置的时间缓存消息，并一次性发送
+## 在较新版本的 Kafka 中，queue.buffering.max.ms 参数已经被弃用
 queue.buffering.max.ms = 5000
-# 异步模式下缓冲的最大消息数，同上
+
+## 【弃用】异步的模式下 最长等待的消息数量
+## 在较新版本的Kafka 中，此参数已经被弃用
 queue.buffering.max.messages = 10000
-# 异步模式下，消息进入队列的等待时间。若是设置为0，则消息不等待，如果进入不了队列，则直接被抛弃
+
+## 【弃用】异步模式下，设置生产者向队列中添加消息时的阻塞等待时间
+## 当生产者向 Kafka 发送消息时，如果消息队列已满（达到了 queue.buffering.max.messages 设置的限制），
+## 生产者会根据 queue.enqueue.timeout.ms 参数的值来决定是否阻塞等待队列有空位。
+## 如果 queue.enqueue.timeout.ms 设置为 0，当消息队列满时，生产者不会阻塞等待，而是会直接丢弃新的消息‌。
+## 如果 queue.enqueue.timeout.ms 设置为一个正数，当消息队列满时，生产者会阻塞等待指定的时间（以毫秒为单位）。
+## 如果在这段时间内队列中有空位，生产者会将新消息添加到队列中；如果等待时间超时队列仍然无空位，生产者则会丢弃新的消息‌。
+## 如果 queue.enqueue.timeout.ms 设置为 -1，当消息队列满时，生产者会无限期地阻塞等待，直到队列中有空位可以添加新消息为止‌。
 queue.enqueue.timeout.ms = -1
-# 异步模式下，每次发送的消息数，当queue.buffering.max.messages或queue.buffering.max.ms满足条件之一时producer会触发发送。
-batch.num.messages=200
 
-------------------------------------------- 系统 相关 -------------------------------------------
-##每一个broker在集群中的唯一标示，要求是正数。在改变IP地址，不改变broker.id的话不会影响consumers
-broker.id = 1
-
-##kafka数据的存放地址，多个地址的话用逗号分割 /tmp/kafka-logs-1，/tmp/kafka-logs-2
-log.dirs = /tmp/kafka-logs
-
-##提供给客户端响应的端口
-port = 6667
-
-##消息体的最大大小，单位是字节
-message.max.bytes = 1000000
-
-## broker 处理消息的最大线程数，一般情况下不需要去修改
-num.network.threads = 3
-
-## broker处理磁盘IO 的线程数 ，数值应该大于你的硬盘数
-num.io.threads = 8
-
-## 一些后台任务处理的线程数，例如过期消息文件的删除等，一般情况下不需要去做修改
-background.threads = 4
-
-## 等待IO线程处理的请求队列最大数，若是等待IO的请求超过这个数值，那么会停止接受外部消息，算是一种自我保护机制
-queued.max.requests = 500
-
-##broker的主机地址，若是设置了，那么会绑定到这个地址上，若是没有，会绑定到所有的接口上，并将其中之一发送到ZK，一般不设置
-host.name
-
-## 打广告的地址，若是设置的话，会提供给producers, consumers,其他broker连接，具体如何使用还未深究
-advertised.host.name
-
-## 广告地址端口，必须不同于port中的设置
-advertised.port
-
-## socket的发送缓冲区，socket的调优参数SO_SNDBUFF
-socket.send.buffer.bytes = 100 * 1024
-
-## socket的接受缓冲区，socket的调优参数SO_RCVBUFF
-socket.receive.buffer.bytes = 100 * 1024
-
-## socket请求的最大数值，防止serverOOM，message.max.bytes必然要小于socket.request.max.bytes，会被topic创建时的指定参数覆盖
-socket.request.max.bytes = 100 * 1024 * 1024
-
-------------------------------------------- LOG 相关 -------------------------------------------
-## topic的分区是以一堆segment文件存储的，这个控制每个segment的大小，会被topic创建时的指定参数覆盖
-log.segment.bytes = 1024 * 1024 * 1024
-
-## 这个参数会在日志segment没有达到log.segment.bytes设置的大小，也会强制新建一个segment 会被 topic创建时的指定参数覆盖
-log.roll.hours = 24*7
-
-## 日志清理策略 选择有：delete和compact 主要针对过期数据的处理，或是日志文件达到限制的额度，会被 topic创建时的指定参数覆盖
-log.cleanup.policy = delete
-
-## 数据存储的最大时间 超过这个时间 会根据log.cleanup.policy设置的策略处理数据，也就是消费端能够多久去消费数据
-## log.retention.bytes和log.retention.minutes任意一个达到要求，都会执行删除，会被topic创建时的指定参数覆盖
-log.retention.minutes=7 days
-
-## topic每个分区的最大文件大小，一个topic的大小限制 = 分区数*log.retention.bytes 。-1 没有大小限制
-## log.retention.bytes和log.retention.minutes任意一个达到要求，都会执行删除，会被topic创建时的指定参数覆盖
-log.retention.bytes=-1
-
-## 文件大小检查的周期时间，是否处罚 log.cleanup.policy中设置的策略
-log.retention.check.interval.ms=5 minutes
-
-## 是否开启日志压缩
-log.cleaner.enable=false
-
-## 日志压缩运行的线程数
-log.cleaner.threads =1
-
-## 日志压缩时候处理的最大大小
-log.cleaner.io.max.bytes.per.second=None
-
-## 日志压缩去重时候的缓存空间 ，在空间允许的情况下，越大越好
-log.cleaner.dedupe.buffer.size=500*1024*1024
-
-## 日志清理时候用到的IO块大小 一般不需要修改
-log.cleaner.io.buffer.size=512*1024
-
-## 日志清理中hash表的扩大因子 一般不需要修改
-log.cleaner.io.buffer.load.factor = 0.9
-
-## 检查是否处罚日志清理的间隔
-log.cleaner.backoff.ms =15000
-
-## 日志清理的频率控制，越大意味着更高效的清理，同时会存在一些空间上的浪费，会被topic创建时的指定参数覆盖
-log.cleaner.min.cleanable.ratio=0.5
-
-## 对于压缩的日志保留的最长时间，也是客户端消费消息的最长时间，同log.retention.minutes的区别在于一个控制未压缩数据，一个控制压缩后的数据。会被topic创建时的指定参数覆盖
-log.cleaner.delete.retention.ms = 1 day
-
-## 对于segment日志的索引文件大小限制，会被topic创建时的指定参数覆盖
-log.index.size.max.bytes = 10 * 1024 * 1024
-
-## 当执行一个fetch操作后，需要一定的空间来扫描最近的offset大小，设置越大，代表扫描速度越快，但是也更好内存，一般情况下不需要搭理这个参数
-log.index.interval.bytes = 4096
-
-## log文件"sync"到磁盘之前累积的消息条数
-## 因为磁盘IO操作是一个慢操作,但又是一个"数据可靠性"的必要手段
-## 所以此参数的设置,需要在"数据可靠性"与"性能"之间做必要的权衡.
-## 如果此值过大,将会导致每次"fsync"的时间较长(IO阻塞)
-## 如果此值过小,将会导致"fsync"的次数较多,这也意味着整体的client请求有一定的延迟.
-## 物理server故障,将会导致没有fsync的消息丢失.
-log.flush.interval.messages=None
-
-## 检查是否需要固化到硬盘的时间间隔
-log.flush.scheduler.interval.ms = 3000
-
-## 仅仅通过interval来控制消息的磁盘写入时机,是不足的.
-## 此参数用于控制"fsync"的时间间隔,如果消息量始终没有达到阀值,但是离上一次磁盘同步的时间间隔
-## 达到阀值,也将触发.
-log.flush.interval.ms = None
-
-## 文件在索引中清除后保留的时间 一般不需要去修改
-log.delete.delay.ms = 60000
-
-## 控制上次固化硬盘的时间点，以便于数据恢复 一般不需要去修改
-log.flush.offset.checkpoint.interval.ms =60000
-
-------------------------------------------- TOPIC 相关 -------------------------------------------
-## 是否允许自动创建topic ，若是false，就需要通过命令创建topic
-auto.create.topics.enable =true
-
-## 一个topic ，默认分区的replication个数 ，不得大于集群中broker的个数
-default.replication.factor =1
-
-## 每个topic的分区个数，若是在topic创建时候没有指定的话 会被topic创建时的指定参数覆盖
-num.partitions = 1
-
-实例 --replication-factor 3 --partitions 1 --topic replicated-topic ：名称replicated-topic有一个分区，分区被复制到三个broker上。
-
-------------------------------------------- 复制(Leader、replicas) 相关 -------------------------------------------
-## partition leader与replicas之间通讯时,socket的超时时间
-controller.socket.timeout.ms = 30000
-
-## partition leader与replicas数据同步时,消息的队列尺寸
-controller.message.queue.size=10
-
-## replicas响应partition leader的最长等待时间，若是超过这个时间，就将replicas列入ISR(in-sync replicas)，并认为它是死的，不会再加入管理中
-replica.lag.time.max.ms = 10000
-
-## 如果follower落后与leader太多,将会认为此follower[或者说partition relicas]已经失效
-## 通常,在follower与leader通讯时,因为网络延迟或者链接断开,总会导致replicas中消息同步滞后
-## 如果消息之后太多,leader将认为此follower网络延迟较大或者消息吞吐能力有限,将会把此replicas迁移
-## 到其他follower中.
-## 在broker数量较少,或者网络不足的环境中,建议提高此值.
-replica.lag.max.messages = 4000
-
-##follower与leader之间的socket超时时间
-replica.socket.timeout.ms= 30 * 1000
-
-## leader复制时候的socket缓存大小
-replica.socket.receive.buffer.bytes=64 * 1024
-
-## replicas每次获取数据的最大大小
-replica.fetch.max.bytes = 1024 * 1024
-
-## replicas同leader之间通信的最大等待时间，失败了会重试
-replica.fetch.wait.max.ms = 500
-
-## fetch的最小数据尺寸,如果leader中尚未同步的数据不足此值,将会阻塞,直到满足条件
-replica.fetch.min.bytes =1
-
-## leader 进行复制的线程数，增大这个数值会增加follower的IO
-num.replica.fetchers=1
-
-## 每个replica检查是否将最高水位进行固化的频率
-replica.high.watermark.checkpoint.interval.ms = 5000
-
-## 是否允许控制器关闭broker ,若是设置为true,会关闭所有在这个broker上的leader，并转移到其他broker
-controlled.shutdown.enable = false
-
-## 控制器关闭的尝试次数
-controlled.shutdown.max.retries = 3
-
-## 每次关闭尝试的时间间隔
-controlled.shutdown.retry.backoff.ms = 5000
-
-## 是否自动平衡broker之间的分配策略
-auto.leader.rebalance.enable = false
-
-## leader的不平衡比例，若是超过这个数值，会对分区进行重新的平衡
-leader.imbalance.per.broker.percentage = 10
-
-## 检查leader是否不平衡的时间间隔
-leader.imbalance.check.interval.seconds = 300
-
-## 客户端保留offset信息的最大空间大小
-offset.metadata.max.bytes
-
-------------------------------------------- ZooKeeper 相关 -------------------------------------------
-##zookeeper集群的地址，可以是多个，多个之间用逗号分割 hostname1:port1,hostname2:port2,hostname3:port3
-zookeeper.connect = localhost:2181
-
-## ZooKeeper的最大超时时间，就是心跳的间隔，若是没有反映，那么认为已经死了，不易过大
-zookeeper.session.timeout.ms=6000
-
-## ZooKeeper的连接超时时间
-zookeeper.connection.timeout.ms = 6000
-
-## ZooKeeper集群中leader和follower之间的同步实际那
-zookeeper.sync.time.ms = 2000
-配置的修改
-其中一部分配置是可以被每个topic自身的配置所代替，例如
-新增配置
-bin/kafka-topics.sh --zookeeper localhost:2181 --create --topic my-topic --partitions 1 --replication-factor 1 --config max.message.bytes=64000 --config flush.messages=1
-
-修改配置
-bin/kafka-topics.sh --zookeeper localhost:2181 --alter --topic my-topic --config max.message.bytes=128000
-
-删除配置 ：
-bin/kafka-topics.sh --zookeeper localhost:2181 --alter --topic my-topic --deleteConfig max.message.bytes
-
---------------------------------------------- Consumer相关 --------------------------------------------
-核心的配置是group.id、zookeeper.connect
-## Consumer归属的组ID，broker是根据group.id来判断是队列模式还是发布订阅模式，非常重要
- group.id
-## 消费者的ID，若是没有设置的话，会自增
- consumer.id
-## 一个用于跟踪调查的ID ，最好同group.id相同
- client.id = group id value
-
-## 对于zookeeper集群的指定，可以是多个 hostname1:port1,hostname2:port2,hostname3:port3 必须和broker使用同样的zk配置
- zookeeper.connect=localhost:2182
-
-## zookeeper的心跳超时时间，超过这个时间就认为是dead消费者
- zookeeper.session.timeout.ms = 6000
-
-## zookeeper的等待连接时间
- zookeeper.connection.timeout.ms = 6000
-
-## zookeeper的follower同leader的同步时间
- zookeeper.sync.time.ms = 2000
-
-## auto.offset.reset定义当无法获取消费分区的位移时从何处开始消费。
-auto.offset.reset 默认是latest
-earliest 选项意味着，当Kafka的分区中存在已提交的偏移量（offset）时，消费者将从这些已提交的偏移量处开始消费数据；
-如果分区中没有已提交的偏移量，消费者将从该分区的起始位置开始消费数据。
-latest 选项则表示，当Kafka的分区中存在已提交的偏移量时，消费者同样从这些已提交的偏移量处开始消费数据；
-如果分区中没有已提交的偏移量，消费者将开始消费该分区新产生的数据，而不是从分区的起始位置开始。
-提交过offset，latest和earliest没有区别，但是在没有提交offset情况下，用latest直接会导致无法读取旧数据。
-
-## socket的超时时间，实际的超时时间是：max.fetch.wait + socket.timeout.ms.
- socket.timeout.ms= 30 * 1000
-
-## socket的接受缓存空间大小
- socket.receive.buffer.bytes=64 * 1024
-
-##从每个分区获取的消息大小限制
- fetch.message.max.bytes = 1024 * 1024
-
-## 是否在消费消息后将offset同步到zookeeper，当Consumer失败后就能从zookeeper获取最新的offset
- auto.commit.enable = true
-
-## 自动提交的时间间隔
- auto.commit.interval.ms = 5 * 1000
-
-## 用来处理消费消息的块，每个块可以等同于fetch.message.max.bytes中数值
- queued.max.message.chunks = 10
-
-## 当有新的consumer加入到group时,将会reblance,此后将会有partitions的消费端迁移到新
-## 的consumer上,如果一个consumer获得了某个partition的消费权限,那么它将会向zk注册
-## "Partition Owner registry"节点信息,但是有可能此时旧的consumer尚没有释放此节点,
-## 此值用于控制,注册节点的重试次数.
- rebalance.max.retries = 4
-
-## 每次再平衡的时间间隔
- rebalance.backoff.ms = 2000
-
-## 每次重新选举leader的时间
- refresh.leader.backoff.ms
-
-## server发送到消费端的最小数据，若是不满足这个数值则会等待，知道满足数值要求
- fetch.min.bytes = 1
-
-## 若是不满足最小大小(fetch.min.bytes)的话，等待消费端请求的最长等待时间
- fetch.wait.max.ms = 100
-
-## 指定时间内没有消息到达就抛出异常，一般不需要改
- consumer.timeout.ms = -1
----------------------------------------- Producer相关 -------------------------------------
-比较核心的配置：metadata.broker.list、request.required.acks、producer.type、serializer.class
-
-## 消费者获取消息元信息(topics, partitions and replicas)的地址,配置格式是：host1:port1,host2:port2，
- metadata.broker.list
-
-##消息的确认模式
- ## 0：不保证消息的到达确认，只管发送，低延迟但是会出现消息的丢失，在某个server失败的情况下，有点像TCP
- ## 1：发送消息，并会等待leader 收到确认后，一定的可靠性
- ## -1：发送消息，等待leader收到确认，并进行复制操作后，才返回，最高的可靠性
- request.required.acks = 0
-
-## 消息发送的最长等待时间
- request.timeout.ms = 10000
-
-## socket的缓存大小
- send.buffer.bytes=100*1024
-
-## key的序列化方式，若是没有设置，同serializer.class
- key.serializer.class
-
-## 分区的策略，默认是取模
- partitioner.class=kafka.producer.DefaultPartitioner
-
-## 消息的压缩模式，默认是none，可以有gzip和snappy
- compression.codec = none
-
-## 可以针对默写特定的topic进行压缩
- compressed.topics=null
-
-## 消息发送失败后的重试次数
- message.send.max.retries = 3
-
-## 每次失败后的间隔时间
- retry.backoff.ms = 100
-
-## 生产者定时更新topic元信息的时间间隔 ，若是设置为0，那么会在每个消息发送后都去更新数据
- topic.metadata.refresh.interval.ms = 600 * 1000
-
-## 用户随意指定，但是不能重复，主要用于跟踪记录消息
- client.id=""
-
-------------------------------------------- 消息模式 相关 -------------------------------------------
- ## 生产者的类型 async:异步执行消息的发送 sync：同步执行消息的发送
- producer.type=sync
-
-## 异步模式下，那么就会在设置的时间缓存消息，并一次性发送
- queue.buffering.max.ms = 5000
-
-## 异步的模式下 最长等待的消息数
- queue.buffering.max.messages = 10000
-
-## 异步模式下，进入队列的等待时间 若是设置为0，那么要么进入队列，要么直接抛弃
- queue.enqueue.timeout.ms = -1
-
-## 异步模式下，每次发送的最大消息数，前提是触发了queue.buffering.max.messages或是queue.buffering.max.ms的限制
- batch.num.messages=200
-
-## 消息体的系列化处理类 ，转化为字节流进行传输
- serializer.class = kafka.serializer.DefaultEncoder
+## 【弃用】消息体的序列化处理类 ，转化为字节流进行传输
+## 在较新版本的 Kafka 中，通常使用 key.serializer 和 value.serializer 参数来分别指定键和值的序列化器类
+serializer.class = kafka.serializer.DefaultEncoder
 ---------------------------------------------------------------------------------------------------------

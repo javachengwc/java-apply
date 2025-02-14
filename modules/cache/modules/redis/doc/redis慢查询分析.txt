@@ -5,7 +5,7 @@ redis默认对于执行超过10毫秒的命令记录到一个定长队列中,慢
 需要重点比对异常和慢查询发生的时间点，确认是否有慢查询造成的命令阻塞排队。
 redis慢查询配置:
   config set slowlog-max-len  100                   ###设置慢查询队列的长度
-  config set slowlog-log-slower-than 100            ###设置慢查询阈值,单位(毫秒),当大于这个时间放入慢查询队列中
+  config set slowlog-log-slower-than 10000          ###设置慢查询阈值,单位(微秒),当大于这个时间放入慢查询队列中
   config get
 redis慢查询命令:
   slowlog get [n]                                   ###获取慢查询队列，获取前n条慢查询的数据。
@@ -49,14 +49,14 @@ redis-cli对延迟监控的支持
   redis-cli -h{host} -p{port} --stat                ###查看redis及时请求状态
 套路:
 可能产生慢查询的原因：
- 1）典型的一些慢命令，如：save持久化数据化；keys匹配所有的键；hgetall，smembers等大集合的全量操作；
- 2）使用del命令删除一个非常大的集合键，集合键在删除的时候，需要释放每一个元素的内存空间，exists命令如果查询的是过期的大集合键,也会触发删除操作。
+1）典型的一些慢命令，如：save持久化数据化；keys匹配所有的键；hgetall，smembers等大集合的全量操作；
+2）使用del命令删除一个非常大的集合键，集合键在删除的时候，需要释放每一个元素的内存空间，exists命令如果查询的是过期的大集合键,也会触发删除操作。
   对于集合键的删除，redis提供了异步删除方式，主线程中断开数据库与该键的引用关系，真正的删除动作通过队列异步交由另外的子线程处理。
   不过需要配置lazyfree-lazy-expire=yes,异步进行key过期事件的处理。
- 3）bgsave持久化，虽是fork子进程执行持久化操作，但有时fork系统调用同样会比较耗时，从而阻塞主线程执行命令请求；
- 4）aof持久化，aof写入时如果磁盘的负载较高，会阻塞aof的写入，从而影响命令的执行；
- 5）时间事件循环中的周期性删除过期键，在遇到大量键集中过期时，删除过期键同样会比较耗时；
- 6）快命令被其他慢命令请求阻塞。
+3）bgsave持久化，虽是fork子进程执行持久化操作，但有时fork系统调用同样会比较耗时，从而阻塞主线程执行命令请求；
+4）aof持久化，aof写入时如果磁盘的负载较高，会阻塞aof的写入，从而影响命令的执行；
+5）时间事件循环中的周期性删除过期键，在遇到大量键集中过期时，删除过期键同样会比较耗时；
+6）快命令被其他慢命令请求阻塞。
 优化:
   如果AOF持久化导致阻塞，类似报错：Asynchronous AOF fsync is taking too long(disk is busy).
   Writing the AOF buffe without waiting for fsync to complete,this may slow down Redis

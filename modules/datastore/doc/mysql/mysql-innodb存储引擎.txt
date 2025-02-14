@@ -49,11 +49,12 @@ InnoDB物理存储结构文件包括:
     其他文件
 
 内存结构:
-缓冲池buffer pool                           ###由innodb_buffer_pool_size配置
-重做日志缓冲池redo log buffer               ###由innodb_log_buffer_size配置
+缓冲池buffer pool                          ###由innodb_buffer_pool_size配置
+重做日志缓冲池redo log buffer                ###由innodb_log_buffer_size配置
 额外内存池additional memory pool            ###由innodb_additional_mem_pool_size配置
 可以使用 show engine innodb status来查看innodb_buffer_pool的使用情况。
-缓冲池buffer pool中的数据库类型有：索引页、数据库页、undo页、插入缓存页(insert buffer)、自适应hash(adaptive hashindex)、innodb存储的锁信息(lock info)、数据字典信息(data dictionary)。
+缓冲池buffer pool中的数据库类型有：索引页、数据库页、undo页、插入缓存页(insert buffer)、
+   自适应hash(adaptive hashindex)、innodb存储的锁信息(lock info)、数据字典信息(data dictionary)。
 InnoDB工作方式：将数据文件按页(每页16K)读入innodb buffer pool，然后按最近最少使用算法(LRU)保留缓存数据，最后通过一定频率将脏页刷新到文件。
 
 在InnoDB存储引擎表中，每张表都有个主键，如果在创建表时没有显式地定义主键（Primary Key），则InnoDB存储引擎会按如下方式选择或创建主键。
@@ -138,7 +139,7 @@ innodb_log_files_in_group                                         ###重做日�
 innodb_log_group_home_dir                                         ###重做日志文件组所在路径。默认为./，表示在mysql数据库目录下。
 
 innodb相关主要设置参数查看:
-show variables like '配置参数名'                                  ###查看配置参数值
+show variables like '配置参数名'                                    ###查看配置参数值
 show variables like 'innodb_file_per_table' \G                    ###查看每张表是否开启独立表空间
 show variables like 'innodb%log%';                                ###查看日志相关东东
 

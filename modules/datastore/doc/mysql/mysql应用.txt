@@ -45,7 +45,7 @@ select * from test order by rand() limit 3;
 SELECT a1.id,b1.goods_id
 FROM a a1
 LEFT JOIN b b1 ON a1.id =b1.aid
-WHERE (SELECT COUNT(1)FROM b b2 WHERE b1.aid=b2.aid AND b1.id>b2.id)<2
+WHERE (SELECT COUNT(1) FROM b b2 WHERE b1.aid=b2.aid AND b1.id>b2.id)<2
 
 -----查询表中按照某字段分组,各分组中再按照另一字段排序的各分组前n条记录
 方式1:

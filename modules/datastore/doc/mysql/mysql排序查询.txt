@@ -69,7 +69,7 @@ insert into t2 values(2,4,'c',repeat('a',255),repeat('a',255));
 insert into t2 values(1,5,'a',repeat('a',255),repeat('a',255));
 
 分别执行sql语句：
-elect id,status,c1,c2 from t2 force index(c1) where c1>='b' order by status;
+select id,status,c1,c2 from t2 force index(c1) where c1>='b' order by status;
 select id,status from t2 force index(c1) where c1>='b' order by status;
 
 执行结果如下：

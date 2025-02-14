@@ -14,12 +14,15 @@ kafka消息不重复
 
 rebalance是kafka认为消费者已经离线或者挂掉或则有新的消费者加入，就会触发rebalance把消息分配给新的消费者。
 导致rebalance的原因可能有：
-   a，消费后的数据，当offset还没有提交时，partition就断开连接。
-      比如，消费的数据处理很耗时，导致超过了Kafka的session timeout时间（0.10.x版本默认是30秒），
+   a，kafka 0.10.1.0之前版本存在消费后的数据，当offset还没有提交时，partition就断开连接。
+      比如，消费的数据处理很耗时，导致超过了Kafka的session timeout时间（0.10.1.0之前版本默认10秒），
       那么就会reblance重平衡，此时有一定几率offset没提交，会导致重平衡后重复消费。
-   b，并发很大，可能在规定的时间（session.time.out默认30s）内没有消费完，
-      就会可能导致reblance重平衡，导致一部分offset自动提交失败，然后重平衡后重复消费。
-   c，当消费者消费的速度很慢的时候，可能在一个session周期内还未完成，导致心跳机制检测报告出问题。
+      在0.10.1.0或更新的版本中解决了这个问题，心跳请求会在单独的线程中发送，因此就不会出现因为消息处理过长而发不出心跳的问题了。
+   b，并发大或则消费者消费的速度慢或则spring.kafka.consumer.max.poll.records指定拉取的数量比较大，
+      可能在poll()拉取数据的间隔时间spring.kafka.properties.max.poll.interval.ms内没有消费完，
+      就会可能导致reblance重平衡。
+   c，消费者使用自动提交offset，但当还没有提交的时候，有新的消费者加入或者移除，发生了rebalance（再平衡）。
+      再次消费的时候，由于之前的offset没提交，可能会获取到之前已经处理了但没提交的数据，这样就重复了。
    d，强行kill线程，导致消费后的数据，offset没有提交（消费系统宕机、重启等）。
 
 影响rebalance触发的参数

@@ -1,5 +1,5 @@
 -------------------------------spring事务问题集-------------------------------
-1,基于spring的项目中国，对象调用自己方法事务失效问题
+1,基于spring的项目中，对象调用自己方法事务失效问题
 @Service
 public class ClassA implements IA{
 
@@ -38,4 +38,17 @@ public class ClassA implements IA{
        如果用xml配置，则是<aop:aspectj-autoproxy expose-proxy="true"/>
 
 2,直接在当前类@Autowire 注入自己,然后用注入的bean调用方法
+------------------------------------------------------------------------------
+Spring注解事务失效的场景：
+1，@Transactional注解使用在非public方法上
+@Transactional注解不能被用在非public方法上，如protected或private方法上。
+只有当@Transactional注解用在public方法上时，Spring才能通过代理机制来增强该方法，实现事务管理。
+
+2，注解事务的方法用 final 或 static 修饰，那么事务将不生效
+spring 事务底层使用了 aop，通过 jdk 动态代理或者 cglib生成了代理类，在代理类中实现的事务功能。
+但如果方法用 final 修饰了，那么在它的代理类中，就无法重写该方法添加事务功能。
+
+3，方法内部调用
+当一个类内部的非注解事务方法调用另一个标注了 @Transactional 的方法时，事务不生效。
+这是因为内部方法的方法调用没有经过 spring 代理类，所以事务不生效。
 ------------------------------------------------------------------------------

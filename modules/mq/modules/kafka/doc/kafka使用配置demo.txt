@@ -18,4 +18,4 @@ kafka.consumers.zkSyncTime = 10000
 kafka.consumers.autoCommitInterval = 2000
 kafka.consumers.rebalanceBackOff = 2000
 kafka.consumers.rebalanceMaxRetries = 10
-kafka.consumers.autoOffsetReset = smallest
+kafka.consumers.autoOffsetReset = latest

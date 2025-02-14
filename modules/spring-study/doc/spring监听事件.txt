@@ -1,0 +1,82 @@
+--------------------------------------------spring事件---------------------------------------------
+Spring监听组成：
+1，Event：事件，相当于被观察者。非Spring Bean
+  Spring提供了事件基类：ApplicationEvent extends EventObject，
+  用户自定义事件只需继承基类实现自己的数据变化业务即可；
+  监听列表（观察者列表）由Spring容器管理；
+2，Listener：监听器，相当于观察者。Spring Bean
+  Spring提供了监听器基类：ApplicationListenner<E extends ApplicationEvent> extends EventListener ，
+  用户自定义监听器需指明监听事件，并实现自己的事件基础业务；或者更简单地，实现EventListener注解的方法。
+3，Publisher：事件发布器。Spring独有，Spring Bean
+  观察者模式中，当目标发生变化后，需要由修改目标变化的线程主动调用目标的通知观察者方法，以此触发观察者的执行；
+  Spring监听在事件发生后，由修改事件变化的线程调用Spring容器的事件发布方法，以此触发监听的执行。
+  事件可以通过ApplicationEventPublisher接口发布。这个接口通常通过ApplicationContext获得，
+  public interface ApplicationEventPublisher {
+      void publishEvent(ApplicationEvent event);
+      void publishEvent(Object event);
+  }
+
+  @Autowired
+  private ApplicationEventPublisher publisher;
+  或则通过applicationContext.publishEvent()方法直接发布事件。
+4，Spring使用ApplicationEventMulticaster接口来广播事件。默认实现是SimpleApplicationEventMulticaster，
+  它负责找到所有监听特定事件的bean，并调用它们的事件处理方法。
+  ApplicationEventMulticaster：事件广播器，Spring中负责事件的发布和监听的核心接口
+  public interface ApplicationEventMulticaster {
+      //用于向事件广播器注册一个监听器。在广播器发送事件时，这个监听器将会接收到事件。
+      void addApplicationListener(ApplicationListener<?> listener);
+      //用于将一个已经注册的监听器从事件广播器中移除。
+      void removeApplicationListener(ApplicationListener<?> listener);
+       //用于移除所有注册的监听器。
+      void removeAllListeners();
+      //用于向所有已注册的监听器广播一个事件。
+      void multicastEvent(ApplicationEvent event);
+  }
+Spring监听原理：
+Spring的源码中，当初始化beanfacotory时，Spring会初始化事件广播器以及注册事件监听器。
+Spring容器维护了事件-监听的容器：Map<Event, Set<Listener>>。
+当事件发布后，通过维护的事件-监听容器，找到对应的监听，通过反射，调用监听方法。
+由于事件非Spring Bean，故事件发布前，容器中并不存在事件-监听的关系。
+由于监听器在声明时已经指明了监听的事件，故在事件发布时，通过Listener Bean与事件作匹配对比，维护在Map容器中。
+
+Spring框架内部事件监听
+在Spring框架中，有许多预定义的事件，这些事件涵盖了Spring的生命周期、Web应用程序上下文的生命周期以及许多其他方面。
+下面是一些常见的Spring事件：
+1.ContextRefreshedEvent：当ApplicationContext被初始化或刷新时触发该事件。
+2.ContextStartedEvent：当ApplicationContext被启动时触发该事件，即在所有BeanDefinition都已加载和bean初始化之后。
+3.ContextStoppedEvent：当ApplicationContext被停止时触发该事件，即在所有singleton bean被销毁之前。
+4.ContextClosedEvent：当ApplicationContext被关闭时触发该事件，即在所有singleton bean被销毁之后。
+5.RequestHandledEvent：在Web应用程序上下文中，当HTTP请求被处理完毕后触发该事件。
+6.ServletRequestHandledEvent：与RequestHandledEvent类似，但是专为Spring的DispatcherServlet设计。
+除了这些预定义的事件之外，开发人员可以创建自己的自定义事件，并使用ApplicationEventPublisher接口将其发布到应用程序上下文中。
+对于开发者来说，使用Spring监听机制非常简单。只需要实现事件和监听器接口，并在代码中注册监听器即可。
+Spring会自动管理事件和监听器的生命周期，确保它们的正确运行。
+同时，由于Spring监听器使用了异步执行机制，因此不会影响主线程的运行效率。
+
+如果需要事件监听器异步执行，可以使用Spring的@Async注解。
+//启用异步支持
+@EnableAsync
+@Configuration
+public class AsyncConfig { }
+//事件监听器
+@Component
+public class MyAsyncEventListener {
+    @Async
+    @EventListener
+    public void onApplicationEvent(MyCustomEvent event) {
+        System.out.println("Received: " + event.getMessage());
+    }
+}
+Spring还支持条件化的监听器配置，通过实现Condition接口或者
+使用Spring Boot的条件注解（如@ConditionalOnProperty等），可以基于不同的条件来决定是否注册监听器
+@Component
+@ConditionalOnProperty(name = "custom.event.enabled", havingValue = "true")
+public class ConditionalEventListener {
+    @EventListener
+    public void onApplicationEvent(MyCustomEvent event) {
+        System.out.println("Conditional event received: " + event.getMessage());
+    }
+}
+
+@RefreshScope注解是spring cloud中的一个注解，用来实现Bean中属性的动态刷新。
+---------------------------------------------------------------------------------------------------

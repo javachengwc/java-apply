@@ -12,7 +12,7 @@ Transaction Coordinator 的主要责任是协调和管理事务的生命周期,
 
 Transaction Log（事务日志）:
 Transaction Log 是 Kafka 的一个内部 Topic，
-Transaction Log 由多个Partition组成，每个​Partition有一个 Leader。每个 Leader 对应于一个 Kafka Broker，
+Transaction Log 由多个Partition组成，每个Partition有一个 Leader。每个 Leader 对应于一个 Kafka Broker，
 该 Broker 上的 Transaction Coordinator 负责管理这些分区的写操作。
 通过内部的复制协议和选举机制，Kafka 确保 Transaction Coordinator 的可用性和 Transaction State 的持久性，
 确保了即使其中一个 Broker 发生故障，事务仍然可以正确进行。
