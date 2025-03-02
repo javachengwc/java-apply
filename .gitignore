@@ -144,3 +144,4 @@ modules/otd/otd-boot/otdboot-plat/target/
 modules/sharding-dbtable/modules/shardingboot-junior/target/
 modules/common-tool/target/
 modules/webboothutool/target/
+modules/commonservice/modules/commonservice-manage/target/

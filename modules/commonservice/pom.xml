@@ -13,5 +13,6 @@
         <module>modules/commonservice-sms</module>
 		<module>modules/commonservice-push</module>
         <module>modules/commonservice-invoke</module>
+		<module>modules/commonservice-manage</module>
 	</modules>	
 </project>
