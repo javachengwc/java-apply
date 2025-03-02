@@ -22,6 +22,7 @@ import java.util.List;
 /**
  * swagger配置
  * 访问地址：http://localhost:port/swagger-ui/index.html
+ * 接口地址：http://localhost:port/v2/api-docs  #如果是3版本，v2变为v3
  */
 //@Configuration
 //@EnableSwagger2
