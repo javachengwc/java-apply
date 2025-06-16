@@ -47,14 +47,15 @@ npm config set sass-binary-site http://npm.taobao.org/mirrors/node-sass         
 npm set init-author-name 'your name'                           ------初始化一些信息
 npm install webpack-cli --save-dev                             ------安装webpack-cli,是webpack的cli（Command-line interface）工具。
 
-npm adduser, 提示输入账号，密码和邮箱，然后将提示创建成功        ------创建一个npm账号，以便发布包
-npm login，  输入你账号，密码和邮箱                             ------登录npm账号
-npm publish  模块名称@版本号                                    ------发布包
+npm adduser, 提示输入账号，密码和邮箱，然后将提示创建成功               ------创建一个npm账号，以便发布包
+npm login，  输入你账号，密码和邮箱                                 ------登录npm账号
+npm publish  模块名称@版本号                                      ------发布包
 ###npm对包名的限制:不能有大写字母/空格/下滑线,包的名称和版本就是项目中package.json里的name和version
 ###项目中如果有部分私密的代码不想发布到npm上mm,将它写入.gitignore 或.npmignore中，上传就会被忽略了
-npm unpublish 模块名称@版本号 --force                          ------撤销发布包
+npm unpublish 模块名称@版本号 --force                             ------撤销发布包
 ###只有在发包的24小时内才允许撤销发布的包,再次发包时,不能再和被撤销的包的名称和版本重复
 
+-----------------------------------------------------------------------------------
 cd  webdir
 rmdir /q/s node_modules
 rm package-lock.json

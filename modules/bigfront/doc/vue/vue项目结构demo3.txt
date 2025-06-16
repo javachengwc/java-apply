@@ -5,13 +5,13 @@
 │   ├── assets                                      #存放公用静态资源文件，例如图片，字体，图标等，通过相对路径或者@/引用
 │   ├── components                                  #公用组件(用到什么组件添加什么组件,参考官方组件集)
 │   ├── layout                                      #页面布局
-│   ├── router                                      #静态菜单定义，以及路由守卫相关配置
+│   ├── router                                      #静态菜单定义，以及路由相关配置
 │   ├── stores                                      #客户端缓存数据落地存储工具
 │   ├── styles                                      #前端全局公共样式定义
 │   ├── utils                                       #工具类的js脚本文件
 │   ├── views                                       #前端展示所有业务页面，vue页面
-│   ├── App.vue                                     #应用程序根组件，整个应用的入口点
-│   └── main.js                                     #入口文件
+│   ├── App.vue                                     #应用程序根组件
+│   └── main.js                                     #项目入口主体文件
 ├── .env.dev                                        #开发环境变量
 ├── .env.prod                                       #生产环境变量
 ├── .env.test                                       #测试环境变量
@@ -20,7 +20,7 @@
 ├── .gitignore                                      #git忽略文件
 ├── .prettierignore                                 #prettier忽略文件
 ├── .prettierrc.cjs                                 #prettier文件
-├── index.html                                      #vue项目的一个总入口文件
+├── index.html                                      #vue项目的总入口文件
 ├── package-lock.json                               #npm包管理器中用于锁定项目依赖版本的文件
 ├── package.json                                    #npm包配置文件，包括项目依赖、脚本命令、项目信息等元数据
 ├── README.md                                       #描述文件

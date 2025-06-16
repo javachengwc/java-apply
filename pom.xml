@@ -62,6 +62,7 @@
 		<module>modules/sharding-dbtable</module>
 		<module>modules/otd</module>
 		<module>modules/tmp</module>
+		<module>modules/stock</module>
 		<!--
 		<module>modules/bigdata</module>
 		-->

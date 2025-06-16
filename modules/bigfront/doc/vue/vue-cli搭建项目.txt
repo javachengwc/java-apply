@@ -1,14 +1,5 @@
 --------------------------------vue-cli搭建项目-----------------------------
-vue cli是基于vue.js进行快速开发的系统。提供：
-1,通过 @vue/cli 实现的交互式的项目脚手架。
-2,通过 @vue/cli + @vue/cli-service-global 实现的零配置原型开发。
-3,一个运行时依赖 (@vue/cli-service)，该依赖：
-    可升级；
-    基于 webpack 构建，并带有合理的默认配置；
-    可以通过项目内的配置文件进行配置；
-    可以通过插件进行扩展。
-4,一个丰富的官方插件集合，集成了前端生态中最好的工具。
-5,一套完全图形化的创建和管理 vue.js 项目的用户界面。
+vue cli是一个官方发布 vue.js 项目脚手架，使用 vue-cli 可以快速创建 vue 项目。
 包含3个组件：
 1,CLI: @vue/cli 全局安装的 npm 包，提供了终端里的vue命令（如：vue create 、vue serve 、vue ui 等命令）
   通过 vue create 快速搭建一个新项目，通过 vue serve 构建项目，通过 vue ui 通过一套图形化界面管理项目。
@@ -27,6 +18,13 @@ yarn global add @vue/cli
 vue --version                                             ###查看vue cli版本
 npm update -g @vue/cli                                    ###升级vue cli
 yarn global upgrade --latest @vue/cli
+---------------------------------------------------------------
+###创建vue项目，如下3种方式:
+vue ui                                                    ###打开图形化界面创建和管理项目
+npm i -g @vue/cli-init                                    ###安装vue init
+vue init webpack <project>                                ###通过vue init创建项目
+npm create vue@latest                                     ###通过npm create创建vue项目
+-------------------------------------------------------------------------------
 vue upgrade [options] [plugin-name]                       ###升级项目中的vue cli相关模块（以 @vue/cli-plugin- 或 vue-cli-plugin- 开头
 选项：
   -t, --to <version>    升级 <plugin-name> 到指定的版本

@@ -1,0 +1,105 @@
+vite 是一个 web 开发构建工具，可以使用 vite 快速构建 vue 项目。
+vite 支持使用 Sass、Less、Stylus 等 css 预处理器。
+vite 支持使用 TypeScript 编写代码，vite会自动编译TypeScript 代码。
+vite 拥有丰富的插件，可以使用 Vite 插件来实现代码压缩、图片优化、代码分析等功能。
+在 vite 出现之前，前端开发通常使用 webpack 等构建工具。
+----------------------------------------------------------------
+npm create vite@latest <project-name>           ###通过vite创建项目
+----------------------------------------------------------------
+npm install -D vite-plugin-xxx                  ###安装vite相关插件
+在 vite.config.js 文件中配置插件：
+import xxx from 'vite-plugin-xxx'
+
+export default {
+  plugins: [
+    xxx()
+  ]
+----------------------------------------------------------------
+vite.config.js 是 Vite 项目的核心配置文件，
+通过配置 vite.config.js，可以定义 Vite 的各种行为，例如开发服务器、构建选项、插件等。
+
+vite.config.js 配置示例：
+// 导入 defineConfig 函数，用于定义 Vite 配置
+import { defineConfig } from 'vite';
+// 导入 Vue 插件，用于支持 Vue 项目
+import vue from '@vitejs/plugin-vue';
+// 导入 path 模块，用于处理路径
+import path from 'path';
+
+// 使用 defineConfig 定义 Vite 配置
+export default defineConfig({
+  // 项目根目录，默认为当前工作目录
+  root: path.resolve(__dirname, './src'),
+
+  // 基础路径，用于部署在子路径时使用
+  base: '/my-app/',
+
+  // 开发服务器配置
+  server: {
+    // 指定开发服务器端口
+    port: 3000,
+    // 是否自动打开浏览器
+    open: true,
+    // 配置代理服务器，用于解决跨域问题
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080', // 目标服务器地址
+        changeOrigin: true, // 是否改变请求源
+        rewrite: (path) => path.replace(/^\/api/, ''), // 重写请求路径
+      },
+    },
+  },
+
+  // 构建配置
+  build: {
+    // 指定输出目录
+    outDir: path.resolve(__dirname, '../dist'),
+    // 指定静态资源目录
+    assetsDir: 'static',
+    // 是否生成 sourcemap 文件，便于调试
+    sourcemap: true,
+    // 是否压缩代码，terser 是默认的压缩工具
+    minify: 'terser', // 使用 terser 进行代码压缩
+    // 配置 Rollup 选项
+    rollupOptions: {
+      // 配置外部依赖
+      external: ['lodash'],
+      // 配置输出格式
+      output: {
+        manualChunks: {
+          // 将 lodash 单独打包
+          lodash: ['lodash'],
+        },
+      },
+    },
+  },
+
+  // 插件配置
+  plugins: [
+    // 使用 Vue 插件
+    vue(),
+  ],
+
+  // 模块解析配置
+  resolve: {
+    // 配置路径别名
+    alias: {
+      '@': path.resolve(__dirname, './src'), // 将 @ 映射到 src 目录
+    },
+  },
+
+  // CSS 配置
+  css: {
+    // 配置 CSS 预处理器选项
+    preprocessorOptions: {
+      scss: {
+        // 全局注入 SCSS 变量
+        additionalData: `@import "@/styles/variables.scss";`,
+      },
+    },
+  },
+
+  // 环境变量配置
+  envPrefix: 'VITE_', // 环境变量前缀，默认为 VITE_
+});
+------------------------------------------------------------------------

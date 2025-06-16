@@ -1,0 +1,19 @@
+typescript是由微软开发的开源编程语言，作为javascript的超集，通过添加静态类型系统、类、接口等特性扩展了javascript的语法‌。
+通过typescript编译器或babel转换为跨平台兼容的javascript代码‌，可在任何支持javascript的环境中运行‌。
+typescript通过静态类型和工程化能力解决了javascript在大型应用中的维护难题，同时保持与现有生态的完全兼容‌。
+其设计目标是让开发者既能享受javascript的灵活性，又能通过类型安全降低潜在风险‌。
+-------------------------------------------------------------
+
+2012年10月‌，微软发布typescript的第一个公开版本，版本号为0.8
+2014年‌：推出首个稳定版本typescript 1.0
+2016年‌：发布typescript 2.0 ，新增非空断言、联合类型等特性‌
+2023年‌：发布typescript 5.2
+-------------------------------------------------------------
+
+typescript支持类型注解和编译时类型检查，减少因动态类型引发的运行时错误‌。
+比如：let count: number = 10;  // 显式类型注解
+typescript提供类、接口、泛型、装饰器等面向对象特性，增强代码组织和复用性‌。
+比如：interface User { name: string; age: number; }
+     class Admin implements User { name: string; age: number; role: string; }
+-------------------------------------------------------------
+npm install -D typescript               ###安装typescript

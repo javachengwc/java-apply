@@ -5,7 +5,8 @@ vue两大核心思想：组件化和数据驱动
 vue-cli是快速构建vue单页应用的脚手架。
 npm install vue                           ###安装vue
 npm install --global vue-cli              ###使用npm全局安装vue-cli
-vue init webpack testweb                  ###用vue创建testweb项目
+npm i -g @vue/cli-init                    ###安装vue init
+vue init webpack testweb                  ###通过vue init创建testweb项目
 cd testweb
 npm install  或 cnpm install              ###下载安装项目依赖
 npm run dev  或 npm start                 ###启动项目
@@ -19,11 +20,11 @@ npm run build                             ###项目打包，项目根目录下�
     | - dist                              ###打包生成的部署文件夹
     | - node_modules                      ###依赖的模块
     | - src                               ###项目代码
-      | - **assets**                    ###自身项目资源文件夹
-      | - **components**                ###页面组件文件夹
-      | - **router**                    ###路由文件夹
-      | - *App.vue*                     ###vue主文件
-      | - *main.js*                     ###入口文件，webpack配置的entrance
+    | - **assets**                        ###自身项目资源文件夹
+    | - **components**                    ###页面组件文件夹
+    | - **router**                        ###路由文件夹
+    | - *App.vue*                         ###vue主文件
+    | - *main.js*                         ###入口文件，webpack配置的entrance
                                              main.js文件，声明了一个Vue根实例，是说明用APP组件去渲染替换#app的这个DOM元素
     | - static                            ###第三方的资源文件夹
     | - .babelrc                          ###转码规则配置

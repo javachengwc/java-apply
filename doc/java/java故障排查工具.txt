@@ -14,7 +14,7 @@ jhat -port 5000 m.dat                         ---在浏览器中访问：http://
     top  ,  P                                  ###先top然后P按进程负载排序
     top -Hp pid                                ###找到相关负载 线程PID
     printf "%x\n" 线程pid                      ###将线程pid转换为 16进制
-    jstack  进程PID | vim +/十六进制线程PID -  ###查看线程调用栈信息，比如jstack 111|vim +/0x431 -
+    jstack  进程PID | vim +/十六进制线程PID -     ###查看线程调用栈信息，比如jstack 111|vim +/0x431 -
 
 但对于线上问题定位来说，上面的操作比较耗时了,show-busy-java-threads.sh 可以很快很方便的定位线上的这类问题。
 show-busy-java-threads 用于快速排查Java的CPU性能问题(top us值过高)，自动查出运行的Java进程中消耗CPU多的线程，

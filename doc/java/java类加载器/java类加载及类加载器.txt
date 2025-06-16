@@ -38,7 +38,7 @@
 
 双亲委派模型的破坏者-线程上下文类加载器
     在Java应用中存在着很多服务提供者接口（Service Provider Interface，SPI），这些接口允许第三方为它们提供实现，如常见的 SPI 有 JDBC、JNDI等，
-    这些 SPI 的接口属于 Java 核心库，一般存在rt.jar包中，由Bootstrap类加载器加载，而SPI 的第三方实现代码则是作为Java应用所依赖的 jar 包被存放在classpath路径下，、
+    这些 SPI 的接口属于 Java 核心库，一般存在rt.jar包中，由Bootstrap类加载器加载，而SPI 的第三方实现代码则是作为Java应用所依赖的 jar 包被存放在classpath路径下，
     由于SPI接口中的代码经常需要加载具体的第三方实现类并调用其相关方法，但SPI的核心接口类是由引导类加载器来加载的，
     而Bootstrap类加载器无法直接加载SPI的实现类，同时由于双亲委派模式的存在，Bootstrap类加载器也无法反向委托AppClassLoader加载器SPI的实现类。
     在这种情况下，就需要一种特殊的类加载器来加载第三方的类库，而线程上下文类加载器就是很好的选择。
@@ -62,26 +62,26 @@ Tomcat的类加载器架构
         运行时修改的概率远远大于第三方类库或程序自身的Class文件。而且ASP、PHP和JSP这些网页应用也把修改后无须重启作为一个很大的“优势”来看待，
         因此“主流”的Web容器都会支持JSP生成类的热替换。
     由于存在上述问题，在部署Web应用时，单独的一个Class Path就无法满足需求了，所以各种Web容都“不约而同”地提供了好几个Class Path路径供用户存放第三方类库，
-        这些路径一般都以“lib”或“classes”命名。被放置到不同路径中的类库，具备不同的访问范围和服务对象，
-        通常，每一个目录都会有一个相应的自定义类加载器去加载放置在里面的Java类库。
-        以Tomcat容器为例，看一看Tomcat具体是如何规划用户类库结构和类加载器的。
-     在Tomcat目录结构中，有3组目录（“/common/*”、“/server/*”和“/shared/*”）可以存放Java类库，另外还可以加上Web应用程序自身的目录“/WEB-INF/*”，
-            一共4组，把Java类库放置在这些目录中的含义分别如下：
-         1,放置在/common目录中：类库可被Tomcat和所有的Web应用程序共同使用。
-         2,放置在/server目录中：类库可被Tomcat使用，对所有的Web应用程序都不可见。
-           3,放置在/shared目录中：类库可被所有的Web应用程序共同使用，但对Tomcat自己不可见。
-           4,放置在/WebApp/WEB-INF目录中：类库仅仅可以被此Web应用程序使用，对Tomcat和其他Web应用程序都不可见。
-           为了支持这套目录结构，并对目录里面的类库进行加载和隔离，Tomcat自定义了多个类加载器，这些类加载器按照经典的双亲委派模型来实现，其关系图见tomcat-class-loader.png。
+    这些路径一般都以“lib”或“classes”命名。被放置到不同路径中的类库，具备不同的访问范围和服务对象，
+    通常，每一个目录都会有一个相应的自定义类加载器去加载放置在里面的Java类库。
+    以Tomcat容器为例，看一看Tomcat具体是如何规划用户类库结构和类加载器的。
+    在Tomcat目录结构中，有3组目录（“/common/*”、“/server/*”和“/shared/*”）可以存放Java类库，另外还可以加上Web应用程序自身的目录“/WEB-INF/*”，
+    一共4组，把Java类库放置在这些目录中的含义分别如下：
+        1,放置在/common目录中：类库可被Tomcat和所有的Web应用程序共同使用。
+        2,放置在/server目录中：类库可被Tomcat使用，对所有的Web应用程序都不可见。
+        3,放置在/shared目录中：类库可被所有的Web应用程序共同使用，但对Tomcat自己不可见。
+        4,放置在/WebApp/WEB-INF目录中：类库仅仅可以被此Web应用程序使用，对Tomcat和其他Web应用程序都不可见。
+         为了支持这套目录结构，并对目录里面的类库进行加载和隔离，Tomcat自定义了多个类加载器，这些类加载器按照经典的双亲委派模型来实现，其关系图见tomcat-class-loader.png。
          图中灰色背景的3个类加载器是JDK默认提供的类加载器，这3个加载器的作用已经介绍过了。
          而CommonClassLoader、CatalinaClassLoader、SharedClassLoader和WebappClassLoader则是Tomcat自己定义的类加载器，
          它们分别加载/common/*、/server/*、/shared/*和/WebApp/WEB-INF/*中的Java类库。
          其中WebApp类加载器和Jsp类加载器通常会存在多个实例，每一个Web应用程序对应一个WebApp类加载器，每一个JSP文件对应一个Jsp类加载器。
-         从图中的委派关系中可以看出，CommonClassLoader能加载的类都可以被Catalina ClassLoader和SharedClassLoader使用，
-         而CatalinaClassLoader和Shared ClassLoader自己能加载的类则与对方相互隔离。
+         从图中的委派关系中可以看出，CommonClassLoader能加载的类都可以被CatalinaClassLoader和SharedClassLoader使用，
+         而CatalinaClassLoader和SharedClassLoader自己能加载的类则与对方相互隔离。
          WebAppClassLoader可以使用SharedClassLoader加载到的类，但各个WebAppClassLoader实例之间相互隔离。
          而JasperLoader的加载范围仅仅是这个JSP文件所编译出来的那一个.Class文件，
          它出现的目的就是为了被丢弃：当Web容器检测到JSP文件被修改时，会替换掉目前的JasperLoader的实例，并通过再建立一个新的Jsp类加载器来实现JSP文件的HotSwap功能。
-         对于Tomcat的6.x版本，只有指定了tomcat/conf/catalina.properties配置文件的server.loader和share.loader项后才会真正建立Catalina ClassLoader和SharedClassLoader的实例，
-         否则在用到这两个类加载器的地方都会用Common ClassLoader的实例代替，而默认的配置文件中没有设置这两个loader项，
+         对于Tomcat的6.x版本，只有指定了tomcat/conf/catalina.properties配置文件的server.loader和share.loader项后才会真正建立CatalinaClassLoader和SharedClassLoader的实例，
+         否则在用到这两个类加载器的地方都会用CommonClassLoader的实例代替，而默认的配置文件中没有设置这两个loader项，
          所以Tomcat 6.x顺理成章地把/common、/server和/shared三个目录默认合并到一起变成一个/lib目录，这个目录里的类库相当于以前/common目录中类库的作用。
          如果默认设置不能满足需要，用户可以通过修改配置文件指定server.loader和share.loader的方式重新启用Tomcat。
