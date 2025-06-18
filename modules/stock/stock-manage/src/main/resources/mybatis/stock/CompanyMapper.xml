@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.stock.mapper.CompanyMapper">
+    
+    <resultMap type="com.manage.stock.domain.Company" id="CompanyResult">
+        <result property="id"    column="id"    />
+        <result property="companyName"    column="company_name"    />
+        <result property="provinceName"    column="province_name"    />
+        <result property="stockNames"    column="stock_names"    />
+        <result property="note"    column="note"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectCompanyVo">
+        select id, company_name, province_name, stock_names, note, create_time from t_company
+    </sql>
+
+    <select id="selectCompanyList" parameterType="com.manage.stock.domain.Company" resultMap="CompanyResult">
+        <include refid="selectCompanyVo"/>
+        <where>  
+            <if test="companyName != null  and companyName != ''"> and company_name like concat('%', #{companyName}, '%')</if>
+            <if test="provinceName != null  and provinceName != ''"> and province_name like concat('%', #{provinceName}, '%')</if>
+            <if test="stockNames != null  and stockNames != ''"> and stock_names = #{stockNames}</if>
+            <if test="note != null  and note != ''"> and note = #{note}</if>
+        </where>
+    </select>
+    
+    <select id="selectCompanyById" parameterType="Long" resultMap="CompanyResult">
+        <include refid="selectCompanyVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertCompany" parameterType="com.manage.stock.domain.Company" useGeneratedKeys="true" keyProperty="id">
+        insert into t_company
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="companyName != null">company_name,</if>
+            <if test="provinceName != null">province_name,</if>
+            <if test="stockNames != null">stock_names,</if>
+            <if test="note != null">note,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="companyName != null">#{companyName},</if>
+            <if test="provinceName != null">#{provinceName},</if>
+            <if test="stockNames != null">#{stockNames},</if>
+            <if test="note != null">#{note},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCompany" parameterType="com.manage.stock.domain.Company">
+        update t_company
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="companyName != null">company_name = #{companyName},</if>
+            <if test="provinceName != null">province_name = #{provinceName},</if>
+            <if test="stockNames != null">stock_names = #{stockNames},</if>
+            <if test="note != null">note = #{note},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCompanyById" parameterType="Long">
+        delete from t_company where id = #{id}
+    </delete>
+
+    <delete id="deleteCompanyByIds" parameterType="String">
+        delete from t_company where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.stock.mapper.CompanyStockMapper">
+    
+    <resultMap type="com.manage.stock.domain.CompanyStock" id="CompanyStockResult">
+        <result property="id"    column="id"    />
+        <result property="companyId"    column="company_id"    />
+        <result property="stockName"    column="stock_name"    />
+        <result property="stockCode"    column="stock_code"    />
+        <result property="stockMarketCode"    column="stock_market_code"    />
+        <result property="careValue"    column="care_value"    />
+        <result property="industry"    column="industry"    />
+        <result property="haveData"    column="have_data"    />
+        <result property="publicTime"    column="public_time"    />
+        <result property="tags"    column="tags"    />
+        <result property="recordDay"    column="record_day"    />
+        <result property="divvyDay"    column="divvy_day"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="modifyTime"    column="modify_time"    />
+    </resultMap>
+
+    <sql id="selectCompanyStockVo">
+        select id, company_id, stock_name, stock_code, stock_market_code, care_value, industry, have_data, public_time, tags, record_day, divvy_day, create_time, modify_time from t_company_stock
+    </sql>
+
+    <select id="selectCompanyStockList" parameterType="com.manage.stock.domain.CompanyStock" resultMap="CompanyStockResult">
+        <include refid="selectCompanyStockVo"/>
+        <where>  
+            <if test="companyId != null "> and company_id = #{companyId}</if>
+            <if test="stockName != null  and stockName != ''"> and stock_name like concat('%', #{stockName}, '%')</if>
+            <if test="stockCode != null  and stockCode != ''"> and stock_code = #{stockCode}</if>
+            <if test="stockMarketCode != null  and stockMarketCode != ''"> and stock_market_code = #{stockMarketCode}</if>
+            <if test="careValue != null "> and care_value = #{careValue}</if>
+            <if test="industry != null  and industry != ''"> and industry = #{industry}</if>
+            <if test="haveData != null "> and have_data = #{haveData}</if>
+            <if test="publicTime != null "> and public_time = #{publicTime}</if>
+            <if test="tags != null  and tags != ''"> and tags = #{tags}</if>
+            <if test="recordDay != null  and recordDay != ''"> and record_day = #{recordDay}</if>
+            <if test="divvyDay != null  and divvyDay != ''"> and divvy_day = #{divvyDay}</if>
+            <if test="modifyTime != null "> and modify_time = #{modifyTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectCompanyStockById" parameterType="Long" resultMap="CompanyStockResult">
+        <include refid="selectCompanyStockVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertCompanyStock" parameterType="com.manage.stock.domain.CompanyStock" useGeneratedKeys="true" keyProperty="id">
+        insert into t_company_stock
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="companyId != null">company_id,</if>
+            <if test="stockName != null">stock_name,</if>
+            <if test="stockCode != null">stock_code,</if>
+            <if test="stockMarketCode != null">stock_market_code,</if>
+            <if test="careValue != null">care_value,</if>
+            <if test="industry != null">industry,</if>
+            <if test="haveData != null">have_data,</if>
+            <if test="publicTime != null">public_time,</if>
+            <if test="tags != null">tags,</if>
+            <if test="recordDay != null">record_day,</if>
+            <if test="divvyDay != null">divvy_day,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="modifyTime != null">modify_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="companyId != null">#{companyId},</if>
+            <if test="stockName != null">#{stockName},</if>
+            <if test="stockCode != null">#{stockCode},</if>
+            <if test="stockMarketCode != null">#{stockMarketCode},</if>
+            <if test="careValue != null">#{careValue},</if>
+            <if test="industry != null">#{industry},</if>
+            <if test="haveData != null">#{haveData},</if>
+            <if test="publicTime != null">#{publicTime},</if>
+            <if test="tags != null">#{tags},</if>
+            <if test="recordDay != null">#{recordDay},</if>
+            <if test="divvyDay != null">#{divvyDay},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="modifyTime != null">#{modifyTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCompanyStock" parameterType="com.manage.stock.domain.CompanyStock">
+        update t_company_stock
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="stockName != null">stock_name = #{stockName},</if>
+            <if test="stockCode != null">stock_code = #{stockCode},</if>
+            <if test="stockMarketCode != null">stock_market_code = #{stockMarketCode},</if>
+            <if test="careValue != null">care_value = #{careValue},</if>
+            <if test="industry != null">industry = #{industry},</if>
+            <if test="haveData != null">have_data = #{haveData},</if>
+            <if test="publicTime != null">public_time = #{publicTime},</if>
+            <if test="tags != null">tags = #{tags},</if>
+            <if test="recordDay != null">record_day = #{recordDay},</if>
+            <if test="divvyDay != null">divvy_day = #{divvyDay},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="modifyTime != null">modify_time = #{modifyTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCompanyStockById" parameterType="Long">
+        delete from t_company_stock where id = #{id}
+    </delete>
+
+    <delete id="deleteCompanyStockByIds" parameterType="String">
+        delete from t_company_stock where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

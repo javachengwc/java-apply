@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.stock.mapper.StockDayMapper">
+    
+    <resultMap type="com.manage.stock.domain.StockDay" id="StockDayResult">
+        <result property="id"    column="id"    />
+        <result property="careFlag"    column="care_flag"    />
+        <result property="stockName"    column="stock_name"    />
+        <result property="stockCode"    column="stock_code"    />
+        <result property="dayDate"    column="day_date"    />
+        <result property="beginPrice"    column="begin_price"    />
+        <result property="endPrice"    column="end_price"    />
+        <result property="minPrice"    column="min_price"    />
+        <result property="maxPrice"    column="max_price"    />
+        <result property="increaseRate"    column="increase_rate"    />
+        <result property="note"    column="note"    />
+        <result property="turnoverRate"    column="turnover_rate"    />
+        <result property="turnoverAmount"    column="turnover_amount"    />
+        <result property="orderRate"    column="order_rate"    />
+        <result property="mainInAmount"    column="main_in_amount"    />
+        <result property="mainTransAmount"    column="main_trans_amount"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectStockDayVo">
+        select id, care_flag, stock_name, stock_code, day_date, begin_price, end_price, min_price, max_price, increase_rate, note, turnover_rate, turnover_amount, order_rate, main_in_amount, main_trans_amount, create_time from t_stock_day
+    </sql>
+
+    <select id="selectStockDayList" parameterType="com.manage.stock.domain.StockDay" resultMap="StockDayResult">
+        <include refid="selectStockDayVo"/>
+        <where>  
+            <if test="careFlag != null "> and care_flag = #{careFlag}</if>
+            <if test="stockName != null  and stockName != ''"> and stock_name like concat('%', #{stockName}, '%')</if>
+            <if test="stockCode != null  and stockCode != ''"> and stock_code = #{stockCode}</if>
+            <if test="dayDate != null "> and day_date = #{dayDate}</if>
+            <if test="beginPrice != null "> and begin_price = #{beginPrice}</if>
+            <if test="endPrice != null "> and end_price = #{endPrice}</if>
+            <if test="minPrice != null "> and min_price = #{minPrice}</if>
+            <if test="maxPrice != null "> and max_price = #{maxPrice}</if>
+            <if test="increaseRate != null  and increaseRate != ''"> and increase_rate = #{increaseRate}</if>
+            <if test="note != null  and note != ''"> and note = #{note}</if>
+            <if test="turnoverRate != null  and turnoverRate != ''"> and turnover_rate = #{turnoverRate}</if>
+            <if test="turnoverAmount != null "> and turnover_amount = #{turnoverAmount}</if>
+            <if test="orderRate != null  and orderRate != ''"> and order_rate = #{orderRate}</if>
+            <if test="mainInAmount != null "> and main_in_amount = #{mainInAmount}</if>
+            <if test="mainTransAmount != null "> and main_trans_amount = #{mainTransAmount}</if>
+        </where>
+    </select>
+    
+    <select id="selectStockDayById" parameterType="Long" resultMap="StockDayResult">
+        <include refid="selectStockDayVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertStockDay" parameterType="com.manage.stock.domain.StockDay" useGeneratedKeys="true" keyProperty="id">
+        insert into t_stock_day
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="careFlag != null">care_flag,</if>
+            <if test="stockName != null">stock_name,</if>
+            <if test="stockCode != null">stock_code,</if>
+            <if test="dayDate != null">day_date,</if>
+            <if test="beginPrice != null">begin_price,</if>
+            <if test="endPrice != null">end_price,</if>
+            <if test="minPrice != null">min_price,</if>
+            <if test="maxPrice != null">max_price,</if>
+            <if test="increaseRate != null">increase_rate,</if>
+            <if test="note != null">note,</if>
+            <if test="turnoverRate != null">turnover_rate,</if>
+            <if test="turnoverAmount != null">turnover_amount,</if>
+            <if test="orderRate != null">order_rate,</if>
+            <if test="mainInAmount != null">main_in_amount,</if>
+            <if test="mainTransAmount != null">main_trans_amount,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="careFlag != null">#{careFlag},</if>
+            <if test="stockName != null">#{stockName},</if>
+            <if test="stockCode != null">#{stockCode},</if>
+            <if test="dayDate != null">#{dayDate},</if>
+            <if test="beginPrice != null">#{beginPrice},</if>
+            <if test="endPrice != null">#{endPrice},</if>
+            <if test="minPrice != null">#{minPrice},</if>
+            <if test="maxPrice != null">#{maxPrice},</if>
+            <if test="increaseRate != null">#{increaseRate},</if>
+            <if test="note != null">#{note},</if>
+            <if test="turnoverRate != null">#{turnoverRate},</if>
+            <if test="turnoverAmount != null">#{turnoverAmount},</if>
+            <if test="orderRate != null">#{orderRate},</if>
+            <if test="mainInAmount != null">#{mainInAmount},</if>
+            <if test="mainTransAmount != null">#{mainTransAmount},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStockDay" parameterType="com.manage.stock.domain.StockDay">
+        update t_stock_day
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="careFlag != null">care_flag = #{careFlag},</if>
+            <if test="stockName != null">stock_name = #{stockName},</if>
+            <if test="stockCode != null">stock_code = #{stockCode},</if>
+            <if test="dayDate != null">day_date = #{dayDate},</if>
+            <if test="beginPrice != null">begin_price = #{beginPrice},</if>
+            <if test="endPrice != null">end_price = #{endPrice},</if>
+            <if test="minPrice != null">min_price = #{minPrice},</if>
+            <if test="maxPrice != null">max_price = #{maxPrice},</if>
+            <if test="increaseRate != null">increase_rate = #{increaseRate},</if>
+            <if test="note != null">note = #{note},</if>
+            <if test="turnoverRate != null">turnover_rate = #{turnoverRate},</if>
+            <if test="turnoverAmount != null">turnover_amount = #{turnoverAmount},</if>
+            <if test="orderRate != null">order_rate = #{orderRate},</if>
+            <if test="mainInAmount != null">main_in_amount = #{mainInAmount},</if>
+            <if test="mainTransAmount != null">main_trans_amount = #{mainTransAmount},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteStockDayById" parameterType="Long">
+        delete from t_stock_day where id = #{id}
+    </delete>
+
+    <delete id="deleteStockDayByIds" parameterType="String">
+        delete from t_stock_day where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

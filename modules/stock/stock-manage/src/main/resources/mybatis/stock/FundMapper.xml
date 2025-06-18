@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.stock.mapper.FundMapper">
+    
+    <resultMap type="com.manage.stock.domain.Fund" id="FundResult">
+        <result property="id"    column="id"    />
+        <result property="fundName"    column="fund_name"    />
+        <result property="fundCode"    column="fund_code"    />
+        <result property="tradeMode"    column="trade_mode"    />
+        <result property="note"    column="note"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="modifyTime"    column="modify_time"    />
+    </resultMap>
+
+    <sql id="selectFundVo">
+        select id, fund_name, fund_code, trade_mode, note, create_time, modify_time from t_fund
+    </sql>
+
+    <select id="selectFundList" parameterType="com.manage.stock.domain.Fund" resultMap="FundResult">
+        <include refid="selectFundVo"/>
+        <where>  
+            <if test="fundName != null  and fundName != ''"> and fund_name like concat('%', #{fundName}, '%')</if>
+            <if test="fundCode != null  and fundCode != ''"> and fund_code = #{fundCode}</if>
+            <if test="tradeMode != null  and tradeMode != ''"> and trade_mode = #{tradeMode}</if>
+            <if test="note != null  and note != ''"> and note = #{note}</if>
+            <if test="modifyTime != null "> and modify_time = #{modifyTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectFundById" parameterType="Long" resultMap="FundResult">
+        <include refid="selectFundVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertFund" parameterType="com.manage.stock.domain.Fund" useGeneratedKeys="true" keyProperty="id">
+        insert into t_fund
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="fundName != null">fund_name,</if>
+            <if test="fundCode != null">fund_code,</if>
+            <if test="tradeMode != null">trade_mode,</if>
+            <if test="note != null">note,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="modifyTime != null">modify_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="fundName != null">#{fundName},</if>
+            <if test="fundCode != null">#{fundCode},</if>
+            <if test="tradeMode != null">#{tradeMode},</if>
+            <if test="note != null">#{note},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="modifyTime != null">#{modifyTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateFund" parameterType="com.manage.stock.domain.Fund">
+        update t_fund
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="fundName != null">fund_name = #{fundName},</if>
+            <if test="fundCode != null">fund_code = #{fundCode},</if>
+            <if test="tradeMode != null">trade_mode = #{tradeMode},</if>
+            <if test="note != null">note = #{note},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="modifyTime != null">modify_time = #{modifyTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteFundById" parameterType="Long">
+        delete from t_fund where id = #{id}
+    </delete>
+
+    <delete id="deleteFundByIds" parameterType="String">
+        delete from t_fund where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

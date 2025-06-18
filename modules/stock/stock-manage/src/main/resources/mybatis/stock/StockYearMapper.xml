@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.stock.mapper.StockYearMapper">
+    
+    <resultMap type="com.manage.stock.domain.StockYear" id="StockYearResult">
+        <result property="id"    column="id"    />
+        <result property="stockName"    column="stock_name"    />
+        <result property="stockCode"    column="stock_code"    />
+        <result property="statYear"    column="stat_year"    />
+        <result property="highlight"    column="highlight"    />
+        <result property="minPrice"    column="min_price"    />
+        <result property="maxPrice"    column="max_price"    />
+        <result property="beginPrice"    column="begin_price"    />
+        <result property="endPrice"    column="end_price"    />
+        <result property="marketValue"    column="market_value"    />
+        <result property="pe"    column="pe"    />
+        <result property="gmv"    column="gmv"    />
+        <result property="profit"    column="profit"    />
+        <result property="note"    column="note"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectStockYearVo">
+        select id, stock_name, stock_code, stat_year, highlight, min_price, max_price, begin_price, end_price, market_value, pe, gmv, profit, note, create_time from t_stock_year
+    </sql>
+
+    <select id="selectStockYearList" parameterType="com.manage.stock.domain.StockYear" resultMap="StockYearResult">
+        <include refid="selectStockYearVo"/>
+        <where>  
+            <if test="stockName != null  and stockName != ''"> and stock_name like concat('%', #{stockName}, '%')</if>
+            <if test="stockCode != null  and stockCode != ''"> and stock_code = #{stockCode}</if>
+            <if test="statYear != null "> and stat_year = #{statYear}</if>
+            <if test="highlight != null "> and highlight = #{highlight}</if>
+            <if test="minPrice != null "> and min_price = #{minPrice}</if>
+            <if test="maxPrice != null "> and max_price = #{maxPrice}</if>
+            <if test="beginPrice != null "> and begin_price = #{beginPrice}</if>
+            <if test="endPrice != null "> and end_price = #{endPrice}</if>
+            <if test="marketValue != null "> and market_value = #{marketValue}</if>
+            <if test="pe != null "> and pe = #{pe}</if>
+            <if test="gmv != null "> and gmv = #{gmv}</if>
+            <if test="profit != null "> and profit = #{profit}</if>
+            <if test="note != null  and note != ''"> and note = #{note}</if>
+        </where>
+    </select>
+    
+    <select id="selectStockYearById" parameterType="Long" resultMap="StockYearResult">
+        <include refid="selectStockYearVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertStockYear" parameterType="com.manage.stock.domain.StockYear" useGeneratedKeys="true" keyProperty="id">
+        insert into t_stock_year
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="stockName != null">stock_name,</if>
+            <if test="stockCode != null">stock_code,</if>
+            <if test="statYear != null">stat_year,</if>
+            <if test="highlight != null">highlight,</if>
+            <if test="minPrice != null">min_price,</if>
+            <if test="maxPrice != null">max_price,</if>
+            <if test="beginPrice != null">begin_price,</if>
+            <if test="endPrice != null">end_price,</if>
+            <if test="marketValue != null">market_value,</if>
+            <if test="pe != null">pe,</if>
+            <if test="gmv != null">gmv,</if>
+            <if test="profit != null">profit,</if>
+            <if test="note != null">note,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="stockName != null">#{stockName},</if>
+            <if test="stockCode != null">#{stockCode},</if>
+            <if test="statYear != null">#{statYear},</if>
+            <if test="highlight != null">#{highlight},</if>
+            <if test="minPrice != null">#{minPrice},</if>
+            <if test="maxPrice != null">#{maxPrice},</if>
+            <if test="beginPrice != null">#{beginPrice},</if>
+            <if test="endPrice != null">#{endPrice},</if>
+            <if test="marketValue != null">#{marketValue},</if>
+            <if test="pe != null">#{pe},</if>
+            <if test="gmv != null">#{gmv},</if>
+            <if test="profit != null">#{profit},</if>
+            <if test="note != null">#{note},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStockYear" parameterType="com.manage.stock.domain.StockYear">
+        update t_stock_year
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="stockName != null">stock_name = #{stockName},</if>
+            <if test="stockCode != null">stock_code = #{stockCode},</if>
+            <if test="statYear != null">stat_year = #{statYear},</if>
+            <if test="highlight != null">highlight = #{highlight},</if>
+            <if test="minPrice != null">min_price = #{minPrice},</if>
+            <if test="maxPrice != null">max_price = #{maxPrice},</if>
+            <if test="beginPrice != null">begin_price = #{beginPrice},</if>
+            <if test="endPrice != null">end_price = #{endPrice},</if>
+            <if test="marketValue != null">market_value = #{marketValue},</if>
+            <if test="pe != null">pe = #{pe},</if>
+            <if test="gmv != null">gmv = #{gmv},</if>
+            <if test="profit != null">profit = #{profit},</if>
+            <if test="note != null">note = #{note},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteStockYearById" parameterType="Long">
+        delete from t_stock_year where id = #{id}
+    </delete>
+
+    <delete id="deleteStockYearByIds" parameterType="String">
+        delete from t_stock_year where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.stock.mapper.StockWeekMapper">
+    
+    <resultMap type="com.manage.stock.domain.StockWeek" id="StockWeekResult">
+        <result property="id"    column="id"    />
+        <result property="hignFlag"    column="hign_flag"    />
+        <result property="stockName"    column="stock_name"    />
+        <result property="stockCode"    column="stock_code"    />
+        <result property="weekDate"    column="week_date"    />
+        <result property="beginPrice"    column="begin_price"    />
+        <result property="endPrice"    column="end_price"    />
+        <result property="minPrice"    column="min_price"    />
+        <result property="maxPrice"    column="max_price"    />
+        <result property="increaseRate"    column="increase_rate"    />
+        <result property="note"    column="note"    />
+        <result property="turnoverRate"    column="turnover_rate"    />
+        <result property="turnoverAmount"    column="turnover_amount"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectStockWeekVo">
+        select id, hign_flag, stock_name, stock_code, week_date, begin_price, end_price, min_price, max_price, increase_rate, note, turnover_rate, turnover_amount, create_time from t_stock_week
+    </sql>
+
+    <select id="selectStockWeekList" parameterType="com.manage.stock.domain.StockWeek" resultMap="StockWeekResult">
+        <include refid="selectStockWeekVo"/>
+        <where>  
+            <if test="hignFlag != null "> and hign_flag = #{hignFlag}</if>
+            <if test="stockName != null  and stockName != ''"> and stock_name like concat('%', #{stockName}, '%')</if>
+            <if test="stockCode != null  and stockCode != ''"> and stock_code = #{stockCode}</if>
+            <if test="weekDate != null "> and week_date = #{weekDate}</if>
+            <if test="beginPrice != null "> and begin_price = #{beginPrice}</if>
+            <if test="endPrice != null "> and end_price = #{endPrice}</if>
+            <if test="minPrice != null "> and min_price = #{minPrice}</if>
+            <if test="maxPrice != null "> and max_price = #{maxPrice}</if>
+            <if test="increaseRate != null  and increaseRate != ''"> and increase_rate = #{increaseRate}</if>
+            <if test="note != null  and note != ''"> and note = #{note}</if>
+            <if test="turnoverRate != null  and turnoverRate != ''"> and turnover_rate = #{turnoverRate}</if>
+            <if test="turnoverAmount != null "> and turnover_amount = #{turnoverAmount}</if>
+        </where>
+    </select>
+    
+    <select id="selectStockWeekById" parameterType="Long" resultMap="StockWeekResult">
+        <include refid="selectStockWeekVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertStockWeek" parameterType="com.manage.stock.domain.StockWeek" useGeneratedKeys="true" keyProperty="id">
+        insert into t_stock_week
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="hignFlag != null">hign_flag,</if>
+            <if test="stockName != null">stock_name,</if>
+            <if test="stockCode != null">stock_code,</if>
+            <if test="weekDate != null">week_date,</if>
+            <if test="beginPrice != null">begin_price,</if>
+            <if test="endPrice != null">end_price,</if>
+            <if test="minPrice != null">min_price,</if>
+            <if test="maxPrice != null">max_price,</if>
+            <if test="increaseRate != null">increase_rate,</if>
+            <if test="note != null">note,</if>
+            <if test="turnoverRate != null">turnover_rate,</if>
+            <if test="turnoverAmount != null">turnover_amount,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="hignFlag != null">#{hignFlag},</if>
+            <if test="stockName != null">#{stockName},</if>
+            <if test="stockCode != null">#{stockCode},</if>
+            <if test="weekDate != null">#{weekDate},</if>
+            <if test="beginPrice != null">#{beginPrice},</if>
+            <if test="endPrice != null">#{endPrice},</if>
+            <if test="minPrice != null">#{minPrice},</if>
+            <if test="maxPrice != null">#{maxPrice},</if>
+            <if test="increaseRate != null">#{increaseRate},</if>
+            <if test="note != null">#{note},</if>
+            <if test="turnoverRate != null">#{turnoverRate},</if>
+            <if test="turnoverAmount != null">#{turnoverAmount},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStockWeek" parameterType="com.manage.stock.domain.StockWeek">
+        update t_stock_week
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="hignFlag != null">hign_flag = #{hignFlag},</if>
+            <if test="stockName != null">stock_name = #{stockName},</if>
+            <if test="stockCode != null">stock_code = #{stockCode},</if>
+            <if test="weekDate != null">week_date = #{weekDate},</if>
+            <if test="beginPrice != null">begin_price = #{beginPrice},</if>
+            <if test="endPrice != null">end_price = #{endPrice},</if>
+            <if test="minPrice != null">min_price = #{minPrice},</if>
+            <if test="maxPrice != null">max_price = #{maxPrice},</if>
+            <if test="increaseRate != null">increase_rate = #{increaseRate},</if>
+            <if test="note != null">note = #{note},</if>
+            <if test="turnoverRate != null">turnover_rate = #{turnoverRate},</if>
+            <if test="turnoverAmount != null">turnover_amount = #{turnoverAmount},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteStockWeekById" parameterType="Long">
+        delete from t_stock_week where id = #{id}
+    </delete>
+
+    <delete id="deleteStockWeekByIds" parameterType="String">
+        delete from t_stock_week where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
