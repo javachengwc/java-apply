@@ -91,14 +91,4 @@ public class BourseWeekController extends BaseController
         return toAjax(bourseWeekService.updateBourseWeek(bourseWeek));
     }
 
-    /**
-     * 删除证券指数周数据
-     */
-    @PreAuthorize("@ss.hasPermi('stock:bourseweek:remove')")
-    @Log(title = "证券指数周数据", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
-        return toAjax(bourseWeekService.deleteBourseWeekByIds(ids));
-    }
 }

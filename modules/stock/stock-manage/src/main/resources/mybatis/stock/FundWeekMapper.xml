@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.stock.mapper.FundWeekMapper">
+    
+    <resultMap type="com.manage.stock.domain.FundWeek" id="FundWeekResult">
+        <result property="id"    column="id"    />
+        <result property="fundName"    column="fund_name"    />
+        <result property="fundCode"    column="fund_code"    />
+        <result property="weekDate"    column="week_date"    />
+        <result property="beginPrice"    column="begin_price"    />
+        <result property="endPrice"    column="end_price"    />
+        <result property="increaseRate"    column="increase_rate"    />
+        <result property="note"    column="note"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectFundWeekVo">
+        select id, fund_name, fund_code, week_date, begin_price, end_price, increase_rate, note, create_time from t_fund_week
+    </sql>
+
+    <select id="selectFundWeekList" parameterType="com.manage.stock.domain.FundWeek" resultMap="FundWeekResult">
+        <include refid="selectFundWeekVo"/>
+        <where>  
+            <if test="fundName != null  and fundName != ''"> and fund_name like concat('%', #{fundName}, '%')</if>
+            <if test="fundCode != null  and fundCode != ''"> and fund_code = #{fundCode}</if>
+            <if test="weekDate != null "> and week_date = #{weekDate}</if>
+            <if test="beginPrice != null "> and begin_price = #{beginPrice}</if>
+            <if test="endPrice != null "> and end_price = #{endPrice}</if>
+            <if test="increaseRate != null  and increaseRate != ''"> and increase_rate = #{increaseRate}</if>
+            <if test="note != null  and note != ''"> and note = #{note}</if>
+        </where>
+    </select>
+    
+    <select id="selectFundWeekById" parameterType="Long" resultMap="FundWeekResult">
+        <include refid="selectFundWeekVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertFundWeek" parameterType="com.manage.stock.domain.FundWeek" useGeneratedKeys="true" keyProperty="id">
+        insert into t_fund_week
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="fundName != null">fund_name,</if>
+            <if test="fundCode != null">fund_code,</if>
+            <if test="weekDate != null">week_date,</if>
+            <if test="beginPrice != null">begin_price,</if>
+            <if test="endPrice != null">end_price,</if>
+            <if test="increaseRate != null">increase_rate,</if>
+            <if test="note != null">note,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="fundName != null">#{fundName},</if>
+            <if test="fundCode != null">#{fundCode},</if>
+            <if test="weekDate != null">#{weekDate},</if>
+            <if test="beginPrice != null">#{beginPrice},</if>
+            <if test="endPrice != null">#{endPrice},</if>
+            <if test="increaseRate != null">#{increaseRate},</if>
+            <if test="note != null">#{note},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateFundWeek" parameterType="com.manage.stock.domain.FundWeek">
+        update t_fund_week
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="fundName != null">fund_name = #{fundName},</if>
+            <if test="fundCode != null">fund_code = #{fundCode},</if>
+            <if test="weekDate != null">week_date = #{weekDate},</if>
+            <if test="beginPrice != null">begin_price = #{beginPrice},</if>
+            <if test="endPrice != null">end_price = #{endPrice},</if>
+            <if test="increaseRate != null">increase_rate = #{increaseRate},</if>
+            <if test="note != null">note = #{note},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteFundWeekById" parameterType="Long">
+        delete from t_fund_week where id = #{id}
+    </delete>
+
+    <delete id="deleteFundWeekByIds" parameterType="String">
+        delete from t_fund_week where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

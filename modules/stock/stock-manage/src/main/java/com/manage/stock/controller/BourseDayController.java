@@ -90,15 +90,4 @@ public class BourseDayController extends BaseController
     {
         return toAjax(bourseDayService.updateBourseDay(bourseDay));
     }
-
-    /**
-     * 删除证券指数天数据
-     */
-    @PreAuthorize("@ss.hasPermi('stock:bourseday:remove')")
-    @Log(title = "证券指数天数据", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
-        return toAjax(bourseDayService.deleteBourseDayByIds(ids));
-    }
 }

@@ -90,15 +90,4 @@ public class BourseMonthController extends BaseController
     {
         return toAjax(bourseMonthService.updateBourseMonth(bourseMonth));
     }
-
-    /**
-     * 删除证券指数月数据
-     */
-    @PreAuthorize("@ss.hasPermi('stock:boursemonth:remove')")
-    @Log(title = "证券指数月数据", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
-        return toAjax(bourseMonthService.deleteBourseMonthByIds(ids));
-    }
 }

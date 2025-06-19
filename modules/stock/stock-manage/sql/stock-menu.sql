@@ -1,14 +1,14 @@
 
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`)
-VALUES (5, '股票管理', 0, 5, '', NULL, '', '', 1, 0, 'M', '0', '0', '', '', 'admin', now(), 'admin', now(), '股票目录');
+VALUES (5, '股票管理', 0, 5, 'stk', NULL, '', '', 1, 0, 'M', '0', '0', '', '', 'admin', now(), 'admin', now(), '股票目录');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`)
-VALUES (6, '股票数据', 0, 6, '', NULL, '', '', 1, 0, 'M', '0', '0', '', '', 'admin', now(), 'admin', now(), '股票数据目录');
+VALUES (6, '股票数据', 0, 6, 'sdata', NULL, '', '', 1, 0, 'M', '0', '0', '', '', 'admin', now(), 'admin', now(), '股票数据目录');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`)
-VALUES (7, '基金管理', 0, 7, '', NULL, '', '', 1, 0, 'M', '0', '0', '', '', 'admin', now(), 'admin', now(), '基金目录');
+VALUES (7, '基金管理', 0, 7, 'fund', NULL, '', '', 1, 0, 'M', '0', '0', '', '', 'admin', now(), 'admin', now(), '基金目录');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`)
-VALUES (8, '基金数据', 0, 8, '', NULL, '', '', 1, 0, 'M', '0', '0', '', '', 'admin', now(), 'admin', now(), '基金数据目录');
+VALUES (8, '基金数据', 0, 8, 'fdata', NULL, '', '', 1, 0, 'M', '0', '0', '', '', 'admin', now(), 'admin', now(), '基金数据目录');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `route_name`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`)
-VALUES (9, '大盘指数', 0, 9, '', NULL, '', '', 1, 0, 'M', '0', '0', '', '', 'admin', now(), 'admin', now(), '大盘指数');
+VALUES (9, '大盘指数', 0, 9, 'disk', NULL, '', '', 1, 0, 'M', '0', '0', '', '', 'admin', now(), 'admin', now(), '大盘指数');
 
 -- 菜单 SQL
 insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
@@ -128,6 +128,57 @@ insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame
 values('基金删除', @parentId, '4',  '#', '', 1, 0, 'F', '0', '0', 'stock:fund:remove',       '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
 values('基金导出', @parentId, '5',  '#', '', 1, 0, 'F', '0', '0', 'stock:fund:export',       '#', 'admin', sysdate(), '', null, '');
+
+-- 菜单 SQL
+insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+values('基金月数据', '8', '1', 'fundmonth', 'stock/fundmonth/index', 1, 0, 'C', '0', '0', 'stock:fundmonth:list', '#', 'admin', sysdate(), '', null, '基金月数据菜单');
+-- 按钮父菜单ID
+SELECT @parentId := LAST_INSERT_ID();
+-- 按钮 SQL
+insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+values('基金月数据查询', @parentId, '1',  '#', '', 1, 0, 'F', '0', '0', 'stock:fundmonth:query',        '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+values('基金月数据新增', @parentId, '2',  '#', '', 1, 0, 'F', '0', '0', 'stock:fundmonth:add',          '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+values('基金月数据修改', @parentId, '3',  '#', '', 1, 0, 'F', '0', '0', 'stock:fundmonth:edit',         '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+values('基金月数据删除', @parentId, '4',  '#', '', 1, 0, 'F', '0', '0', 'stock:fundmonth:remove',       '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+values('基金月数据导出', @parentId, '5',  '#', '', 1, 0, 'F', '0', '0', 'stock:fundmonth:export',       '#', 'admin', sysdate(), '', null, '');
+
+-- 菜单 SQL
+insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+values('基金周数据', '8', '1', 'fundweek', 'stock/fundweek/index', 1, 0, 'C', '0', '0', 'stock:fundweek:list', '#', 'admin', sysdate(), '', null, '基金周数据菜单');
+-- 按钮父菜单ID
+SELECT @parentId := LAST_INSERT_ID();
+-- 按钮 SQL
+insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+values('基金周数据查询', @parentId, '1',  '#', '', 1, 0, 'F', '0', '0', 'stock:fundweek:query',        '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+values('基金周数据新增', @parentId, '2',  '#', '', 1, 0, 'F', '0', '0', 'stock:fundweek:add',          '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+values('基金周数据修改', @parentId, '3',  '#', '', 1, 0, 'F', '0', '0', 'stock:fundweek:edit',         '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+values('基金周数据删除', @parentId, '4',  '#', '', 1, 0, 'F', '0', '0', 'stock:fundweek:remove',       '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+values('基金周数据导出', @parentId, '5',  '#', '', 1, 0, 'F', '0', '0', 'stock:fundweek:export',       '#', 'admin', sysdate(), '', null, '');
+
+-- 菜单 SQL
+insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+values('基金天数据', '8', '1', 'fundday', 'stock/fundday/index', 1, 0, 'C', '0', '0', 'stock:fundday:list', '#', 'admin', sysdate(), '', null, '基金天数据菜单');
+-- 按钮父菜单ID
+SELECT @parentId := LAST_INSERT_ID();
+-- 按钮 SQL
+insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+values('基金天数据查询', @parentId, '1',  '#', '', 1, 0, 'F', '0', '0', 'stock:fundday:query',        '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+values('基金天数据新增', @parentId, '2',  '#', '', 1, 0, 'F', '0', '0', 'stock:fundday:add',          '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+values('基金天数据修改', @parentId, '3',  '#', '', 1, 0, 'F', '0', '0', 'stock:fundday:edit',         '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+values('基金天数据删除', @parentId, '4',  '#', '', 1, 0, 'F', '0', '0', 'stock:fundday:remove',       '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+values('基金天数据导出', @parentId, '5',  '#', '', 1, 0, 'F', '0', '0', 'stock:fundday:export',       '#', 'admin', sysdate(), '', null, '');
 
 -- 菜单 SQL
 insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)

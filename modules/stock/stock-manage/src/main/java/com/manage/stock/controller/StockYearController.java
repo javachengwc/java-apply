@@ -91,14 +91,4 @@ public class StockYearController extends BaseController
         return toAjax(stockYearService.updateStockYear(stockYear));
     }
 
-    /**
-     * 删除股票年数据
-     */
-    @PreAuthorize("@ss.hasPermi('stock:stockyear:remove')")
-    @Log(title = "股票年数据", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
-        return toAjax(stockYearService.deleteStockYearByIds(ids));
-    }
 }

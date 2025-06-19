@@ -91,14 +91,4 @@ public class StockDayController extends BaseController
         return toAjax(stockDayService.updateStockDay(stockDay));
     }
 
-    /**
-     * 删除股票天数据
-     */
-    @PreAuthorize("@ss.hasPermi('stock:stockday:remove')")
-    @Log(title = "股票天数据", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
-        return toAjax(stockDayService.deleteStockDayByIds(ids));
-    }
 }

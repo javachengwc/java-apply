@@ -91,14 +91,4 @@ public class StockMonthController extends BaseController
         return toAjax(stockMonthService.updateStockMonth(stockMonth));
     }
 
-    /**
-     * 删除股票月数据
-     */
-    @PreAuthorize("@ss.hasPermi('stock:stockmonth:remove')")
-    @Log(title = "股票月数据", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
-        return toAjax(stockMonthService.deleteStockMonthByIds(ids));
-    }
 }
