@@ -67,6 +67,10 @@ public class StockYear extends BaseEntity
     @Excel(name = "利润(亿)")
     private BigDecimal profit;
 
+	/** 分红(亿) */
+    @Excel(name = "分红(亿)")
+    private BigDecimal dividend;
+
     /** 备注 */
     @Excel(name = "备注")
     private String note;
@@ -188,6 +192,15 @@ public class StockYear extends BaseEntity
     {
         return profit;
     }
+    public void setDividend(BigDecimal dividend) 
+    {
+        this.dividend = dividend;
+    }
+
+    public BigDecimal getDividend() 
+    {
+        return dividend;
+    }
     public void setNote(String note) 
     {
         this.note = note;
@@ -214,6 +227,7 @@ public class StockYear extends BaseEntity
             .append("pe", getPe())
             .append("gmv", getGmv())
             .append("profit", getProfit())
+			.append("dividend", getDividend())
             .append("note", getNote())
             .append("createTime", getCreateTime())
             .toString();

@@ -18,12 +18,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="pe"    column="pe"    />
         <result property="gmv"    column="gmv"    />
         <result property="profit"    column="profit"    />
+		<result property="dividend"    column="dividend"    />
         <result property="note"    column="note"    />
         <result property="createTime"    column="create_time"    />
     </resultMap>
 
     <sql id="selectStockYearVo">
-        select id, stock_name, stock_code, stat_year, highlight, min_price, max_price, begin_price, end_price, market_value, pe, gmv, profit, note, create_time from t_stock_year
+        select id, stock_name, stock_code, stat_year, highlight, min_price, max_price, begin_price, end_price, market_value, pe, gmv, profit,dividend, note, create_time from t_stock_year
     </sql>
 
     <select id="selectStockYearList" parameterType="com.manage.stock.domain.StockYear" resultMap="StockYearResult">
@@ -65,6 +66,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="pe != null">pe,</if>
             <if test="gmv != null">gmv,</if>
             <if test="profit != null">profit,</if>
+			<if test="dividend != null">dividend,</if>
             <if test="note != null">note,</if>
             <if test="createTime != null">create_time,</if>
          </trim>
@@ -81,6 +83,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="pe != null">#{pe},</if>
             <if test="gmv != null">#{gmv},</if>
             <if test="profit != null">#{profit},</if>
+			<if test="dividend != null">#{dividend},</if>
             <if test="note != null">#{note},</if>
             <if test="createTime != null">#{createTime},</if>
          </trim>
@@ -101,6 +104,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="pe != null">pe = #{pe},</if>
             <if test="gmv != null">gmv = #{gmv},</if>
             <if test="profit != null">profit = #{profit},</if>
+			<if test="dividend != null">dividend = #{dividend},</if>
             <if test="note != null">note = #{note},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
         </trim>

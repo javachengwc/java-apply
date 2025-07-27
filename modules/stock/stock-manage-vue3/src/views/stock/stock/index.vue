@@ -90,7 +90,11 @@
       <el-table-column label="交易所" align="center" width="70" prop="stockMarketCode" />
       <el-table-column label="行业" align="center" width="100" prop="industry" />
       <el-table-column label="关注值" align="center" width="70" prop="careValue" />
-      <el-table-column label="数据" align="center" width="50" prop="haveData" />
+      <el-table-column label="数据" align="center" width="50" prop="haveData" >
+        <template #default="scope">
+          <span>{{ scope.row.haveData === 1 ? '有' : '无' }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="上市时间" align="center"  width="100" prop="publicTime">
         <template #default="scope">
           <span>{{ parseTime(scope.row.publicTime, '{y}-{m}-{d}') }}</span>
@@ -134,7 +138,14 @@
           <el-input v-model="form.industry" placeholder="请输入行业" />
         </el-form-item>
         <el-form-item label="是否有数据" prop="haveData">
-          <el-input v-model="form.haveData" placeholder="请输入是否有数据 0-否,1-是" />
+          <el-radio-group v-model="form.haveData">
+            <el-radio
+              v-for="item in haveDataOpts"
+              :key="item.value"
+              :label="item.value">
+              {{ item.name }}
+            </el-radio>
+          </el-radio-group>
         </el-form-item>
         <el-form-item label="上市时间" prop="publicTime">
           <el-date-picker clearable
@@ -188,6 +199,11 @@ const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
+
+const haveDataOpts = [
+    {value: 0, name: '无'},
+    {value: 1, name: '有'},
+];
 
 const data = reactive({
   form: {},
