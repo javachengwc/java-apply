@@ -9,10 +9,18 @@ export function listStock(query) {
   })
 }
 
-// 查询公司股票详细
+// 查询公司股票
 export function getStock(id) {
   return request({
     url: '/stock/stock/' + id,
+    method: 'get'
+  })
+}
+
+// 查询公司股票详细
+export function getStockDetail(id) {
+  return request({
+    url: '/stock/stock/getDetail/' + id,
     method: 'get'
   })
 }

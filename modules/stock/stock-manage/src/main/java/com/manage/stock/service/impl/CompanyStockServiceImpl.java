@@ -2,6 +2,10 @@ package com.manage.stock.service.impl;
 
 import java.util.List;
 import com.manage.common.utils.DateUtils;
+import com.manage.stock.domain.Company;
+import com.manage.stock.domain.vo.CompanyStockVo;
+import com.manage.stock.service.ICompanyService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.manage.stock.mapper.CompanyStockMapper;
@@ -20,6 +24,9 @@ public class CompanyStockServiceImpl implements ICompanyStockService
     @Autowired
     private CompanyStockMapper companyStockMapper;
 
+    @Autowired
+    private ICompanyService companyService;
+
     /**
      * 查询公司股票
      * 
@@ -30,6 +37,17 @@ public class CompanyStockServiceImpl implements ICompanyStockService
     public CompanyStock selectCompanyStockById(Long id)
     {
         return companyStockMapper.selectCompanyStockById(id);
+    }
+
+    @Override
+    public CompanyStockVo getDetail(Long id) {
+        CompanyStock companyStock = this.selectCompanyStockById(id);
+        Long companyId = companyStock.getCompanyId();
+        Company company =companyService.selectCompanyById(companyId);
+        CompanyStockVo companyStockVo = new CompanyStockVo();
+        BeanUtils.copyProperties(companyStock,companyStockVo);
+        companyStockVo.setCompanyIntroduce(company==null?"":company.getIntroduce());
+        return companyStockVo;
     }
 
     /**

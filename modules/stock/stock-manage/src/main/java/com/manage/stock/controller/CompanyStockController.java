@@ -70,6 +70,16 @@ public class CompanyStockController extends BaseController
     }
 
     /**
+     * 获取公司股票详细信息
+     */
+    @PreAuthorize("@ss.hasPermi('stock:stock:query')")
+    @GetMapping(value = "/getDetail/{id}")
+    public AjaxResult getDetail(@PathVariable("id") Long id)
+    {
+        return success(companyStockService.getDetail(id));
+    }
+
+    /**
      * 新增公司股票
      */
     @PreAuthorize("@ss.hasPermi('stock:stock:add')")

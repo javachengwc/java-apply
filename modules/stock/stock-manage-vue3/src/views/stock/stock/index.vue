@@ -51,26 +51,6 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="success"
-          plain
-          icon="Edit"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['stock:stock:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="Delete"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['stock:stock:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
           type="warning"
           plain
           icon="Download"
@@ -102,6 +82,7 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
+          <el-button link type="primary" icon="Education" @click="showDetail(scope.row)" >详情</el-button>
           <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['stock:stock:edit']">修改</el-button>
           <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['stock:stock:remove']">删除</el-button>
         </template>
@@ -182,11 +163,65 @@
         </div>
       </template>
     </el-dialog>
+
+    <!-- 股票详情 -->
+    <el-dialog title="股票详情" v-model="detailOpen" width="500px" append-to-body>
+      <el-form ref="stockDetail" :model="detail" label-width="100px" >
+        <el-form-item label="股票名称">
+          <el-input v-model="detail.stockName" readonly />
+        </el-form-item>
+        <el-form-item label="股票代码">
+          <el-input v-model="detail.stockCode" readonly />
+        </el-form-item>
+        <el-form-item label="交易所">
+          <el-input v-model="detail.stockMarketCode" readonly />
+        </el-form-item>
+        <el-form-item label="行业">
+          <el-input v-model="detail.industry" readonly />
+        </el-form-item>
+        <el-form-item label="公司ID">
+          <el-input v-model="detail.companyId" readonly />
+        </el-form-item>
+        <el-form-item label="公司简介">
+          <el-input type="textarea" v-model="detail.companyIntroduce" readonly
+            maxlength="1000" :rows="6" show-word-limit />
+        </el-form-item>
+        <el-form-item label="关注值">
+          <el-input v-model="detail.careValue" readonly />
+        </el-form-item>
+        <el-form-item label="是否有数据">
+          <el-radio-group v-model="detail.haveData" :disabled="true">
+            <el-radio v-for="item in haveDataOpts"
+              :key="item.value" :label="item.value">
+              {{ item.name }}
+            </el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="上市时间">
+          <el-date-picker v-model="detail.publicTime" type="date"
+            value-format="YYYY-MM-DD" readonly >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="标签">
+          <el-input v-model="detail.tags" readonly />
+        </el-form-item>
+        <el-form-item label="股权登记日期">
+          <el-date-picker v-model="detail.recordDay" type="date"
+            value-format="YYYY-MM-DD" readonly >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="分红日期">
+          <el-date-picker v-model="detail.divvyDay" type="date"
+            value-format="YYYY-MM-DD" readonly >
+          </el-date-picker>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
 <script setup name="Stock">
-import { listStock, getStock, delStock, addStock, updateStock } from "@/api/stock/stock";
+import { listStock, getStock, getStockDetail, delStock, addStock, updateStock } from "@/api/stock/stock";
 
 const { proxy } = getCurrentInstance();
 
@@ -199,6 +234,7 @@ const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
+const detailOpen = ref(false);
 
 const haveDataOpts = [
     {value: 0, name: '无'},
@@ -207,6 +243,7 @@ const haveDataOpts = [
 
 const data = reactive({
   form: {},
+  detail:{},
   queryParams: {
     pageNum: 1,
     pageSize: 10,
@@ -227,7 +264,7 @@ const data = reactive({
   }
 });
 
-const { queryParams, form, rules } = toRefs(data);
+const { queryParams, form, rules, detail } = toRefs(data);
 
 /** 查询公司股票列表 */
 function getList() {
@@ -295,11 +332,20 @@ function handleAdd() {
 /** 修改按钮操作 */
 function handleUpdate(row) {
   reset();
-  const _id = row.id || ids.value
+  const _id = row.id;
   getStock(_id).then(response => {
     form.value = response.data;
     open.value = true;
     title.value = "修改公司股票";
+  });
+}
+
+/** 详情按钮操作 */
+function showDetail(row) {
+  const _id = row.id;
+  getStockDetail(_id).then(response => {
+    detail.value = response.data;
+    detailOpen.value = true;
   });
 }
 

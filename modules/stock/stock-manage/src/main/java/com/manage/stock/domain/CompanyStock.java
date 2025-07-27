@@ -2,6 +2,8 @@ package com.manage.stock.domain;
 
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
+import lombok.ToString;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.manage.framework.aspectj.lang.annotation.Excel;
@@ -13,15 +15,17 @@ import com.manage.framework.web.domain.BaseEntity;
  * @author gener
  * @date 2025-06-17
  */
+@Data
+@ToString
 public class CompanyStock extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** $column.columnComment */
+    /** ID */
     private Long id;
 
-    /** $column.columnComment */
-    @Excel(name = "${comment}", readConverterExp = "$column.readConverterExp()")
+    /** 公司ID */
+    @Excel(name = "${companyId}")
     private Long companyId;
 
     /** 股票名称 */
@@ -65,145 +69,8 @@ public class CompanyStock extends BaseEntity
     @Excel(name = "分红日")
     private String divvyDay;
 
-    /** $column.columnComment */
-    @Excel(name = "${comment}", readConverterExp = "$column.readConverterExp()")
+    /** 修改时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date modifyTime;
 
-    public void setId(Long id) 
-    {
-        this.id = id;
-    }
-
-    public Long getId() 
-    {
-        return id;
-    }
-    public void setCompanyId(Long companyId) 
-    {
-        this.companyId = companyId;
-    }
-
-    public Long getCompanyId() 
-    {
-        return companyId;
-    }
-    public void setStockName(String stockName) 
-    {
-        this.stockName = stockName;
-    }
-
-    public String getStockName() 
-    {
-        return stockName;
-    }
-    public void setStockCode(String stockCode) 
-    {
-        this.stockCode = stockCode;
-    }
-
-    public String getStockCode() 
-    {
-        return stockCode;
-    }
-    public void setStockMarketCode(String stockMarketCode) 
-    {
-        this.stockMarketCode = stockMarketCode;
-    }
-
-    public String getStockMarketCode() 
-    {
-        return stockMarketCode;
-    }
-    public void setCareValue(Long careValue) 
-    {
-        this.careValue = careValue;
-    }
-
-    public Long getCareValue() 
-    {
-        return careValue;
-    }
-    public void setIndustry(String industry) 
-    {
-        this.industry = industry;
-    }
-
-    public String getIndustry() 
-    {
-        return industry;
-    }
-    public void setHaveData(Long haveData) 
-    {
-        this.haveData = haveData;
-    }
-
-    public Long getHaveData() 
-    {
-        return haveData;
-    }
-    public void setPublicTime(Date publicTime) 
-    {
-        this.publicTime = publicTime;
-    }
-
-    public Date getPublicTime() 
-    {
-        return publicTime;
-    }
-    public void setTags(String tags) 
-    {
-        this.tags = tags;
-    }
-
-    public String getTags() 
-    {
-        return tags;
-    }
-    public void setRecordDay(String recordDay) 
-    {
-        this.recordDay = recordDay;
-    }
-
-    public String getRecordDay() 
-    {
-        return recordDay;
-    }
-    public void setDivvyDay(String divvyDay) 
-    {
-        this.divvyDay = divvyDay;
-    }
-
-    public String getDivvyDay() 
-    {
-        return divvyDay;
-    }
-    public void setModifyTime(Date modifyTime) 
-    {
-        this.modifyTime = modifyTime;
-    }
-
-    public Date getModifyTime() 
-    {
-        return modifyTime;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("id", getId())
-            .append("companyId", getCompanyId())
-            .append("stockName", getStockName())
-            .append("stockCode", getStockCode())
-            .append("stockMarketCode", getStockMarketCode())
-            .append("careValue", getCareValue())
-            .append("industry", getIndustry())
-            .append("haveData", getHaveData())
-            .append("publicTime", getPublicTime())
-            .append("tags", getTags())
-            .append("recordDay", getRecordDay())
-            .append("divvyDay", getDivvyDay())
-            .append("createTime", getCreateTime())
-            .append("modifyTime", getModifyTime())
-            .toString();
-    }
 }

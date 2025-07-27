@@ -107,6 +107,10 @@
         <el-form-item label="股票名字" prop="stockNames">
           <el-input v-model="form.stockNames" placeholder="请输入股票名字,多个以','号分隔" />
         </el-form-item>
+        <el-form-item label="简介" prop="introduce">
+          <el-input type="textarea" v-model="form.introduce" placeholder="请输入简介"
+           maxlength="1000" :rows="6" show-word-limit />
+        </el-form-item>
         <el-form-item label="备注" prop="note">
           <el-input v-model="form.note" placeholder="请输入备注" />
         </el-form-item>
@@ -144,7 +148,6 @@ const data = reactive({
     companyName: null,
     provinceName: null,
     stockNames: null,
-    note: null,
   },
   rules: {
   }
@@ -174,9 +177,7 @@ function reset() {
     id: null,
     companyName: null,
     provinceName: null,
-    stockNames: null,
-    note: null,
-    createTime: null
+    stockNames: null
   };
   proxy.resetForm("companyRef");
 }

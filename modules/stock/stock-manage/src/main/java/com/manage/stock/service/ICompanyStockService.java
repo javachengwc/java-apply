@@ -2,6 +2,7 @@ package com.manage.stock.service;
 
 import java.util.List;
 import com.manage.stock.domain.CompanyStock;
+import com.manage.stock.domain.vo.CompanyStockVo;
 
 /**
  * 公司股票Service接口
@@ -18,6 +19,14 @@ public interface ICompanyStockService
      * @return 公司股票
      */
     public CompanyStock selectCompanyStockById(Long id);
+
+    /**
+     * 查询公司股票详情
+     *
+     * @param id 公司股票主键
+     * @return 公司股票详情
+     */
+    public CompanyStockVo getDetail(Long id);
 
     /**
      * 查询公司股票列表
