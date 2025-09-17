@@ -2,6 +2,7 @@ package com.manage.stock.service.impl;
 
 import java.util.List;
 import com.manage.common.utils.DateUtils;
+import com.manage.stock.domain.dto.StockMonthDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.manage.stock.mapper.StockMonthMapper;
@@ -39,7 +40,7 @@ public class StockMonthServiceImpl implements IStockMonthService
      * @return 股票月数据
      */
     @Override
-    public List<StockMonth> selectStockMonthList(StockMonth stockMonth)
+    public List<StockMonth> selectStockMonthList(StockMonthDto stockMonth)
     {
         return stockMonthMapper.selectStockMonthList(stockMonth);
     }

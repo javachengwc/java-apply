@@ -2,6 +2,7 @@ package com.manage.stock.service;
 
 import java.util.List;
 import com.manage.stock.domain.StockMonth;
+import com.manage.stock.domain.dto.StockMonthDto;
 
 /**
  * 股票月数据Service接口
@@ -25,7 +26,7 @@ public interface IStockMonthService
      * @param stockMonth 股票月数据
      * @return 股票月数据集合
      */
-    public List<StockMonth> selectStockMonthList(StockMonth stockMonth);
+    public List<StockMonth> selectStockMonthList(StockMonthDto stockMonth);
 
     /**
      * 新增股票月数据

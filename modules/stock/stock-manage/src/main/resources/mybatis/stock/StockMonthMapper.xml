@@ -15,6 +15,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="minPrice"    column="min_price"    />
         <result property="maxPrice"    column="max_price"    />
         <result property="increaseRate"    column="increase_rate"    />
+        <result property="changeRate"    column="change_rate"    />
         <result property="note"    column="note"    />
         <result property="turnoverRate"    column="turnover_rate"    />
         <result property="turnoverAmount"    column="turnover_amount"    />
@@ -22,24 +23,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStockMonthVo">
-        select id, hign_flag, stock_name, stock_code, month_date, begin_price, end_price, min_price, max_price, increase_rate, note, turnover_rate, turnover_amount, create_time from t_stock_month
+        select id, hign_flag, stock_name, stock_code, month_date, begin_price, end_price, min_price, max_price, increase_rate, change_rate, note, turnover_rate, turnover_amount, create_time from t_stock_month
     </sql>
 
-    <select id="selectStockMonthList" parameterType="com.manage.stock.domain.StockMonth" resultMap="StockMonthResult">
+    <select id="selectStockMonthList" parameterType="com.manage.stock.domain.dto.StockMonthDto" resultMap="StockMonthResult">
         <include refid="selectStockMonthVo"/>
-        <where>  
-            <if test="hignFlag != null "> and hign_flag = #{hignFlag}</if>
+        <where>
             <if test="stockName != null  and stockName != ''"> and stock_name like concat('%', #{stockName}, '%')</if>
             <if test="stockCode != null  and stockCode != ''"> and stock_code = #{stockCode}</if>
-            <if test="monthDate != null "> and month_date = #{monthDate}</if>
-            <if test="beginPrice != null "> and begin_price = #{beginPrice}</if>
-            <if test="endPrice != null "> and end_price = #{endPrice}</if>
-            <if test="minPrice != null "> and min_price = #{minPrice}</if>
-            <if test="maxPrice != null "> and max_price = #{maxPrice}</if>
-            <if test="increaseRate != null  and increaseRate != ''"> and increase_rate = #{increaseRate}</if>
-            <if test="note != null  and note != ''"> and note = #{note}</if>
-            <if test="turnoverRate != null  and turnoverRate != ''"> and turnover_rate = #{turnoverRate}</if>
-            <if test="turnoverAmount != null "> and turnover_amount = #{turnoverAmount}</if>
+            <if test="monthDateStart != null "> and month_date >= #{monthDateStart}</if>
+            <if test="monthDateEnd != null ">  <![CDATA[ and month_date <= #{monthDateEnd} ]]> </if>
         </where>
     </select>
     
@@ -60,6 +53,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="minPrice != null">min_price,</if>
             <if test="maxPrice != null">max_price,</if>
             <if test="increaseRate != null">increase_rate,</if>
+            <if test="changeRate != null">change_rate,</if>
             <if test="note != null">note,</if>
             <if test="turnoverRate != null">turnover_rate,</if>
             <if test="turnoverAmount != null">turnover_amount,</if>
@@ -75,6 +69,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="minPrice != null">#{minPrice},</if>
             <if test="maxPrice != null">#{maxPrice},</if>
             <if test="increaseRate != null">#{increaseRate},</if>
+            <if test="changeRate != null">#{changeRate},</if>
             <if test="note != null">#{note},</if>
             <if test="turnoverRate != null">#{turnoverRate},</if>
             <if test="turnoverAmount != null">#{turnoverAmount},</if>
@@ -94,6 +89,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="minPrice != null">min_price = #{minPrice},</if>
             <if test="maxPrice != null">max_price = #{maxPrice},</if>
             <if test="increaseRate != null">increase_rate = #{increaseRate},</if>
+            <if test="changeRate != null">change_rate = #{changeRate},</if>
             <if test="note != null">note = #{note},</if>
             <if test="turnoverRate != null">turnover_rate = #{turnoverRate},</if>
             <if test="turnoverAmount != null">turnover_amount = #{turnoverAmount},</if>

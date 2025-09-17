@@ -58,26 +58,27 @@ CREATE TABLE `t_stock_year`  (
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COMMENT = '股票年表';
 
 DROP TABLE IF EXISTS `t_stock_month`;
-CREATE TABLE `t_stock_month`  (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `hign_flag` int(11) NULL DEFAULT 0 COMMENT '大涨大跌标识 1-大涨 -1-大跌',
+CREATE TABLE `t_stock_month` (
+  `id` bigint(20) AUTO_INCREMENT,
+  `hign_flag` int(11) DEFAULT '0' COMMENT '大涨大跌标识 1-大涨 -1-大跌',
   `stock_name` varchar(30) DEFAULT '' COMMENT '股票名称',
   `stock_code` varchar(20) DEFAULT '' COMMENT '股票代码',
   `month_date` date COMMENT '月期',
-  `begin_price` decimal(10, 2) COMMENT '当月开始股价',
-  `end_price` decimal(10, 2) COMMENT '当月结束股价',
-  `min_price` decimal(10, 2) COMMENT '最低价',
-  `max_price` decimal(10, 2) COMMENT '最高价',
-  `increase_rate` varchar(10) DEFAULT '' COMMENT '涨幅',
+  `begin_price` decimal(10,2) COMMENT '当月开始股价',
+  `end_price` decimal(10,2) COMMENT '当月结束股价',
+  `min_price` decimal(10,2) COMMENT '最低价',
+  `max_price` decimal(10,2) COMMENT '最高价',
+  `increase_rate` decimal(10,2) COMMENT '涨幅',
   `note` varchar(100) DEFAULT '' COMMENT '备注',
-  `turnover_rate` varchar(10) DEFAULT '' COMMENT '换手率',
-  `turnover_amount` decimal(20, 2) COMMENT '成交额(亿)',
+  `turnover_rate` decimal(10,2) COMMENT '换手率',
+  `turnover_amount` decimal(20,2) COMMENT '成交额(亿)',
+  `change_rate` decimal(10,2) COMMENT '振幅',
   `create_time` datetime,
   PRIMARY KEY (`id`),
-  INDEX `idx_stock_code`(`stock_code`),
-  INDEX `idx_stock_name`(`stock_name`),
-  INDEX `idx_month`(`month_date`)
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COMMENT = '股票每月表';
+  KEY `idx_stock_code` (`stock_code`),
+  KEY `idx_stock_name` (`stock_name`),
+  KEY `idx_month` (`month_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='股票每月表';
 
 DROP TABLE IF EXISTS `t_stock_week`;
 CREATE TABLE `t_stock_week`  (

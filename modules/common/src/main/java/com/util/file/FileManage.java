@@ -17,14 +17,15 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 文件读取类
  */
 public final class FileManage
 {
-	private static final Logger logger = Logger.getLogger(FileManage.class);
+	private static final Logger logger = LoggerFactory.getLogger(FileManage.class);
 	
 	private static FileManage fileManage;
 	

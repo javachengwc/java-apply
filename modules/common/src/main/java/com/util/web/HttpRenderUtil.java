@@ -8,11 +8,12 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HttpRenderUtil {
 	
-	protected static final Logger logger = Logger.getLogger(HttpRenderUtil.class);
+	protected static final Logger logger = LoggerFactory.getLogger(HttpRenderUtil.class);
 
 	public static void render(String text, String contentType, HttpServletResponse response)
 		throws IOException
@@ -26,7 +27,7 @@ public class HttpRenderUtil {
 		try {
 			render(text, "text/plain;charset=UTF-8", response);
 		} catch (IOException e) {
-			logger.error(e);
+			logger.error("",e);
 		}
 	}
 
@@ -34,7 +35,7 @@ public class HttpRenderUtil {
 		try {
 			render(html, "text/html;charset=UTF-8", response);
 		} catch (IOException e) {
-			logger.error(e);
+			logger.error("",e);
 		}
 	}
 
@@ -42,7 +43,7 @@ public class HttpRenderUtil {
 		try {
 			render(xml, "text/xml;charset=UTF-8", response);
 		} catch (IOException e) {
-			logger.error(e);
+			logger.error("",e);
 		}
 	}
 	
@@ -51,7 +52,7 @@ public class HttpRenderUtil {
 			//render(json, "text/x-json;charset=UTF-8", response);
 			render(json, "application/json;charset=UTF-8", response);
 		} catch (IOException e) {
-			logger.error(e);
+			logger.error("",e);
 		}
 	}
 	

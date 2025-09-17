@@ -16,8 +16,8 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
  */
 public class PackageUtil {
 	
-	private static Logger logger  =  Logger.getLogger(PackageUtil.class);
+	private static Logger logger  =  LoggerFactory.getLogger(PackageUtil.class);
 
 	public final static List<String> EMPTY_LIST = new ArrayList<String>(0);
 

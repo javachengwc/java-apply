@@ -17,12 +17,19 @@
           @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="月份" prop="monthDate">
+      <el-form-item label="月份" prop="monthDateStart">
         <el-date-picker clearable
-          v-model="queryParams.monthDate"
+          v-model="queryParams.monthDateStart"
           type="date"
           value-format="YYYY-MM-DD"
-          placeholder="请选择月份">
+          placeholder="月份从">
+        </el-date-picker>
+	<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <el-date-picker clearable
+          v-model="queryParams.monthDateEnd"
+          type="date"
+          value-format="YYYY-MM-DD"
+          placeholder="月份到">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -53,21 +60,33 @@
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="stockmonthList" @selection-change="handleSelectionChange">
-      <el-table-column label="ID" align="center" width="60" prop="id" />
+    <el-table v-loading="loading" :data="stockmonthList" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange" >
       <el-table-column label="股票名称" align="center" prop="stockName" />
       <el-table-column label="股票代码" align="center" width="80"  prop="stockCode" />
-      <el-table-column label="月份" align="center" prop="monthDate" width="120">
+      <el-table-column label="月份" align="center" prop="monthDate" width="100" sortable="custom" :sort-orders="['descending', 'ascending']" >
         <template #default="scope">
           <span>{{ parseTime(scope.row.monthDate, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="月初股价" align="center" prop="beginPrice" />
-      <el-table-column label="月末股价" align="center" prop="endPrice" />
-      <el-table-column label="最低价" align="center" prop="minPrice" />
-      <el-table-column label="最高价" align="center" prop="maxPrice" />
-      <el-table-column label="涨幅" align="center" prop="increaseRate" />
-      <el-table-column label="换手率" align="center" prop="turnoverRate" />
+      <el-table-column label="月初股价" align="center" prop="beginPrice" width="80" />
+      <el-table-column label="月末股价" align="center" prop="endPrice" width="80" />
+      <el-table-column label="最低价" align="center" prop="minPrice" width="80" />
+      <el-table-column label="最高价" align="center" prop="maxPrice" width="80" />
+      <el-table-column label="涨幅" align="center" prop="increaseRate" width="80" sortable="custom" :sort-orders="['descending', 'ascending']" >
+        <template #default="scope">
+          <span>{{ scope.row.increaseRate == null ? '' : scope.row.increaseRate + '%' }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="振幅" align="center" prop="changeRate" width="80" sortable="custom" :sort-orders="['descending', 'ascending']" >
+        <template #default="scope">
+          <span>{{ scope.row.changeRate == null ? '' : scope.row.changeRate + '%' }}</span>
+        </template>
+      </el-table-column> 
+      <el-table-column label="换手率" align="center" prop="turnoverRate" width="80" >
+        <template #default="scope">
+          <span>{{ scope.row.turnoverRate == null ? '' : scope.row.turnoverRate + '%' }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="成交额(亿)" align="center" width="100" prop="turnoverAmount" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
@@ -86,15 +105,15 @@
 
     <!-- 添加或修改股票月数据对话框 -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
-      <el-form ref="stockmonthRef" :model="form" :rules="rules" label-width="100px">
+      <el-form ref="stockmonthRef" :model="form" :rules="rules" label-width="100px" >
         <el-form-item label="大涨跌标识" prop="hignFlag">
-          <el-input v-model="form.hignFlag" placeholder="请输入大涨大跌标识 1-大涨 -1-大跌" />
+          <el-input v-model="form.hignFlag" placeholder="请输入大涨跌标识 1-大涨 -1-大跌" style="width: 300px;" />
         </el-form-item>
         <el-form-item label="股票名称" prop="stockName">
-          <el-input v-model="form.stockName" placeholder="请输入股票名称" />
+          <el-input v-model="form.stockName" placeholder="请输入股票名称" style="width: 300px;" />
         </el-form-item>
         <el-form-item label="股票代码" prop="stockCode">
-          <el-input v-model="form.stockCode" placeholder="请输入股票代码" />
+          <el-input v-model="form.stockCode" placeholder="请输入股票代码" style="width: 300px;" />
         </el-form-item>
         <el-form-item label="月份" prop="monthDate">
           <el-date-picker clearable
@@ -105,28 +124,31 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item label="月初股价" prop="beginPrice">
-          <el-input v-model="form.beginPrice" placeholder="请输入月初股价" />
+          <el-input v-model="form.beginPrice" placeholder="请输入月初股价" style="width: 300px;" />
         </el-form-item>
         <el-form-item label="月末股价" prop="endPrice">
-          <el-input v-model="form.endPrice" placeholder="请输入月末股价" />
+          <el-input v-model="form.endPrice" placeholder="请输入月末股价" style="width: 300px;" />
         </el-form-item>
         <el-form-item label="最低价" prop="minPrice">
-          <el-input v-model="form.minPrice" placeholder="请输入最低价" />
+          <el-input v-model="form.minPrice" placeholder="请输入最低价" style="width: 300px;" />
         </el-form-item>
         <el-form-item label="最高价" prop="maxPrice">
-          <el-input v-model="form.maxPrice" placeholder="请输入最高价" />
+          <el-input v-model="form.maxPrice" placeholder="请输入最高价" style="width: 300px;" />
         </el-form-item>
-        <el-form-item label="涨幅" prop="increaseRate">
-          <el-input v-model="form.increaseRate" placeholder="请输入涨幅" />
+        <el-form-item label="涨幅" prop="increaseRate" >
+          <el-input v-model="form.increaseRate" placeholder="请输入涨幅" style="width: 100px;" /><span>&nbsp%</span>
+        </el-form-item>
+	<el-form-item label="振幅" prop="changeRate">
+          <el-input v-model="form.changeRate" placeholder="请输入振幅" style="width: 100px;" /><span>&nbsp%</span>
         </el-form-item>
         <el-form-item label="备注" prop="note">
-          <el-input v-model="form.note" placeholder="请输入备注" />
+          <el-input v-model="form.note" placeholder="请输入备注" style="width: 300px;" />
         </el-form-item>
         <el-form-item label="换手率" prop="turnoverRate">
-          <el-input v-model="form.turnoverRate" placeholder="请输入换手率" />
+          <el-input v-model="form.turnoverRate" placeholder="请输入换手率" style="width: 100px;" /><span>&nbsp%</span>
         </el-form-item>
         <el-form-item label="成交额(亿)" prop="turnoverAmount">
-          <el-input v-model="form.turnoverAmount" placeholder="请输入成交额(亿)" />
+          <el-input v-model="form.turnoverAmount" placeholder="请输入成交额(亿)" style="width: 300px;" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -153,6 +175,7 @@ const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
+const defaultSort = ref({ prop: "id", order: "ascending" });
 
 const data = reactive({
   form: {},
@@ -207,6 +230,7 @@ function reset() {
     minPrice: null,
     maxPrice: null,
     increaseRate: null,
+    changeRate: null,
     note: null,
     turnoverRate: null,
     turnoverAmount: null,
@@ -218,6 +242,15 @@ function reset() {
 /** 搜索按钮操作 */
 function handleQuery() {
   queryParams.value.pageNum = 1;
+  queryParams.value.orderByColumn = null;
+  queryParams.value.isAsc = null;
+  getList();
+}
+
+/** 排序触发事件 */
+function handleSortChange(column, prop, order) {
+  queryParams.value.orderByColumn = column.prop;
+  queryParams.value.isAsc = column.order;
   getList();
 }
 

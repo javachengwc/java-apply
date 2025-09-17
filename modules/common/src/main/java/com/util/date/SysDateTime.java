@@ -1,6 +1,7 @@
 package com.util.date;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -11,7 +12,7 @@ import java.util.Locale;
 
 public class SysDateTime
 {
-	private static Logger m_logger = Logger.getLogger(SysDateTime.class);
+	private static Logger m_logger = LoggerFactory.getLogger(SysDateTime.class);
 	
 	public static String getNowString()
 	{

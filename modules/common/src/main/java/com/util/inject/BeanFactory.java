@@ -12,15 +12,15 @@ import java.util.Set;
 import com.util.lang.PackageUtil;
 import com.util.aop.Aop;
 import com.util.aop.AopProxy;
-import org.apache.log4j.Logger;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 类说明：Bean工厂
  */
 public class BeanFactory {
 	
-	private static Logger m_logger = Logger.getLogger(BeanFactory.class);
+	private static Logger m_logger = LoggerFactory.getLogger(BeanFactory.class);
 	
 	private static Map<String,Object> beanMap = new HashMap<String,Object>();
 

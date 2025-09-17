@@ -55,7 +55,7 @@
 
     <el-table v-loading="loading" :data="fundweekList" @selection-change="handleSelectionChange">
       <el-table-column label="ID" align="center" prop="id" />
-      <el-table-column label="基金名称" align="center" prop="fundName" />
+      <el-table-column label="基金名称" align="center" width="150" prop="fundName" />
       <el-table-column label="基金编码" align="center" width="100" prop="fundCode" />
       <el-table-column label="周期" align="center" prop="weekDate" width="120">
         <template #default="scope">

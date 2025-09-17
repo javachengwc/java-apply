@@ -65,10 +65,10 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="ID" align="center" width="60" prop="id" />
       <el-table-column label="公司ID" align="center" width="70" prop="companyId" />
-      <el-table-column label="股票名称" align="center" width="150" prop="stockName" />
-      <el-table-column label="股票代码" align="center" width="100" prop="stockCode" />
+      <el-table-column label="股票名称" align="center" width="120" prop="stockName" />
+      <el-table-column label="股票代码" align="center" width="80" prop="stockCode" />
       <el-table-column label="交易所" align="center" width="70" prop="stockMarketCode" />
-      <el-table-column label="行业" align="center" width="100" prop="industry" />
+      <el-table-column label="行业" align="center" width="120" prop="industry" />
       <el-table-column label="关注值" align="center" width="70" prop="careValue" />
       <el-table-column label="数据" align="center" width="50" prop="haveData" >
         <template #default="scope">

@@ -1,14 +1,14 @@
 package com.util.inject;
 
 import java.lang.reflect.Field;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 类说明：注入器，提供注入服务，注入的来源是BeanFactory
  */
 public class Injector {
-	private static Logger m_logger = Logger.getLogger(Injector.class);
+	private static Logger m_logger = LoggerFactory.getLogger(Injector.class);
 
 	
 	/**
