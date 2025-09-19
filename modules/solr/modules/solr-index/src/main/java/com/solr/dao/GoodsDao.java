@@ -14,7 +14,8 @@ import com.solr.dao.callback.PkStatementSetterImpl;
 import com.solr.dao.callback.PropertyRsExtractorAndMapperImpl;
 import com.solr.model.Goods;
 import com.solr.model.base.Property;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.CallableStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -24,7 +25,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class GoodsDao extends BaseDao {
 	
-	private static Logger m_logger = Logger.getLogger(GoodsDao.class);
+	private static Logger m_logger = LoggerFactory.getLogger(GoodsDao.class);
 	
 	public Goods getById(String id)
 	{
