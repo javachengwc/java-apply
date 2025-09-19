@@ -3,7 +3,8 @@ package com.captcha.service;
 import com.captcha.util.CaptchaUtil;
 import com.captcha.util.MemcachedUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,7 @@ import java.util.Map;
 @Service
 public class CaptchaService {
 	
-	private static Logger logger = Logger.getLogger(CaptchaService.class);
+	private static Logger logger = LoggerFactory.getLogger(CaptchaService.class);
 
 	private  String captchaStr= "0123456789abc";//随机产生的字符串;
     

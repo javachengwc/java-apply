@@ -10,7 +10,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -23,7 +24,7 @@ import com.captcha.service.CaptchaService;
 @Controller
 public class CaptchaController {
 	
-	private static Logger logger = Logger.getLogger(CaptchaController.class);
+	private static Logger logger = LoggerFactory.getLogger(CaptchaController.class);
 	
 	@Autowired
 	private CaptchaService captchaService;

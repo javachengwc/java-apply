@@ -8,14 +8,15 @@ import com.z7z8.dao.monit.MonitDao;
 import com.z7z8.model.monit.ImageInfo;
 import com.z7z8.model.monit.ProcessInfo;
 import com.z7z8.model.monit.SettingInfo;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MonitService {
 	
-	private static Logger m_logger = Logger.getLogger(MonitService.class);
+	private static Logger m_logger = LoggerFactory.getLogger(MonitService.class);
 	/**默认的一个版本号**/
 	private static String DEFALUT_VERSION ="1.0.0.0";
 	

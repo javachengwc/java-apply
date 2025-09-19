@@ -4,7 +4,8 @@ import com.z7z8.model.monit.ImageInfo;
 import com.z7z8.model.monit.ProcessInfo;
 import com.z7z8.model.monit.ProcessItem;
 import com.z7z8.util.DbUtil;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -16,7 +17,7 @@ import java.sql.*;
 @Repository
 public class MonitDao {
 	
-	private static Logger m_logger = Logger.getLogger(MonitDao.class);
+	private static Logger m_logger = LoggerFactory.getLogger(MonitDao.class);
 	
 	private static final String INSERT_PROCESS_SQL = "INSERT INTO monit_process (user_name, machine_name, record_time) VALUES (?, ?, ?)";
 	

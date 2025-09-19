@@ -1,7 +1,8 @@
 package com.shop.user;
 
 import com.shop.user.config.Config;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -15,7 +16,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 @EnableDiscoveryClient
 public class UserApplication {
 
-    private static Logger logger = Logger.getLogger(UserApplication.class);
+    private static Logger logger = LoggerFactory.getLogger(UserApplication.class);
 
     public static void main(String[] args) {
         logger.info("UserApplication start  begin........");

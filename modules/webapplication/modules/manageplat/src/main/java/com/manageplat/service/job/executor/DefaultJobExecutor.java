@@ -3,11 +3,12 @@ package com.manageplat.service.job.executor;
 import com.manageplat.model.job.JobInfo;
 import com.manageplat.service.job.QuartzService;
 import com.manageplat.util.SpringContextUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DefaultJobExecutor implements IJobExecutor {
 	
-	private static Logger logger = Logger.getLogger(DefaultJobExecutor.class);
+	private static Logger logger = LoggerFactory.getLogger(DefaultJobExecutor.class);
 	
 	protected JobInfo jobInfo;
 	
