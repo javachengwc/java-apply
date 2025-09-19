@@ -1,14 +1,16 @@
 package com.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
 
 public class SysConfig {
 
     private static Properties properties = new Properties();
 	
-	public static final Logger logger = Logger.getLogger(SysConfig.class);
+	public static final Logger logger = LoggerFactory.getLogger(SysConfig.class);
 
 	static {
 		try {

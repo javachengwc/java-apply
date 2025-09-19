@@ -19,7 +19,7 @@ public class LogUtil {
     static {
 
         new Thread(new Runnable() {
-            @Override
+
             public void run() {
 
                 Thread.currentThread().setName("log thread");

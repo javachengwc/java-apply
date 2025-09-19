@@ -2,16 +2,17 @@ package com.flower.populator;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 
 import com.flower.converter.PrimitiveType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class BaseSimplePopulator implements IPopulator {
 
 	/**
 	 * 用于记录日志的Logger
 	 */
-	protected final Logger logger = Logger.getLogger(this.getClass());
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	/**
 	 * 实现了IPopulator中的相应方法

@@ -1,13 +1,15 @@
 package com.flower.ret;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 
 import javax.servlet.ServletException;
 
-import org.apache.log4j.Logger;
 
 public class Forward extends AbstractReturn {
-	protected final Logger logger = Logger.getLogger(Forward.class);
+	protected final Logger logger = LoggerFactory.getLogger(Forward.class);
 	public String path;
 	public Forward(String path) {
 		this.path = path;
