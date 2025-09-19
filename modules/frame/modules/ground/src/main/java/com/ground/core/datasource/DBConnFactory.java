@@ -7,14 +7,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.commons.pool.BasePoolableObjectFactory;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DBConnFactory extends BasePoolableObjectFactory
 {
-	private static Logger m_logger = Logger.getLogger(DBConnFactory.class);
+	private static Logger m_logger = LoggerFactory.getLogger(DBConnFactory.class);
 	
 	private String m_url;
-	
+
 	public DBConnFactory(String url)
 	{
 		m_url = url;

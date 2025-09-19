@@ -11,7 +11,8 @@ import com.ground.core.datasource.DBServerInfo;
 import com.ground.exception.GroundException;
 import com.util.pool.MapObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -19,7 +20,7 @@ import org.apache.log4j.Logger;
  */
 public class DBEnvImpl extends DBServerInfo implements DBEnv
 {
-	private static Logger m_logger = Logger.getLogger(DBEnvImpl.class);
+	private static Logger m_logger = LoggerFactory.getLogger(DBEnvImpl.class);
 	
 	/**
 	 * 保存jdbc url字符串

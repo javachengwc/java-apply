@@ -1,7 +1,8 @@
 package com.shop.book.search;
 
 import com.shop.book.search.config.Config;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -13,7 +14,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableDiscoveryClient
 public class BookSearchApplication {
 
-    private static Logger logger = Logger.getLogger(BookSearchApplication.class);
+    private static Logger logger = LoggerFactory.getLogger(BookSearchApplication.class);
 
     public static void main(String[] args) {
         logger.info("BookSearchApplication start  begin........");

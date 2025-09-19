@@ -3,15 +3,16 @@ package com.manageplat.service.job;
 import com.manageplat.model.job.JobInfo;
 import com.manageplat.service.job.hander.HttpJobHandler;
 import com.manageplat.util.SpringContextUtils;
-import org.apache.log4j.Logger;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HttpJob implements Job {
 
-	public static final Logger logger = Logger.getLogger(HttpJob.class);
+	public static final Logger logger = LoggerFactory.getLogger(HttpJob.class);
 
 	private JobInfo jobInfo;
 

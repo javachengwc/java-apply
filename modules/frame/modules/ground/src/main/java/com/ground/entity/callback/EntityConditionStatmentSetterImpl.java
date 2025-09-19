@@ -8,12 +8,13 @@ import com.ground.condition.UpdateSet;
 import com.ground.condition.WhereCondition;
 import com.ground.core.callback.IPreparedStatementSetter;
 import com.ground.entity.EntityFactory;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class EntityConditionStatmentSetterImpl implements IPreparedStatementSetter {
 
-	private static Logger m_logger = Logger.getLogger(EntityConditionStatmentSetterImpl.class);
+	private static Logger m_logger = LoggerFactory.getLogger(EntityConditionStatmentSetterImpl.class);
 	
 	private DBCondition dbCondition;
 	

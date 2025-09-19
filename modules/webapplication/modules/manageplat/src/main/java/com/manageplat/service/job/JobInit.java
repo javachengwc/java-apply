@@ -1,13 +1,14 @@
 package com.manageplat.service.job;
 
 import com.manageplat.util.SpringContextUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class JobInit {
 
-	private static Logger logger = Logger.getLogger(JobInit.class);
+	private static Logger logger = LoggerFactory.getLogger(JobInit.class);
 	
 	public void init()
 	{

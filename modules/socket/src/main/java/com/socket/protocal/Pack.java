@@ -7,11 +7,12 @@ import java.nio.ByteOrder;
 
 import com.socket.marshal.Marshallable;
 import com.socket.marshal.uint;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Pack
 {
-	private Logger m_logger = Logger.getLogger(Pack.class);
+	private Logger m_logger = LoggerFactory.getLogger(Pack.class);
 	
 	private ByteBuffer m_buffer;
 	

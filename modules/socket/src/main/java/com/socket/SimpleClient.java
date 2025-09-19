@@ -7,12 +7,13 @@ import java.nio.channels.SocketChannel;
 
 import com.socket.workshop.TaskItem;
 import com.socket.workshop.WorkShop;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class SimpleClient implements INioSocketCB, ISocketBufferCB
 {
-	private static Logger m_logger = Logger.getLogger(SimpleClient.class);
+	private static Logger m_logger = LoggerFactory.getLogger(SimpleClient.class);
 	
 	protected WorkShop m_workshop;
 	
