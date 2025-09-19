@@ -7,8 +7,9 @@ import com.solr.service.solr.SolrSchemaConfig;
 import com.solr.web.action.response.ExceptionResponse;
 import com.solr.web.action.response.Return;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +21,7 @@ import com.alibaba.fastjson.JSONObject;
 @RequestMapping("goods")
 public class GoodsAction {
 
-	private static Logger m_logger = Logger.getLogger(GoodsAction.class);
+	private static Logger m_logger = LoggerFactory.getLogger(GoodsAction.class);
 	
 	@Autowired
 	private GoodsService goodsService;
