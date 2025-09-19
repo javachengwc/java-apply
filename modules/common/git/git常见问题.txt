@@ -9,4 +9,6 @@
 git remote show origin
 git remote prune origin
 
+3,Windows系统中idea使用git管理代码版本，设置密钥方式为：
+直接将私钥文件id_rsa放于C:\Users\xxx\.ssh目录下即可。
 -----------------------------------------------------------------------------------

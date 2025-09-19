@@ -1,0 +1,11 @@
+在git中使用ssh密钥可以不需要每次都输入用户名和密码的情况下，安全地与远程仓库进行交互。
+git使用的是最常见的SSH密钥类型——RSA密钥,生成ssh密钥如下：
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"         或
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com" -f ~/.ssh/id_rsa_new   ###指定密钥保存位置
+  -t rsa    指定密钥类型为RSA。
+  -b 4096   指定密钥的位数，这里选择4096位。
+  "your_email@example.com" 是邮箱地址，用于标识这个密钥。
+
+在执行上述命令后，系统可能会提示输入一个密码短语（passphrase）。这是一个可选步骤，用于增加额外的安全层。
+每次使用这个密钥时，都需要输入这个密码短语。如果不想设置密码短语，可以直接按回车跳过。
+生成SSH密钥后，可以查看你的公钥，通常位于 ~/.ssh/id_rsa.pub（或者指定的其他文件名加上.pub后缀）。
