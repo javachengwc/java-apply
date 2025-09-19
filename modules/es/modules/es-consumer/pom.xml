@@ -40,6 +40,19 @@
         </plugins>
     </build>
 
+    <repositories>
+        <repository>
+            <id>elasticsearch-releases</id>
+            <url>https://artifacts.elastic.co/maven</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -132,11 +145,11 @@
             <artifactId>elasticsearch</artifactId>
             <version>1.5.0</version>
         </dependency>
-        <dependency>
-            <groupId>fakepath</groupId>
-            <artifactId>elasticsearch-sql</artifactId>
-            <version>1.4.8</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.elasticsearch</groupId>-->
+<!--            <artifactId>elasticsearch-sql</artifactId>-->
+<!--            <version>1.4.8</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka_2.11</artifactId>
