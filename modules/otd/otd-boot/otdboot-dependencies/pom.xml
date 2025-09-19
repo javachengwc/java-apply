@@ -105,11 +105,13 @@
         <artifactId>pagehelper</artifactId>
         <version>${pagehelper.version}</version>
       </dependency>
+      <!--
       <dependency>
         <groupId>com.github.sqlhelper</groupId>
         <artifactId>sqlhelper</artifactId>
         <version>${sqlhelper.version}</version>
       </dependency>
+      -->
       <dependency>
         <groupId>net.sf.ehcache</groupId>
         <artifactId>ehcache-core</artifactId>
