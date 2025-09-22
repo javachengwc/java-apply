@@ -160,3 +160,6 @@ modules/webcloud/modules/webcloud-framework/target/
 modules/webrest/modules/webrest-api/target/
 modules/webservice/modules/axis2/target/
 modules/zookeeper/target/
+modules/otd/otd-boot/otdboot-component-velocity/target/
+modules/rule/modules/data-manage/target/
+modules/webapplication/modules/app-z7z8/target/
