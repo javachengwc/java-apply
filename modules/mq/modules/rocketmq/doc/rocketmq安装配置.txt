@@ -63,9 +63,10 @@ windows中安装rocketmq
 创建Topic测试‌：mqadmin.cmd updateTopic -n 127.0.0.1:9876 -t TestTopic -c DefaultCluster
 8，下载rocketmq dashboard管控rocketmq
 git clone https://github.com/apache/rocketmq-dashboard    ###下载源码
+将分支切换到release-1.0.0分支，此分支才支持jdk 1.8。
+配置项目中application.properties文件中的namesrvAddr为127.0.0.1:9876
 mvn clean package -Dmaven.test.skip=true                  ###编译打包
-###需配置application.properties中的namesrvAddr为127.0.0.1:9876
-java -jar target/rocketmq-dashboard-1.0.1-SNAPSHOT.jar    ###运行
-###访问http://localhost:8082
+java -jar target/rocketmq-dashboard-1.0.0.jar             ###运行
+###访问http://localhost:8080
 
 ---------------------------------------------------------------------------------------
