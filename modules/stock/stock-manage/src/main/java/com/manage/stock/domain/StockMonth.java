@@ -76,4 +76,12 @@ public class StockMonth extends BaseEntity
     @Excel(name = "成交额(亿)")
     private BigDecimal turnoverAmount;
 
+    /** 市值(亿) */
+    @Excel(name = "市值(亿)")
+    private Long marketValue;
+
+    /** 市盈率 */
+    @Excel(name = "市盈率")
+    private BigDecimal pe;
+
 }

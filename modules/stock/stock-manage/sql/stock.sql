@@ -72,6 +72,8 @@ CREATE TABLE `t_stock_month` (
   `note` varchar(100) DEFAULT '' COMMENT '备注',
   `turnover_rate` decimal(10,2) COMMENT '换手率',
   `turnover_amount` decimal(20,2) COMMENT '成交额(亿)',
+  `market_value` bigint(20) DEFAULT NULL COMMENT '市值(亿)',
+  `pe` decimal(10,2) DEFAULT NULL COMMENT '市盈率',
   `change_rate` decimal(10,2) COMMENT '振幅',
   `create_time` datetime,
   PRIMARY KEY (`id`),

@@ -61,8 +61,8 @@
     </el-row>
 
     <el-table v-loading="loading" :data="stockmonthList" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange" >
-      <el-table-column label="股票名称" align="center" prop="stockName" />
-      <el-table-column label="股票代码" align="center" width="80"  prop="stockCode" />
+      <el-table-column label="股票名称" align="center" prop="stockName" width="80" />
+      <el-table-column label="股票代码" align="center" prop="stockCode" width="80" />
       <el-table-column label="月份" align="center" prop="monthDate" width="100" sortable="custom" :sort-orders="['descending', 'ascending']" >
         <template #default="scope">
           <span>{{ parseTime(scope.row.monthDate, '{y}-{m}-{d}') }}</span>
@@ -87,7 +87,9 @@
           <span>{{ scope.row.turnoverRate == null ? '' : scope.row.turnoverRate + '%' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="成交额(亿)" align="center" width="100" prop="turnoverAmount" />
+      <el-table-column label="成交额(亿)" align="center" width="90" prop="turnoverAmount" />
+      <el-table-column label="市盈率" align="center" prop="pe" width="80" />
+      <el-table-column label="市值(亿)" align="center" prop="marketValue" width="80" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['stock:stockmonth:edit']">修改</el-button>
@@ -149,6 +151,12 @@
         </el-form-item>
         <el-form-item label="成交额(亿)" prop="turnoverAmount">
           <el-input v-model="form.turnoverAmount" placeholder="请输入成交额(亿)" style="width: 300px;" />
+        </el-form-item>
+	<el-form-item label="市盈率" prop="pe">
+          <el-input v-model="form.pe" placeholder="请输入市盈率" style="width: 300px;" />
+        </el-form-item>
+	<el-form-item label="市值(亿)" prop="marketValue">
+          <el-input v-model="form.marketValue" placeholder="请输入市值(亿)" style="width: 300px;" />
         </el-form-item>
       </el-form>
       <template #footer>
