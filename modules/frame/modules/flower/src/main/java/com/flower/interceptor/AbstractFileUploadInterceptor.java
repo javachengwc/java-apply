@@ -12,13 +12,13 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
-
 import com.flower.BaseAction;
 import com.flower.DataFilter;
 import com.flower.invocation.ActionInvocation;
 import com.flower.multipart.IMultiPartRequest;
 import com.flower.multipart.MultipartRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -26,7 +26,7 @@ import com.flower.multipart.MultipartRequest;
  */
 public abstract class AbstractFileUploadInterceptor implements Interceptor {
 
-	protected final Logger logger = Logger.getLogger(this.getClass());
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
     protected Set<String> notAllowedExtensionsSet = Collections.emptySet();
 

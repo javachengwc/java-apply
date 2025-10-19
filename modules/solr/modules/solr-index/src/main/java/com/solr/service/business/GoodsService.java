@@ -11,14 +11,15 @@ import com.solr.model.base.Property;
 import com.solr.service.solr.ISolrService;
 import com.solr.service.solr.SolrSchemaConfig;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class GoodsService {
 	
-	private static Logger m_logger = Logger.getLogger(GoodsService.class);
+	private static Logger m_logger = LoggerFactory.getLogger(GoodsService.class);
 	
 	@Autowired
 	public ISolrService solrService;
@@ -109,7 +110,7 @@ public class GoodsService {
 			rt.remove(key);
 		}
 			
-		m_logger.info("GoodsService filterSolrFieldInfo rt.size()="+rt==null?"0":rt.size());
+		m_logger.info("GoodsService filterSolrFieldInfo rt.size()="+rt==null?"0": ""+rt.size());
 		
 		return rt;
 	}

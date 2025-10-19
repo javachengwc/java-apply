@@ -11,9 +11,9 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
-import com.sun.image.codec.jpeg.JPEGCodec;
-import com.sun.image.codec.jpeg.JPEGEncodeParam;
-import com.sun.image.codec.jpeg.JPEGImageEncoder;
+//import com.sun.image.codec.jpeg.JPEGCodec;
+//import com.sun.image.codec.jpeg.JPEGEncodeParam;
+//import com.sun.image.codec.jpeg.JPEGImageEncoder;
 
 /**
  * maven下编译报错程序包com.sun.image.codec.jpeg不存在,
@@ -89,11 +89,11 @@ public class ImageCompressUtil
 		
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		
-		JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
-		JPEGEncodeParam jep = JPEGCodec.getDefaultJPEGEncodeParam(bid);
-		/* 压缩质量 */
-		jep.setQuality(qt, true);
-		encoder.encode(bid, jep);
+//		JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
+//		JPEGEncodeParam jep = JPEGCodec.getDefaultJPEGEncodeParam(bid);
+//		/* 压缩质量 */
+//		jep.setQuality(qt, true);
+//		encoder.encode(bid, jep);
 
 		// ImageIO.write(bid, fileExtName, out);//这个默认质量就是0.75
 		return out.toByteArray();

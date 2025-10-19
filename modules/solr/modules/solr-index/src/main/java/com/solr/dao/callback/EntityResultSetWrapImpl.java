@@ -12,7 +12,8 @@ import com.util.date.SysDateTime;
 import com.solr.util.TypeUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -21,7 +22,7 @@ import org.springframework.jdbc.core.RowMapper;
  */
 public class EntityResultSetWrapImpl<T> implements ResultSetExtractor<T>,RowMapper<T>
 {
-	private static Logger m_logger = Logger.getLogger(EntityResultSetWrapImpl.class);
+	private static Logger m_logger = LoggerFactory.getLogger(EntityResultSetWrapImpl.class);
 	
     protected Class<T> entityClass;
     

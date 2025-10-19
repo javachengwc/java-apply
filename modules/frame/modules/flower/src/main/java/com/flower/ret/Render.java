@@ -2,17 +2,18 @@ package com.flower.ret;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 
 import com.flower.DataFilter;
 import com.util.web.HttpRenderUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
  * 字符型的输出
  */
 public class Render  extends AbstractReturn  {
-	protected static final Logger logger = Logger.getLogger(Render.class);
+	protected static final Logger logger = LoggerFactory.getLogger(Render.class);
 	
 	public RenderType renderType;
 	public Render(RenderType renderType, String renderData) {

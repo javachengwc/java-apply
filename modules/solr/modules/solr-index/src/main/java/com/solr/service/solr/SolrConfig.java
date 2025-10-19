@@ -10,13 +10,14 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 import com.util.PropertiesLoader;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SolrConfig {
 	
 	private static Properties solrProperties = new Properties();
 	
-	public static final Logger logger = Logger.getLogger(SolrConfig.class);
+	public static final Logger logger = LoggerFactory.getLogger(SolrConfig.class);
 
 	static {
 		try {

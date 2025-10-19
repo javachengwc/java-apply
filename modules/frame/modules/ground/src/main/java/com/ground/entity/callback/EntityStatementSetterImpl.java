@@ -11,12 +11,13 @@ import java.util.Set;
 import com.ground.core.callback.IPreparedStatementSetter;
 import com.ground.entity.EntityFactory;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class EntityStatementSetterImpl<T> implements IPreparedStatementSetter
 {
-	private static Logger m_logger = Logger.getLogger(EntityStatementSetterImpl.class);
+	private static Logger m_logger = LoggerFactory.getLogger(EntityStatementSetterImpl.class);
 	
 	private T entity;
 	

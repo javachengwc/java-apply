@@ -11,10 +11,11 @@ import java.util.List;
 import com.ground.core.callback.*;
 import com.ground.core.datasource.DBEnv;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GenericDBHelper {
-	private static final Logger m_logger = Logger.getLogger(GenericDBHelper.class);
+	private static final Logger m_logger = LoggerFactory.getLogger(GenericDBHelper.class);
 
 	public static <T>  T query(DBEnv db, String key,
 			IPreparedStatementCreator creator,IPreparedStatementSetter setter,IResultSetExtractor<T> resultSetExtractor) throws Exception

@@ -14,11 +14,12 @@ import com.ground.entity.annotation.Column;
 import com.ground.entity.annotation.Entity;
 import com.ground.entity.annotation.Transient;
 import org.apache.commons.collections.map.LinkedMap;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EntityFactory
 {
-	private static Logger m_logger = Logger.getLogger(EntityFactory.class);
+	private static Logger m_logger = LoggerFactory.getLogger(EntityFactory.class);
 	//实体--表名映射
 	public static Map<String,String> entityTableMap=new HashMap<String,String>();
 	//实体字段与表字段映射

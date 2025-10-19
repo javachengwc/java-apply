@@ -6,12 +6,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.solr.util.SetterUtil;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 
 public class PreparedStatementSetterImpl implements PreparedStatementSetter
 {
-	private static Logger m_logger = Logger.getLogger(PreparedStatementSetterImpl.class);
+	private static Logger m_logger = LoggerFactory.getLogger(PreparedStatementSetterImpl.class);
 
 
     private List<Object> values;

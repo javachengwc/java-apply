@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.flower.exception.ActionInvocationException;
-import org.apache.log4j.Logger;
 
 import com.flower.annotation.Read;
 import com.flower.annotation.Scope;
@@ -29,6 +28,8 @@ import com.flower.multipart.MultipartRequest;
 import com.flower.populator.PopulatorFactory;
 import com.flower.util.GenericsUtils;
 import com.util.web.HttpRenderUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -41,7 +42,7 @@ public class BaseAction {
 	/**
 	 * 日志对象. 在子类中不必单独定义日志对象，直接使用这里生成的即可
 	 */
-	protected final Logger logger = Logger.getLogger(getClass());
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public void processRequest(Method method, String methodName) throws Exception {
 		logger.debug("will invoke method : "

@@ -16,7 +16,8 @@ import com.manageplat.service.job.filter.DefaultJobFilter;
 import com.manageplat.service.job.filter.IJobFilter;
 import com.manageplat.util.SpringContextUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 任务管理器
@@ -24,7 +25,7 @@ import org.apache.log4j.Logger;
  */
 public class JobManager{
 	
-	 private static Logger logger = Logger.getLogger(JobManager.class);
+	 private static Logger logger = LoggerFactory.getLogger(JobManager.class);
 	 
 	 private static JobManager inst = new JobManager();
 	

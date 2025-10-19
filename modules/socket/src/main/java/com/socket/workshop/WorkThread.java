@@ -1,12 +1,14 @@
 package com.socket.workshop;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.apache.log4j.Logger;
 
 public class WorkThread extends Thread
 {
-	private static Logger m_logger = Logger.getLogger(WorkThread.class);
+	private static Logger m_logger = LoggerFactory.getLogger(WorkThread.class);
 	
 	private LinkedBlockingQueue<TaskItem> m_taskQueue;
 	

@@ -11,9 +11,10 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
-
 import com.flower.annotation.Scope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * DataFilter将request和response对象存放在静态ThreadLocal的实例变量中，保证每个请求的request和response能通过静态方法获取，从而减少传递参数。
  * DataFitler提供request的set方法，以便后面做request的重新封装。
@@ -22,7 +23,7 @@ public class DataFilter implements Filter {
 
 	static final ThreadLocal<Context> localContext = new ThreadLocal<Context>();
 	
-	protected final Logger m_logger = Logger.getLogger(DataFilter.class);
+	protected final Logger m_logger = LoggerFactory.getLogger(DataFilter.class);
 
 	public void doFilter(ServletRequest servletRequest,
 			ServletResponse servletResponse, FilterChain filterChain)

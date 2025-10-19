@@ -4,15 +4,16 @@ import java.io.InputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 
 import com.util.web.HttpRenderUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 二进制类型的输出
  */
 public class BinaryRender extends AbstractReturn {
-	protected static final Logger logger = Logger.getLogger(BinaryRender.class);
+	protected static final Logger logger = LoggerFactory.getLogger(BinaryRender.class);
 
 	private InputType type;
 	private String mimetype;

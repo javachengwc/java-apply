@@ -14,11 +14,12 @@ import com.ground.core.callback.IPreparedStatementSetter;
 import com.ground.core.callback.IRowMapper;
 import com.ground.core.callback.RowMapperResultSetExtractorImpl;
 import com.ground.core.datasource.DBEnv;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GenericMutilDBHelper
 {
-	private static Logger m_logger = Logger.getLogger(GenericMutilDBHelper.class);
+	private static Logger m_logger = LoggerFactory.getLogger(GenericMutilDBHelper.class);
 	
 	private static final int THREAD_SIZE = 10;
 	

@@ -9,9 +9,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.util.inject.BeanFactory;
-import org.apache.log4j.Logger;
 
 import com.flower.invocation.ActionProxy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Action的分发器，本身是一个servlet，收到request后并不做实际的业务处理，而是组装action并交给处理。
@@ -19,7 +20,7 @@ import com.flower.invocation.ActionProxy;
  */
 public class ActionDispatcher extends HttpServlet {
 	
-	protected final Logger logger = Logger.getLogger(getClass());
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private static final long serialVersionUID = -6663019953908113831L;
 	

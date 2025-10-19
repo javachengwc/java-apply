@@ -9,13 +9,14 @@ import java.awt.image.BufferedImage;
 import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 
 import com.captcha.dto.Captcha;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CaptchaHelper {
 	
-	private static Logger logger = Logger.getLogger(CaptchaHelper.class);
+	private static Logger logger = LoggerFactory.getLogger(CaptchaHelper.class);
 	
 	private static Random random = new Random();
     private static String randString = "0123456789abc";//随机产生的字符串

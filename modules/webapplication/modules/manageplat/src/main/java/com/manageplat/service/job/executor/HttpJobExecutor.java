@@ -4,7 +4,8 @@ import com.manageplat.model.job.JobInfo;
 import com.manageplat.service.job.HttpJob;
 import com.manageplat.service.job.QuartzService;
 import com.manageplat.util.SpringContextUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * http类型定时任务执行器
@@ -12,7 +13,7 @@ import org.apache.log4j.Logger;
  */
 public class HttpJobExecutor extends DefaultJobExecutor {
 	
-	private static Logger logger = Logger.getLogger(HttpJobExecutor.class);
+	private static Logger logger = LoggerFactory.getLogger(HttpJobExecutor.class);
 	
 	public HttpJobExecutor(JobInfo jobInfo)
 	{

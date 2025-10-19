@@ -17,15 +17,16 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 
 public class SolrSchemaConfig {
 
-	public static final Logger logger = Logger.getLogger(SolrSchemaConfig.class);
+	public static final Logger logger = LoggerFactory.getLogger(SolrSchemaConfig.class);
 	
 	public static final String GENERAL_FIELD="general_field";
 	

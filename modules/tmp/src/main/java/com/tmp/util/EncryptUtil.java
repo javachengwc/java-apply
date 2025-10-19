@@ -2,13 +2,14 @@ package com.tmp.util;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.codec.binary.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class EncryptUtil extends MD5Util{
-    private static final Logger LOGGER = Logger.getLogger(EncryptUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EncryptUtil.class);
 
     public static String getSign(String s, String token) {
 
@@ -16,9 +17,8 @@ public class EncryptUtil extends MD5Util{
         String ret = "";
         try {
             ret = encryptMD5(s);
-        }
-        catch (Exception e) {
-            LOGGER.error(e);
+        } catch (Exception e) {
+            LOGGER.error("EncryptUtil getSign exception",e);
         }
         return ret.trim();
     }
@@ -47,7 +47,7 @@ public class EncryptUtil extends MD5Util{
             String besing= org.apache.commons.lang3.StringUtils.join(list,"&");
             return getSign(besing+"&",token);
         }catch (Exception e) {
-            LOGGER.error(e);
+            LOGGER.error("EncryptUtil sign exception",e);
         }
         return null;
     }

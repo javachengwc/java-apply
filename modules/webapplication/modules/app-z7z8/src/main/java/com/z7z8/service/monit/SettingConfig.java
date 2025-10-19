@@ -4,14 +4,15 @@ import java.util.Properties;
 
 import com.util.PropertiesLoader;
 import com.z7z8.model.monit.SettingInfo;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class SettingConfig {
 
 	private static Properties setting = new Properties();
 	
-	public static final Logger logger = Logger.getLogger(SettingConfig.class);
+	public static final Logger logger = LoggerFactory.getLogger(SettingConfig.class);
 
 	static {
 		try {

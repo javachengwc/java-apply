@@ -8,15 +8,16 @@ import com.ground.core.datasource.DBServerInfo;
 import com.ground.entity.RegistEntity;
 import com.ground.exception.GroundException;
 import com.ground.util.XmlUtil;
-import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class DBConfig
 {
-	private static Logger m_logger = Logger.getLogger(DBConfig.class);
+	private static Logger m_logger = LoggerFactory.getLogger(DBConfig.class);
 	
 	private  static Element root = null;
 

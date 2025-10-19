@@ -51,3 +51,22 @@ vim broker-b.properties
     flushDiskType = ASYNC_FLUSH
     listenPort = 11911
 ---------------------------------------------------------------------------------------
+windows中安装rocketmq
+1，安装jdk 1.8或更高版本，配置系统环境变量JAVA_HOME指向JDK安装目录
+2，从官网下载Binary版本（如rocketmq-all-5.3.0-bin-release.zip），解压至目标目录（如D:\rocketmq-5.3.0）
+3，设置环境变量‌ROCKETMQ_HOME，值为RocketMQ解压路径（如D:\rocketmq-5.3.0），在Path中添加%ROCKETMQ_HOME%\bin。
+4，修改rocketmq的jvm内存配置，bin\runserver.cmd和bin\runbroker.cmd中的-Xms和-Xmx参数（如-Xms256m -Xmx512m），以避免内存不足。
+5，启动NameServer，在bin目录下命令行执行start mqnamesrv.cmd
+6，启动Broker，在bin目录下命令行执行start mqbroker.cmd -n 127.0.0.1:9876 autoCreateTopicEnable=true
+###默认端口为9876，autoCreateTopicEnable=true允许自动创建Topic
+7，验证安装
+创建Topic测试‌：mqadmin.cmd updateTopic -n 127.0.0.1:9876 -t TestTopic -c DefaultCluster
+8，下载rocketmq dashboard管控rocketmq
+git clone https://github.com/apache/rocketmq-dashboard    ###下载源码
+将分支切换到release-1.0.0分支，此分支才支持jdk 1.8。
+配置项目中application.properties文件中的namesrvAddr为127.0.0.1:9876
+mvn clean package -Dmaven.test.skip=true                  ###编译打包
+java -jar target/rocketmq-dashboard-1.0.0.jar             ###运行
+###访问http://localhost:8080
+
+---------------------------------------------------------------------------------------

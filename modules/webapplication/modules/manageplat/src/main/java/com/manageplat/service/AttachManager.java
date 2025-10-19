@@ -2,7 +2,8 @@ package com.manageplat.service;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -12,7 +13,7 @@ import java.util.Date;
 
 public class AttachManager {
 	
-	private static Logger m_logger = Logger.getLogger(AttachManager.class);
+	private static Logger m_logger = LoggerFactory.getLogger(AttachManager.class);
 
     private static final String ROOT_DIR="/tmp/edm/";
 

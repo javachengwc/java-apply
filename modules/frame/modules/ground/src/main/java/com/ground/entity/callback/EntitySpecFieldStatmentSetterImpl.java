@@ -6,12 +6,13 @@ import java.sql.SQLException;
 import java.util.List;
 
 import com.ground.core.callback.IPreparedStatementSetter;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class EntitySpecFieldStatmentSetterImpl<T> implements IPreparedStatementSetter {
 
-	private static Logger m_logger = Logger.getLogger(EntitySpecFieldStatmentSetterImpl.class);
+	private static Logger m_logger = LoggerFactory.getLogger(EntitySpecFieldStatmentSetterImpl.class);
 	
 	private T entity;
 	

@@ -1,7 +1,8 @@
 package com.tmp.util;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -9,7 +10,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class MD5Util {
 
-    private static final Logger LOGGER = Logger.getLogger(MD5Util.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MD5Util.class);
 
     public static final String DEFAULT_CHARSET = "UTF-8";
 
@@ -45,7 +46,7 @@ public class MD5Util {
             }
             return new String(str);
         } catch (Exception e) {
-            LOGGER.error(e);
+            LOGGER.error("MD5Util encryptMD5String exception",e);
             return "";
         }
     }
@@ -72,7 +73,7 @@ public class MD5Util {
             ret = MD5Util.encryptMD5(s);
         }
         catch (Exception e) {
-            LOGGER.error(e);
+            LOGGER.error("MD5Util getSign exception",e);
         }
         return ret.trim();
     }
@@ -82,7 +83,7 @@ public class MD5Util {
         try {
             md5 = MessageDigest.getInstance(model);
         } catch (NoSuchAlgorithmException e) {
-            LOGGER.error(e);
+            LOGGER.error("MD5Util getMessageDigest exception",e);
         }
         return md5;
     }

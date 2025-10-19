@@ -17,12 +17,13 @@ import com.util.base.ObjectUtil;
 import com.util.date.SysDateTime;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.ClassUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class EntityResultSetWrapImpl<T> implements IResultSetExtractor<T>,IRowMapper<T>
 {
-	private static Logger m_logger = Logger.getLogger(EntityResultSetWrapImpl.class);
+	private static Logger m_logger = LoggerFactory.getLogger(EntityResultSetWrapImpl.class);
 	
     protected Class<T> entityClass;
     

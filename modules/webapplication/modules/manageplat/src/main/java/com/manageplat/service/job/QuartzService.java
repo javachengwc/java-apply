@@ -5,7 +5,6 @@ import java.util.Date;
 import com.manageplat.model.job.JobInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.log4j.Logger;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.Job;
@@ -18,6 +17,8 @@ import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +26,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class QuartzService {
 	
-	private static Logger logger = Logger.getLogger(QuartzService.class);
+	private static Logger logger = LoggerFactory.getLogger(QuartzService.class);
 	  
 	@Autowired
 	private Scheduler quartzScheduler;  

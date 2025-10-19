@@ -1,12 +1,13 @@
 package com.flower.converter;
 
-import java.lang.reflect.Method;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.apache.log4j.Logger;
+import java.lang.reflect.Method;
 
 public abstract class BaseSimpleTypeConverter implements ITypeConverter {
 
-	protected final Logger logger = Logger.getLogger(this.getClass());
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	/**
 	 * 实现了ITypeConverter中的相同方法

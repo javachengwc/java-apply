@@ -17,7 +17,6 @@ import com.flower.exception.DuplicateInterceptorIdException;
 import com.flower.exception.InterceptorNoExistException;
 import com.util.lang.PackageUtil;
 import com.util.inject.Injector;
-import org.apache.log4j.Logger;
 
 import com.flower.annotation.Interceptors;
 import com.flower.annotation.Namespace;
@@ -29,9 +28,11 @@ import com.flower.invocation.ActionInvocation;
 import com.flower.invocation.ActionProxy;
 import com.util.lang.ClassUtil;
 import com.flower.util.MatchUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FlowerContext {
-	protected final Logger logger = Logger.getLogger(getClass());
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	private Map<String, ActionWrapper> actions = new HashMap<String, ActionWrapper>();
 

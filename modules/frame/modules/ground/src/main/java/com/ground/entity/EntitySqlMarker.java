@@ -10,12 +10,13 @@ import com.ground.condition.DBCondition;
 import com.ground.condition.UpdateSet;
 import com.ground.condition.WhereCondition;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class EntitySqlMarker
 {
-	private static Logger m_logger = Logger.getLogger(EntitySqlMarker.class);
+	private static Logger m_logger = LoggerFactory.getLogger(EntitySqlMarker.class);
 	
 	public static String findById(String table,Map<String, Boolean> pkColumn) throws Exception
 	{

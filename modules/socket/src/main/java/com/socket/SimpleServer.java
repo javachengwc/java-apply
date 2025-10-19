@@ -10,11 +10,12 @@ import java.util.Map;
 
 import com.socket.workshop.TaskItem;
 import com.socket.workshop.WorkShop;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SimpleServer implements INioSocketCB, ISocketBufferCB
 {
-	private static Logger m_logger = Logger.getLogger(SimpleServer.class);
+	private static Logger m_logger = LoggerFactory.getLogger(SimpleServer.class);
 	
 	protected WorkShop m_workshop;
 	

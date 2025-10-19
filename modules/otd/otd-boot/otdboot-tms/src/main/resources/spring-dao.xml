@@ -67,7 +67,9 @@
 						</value>
 					</property>
 				</bean>
+                <!--
                  <bean class="com.github.sqlhelper.SqlHelper"/>
+                 -->
 			</array>
 		</property>
 	</bean>

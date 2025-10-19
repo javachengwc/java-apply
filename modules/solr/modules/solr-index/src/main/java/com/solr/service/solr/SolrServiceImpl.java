@@ -7,9 +7,10 @@ import java.util.Map;
 import java.util.Random;
 
 import com.solr.util.SolrHelper;
-import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SolrServiceImpl implements ISolrService{
 
-	private static Logger m_logger = Logger.getLogger(SolrServiceImpl.class);
+	private static Logger m_logger = LoggerFactory.getLogger(SolrServiceImpl.class);
 
 	private List<SolrServer> servers = new ArrayList<SolrServer>();
 	

@@ -20,11 +20,12 @@ import com.util.page.Page;
 import com.util.page.PageQuery;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.ClassUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EntityDaoImpl extends GenericDao implements IEntityDao
 {
-	private static final Logger m_logger = Logger.getLogger(EntityDaoImpl.class);
+	private static final Logger m_logger = LoggerFactory.getLogger(EntityDaoImpl.class);
     
 	public EntityDaoImpl()
 	{

@@ -18,14 +18,15 @@ import com.manageplat.util.MemcachedUtil;
 import com.util.date.SysDateTime;
 import com.util.slice.QuerySliceUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class JobService {
 	
-	private static Logger logger = Logger.getLogger(JobService.class);
+	private static Logger logger = LoggerFactory.getLogger(JobService.class);
 
     @Autowired
     private JobInfoDao jobInfoDao;
