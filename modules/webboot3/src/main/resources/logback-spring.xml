@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+    <property name="PROJECT_NAME" value="webboot3"/>
+    <property name="APP_NAME" value="webboot3"/>
+    <property name="LOG_HOME" value="/web/logs/webboot3"/>
+    <property name="charSet" value="UTF-8" />
+    <springProperty name="APP_LOG" source="log.path" scope="context" />
+    <springProperty name="log.level" source="log.level" scope="context" />
+    <property name="outPattern" value="[%-5p] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%c %L] [%X{tid}] - %m%n" />
+    <property name="outPatternWithColor" value="[%highlight(%-5p)] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%c %L] [%X{tid}] - %m%n" />
+
+    <appender name="CONSOLE-LOG" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>${outPattern}</pattern>
+        </layout>
+    </appender>
+
+    <appender name="INFO-LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_HOME}/info.log</file>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>DENY</onMatch>
+            <onMismatch>ACCEPT</onMismatch>
+        </filter>
+        <encoder>
+            <pattern>${outPattern}</pattern>
+        </encoder>
+        <!--滚动策略-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--路径-->
+            <fileNamePattern>${LOG_HOME}/info.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+    <appender name="ERROR-LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_HOME}/error.log</file>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <encoder>
+            <pattern>${outPattern}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--路径-->
+            <fileNamePattern>${LOG_HOME}/error.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="SQL-LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_HOME}/sql.log</file>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+        <encoder>
+            <pattern>${outPattern}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--路径-->
+            <fileNamePattern>${LOG_HOME}/sql.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 异步输出 -->
+    <appender name="ASYNC-INFO" class="ch.qos.logback.classic.AsyncAppender">
+        <!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>256</queueSize>
+        <appender-ref ref="INFO-LOG"/>
+    </appender>
+    <appender name="ASYNC-ERROR" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>256</queueSize>
+        <appender-ref ref="ERROR-LOG"/>
+    </appender>
+    <appender name="ASYNC-SQL" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>256</queueSize>
+        <appender-ref ref="SQL-LOG"/>
+    </appender>
+
+    <springProfile name="dev">
+        <root level="${log.level}">
+            <appender-ref ref="CONSOLE-LOG" />
+            <appender-ref ref="ASYNC-INFO"/>
+            <appender-ref ref="ASYNC-ERROR"/>
+        </root>
+    </springProfile>
+    <springProfile name="test,qtest,uat">
+        <root level="${log.level}">
+            <appender-ref ref="CONSOLE-LOG" />
+            <appender-ref ref="ASYNC-INFO"/>
+            <appender-ref ref="ASYNC-ERROR"/>
+        </root>
+    </springProfile>
+    <springProfile name="online">
+        <root level="${log.level}">
+            <appender-ref ref="CONSOLE-LOG" />
+            <appender-ref ref="ASYNC-INFO"/>
+            <appender-ref ref="ASYNC-ERROR"/>
+        </root>
+    </springProfile>
+
+    <!-- 输出SQL -->
+    <logger name="com.boot.dao" level="DEBUG" additivity="true">
+        <appender-ref ref="ASYNC-SQL"/>
+    </logger>
+</configuration>

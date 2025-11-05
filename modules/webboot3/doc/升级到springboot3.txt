@@ -1,0 +1,26 @@
+springboot低版本升级到springboot3大致步骤:
+1，springboot版本变更成3.*, 相关依赖包和配套的包版本也做相应升级，使包之间兼容。
+   以升级到springboot 3.2.12为例，如下包版本做相应的升级：
+   jdk->17+
+   servlet->6.0.0
+   commons-pool2->2.12.0
+   slf4j-api->2.0.7
+   logback-classic->1.4.14
+   lombok->1.18.20
+   mybatis-spring-boot-starter->3.0.5
+   pagehelper-spring-boot-starter->1.4.6
+2，项目代码中引用的类替换，
+   servlet相关的类包名发生了变更，从javax.servlet->jakarta.servlet, 引用类需替换引用它的包名
+3，springboot3不支持的功能，需要取消或变更。
+   不支持的功能有：
+   swagger2，可迁移至swagger3,依赖springdoc-openapi-starter-webmvc-ui，注解从@Api改为@Tag，@ApiOperation改为@Operation
+   velocity，springboot1.4.x版本之后，已经移除了对velocity的支持
+4，解决spring bean循环依赖问题
+   springboot从2.6.0版本‌开始默认禁止循环依赖。如果程序中存在循环依赖，应用启动时会直接报错。
+   修改方式(任意一种方式都可)：
+   a，application.xml或application.properties中配置可循环依赖
+      spring.main.allow-circular-references=true
+   b，启动类中设置可循环依赖
+      new SpringApplicationBuilder(App.class).allowCircularReferences(true).run(args);
+   c，spring bean中对循环依赖的bean，加上懒加载注解@Lazy
+

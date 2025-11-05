@@ -63,6 +63,7 @@
 		<module>modules/otd</module>
 		<module>modules/tmp</module>
 		<module>modules/stock</module>
+		<module>modules/webboot3</module>
 		<!--
 		<module>modules/bigdata</module>
 		-->
