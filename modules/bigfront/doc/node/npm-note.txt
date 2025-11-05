@@ -64,3 +64,4 @@ npm install --chromedriver_cdnurl=https://npm.taobao.org/mirrors/chromedriver   
 npm run start                                                                    ------启动项目
 npm run build                                                                    ------打包项目
 npm run analyze                                                                  ------分析依赖模块优化项目
+npm config set strict-ssl false                                              ------临时禁用 SSL 验证
