@@ -89,5 +89,8 @@ quit;
 然后关闭窗口a,重启mysql,net start mysql
 mysql -uroot -p 回车
 alter user 'root'@'localhost' identified by 'root';    ###重设密码
+alter user 'root'@'localhost' identified with mysql_native_password by 'root';
+###mysql8.0开始，默认启用了caching_sha2_password认证插件，要求客户端和服务器之间使用加密的连接来验证密码。
+###可将用户的认证方式设置为mysql_native_password，这样就与mysql5系列认证方式一致。
 6，用新密码验证登录mysql
 -------------------------------------------------------------
