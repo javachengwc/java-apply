@@ -103,7 +103,7 @@
     </springProfile>
 
     <!-- 输出SQL -->
-    <logger name="com.boot.dao" level="DEBUG" additivity="true">
+    <logger name="com.boot3.dao" level="DEBUG" additivity="true">
         <appender-ref ref="ASYNC-SQL"/>
     </logger>
 </configuration>

@@ -6,10 +6,21 @@ spring:
     url: jdbc:mysql://localhost:3306/db_boot?characterEncoding=UTF8&rewriteBatchedStatements=true&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2B8
     username: root
     password: root
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: 123456
+      timeout: 30000
+      lettuce:
+        pool:
+          max-active: 10
+          max-idle: 10
+          min-idle: 10
 
 mybatis:
   mapper-locations: classpath:mybatis/sqlmap/*.xml
-  type-aliases-package: com.boot.model
+  type-aliases-package: com.boot3.model
 
 pagehelper:
   helperDialect: mysql

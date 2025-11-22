@@ -1,4 +1,4 @@
-package com.boot.config;
+package com.boot3.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

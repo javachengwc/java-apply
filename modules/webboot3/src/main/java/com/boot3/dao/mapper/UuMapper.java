@@ -1,6 +1,6 @@
-package com.boot.dao.mapper;
+package com.boot3.dao.mapper;
 
-import com.boot.model.Uu;
+import com.boot3.model.Uu;
 
 public interface UuMapper {
 

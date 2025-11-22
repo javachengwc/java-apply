@@ -1,4 +1,4 @@
-package com.boot.vo;
+package com.boot3.vo;
 
 import lombok.Data;
 

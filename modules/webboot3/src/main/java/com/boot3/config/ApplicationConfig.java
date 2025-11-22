@@ -1,4 +1,4 @@
-package com.boot.config;
+package com.boot3.config;
 
 import lombok.Getter;
 import lombok.Setter;

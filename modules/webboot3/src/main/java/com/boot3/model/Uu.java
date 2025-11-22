@@ -1,4 +1,4 @@
-package com.boot.model;
+package com.boot3.model;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;

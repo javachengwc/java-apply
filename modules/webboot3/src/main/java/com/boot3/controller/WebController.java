@@ -1,7 +1,7 @@
-package com.boot.controller;
+package com.boot3.controller;
 
-import com.boot.config.ApplicationConfig;
-import com.boot.vo.RespVO;
+import com.boot3.config.ApplicationConfig;
+import com.boot3.vo.RespVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;

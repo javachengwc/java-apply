@@ -1,7 +1,7 @@
-package com.boot.service;
+package com.boot3.service;
 
-import com.boot.dao.mapper.UuMapper;
-import com.boot.model.Uu;
+import com.boot3.dao.mapper.UuMapper;
+import com.boot3.model.Uu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

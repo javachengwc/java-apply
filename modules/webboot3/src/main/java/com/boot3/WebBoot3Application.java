@@ -1,4 +1,4 @@
-package com.boot;
+package com.boot3;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
@@ -12,10 +12,10 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 /**
  * web启动入口
  */
-@MapperScan("com.boot.dao")
+@MapperScan("com.boot3.dao")
 @EnableCaching
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-@SpringBootApplication(scanBasePackages = {"com.boot"})
+@SpringBootApplication(scanBasePackages = {"com.boot3"})
 public class WebBoot3Application {
 
     private static Logger logger = LoggerFactory.getLogger(WebBoot3Application.class);

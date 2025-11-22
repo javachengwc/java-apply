@@ -1,6 +1,6 @@
-package com.boot.exception;
+package com.boot3.exception;
 
-import com.boot.vo.RespVO;
+import com.boot3.vo.RespVO;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;

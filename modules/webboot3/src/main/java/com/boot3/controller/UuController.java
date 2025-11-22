@@ -1,7 +1,7 @@
-package com.boot.controller;
+package com.boot3.controller;
 
-import com.boot.model.Uu;
-import com.boot.service.UuService;
+import com.boot3.model.Uu;
+import com.boot3.service.UuService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
