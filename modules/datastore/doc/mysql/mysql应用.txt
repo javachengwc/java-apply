@@ -111,7 +111,52 @@ select b.stat_date,b.from_source, ifnull(a.cnt, 0) as new, ifnull(b.cnt, 0) as o
 from t_old  b left join t_new a on b.stat_date=a.stat_date and b.from_source=a.from_source
 where a.stat_date is null
 
-------mysql分页查询优化
+-----mysql表列值为拼接串与另一表行关联查询
+select a.id,
+a.sys_manager_ids,
+LENGTH(a.sys_manager_ids) - LENGTH(REPLACE(a.sys_manager_ids, ',', ''))+1 AS manager_count,
+FIND_IN_SET(b.erp_user_id, a.sys_manager_ids) as pos,
+SUBSTRING_INDEX(SUBSTRING_INDEX(a.sys_manager_ids, ',', FIND_IN_SET(b.erp_user_id, a.sys_manager_ids)), ',', -1) as c1,
+b.user_id,
+SUBSTRING_INDEX(a.sys_manager_ids, ',', FIND_IN_SET(b.erp_user_id, a.sys_manager_ids)-1) as left_str,
+SUBSTRING_INDEX(a.sys_manager_ids, ',', FIND_IN_SET(b.erp_user_id, a.sys_manager_ids)- 1-
+( LENGTH(a.sys_manager_ids) - LENGTH(REPLACE(a.sys_manager_ids, ',', '')) )  ) as right_str,
+
+concat(SUBSTRING_INDEX(a.sys_manager_ids, ',', FIND_IN_SET(b.erp_user_id, a.sys_manager_ids)-1),',',b.user_id,',',
+ SUBSTRING_INDEX(a.sys_manager_ids, ',', FIND_IN_SET(b.erp_user_id, a.sys_manager_ids)- 1-
+( LENGTH(a.sys_manager_ids) - LENGTH(REPLACE(a.sys_manager_ids, ',', '')) )  )
+) as new_str
+
+from a
+join b ON FIND_IN_SET(b.erp_user_id, a.sys_manager_ids) > 0
+where LENGTH(a.sys_manager_ids) - LENGTH(REPLACE(a.sys_manager_ids, ',', ''))>0
+order by a.id
+
+-----mysql表列值为拼接串与另一表行关联更新
+update a
+join b on FIND_IN_SET(b.erp_user_id, a.sys_manager_ids) > 0
+set a.sys_manager_ids = concat("",b.user_id)
+where LENGTH(a.sys_manager_ids) - LENGTH(REPLACE(a.sys_manager_ids, ',', ''))=0;
+
+-- sys_manager_ids字段有多少个逗号分隔的值，就要执行多少次
+update a
+join b ON FIND_IN_SET(b.erp_user_id, a.sys_manager_ids) > 0
+set a.sys_manager_ids =
+concat(SUBSTRING_INDEX(a.sys_manager_ids, ',', FIND_IN_SET(b.erp_user_id, a.sys_manager_ids)-1),',',b.user_id,',',
+ SUBSTRING_INDEX(a.sys_manager_ids, ',', FIND_IN_SET(b.erp_user_id, a.sys_manager_ids)- 1-
+( LENGTH(a.sys_manager_ids) - LENGTH(REPLACE(a.sys_manager_ids, ',', '')) )  )
+)
+where LENGTH(a.sys_manager_ids) - LENGTH(REPLACE(a.sys_manager_ids, ',', ''))>0 ;
+
+update a
+set a.sys_manager_ids= substring(a.sys_manager_ids,2)
+where a.sys_manager_ids like ',%';
+
+update a
+set a.sys_manager_ids= substring(a.sys_manager_ids,1,length(a.sys_manager_ids)-1)
+where a.sys_manager_ids like '%,';
+
+-----mysql分页查询优化
 分页查询的时候往往是采用select * from table1 limit 100,20 的方式来提取数据，在处理的过程中会读取120条数据，
 然后扔掉100条的offset记录,最后返回20条记录给客户端。如果offset的值非常大，效率上可能会有影响，可以通过如下方式优化:
 1.可以通过覆盖索引+inner join的方式来重写sql
@@ -140,57 +185,23 @@ where a.stat_date is null
 4.limit限制优化法
     把limit偏移量限制低于某个数。超过这个数等于没数据。
 
------mysql死锁
-show processlist 或 show full processlist 或
-select * from information_schema.innodb_trx;    ---查看当前的事务
-kill id/trx_mysql_thread_id  #杀死sql线程
-select * from information_schema.INNODB_LOCKS;  ---查看当前锁定的事务
-select * from information_schema.INNODB_LOCK_WAITS;  ---查看当前等锁的事务
-select * from information_schema.PROCESSLIST
-where info is not null and info like "%ALTER%" order by time desc;
-
------mysql锁
-
-GET_LOCK(name,3) RELEASE_LOCK
-获取锁           释放锁
-
-DECLARE is_success TINYINT(1) DEFAULT 0;
-DECLARE is_s_lock smallint(5) DEFAULT 0;
-
-DECLARE t_error INTEGER DEFAULT 1;
-DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET t_error=0;
-
-if GET_LOCK('goods',3) THEN
-SET AUTOCOMMIT =0;
-IF t_error = 0 THEN
-    ROLLBACK;
-ELSE
-    COMMIT;
-END IF;
-SET AUTOCOMMIT =1;
-set is_s_lock=RELEASE_LOCK('goods');
-
 -----获取最后一次写入的id
-
 select last_insert_id();
 
 -----判断字符是否中文或英文字符
-
+-- [u0391-uFFE5] 匹配中文以外的字符
 select name, name REGEXP '[u0391-uFFE5]' from t1;
 | 中文 | 0 |
 | sdalfkj | 1
 
-//[u0391-uFFE5] 匹配中文以外的字符
-
+-- 当字符集为UTF-8,并且字符为中文时,length() 和 char_length() 两个方法返回的结果不相同
 select length(name),char_length(name) from t1;
 | 中文 | 6 | 2 |
 | sdalfkj | 7 | 7 |
 
-//当字符集为UTF-8,并且字符为中文时,
-//length() 和 char_length() 两个方法返回的结果不相同
+-- 匹配字母
+select 'aabb' REGEXP '[a-z]+';
 
-select 'aabb' REGEXP '[a-z]+';   //匹配字母
-
-----mysql释放表空间
+-----mysql释放表空间
 OPTIMIZE TABLE table_name
 -----------------------------------------------------------

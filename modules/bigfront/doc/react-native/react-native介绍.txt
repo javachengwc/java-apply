@@ -1,0 +1,2 @@
+react native 是由 meta（原 facebook）推出的跨平台开发框架，使用 JavaScript 和 React 构建应用。
+它通过桥接机制调用原生组件，使开发者能够使用 Web 技术栈快速构建移动应用。
