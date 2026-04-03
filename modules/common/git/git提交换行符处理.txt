@@ -1,0 +1,65 @@
+不同操作系统使用的换行符不一样,Unix/Linux使用LF，但Windows使用CRLF。
+git为了解决不同平台换行符不一致的问题，
+在 windows 操作系统中默认在检出代码时将 LF 转换为 CRLF,而在提交的时候再转换为 LF。
+项目中一些配置文件或密钥文件中有换行符时，这个转换可能带来问题，
+比如：文件哈希值变化，引发校验错误。
+     密钥文件内容与原内容不一致，导致加解密或验证失败。
+     
+解决方法有2种：
+1，修改git配置，禁用git的自动换行功能
+在C:\Users\[用户名]\.gitconfig配置文件中修改git配置[core]，如果没有就直接添加上去
+[core]
+eol=native                  ###native-换行符默认为操作系统的换行符
+                            ###lf-Unix/Linux系统的换行符
+                            ###crlf-Wondows系统的换行符
+autocrlf = false            ###false-表示不做转换,
+                            ###true-表示检出是转换CRLF, 提交时转换为 LF
+                            ###input-表示检出是不转换，提交时转换为 LF
+filemode = false            ###
+safecrlf = true             ###true-表示不允许提交时包含不同换行符
+                            ###false-表示允许提交时有不同换行符存在
+                            ###warn-表示有不同换行符时发出警告
+或git命令修改全局设置，最终也是修改.gitconfig配置文件
+git config --global core.autocrlf false
+git config --global core.filemode false
+git config --global core.safecrlf true
+虽然通过设置了git全局参数解决了问题，但是作为团队协作的话，并不能保证所有人都正确配好了。
+git提供了.gitattributes文件解决了这个问题，避免有人没有设置 core.autocrlf 参数。
+
+2，通过.gitattributes文件配置，.gitattributes文件允许针对特定文件或文件类型设置换行符处理规则
+在项目根目录下创建.gitattributes文件,内容样例如下：
+# 通用文本文件处理（自动检测并规范化换行符）
+* text=auto
+
+# 指定特定文件类型为文本，并设置换行符
+*.txt text eol=lf
+*.md text eol=lf
+*.csv text eol=crlf
+
+# 脚本文件设置
+*.sh text eol=lf
+*.bat text eol=crlf
+
+# 二进制文件设置（避免git尝试处理这些文件）
+*.png binary
+*.jpg binary
+*.gif binary
+*.pdf binary
+*.zip binary
+
+# 特定IDE文件设置为二进制（如 Xcode项目）
+*.pbxproj binary
+
+# 配置文件设置（如 JSON、YAML）
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.p8 text eol=lf
+
+# 生成文件或临时文件排除在打包外
+*.log export-ignore
+*.tmp export-ignore
+
+
+
+
