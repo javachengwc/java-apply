@@ -66,6 +66,7 @@
       <el-table-column label="分红(亿)" align="center" prop="dividend" />
       <el-table-column label="市值(亿)" align="center" prop="marketValue" />
       <el-table-column label="市盈率" align="center" prop="pe" />
+      <el-table-column label="市净率" align="center" prop="pb" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['stock:stockyear:edit']">修改</el-button>
@@ -113,6 +114,9 @@
         </el-form-item>
         <el-form-item label="市盈率" prop="pe">
           <el-input v-model="form.pe" placeholder="请输入市盈率" />
+        </el-form-item>
+        <el-form-item label="市净率" prop="pb">
+          <el-input v-model="form.pb" placeholder="请输入市净率" />
         </el-form-item>
         <el-form-item label="营收(亿)" prop="gmv">
           <el-input v-model="form.gmv" placeholder="请输入营收(亿)" />
@@ -166,11 +170,10 @@ const data = reactive({
     beginPrice: null,
     endPrice: null,
     marketValue: null,
-    pe: null,
     gmv: null,
     profit: null,
     dividend: null,
-    note: null,
+    note: null
   },
   rules: {
   }
@@ -208,6 +211,7 @@ function reset() {
     endPrice: null,
     marketValue: null,
     pe: null,
+    pb: null,
     gmv: null,
     profit: null,
     dividend: null,

@@ -89,6 +89,7 @@
       </el-table-column>
       <el-table-column label="成交额(亿)" align="center" width="90" prop="turnoverAmount" />
       <el-table-column label="市盈率" align="center" prop="pe" width="80" />
+      <el-table-column label="市净率" align="center" prop="pb" width="80" />
       <el-table-column label="市值(亿)" align="center" prop="marketValue" width="80" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
@@ -140,7 +141,7 @@
         <el-form-item label="涨幅" prop="increaseRate" >
           <el-input v-model="form.increaseRate" placeholder="请输入涨幅" style="width: 100px;" /><span>&nbsp%</span>
         </el-form-item>
-	<el-form-item label="振幅" prop="changeRate">
+	    <el-form-item label="振幅" prop="changeRate">
           <el-input v-model="form.changeRate" placeholder="请输入振幅" style="width: 100px;" /><span>&nbsp%</span>
         </el-form-item>
         <el-form-item label="备注" prop="note">
@@ -152,10 +153,13 @@
         <el-form-item label="成交额(亿)" prop="turnoverAmount">
           <el-input v-model="form.turnoverAmount" placeholder="请输入成交额(亿)" style="width: 300px;" />
         </el-form-item>
-	<el-form-item label="市盈率" prop="pe">
+	    <el-form-item label="市盈率" prop="pe">
           <el-input v-model="form.pe" placeholder="请输入市盈率" style="width: 300px;" />
         </el-form-item>
-	<el-form-item label="市值(亿)" prop="marketValue">
+        <el-form-item label="市净率" prop="pb">
+          <el-input v-model="form.pb" placeholder="请输入市净率" style="width: 300px;" />
+        </el-form-item>
+	    <el-form-item label="市值(亿)" prop="marketValue">
           <el-input v-model="form.marketValue" placeholder="请输入市值(亿)" style="width: 300px;" />
         </el-form-item>
       </el-form>
@@ -199,9 +203,8 @@ const data = reactive({
     minPrice: null,
     maxPrice: null,
     increaseRate: null,
-    note: null,
     turnoverRate: null,
-    turnoverAmount: null,
+    turnoverAmount: null
   },
   rules: {
   }
@@ -242,6 +245,9 @@ function reset() {
     note: null,
     turnoverRate: null,
     turnoverAmount: null,
+    pe: null,
+    pb: null,
+    marketValue: null,
     createTime: null
   };
   proxy.resetForm("stockmonthRef");
