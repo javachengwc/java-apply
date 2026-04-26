@@ -16,6 +16,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="endPrice"    column="end_price"    />
         <result property="marketValue"    column="market_value"    />
         <result property="pe"    column="pe"    />
+        <result property="pb"    column="pb"    />
         <result property="gmv"    column="gmv"    />
         <result property="profit"    column="profit"    />
 		<result property="dividend"    column="dividend"    />
@@ -24,7 +25,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStockYearVo">
-        select id, stock_name, stock_code, stat_year, highlight, min_price, max_price, begin_price, end_price, market_value, pe, gmv, profit,dividend, note, create_time from t_stock_year
+        select id, stock_name, stock_code, stat_year, highlight, min_price, max_price, begin_price, end_price,
+        market_value, pe, pb, gmv, profit,dividend, note, create_time
+        from t_stock_year
     </sql>
 
     <select id="selectStockYearList" parameterType="com.manage.stock.domain.StockYear" resultMap="StockYearResult">
@@ -40,6 +43,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="endPrice != null "> and end_price = #{endPrice}</if>
             <if test="marketValue != null "> and market_value = #{marketValue}</if>
             <if test="pe != null "> and pe = #{pe}</if>
+            <if test="pb != null "> and pb = #{pb}</if>
             <if test="gmv != null "> and gmv = #{gmv}</if>
             <if test="profit != null "> and profit = #{profit}</if>
             <if test="note != null  and note != ''"> and note = #{note}</if>
@@ -64,6 +68,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="endPrice != null">end_price,</if>
             <if test="marketValue != null">market_value,</if>
             <if test="pe != null">pe,</if>
+            <if test="pb != null">pb,</if>
             <if test="gmv != null">gmv,</if>
             <if test="profit != null">profit,</if>
 			<if test="dividend != null">dividend,</if>
@@ -81,6 +86,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="endPrice != null">#{endPrice},</if>
             <if test="marketValue != null">#{marketValue},</if>
             <if test="pe != null">#{pe},</if>
+            <if test="pb != null">#{pb},</if>
             <if test="gmv != null">#{gmv},</if>
             <if test="profit != null">#{profit},</if>
 			<if test="dividend != null">#{dividend},</if>
@@ -102,6 +108,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="endPrice != null">end_price = #{endPrice},</if>
             <if test="marketValue != null">market_value = #{marketValue},</if>
             <if test="pe != null">pe = #{pe},</if>
+            <if test="pb != null">pb = #{pb},</if>
             <if test="gmv != null">gmv = #{gmv},</if>
             <if test="profit != null">profit = #{profit},</if>
 			<if test="dividend != null">dividend = #{dividend},</if>
