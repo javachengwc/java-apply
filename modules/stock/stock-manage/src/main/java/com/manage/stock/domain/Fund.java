@@ -2,6 +2,8 @@ package com.manage.stock.domain;
 
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
+import lombok.ToString;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.manage.framework.aspectj.lang.annotation.Excel;
@@ -13,11 +15,13 @@ import com.manage.framework.web.domain.BaseEntity;
  * @author gener
  * @date 2025-06-18
  */
+@Data
+@ToString
 public class Fund extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** $column.columnComment */
+    /** id */
     private Long id;
 
     /** 基金名称 */
@@ -40,71 +44,4 @@ public class Fund extends BaseEntity
     @Excel(name = "${comment}", readConverterExp = "$column.readConverterExp()")
     private Date modifyTime;
 
-    public void setId(Long id) 
-    {
-        this.id = id;
-    }
-
-    public Long getId() 
-    {
-        return id;
-    }
-    public void setFundName(String fundName) 
-    {
-        this.fundName = fundName;
-    }
-
-    public String getFundName() 
-    {
-        return fundName;
-    }
-    public void setFundCode(String fundCode) 
-    {
-        this.fundCode = fundCode;
-    }
-
-    public String getFundCode() 
-    {
-        return fundCode;
-    }
-    public void setTradeMode(String tradeMode) 
-    {
-        this.tradeMode = tradeMode;
-    }
-
-    public String getTradeMode() 
-    {
-        return tradeMode;
-    }
-    public void setNote(String note) 
-    {
-        this.note = note;
-    }
-
-    public String getNote() 
-    {
-        return note;
-    }
-    public void setModifyTime(Date modifyTime) 
-    {
-        this.modifyTime = modifyTime;
-    }
-
-    public Date getModifyTime() 
-    {
-        return modifyTime;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("id", getId())
-            .append("fundName", getFundName())
-            .append("fundCode", getFundCode())
-            .append("tradeMode", getTradeMode())
-            .append("note", getNote())
-            .append("createTime", getCreateTime())
-            .append("modifyTime", getModifyTime())
-            .toString();
-    }
 }

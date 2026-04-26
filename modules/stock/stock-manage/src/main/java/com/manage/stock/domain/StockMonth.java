@@ -84,4 +84,8 @@ public class StockMonth extends BaseEntity
     @Excel(name = "市盈率")
     private BigDecimal pe;
 
+    /** 市净率 */
+    @Excel(name = "市净率")
+    private BigDecimal pb;
+
 }

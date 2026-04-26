@@ -3,6 +3,8 @@ package com.manage.stock.domain;
 import java.math.BigDecimal;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
+import lombok.ToString;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.manage.framework.aspectj.lang.annotation.Excel;
@@ -14,11 +16,13 @@ import com.manage.framework.web.domain.BaseEntity;
  * @author gener
  * @date 2025-06-19
  */
+@Data
+@ToString
 public class FundMonth extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** $column.columnComment */
+    /** id */
     private Long id;
 
     /** 基金名称 */
@@ -50,91 +54,4 @@ public class FundMonth extends BaseEntity
     @Excel(name = "备注")
     private String note;
 
-    public void setId(Long id) 
-    {
-        this.id = id;
-    }
-
-    public Long getId() 
-    {
-        return id;
-    }
-    public void setFundName(String fundName) 
-    {
-        this.fundName = fundName;
-    }
-
-    public String getFundName() 
-    {
-        return fundName;
-    }
-    public void setFundCode(String fundCode) 
-    {
-        this.fundCode = fundCode;
-    }
-
-    public String getFundCode() 
-    {
-        return fundCode;
-    }
-    public void setMonthDate(Date monthDate) 
-    {
-        this.monthDate = monthDate;
-    }
-
-    public Date getMonthDate() 
-    {
-        return monthDate;
-    }
-    public void setBeginPrice(BigDecimal beginPrice) 
-    {
-        this.beginPrice = beginPrice;
-    }
-
-    public BigDecimal getBeginPrice() 
-    {
-        return beginPrice;
-    }
-    public void setEndPrice(BigDecimal endPrice) 
-    {
-        this.endPrice = endPrice;
-    }
-
-    public BigDecimal getEndPrice() 
-    {
-        return endPrice;
-    }
-    public void setIncreaseRate(String increaseRate) 
-    {
-        this.increaseRate = increaseRate;
-    }
-
-    public String getIncreaseRate() 
-    {
-        return increaseRate;
-    }
-    public void setNote(String note) 
-    {
-        this.note = note;
-    }
-
-    public String getNote() 
-    {
-        return note;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("id", getId())
-            .append("fundName", getFundName())
-            .append("fundCode", getFundCode())
-            .append("monthDate", getMonthDate())
-            .append("beginPrice", getBeginPrice())
-            .append("endPrice", getEndPrice())
-            .append("increaseRate", getIncreaseRate())
-            .append("note", getNote())
-            .append("createTime", getCreateTime())
-            .toString();
-    }
 }

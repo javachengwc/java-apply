@@ -3,6 +3,8 @@ package com.manage.stock.domain;
 import java.math.BigDecimal;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
+import lombok.ToString;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.manage.framework.aspectj.lang.annotation.Excel;
@@ -14,11 +16,13 @@ import com.manage.framework.web.domain.BaseEntity;
  * @author gener
  * @date 2025-06-18
  */
+@Data
+@ToString
 public class StockDay extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** $column.columnComment */
+    /** id */
     private Long id;
 
     /** 关注标识 1-关注 */
@@ -82,171 +86,4 @@ public class StockDay extends BaseEntity
     @Excel(name = "主力净流入(亿)")
     private BigDecimal mainTransAmount;
 
-    public void setId(Long id) 
-    {
-        this.id = id;
-    }
-
-    public Long getId() 
-    {
-        return id;
-    }
-    public void setCareFlag(Long careFlag) 
-    {
-        this.careFlag = careFlag;
-    }
-
-    public Long getCareFlag() 
-    {
-        return careFlag;
-    }
-    public void setStockName(String stockName) 
-    {
-        this.stockName = stockName;
-    }
-
-    public String getStockName() 
-    {
-        return stockName;
-    }
-    public void setStockCode(String stockCode) 
-    {
-        this.stockCode = stockCode;
-    }
-
-    public String getStockCode() 
-    {
-        return stockCode;
-    }
-    public void setDayDate(Date dayDate) 
-    {
-        this.dayDate = dayDate;
-    }
-
-    public Date getDayDate() 
-    {
-        return dayDate;
-    }
-    public void setBeginPrice(BigDecimal beginPrice) 
-    {
-        this.beginPrice = beginPrice;
-    }
-
-    public BigDecimal getBeginPrice() 
-    {
-        return beginPrice;
-    }
-    public void setEndPrice(BigDecimal endPrice) 
-    {
-        this.endPrice = endPrice;
-    }
-
-    public BigDecimal getEndPrice() 
-    {
-        return endPrice;
-    }
-    public void setMinPrice(BigDecimal minPrice) 
-    {
-        this.minPrice = minPrice;
-    }
-
-    public BigDecimal getMinPrice() 
-    {
-        return minPrice;
-    }
-    public void setMaxPrice(BigDecimal maxPrice) 
-    {
-        this.maxPrice = maxPrice;
-    }
-
-    public BigDecimal getMaxPrice() 
-    {
-        return maxPrice;
-    }
-    public void setIncreaseRate(String increaseRate) 
-    {
-        this.increaseRate = increaseRate;
-    }
-
-    public String getIncreaseRate() 
-    {
-        return increaseRate;
-    }
-    public void setNote(String note) 
-    {
-        this.note = note;
-    }
-
-    public String getNote() 
-    {
-        return note;
-    }
-    public void setTurnoverRate(String turnoverRate) 
-    {
-        this.turnoverRate = turnoverRate;
-    }
-
-    public String getTurnoverRate() 
-    {
-        return turnoverRate;
-    }
-    public void setTurnoverAmount(BigDecimal turnoverAmount) 
-    {
-        this.turnoverAmount = turnoverAmount;
-    }
-
-    public BigDecimal getTurnoverAmount() 
-    {
-        return turnoverAmount;
-    }
-    public void setOrderRate(String orderRate) 
-    {
-        this.orderRate = orderRate;
-    }
-
-    public String getOrderRate() 
-    {
-        return orderRate;
-    }
-    public void setMainInAmount(BigDecimal mainInAmount) 
-    {
-        this.mainInAmount = mainInAmount;
-    }
-
-    public BigDecimal getMainInAmount() 
-    {
-        return mainInAmount;
-    }
-    public void setMainTransAmount(BigDecimal mainTransAmount) 
-    {
-        this.mainTransAmount = mainTransAmount;
-    }
-
-    public BigDecimal getMainTransAmount() 
-    {
-        return mainTransAmount;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("id", getId())
-            .append("careFlag", getCareFlag())
-            .append("stockName", getStockName())
-            .append("stockCode", getStockCode())
-            .append("dayDate", getDayDate())
-            .append("beginPrice", getBeginPrice())
-            .append("endPrice", getEndPrice())
-            .append("minPrice", getMinPrice())
-            .append("maxPrice", getMaxPrice())
-            .append("increaseRate", getIncreaseRate())
-            .append("note", getNote())
-            .append("turnoverRate", getTurnoverRate())
-            .append("turnoverAmount", getTurnoverAmount())
-            .append("orderRate", getOrderRate())
-            .append("mainInAmount", getMainInAmount())
-            .append("mainTransAmount", getMainTransAmount())
-            .append("createTime", getCreateTime())
-            .toString();
-    }
 }
