@@ -56,6 +56,10 @@ public class StockYear extends BaseEntity
     @Excel(name = "年底股价")
     private BigDecimal endPrice;
 
+    /** 涨幅 */
+    @Excel(name = "涨幅")
+    private BigDecimal increaseRate;
+
     /** 市值(亿) */
     @Excel(name = "市值(亿)")
     private Long marketValue;
