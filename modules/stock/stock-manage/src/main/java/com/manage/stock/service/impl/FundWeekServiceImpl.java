@@ -1,7 +1,7 @@
 package com.manage.stock.service.impl;
 
+import java.util.Date;
 import java.util.List;
-import com.manage.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.manage.stock.mapper.FundWeekMapper;
@@ -53,7 +53,9 @@ public class FundWeekServiceImpl implements IFundWeekService
     @Override
     public int insertFundWeek(FundWeek fundWeek)
     {
-        fundWeek.setCreateTime(DateUtils.getNowDate());
+        Date now = new Date();
+        fundWeek.setCreateTime(now);
+        fundWeek.setUpdateTime(now);
         return fundWeekMapper.insertFundWeek(fundWeek);
     }
 
@@ -66,6 +68,7 @@ public class FundWeekServiceImpl implements IFundWeekService
     @Override
     public int updateFundWeek(FundWeek fundWeek)
     {
+        fundWeek.setUpdateTime(new Date());
         return fundWeekMapper.updateFundWeek(fundWeek);
     }
 

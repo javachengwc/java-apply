@@ -3,13 +3,12 @@ package com.manage.stock.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
-import com.manage.stock.domain.dto.StockMonthDto;
+import com.manage.stock.domain.dto.StockQueryParam;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,10 +40,10 @@ public class StockMonthController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('stock:stockmonth:list')")
     @GetMapping("/list")
-    public TableDataInfo list(StockMonthDto stockMonth)
+    public TableDataInfo list(StockQueryParam queryParam)
     {
         startPage();
-        List<StockMonth> list = stockMonthService.selectStockMonthList(stockMonth);
+        List<StockMonth> list = stockMonthService.selectStockMonthList(queryParam);
         return getDataTable(list);
     }
 
@@ -54,9 +53,9 @@ public class StockMonthController extends BaseController
     @PreAuthorize("@ss.hasPermi('stock:stockmonth:export')")
     @Log(title = "股票月数据", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, StockMonthDto stockMonth)
+    public void export(HttpServletResponse response, StockQueryParam queryParam)
     {
-        List<StockMonth> list = stockMonthService.selectStockMonthList(stockMonth);
+        List<StockMonth> list = stockMonthService.selectStockMonthList(queryParam);
         ExcelUtil<StockMonth> util = new ExcelUtil<StockMonth>(StockMonth.class);
         util.exportExcel(response, list, "股票月数据数据");
     }

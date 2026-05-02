@@ -1,7 +1,7 @@
 package com.manage.stock.service.impl;
 
+import java.util.Date;
 import java.util.List;
-import com.manage.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.manage.stock.mapper.FundMonthMapper;
@@ -53,7 +53,9 @@ public class FundMonthServiceImpl implements IFundMonthService
     @Override
     public int insertFundMonth(FundMonth fundMonth)
     {
-        fundMonth.setCreateTime(DateUtils.getNowDate());
+        Date now = new Date();
+        fundMonth.setCreateTime(now);
+        fundMonth.setUpdateTime(now);
         return fundMonthMapper.insertFundMonth(fundMonth);
     }
 
@@ -66,6 +68,7 @@ public class FundMonthServiceImpl implements IFundMonthService
     @Override
     public int updateFundMonth(FundMonth fundMonth)
     {
+        fundMonth.setUpdateTime(new Date());
         return fundMonthMapper.updateFundMonth(fundMonth);
     }
 

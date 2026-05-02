@@ -2,12 +2,13 @@ package com.manage.stock.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.manage.stock.domain.dto.StockQueryParam;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,10 +40,10 @@ public class StockDayController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('stock:stockday:list')")
     @GetMapping("/list")
-    public TableDataInfo list(StockDay stockDay)
+    public TableDataInfo list(StockQueryParam queryParam)
     {
         startPage();
-        List<StockDay> list = stockDayService.selectStockDayList(stockDay);
+        List<StockDay> list = stockDayService.selectStockDayList(queryParam);
         return getDataTable(list);
     }
 
@@ -52,9 +53,9 @@ public class StockDayController extends BaseController
     @PreAuthorize("@ss.hasPermi('stock:stockday:export')")
     @Log(title = "股票天数据", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, StockDay stockDay)
+    public void export(HttpServletResponse response, StockQueryParam queryParam)
     {
-        List<StockDay> list = stockDayService.selectStockDayList(stockDay);
+        List<StockDay> list = stockDayService.selectStockDayList(queryParam);
         ExcelUtil<StockDay> util = new ExcelUtil<StockDay>(StockDay.class);
         util.exportExcel(response, list, "股票天数据数据");
     }

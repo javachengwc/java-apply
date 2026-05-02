@@ -2,7 +2,7 @@ package com.manage.stock.service;
 
 import java.util.List;
 import com.manage.stock.domain.StockMonth;
-import com.manage.stock.domain.dto.StockMonthDto;
+import com.manage.stock.domain.dto.StockQueryParam;
 
 /**
  * 股票月数据Service接口
@@ -23,10 +23,10 @@ public interface IStockMonthService
     /**
      * 查询股票月数据列表
      * 
-     * @param stockMonth 股票月数据
+     * @param queryParam 股票月查询条件
      * @return 股票月数据集合
      */
-    public List<StockMonth> selectStockMonthList(StockMonthDto stockMonth);
+    public List<StockMonth> selectStockMonthList(StockQueryParam queryParam);
 
     /**
      * 新增股票月数据

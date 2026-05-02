@@ -15,6 +15,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="minPrice"    column="min_price"    />
         <result property="maxPrice"    column="max_price"    />
         <result property="increaseRate"    column="increase_rate"    />
+        <result property="changeRate"    column="change_rate"    />
         <result property="note"    column="note"    />
         <result property="turnoverRate"    column="turnover_rate"    />
         <result property="turnoverAmount"    column="turnover_amount"    />
@@ -22,36 +23,58 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="mainInAmount"    column="main_in_amount"    />
         <result property="mainTransAmount"    column="main_trans_amount"    />
         <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
     </resultMap>
 
-    <sql id="selectStockDayVo">
-        select id, care_flag, stock_name, stock_code, day_date, begin_price, end_price, min_price, max_price, increase_rate, note, turnover_rate, turnover_amount, order_rate, main_in_amount, main_trans_amount, create_time from t_stock_day
+    <sql id="stockDayFieldWithPrefix">
+        ${tableName}.id,
+        ${tableName}.care_flag,
+        ${tableName}.stock_name,
+        ${tableName}.stock_code,
+        ${tableName}.day_date,
+        ${tableName}.begin_price,
+        ${tableName}.end_price,
+        ${tableName}.min_price,
+        ${tableName}.max_price,
+        ${tableName}.increase_rate,
+        ${tableName}.change_rate,
+        ${tableName}.note,
+        ${tableName}.turnover_rate,
+        ${tableName}.turnover_amount,
+        ${tableName}.order_rate,
+        ${tableName}.main_in_amount,
+        ${tableName}.main_trans_amount,
+        ${tableName}.create_time,
+        ${tableName}.update_time
     </sql>
 
-    <select id="selectStockDayList" parameterType="com.manage.stock.domain.StockDay" resultMap="StockDayResult">
-        <include refid="selectStockDayVo"/>
-        <where>  
-            <if test="careFlag != null "> and care_flag = #{careFlag}</if>
-            <if test="stockName != null  and stockName != ''"> and stock_name like concat('%', #{stockName}, '%')</if>
-            <if test="stockCode != null  and stockCode != ''"> and stock_code = #{stockCode}</if>
-            <if test="dayDate != null "> and day_date = #{dayDate}</if>
-            <if test="beginPrice != null "> and begin_price = #{beginPrice}</if>
-            <if test="endPrice != null "> and end_price = #{endPrice}</if>
-            <if test="minPrice != null "> and min_price = #{minPrice}</if>
-            <if test="maxPrice != null "> and max_price = #{maxPrice}</if>
-            <if test="increaseRate != null  and increaseRate != ''"> and increase_rate = #{increaseRate}</if>
-            <if test="note != null  and note != ''"> and note = #{note}</if>
-            <if test="turnoverRate != null  and turnoverRate != ''"> and turnover_rate = #{turnoverRate}</if>
-            <if test="turnoverAmount != null "> and turnover_amount = #{turnoverAmount}</if>
-            <if test="orderRate != null  and orderRate != ''"> and order_rate = #{orderRate}</if>
-            <if test="mainInAmount != null "> and main_in_amount = #{mainInAmount}</if>
-            <if test="mainTransAmount != null "> and main_trans_amount = #{mainTransAmount}</if>
+    <select id="selectStockDayList" parameterType="com.manage.stock.domain.dto.StockQueryParam" resultMap="StockDayResult">
+        select
+        <include refid="stockDayFieldWithPrefix">
+            <property name="tableName" value="d"/>
+        </include>
+        from t_stock_day d
+        <if test="industry != null and industry != '' ">
+            join t_company_stock c on d.stock_code = c.stock_code
+        </if>
+        <where>
+            <if test="stockName != null  and stockName != ''"> and d.stock_name like concat('%', #{stockName}, '%')</if>
+            <if test="stockCode != null  and stockCode != ''"> and d.stock_code = #{stockCode}</if>
+            <if test="startDate != null "> and d.day_date >= #{startDate}</if>
+            <if test="endDate != null ">  <![CDATA[ and d.day_date <= #{endDate} ]]> </if>
+            <if test="industry != null and industry != '' ">
+                and c.industry = #{industry}
+            </if>
         </where>
     </select>
     
     <select id="selectStockDayById" parameterType="Long" resultMap="StockDayResult">
-        <include refid="selectStockDayVo"/>
-        where id = #{id}
+        select
+        <include refid="stockDayFieldWithPrefix">
+            <property name="tableName" value="d"/>
+        </include>
+        from t_stock_day d
+        where d.id = #{id}
     </select>
 
     <insert id="insertStockDay" parameterType="com.manage.stock.domain.StockDay" useGeneratedKeys="true" keyProperty="id">
@@ -66,6 +89,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="minPrice != null">min_price,</if>
             <if test="maxPrice != null">max_price,</if>
             <if test="increaseRate != null">increase_rate,</if>
+            <if test="changeRate != null">change_rate,</if>
             <if test="note != null">note,</if>
             <if test="turnoverRate != null">turnover_rate,</if>
             <if test="turnoverAmount != null">turnover_amount,</if>
@@ -73,6 +97,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="mainInAmount != null">main_in_amount,</if>
             <if test="mainTransAmount != null">main_trans_amount,</if>
             <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="careFlag != null">#{careFlag},</if>
@@ -84,6 +109,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="minPrice != null">#{minPrice},</if>
             <if test="maxPrice != null">#{maxPrice},</if>
             <if test="increaseRate != null">#{increaseRate},</if>
+            <if test="changeRate != null">#{changeRate},</if>
             <if test="note != null">#{note},</if>
             <if test="turnoverRate != null">#{turnoverRate},</if>
             <if test="turnoverAmount != null">#{turnoverAmount},</if>
@@ -91,6 +117,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="mainInAmount != null">#{mainInAmount},</if>
             <if test="mainTransAmount != null">#{mainTransAmount},</if>
             <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
          </trim>
     </insert>
 
@@ -106,6 +133,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="minPrice != null">min_price = #{minPrice},</if>
             <if test="maxPrice != null">max_price = #{maxPrice},</if>
             <if test="increaseRate != null">increase_rate = #{increaseRate},</if>
+            <if test="changeRate != null">change_rate = #{changeRate},</if>
             <if test="note != null">note = #{note},</if>
             <if test="turnoverRate != null">turnover_rate = #{turnoverRate},</if>
             <if test="turnoverAmount != null">turnover_amount = #{turnoverAmount},</if>
@@ -113,6 +141,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="mainInAmount != null">main_in_amount = #{mainInAmount},</if>
             <if test="mainTransAmount != null">main_trans_amount = #{mainTransAmount},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
         where id = #{id}
     </update>

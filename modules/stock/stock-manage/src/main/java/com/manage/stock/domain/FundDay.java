@@ -48,7 +48,11 @@ public class FundDay extends BaseEntity
 
     /** 涨幅 */
     @Excel(name = "涨幅")
-    private String increaseRate;
+    private BigDecimal increaseRate;
+
+    /** 振幅 */
+    @Excel(name = "振幅")
+    private BigDecimal changeRate;
 
     /** 备注 */
     @Excel(name = "备注")

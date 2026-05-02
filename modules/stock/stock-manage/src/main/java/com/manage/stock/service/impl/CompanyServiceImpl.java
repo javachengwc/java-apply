@@ -1,5 +1,6 @@
 package com.manage.stock.service.impl;
 
+import java.util.Date;
 import java.util.List;
 import com.manage.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +54,9 @@ public class CompanyServiceImpl implements ICompanyService
     @Override
     public int insertCompany(Company company)
     {
-        company.setCreateTime(DateUtils.getNowDate());
+        Date now = new Date();
+        company.setCreateTime(now);
+        company.setUpdateTime(now);
         return companyMapper.insertCompany(company);
     }
 
@@ -66,6 +69,7 @@ public class CompanyServiceImpl implements ICompanyService
     @Override
     public int updateCompany(Company company)
     {
+        company.setUpdateTime(new Date());
         return companyMapper.updateCompany(company);
     }
 

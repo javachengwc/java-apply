@@ -2,6 +2,7 @@ package com.manage.stock.mapper;
 
 import java.util.List;
 import com.manage.stock.domain.StockDay;
+import com.manage.stock.domain.dto.StockQueryParam;
 
 /**
  * 股票天数据Mapper接口
@@ -22,10 +23,10 @@ public interface StockDayMapper
     /**
      * 查询股票天数据列表
      * 
-     * @param stockDay 股票天数据
+     * @param queryParam 股票天查询参数
      * @return 股票天数据集合
      */
-    public List<StockDay> selectStockDayList(StockDay stockDay);
+    public List<StockDay> selectStockDayList(StockQueryParam queryParam);
 
     /**
      * 新增股票天数据

@@ -5,8 +5,6 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.ToString;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import com.manage.framework.aspectj.lang.annotation.Excel;
 import com.manage.framework.web.domain.BaseEntity;
 
@@ -50,9 +48,13 @@ public class BourseDay extends BaseEntity
     @Excel(name = "当天结束指数")
     private BigDecimal endPoint;
 
-    /** 变幅百分比 */
-    @Excel(name = "变幅百分比")
-    private String increaseRate;
+    /** 涨幅 */
+    @Excel(name = "涨幅")
+    private BigDecimal increaseRate;
+
+    /** 振幅 */
+    @Excel(name = "振幅")
+    private BigDecimal changeRate;
 
     /** 备注 */
     @Excel(name = "备注")
@@ -60,7 +62,7 @@ public class BourseDay extends BaseEntity
 
     /** 换手率 */
     @Excel(name = "换手率")
-    private String turnoverRate;
+    private BigDecimal turnoverRate;
 
     /** 成交额(亿) */
     @Excel(name = "成交额(亿)")

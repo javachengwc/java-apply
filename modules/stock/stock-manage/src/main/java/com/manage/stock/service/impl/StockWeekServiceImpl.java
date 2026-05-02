@@ -1,7 +1,9 @@
 package com.manage.stock.service.impl;
 
+import java.util.Date;
 import java.util.List;
 import com.manage.common.utils.DateUtils;
+import com.manage.stock.domain.dto.StockQueryParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.manage.stock.mapper.StockWeekMapper;
@@ -32,16 +34,10 @@ public class StockWeekServiceImpl implements IStockWeekService
         return stockWeekMapper.selectStockWeekById(id);
     }
 
-    /**
-     * 查询股票周数据列表
-     * 
-     * @param stockWeek 股票周数据
-     * @return 股票周数据
-     */
     @Override
-    public List<StockWeek> selectStockWeekList(StockWeek stockWeek)
+    public List<StockWeek> selectStockWeekList(StockQueryParam queryParam)
     {
-        return stockWeekMapper.selectStockWeekList(stockWeek);
+        return stockWeekMapper.selectStockWeekList(queryParam);
     }
 
     /**
@@ -53,7 +49,9 @@ public class StockWeekServiceImpl implements IStockWeekService
     @Override
     public int insertStockWeek(StockWeek stockWeek)
     {
-        stockWeek.setCreateTime(DateUtils.getNowDate());
+        Date now = new Date();
+        stockWeek.setCreateTime(now);
+        stockWeek.setUpdateTime(now);
         return stockWeekMapper.insertStockWeek(stockWeek);
     }
 
@@ -66,6 +64,7 @@ public class StockWeekServiceImpl implements IStockWeekService
     @Override
     public int updateStockWeek(StockWeek stockWeek)
     {
+        stockWeek.setUpdateTime(new Date());
         return stockWeekMapper.updateStockWeek(stockWeek);
     }
 

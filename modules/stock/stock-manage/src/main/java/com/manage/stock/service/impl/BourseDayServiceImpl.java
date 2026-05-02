@@ -1,5 +1,6 @@
 package com.manage.stock.service.impl;
 
+import java.util.Date;
 import java.util.List;
 import com.manage.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +54,9 @@ public class BourseDayServiceImpl implements IBourseDayService
     @Override
     public int insertBourseDay(BourseDay bourseDay)
     {
-        bourseDay.setCreateTime(DateUtils.getNowDate());
+        Date now = new Date();
+        bourseDay.setCreateTime(now);
+        bourseDay.setUpdateTime(now);
         return bourseDayMapper.insertBourseDay(bourseDay);
     }
 
@@ -66,6 +69,7 @@ public class BourseDayServiceImpl implements IBourseDayService
     @Override
     public int updateBourseDay(BourseDay bourseDay)
     {
+        bourseDay.setUpdateTime(new Date());
         return bourseDayMapper.updateBourseDay(bourseDay);
     }
 

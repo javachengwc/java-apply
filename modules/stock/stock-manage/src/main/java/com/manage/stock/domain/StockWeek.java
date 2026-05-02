@@ -60,7 +60,11 @@ public class StockWeek extends BaseEntity
 
     /** 涨幅 */
     @Excel(name = "涨幅")
-    private String increaseRate;
+    private BigDecimal increaseRate;
+
+    /** 振幅 */
+    @Excel(name = "振幅")
+    private BigDecimal changeRate;
 
     /** 备注 */
     @Excel(name = "备注")
@@ -68,7 +72,7 @@ public class StockWeek extends BaseEntity
 
     /** 换手率 */
     @Excel(name = "换手率")
-    private String turnoverRate;
+    private BigDecimal turnoverRate;
 
     /** 成交额(亿) */
     @Excel(name = "成交额(亿)")

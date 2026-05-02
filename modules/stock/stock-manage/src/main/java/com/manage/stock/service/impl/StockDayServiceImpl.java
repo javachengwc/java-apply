@@ -1,7 +1,9 @@
 package com.manage.stock.service.impl;
 
+import java.util.Date;
 import java.util.List;
-import com.manage.common.utils.DateUtils;
+
+import com.manage.stock.domain.dto.StockQueryParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.manage.stock.mapper.StockDayMapper;
@@ -35,13 +37,13 @@ public class StockDayServiceImpl implements IStockDayService
     /**
      * 查询股票天数据列表
      * 
-     * @param stockDay 股票天数据
+     * @param queryParam 股票天查询参数
      * @return 股票天数据
      */
     @Override
-    public List<StockDay> selectStockDayList(StockDay stockDay)
+    public List<StockDay> selectStockDayList(StockQueryParam queryParam)
     {
-        return stockDayMapper.selectStockDayList(stockDay);
+        return stockDayMapper.selectStockDayList(queryParam);
     }
 
     /**
@@ -53,7 +55,9 @@ public class StockDayServiceImpl implements IStockDayService
     @Override
     public int insertStockDay(StockDay stockDay)
     {
-        stockDay.setCreateTime(DateUtils.getNowDate());
+        Date now = new Date();
+        stockDay.setCreateTime(now);
+        stockDay.setUpdateTime(now);
         return stockDayMapper.insertStockDay(stockDay);
     }
 
@@ -66,6 +70,7 @@ public class StockDayServiceImpl implements IStockDayService
     @Override
     public int updateStockDay(StockDay stockDay)
     {
+        stockDay.setUpdateTime(new Date());
         return stockDayMapper.updateStockDay(stockDay);
     }
 

@@ -1,7 +1,9 @@
 package com.manage.stock.service.impl;
 
+import java.util.Date;
 import java.util.List;
-import com.manage.common.utils.DateUtils;
+
+import com.manage.stock.domain.dto.StockQueryParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.manage.stock.mapper.StockYearMapper;
@@ -32,16 +34,10 @@ public class StockYearServiceImpl implements IStockYearService
         return stockYearMapper.selectStockYearById(id);
     }
 
-    /**
-     * 查询股票年数据列表
-     * 
-     * @param stockYear 股票年数据
-     * @return 股票年数据
-     */
     @Override
-    public List<StockYear> selectStockYearList(StockYear stockYear)
+    public List<StockYear> selectStockYearList(StockQueryParam queryParam)
     {
-        return stockYearMapper.selectStockYearList(stockYear);
+        return stockYearMapper.selectStockYearList(queryParam);
     }
 
     /**
@@ -53,7 +49,9 @@ public class StockYearServiceImpl implements IStockYearService
     @Override
     public int insertStockYear(StockYear stockYear)
     {
-        stockYear.setCreateTime(DateUtils.getNowDate());
+        Date now = new Date();
+        stockYear.setCreateTime(now);
+        stockYear.setUpdateTime(now);
         return stockYearMapper.insertStockYear(stockYear);
     }
 
@@ -66,6 +64,7 @@ public class StockYearServiceImpl implements IStockYearService
     @Override
     public int updateStockYear(StockYear stockYear)
     {
+        stockYear.setUpdateTime(new Date());
         return stockYearMapper.updateStockYear(stockYear);
     }
 

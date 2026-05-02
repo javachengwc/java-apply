@@ -15,37 +15,60 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="minPrice"    column="min_price"    />
         <result property="maxPrice"    column="max_price"    />
         <result property="increaseRate"    column="increase_rate"    />
+        <result property="changeRate"    column="change_rate"    />
         <result property="note"    column="note"    />
         <result property="turnoverRate"    column="turnover_rate"    />
         <result property="turnoverAmount"    column="turnover_amount"    />
         <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
     </resultMap>
 
-    <sql id="selectStockWeekVo">
-        select id, hign_flag, stock_name, stock_code, week_date, begin_price, end_price, min_price, max_price, increase_rate, note, turnover_rate, turnover_amount, create_time from t_stock_week
+    <sql id="stockWeekFieldWithPrefix">
+        ${tableName}.id,
+        ${tableName}.hign_flag,
+        ${tableName}.stock_name,
+        ${tableName}.stock_code,
+        ${tableName}.week_date,
+        ${tableName}.begin_price,
+        ${tableName}.end_price,
+        ${tableName}.min_price,
+        ${tableName}.max_price,
+        ${tableName}.increase_rate,
+        ${tableName}.change_rate,
+        ${tableName}.note,
+        ${tableName}.turnover_rate,
+        ${tableName}.turnover_amount,
+        ${tableName}.create_time,
+        ${tableName}.update_time
     </sql>
 
-    <select id="selectStockWeekList" parameterType="com.manage.stock.domain.StockWeek" resultMap="StockWeekResult">
-        <include refid="selectStockWeekVo"/>
-        <where>  
-            <if test="hignFlag != null "> and hign_flag = #{hignFlag}</if>
-            <if test="stockName != null  and stockName != ''"> and stock_name like concat('%', #{stockName}, '%')</if>
-            <if test="stockCode != null  and stockCode != ''"> and stock_code = #{stockCode}</if>
-            <if test="weekDate != null "> and week_date = #{weekDate}</if>
-            <if test="beginPrice != null "> and begin_price = #{beginPrice}</if>
-            <if test="endPrice != null "> and end_price = #{endPrice}</if>
-            <if test="minPrice != null "> and min_price = #{minPrice}</if>
-            <if test="maxPrice != null "> and max_price = #{maxPrice}</if>
-            <if test="increaseRate != null  and increaseRate != ''"> and increase_rate = #{increaseRate}</if>
-            <if test="note != null  and note != ''"> and note = #{note}</if>
-            <if test="turnoverRate != null  and turnoverRate != ''"> and turnover_rate = #{turnoverRate}</if>
-            <if test="turnoverAmount != null "> and turnover_amount = #{turnoverAmount}</if>
+    <select id="selectStockWeekList" parameterType="com.manage.stock.domain.dto.StockQueryParam" resultMap="StockWeekResult">
+        select
+        <include refid="stockWeekFieldWithPrefix">
+            <property name="tableName" value="w"/>
+        </include>
+        from t_stock_week w
+        <if test="industry != null and industry != '' ">
+            join t_company_stock c on w.stock_code = c.stock_code
+        </if>
+        <where>
+            <if test="stockName != null  and stockName != ''"> and w.stock_name like concat('%', #{stockName}, '%')</if>
+            <if test="stockCode != null  and stockCode != ''"> and w.stock_code = #{stockCode}</if>
+            <if test="startDate != null "> and w.week_date >= #{startDate}</if>
+            <if test="endDate != null ">  <![CDATA[ and w.week_date <= #{endDate} ]]> </if>
+            <if test="industry != null and industry != '' ">
+                and c.industry = #{industry}
+            </if>
         </where>
     </select>
     
     <select id="selectStockWeekById" parameterType="Long" resultMap="StockWeekResult">
-        <include refid="selectStockWeekVo"/>
-        where id = #{id}
+        select
+        <include refid="stockWeekFieldWithPrefix">
+            <property name="tableName" value="w"/>
+        </include>
+        from t_stock_week w
+        where w.id = #{id}
     </select>
 
     <insert id="insertStockWeek" parameterType="com.manage.stock.domain.StockWeek" useGeneratedKeys="true" keyProperty="id">
@@ -60,10 +83,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="minPrice != null">min_price,</if>
             <if test="maxPrice != null">max_price,</if>
             <if test="increaseRate != null">increase_rate,</if>
+            <if test="changeRate != null">change_rate,</if>
             <if test="note != null">note,</if>
             <if test="turnoverRate != null">turnover_rate,</if>
             <if test="turnoverAmount != null">turnover_amount,</if>
             <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="hignFlag != null">#{hignFlag},</if>
@@ -75,10 +100,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="minPrice != null">#{minPrice},</if>
             <if test="maxPrice != null">#{maxPrice},</if>
             <if test="increaseRate != null">#{increaseRate},</if>
+            <if test="changeRate != null">#{changeRate},</if>
             <if test="note != null">#{note},</if>
             <if test="turnoverRate != null">#{turnoverRate},</if>
             <if test="turnoverAmount != null">#{turnoverAmount},</if>
             <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
          </trim>
     </insert>
 
@@ -94,10 +121,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="minPrice != null">min_price = #{minPrice},</if>
             <if test="maxPrice != null">max_price = #{maxPrice},</if>
             <if test="increaseRate != null">increase_rate = #{increaseRate},</if>
+            <if test="changeRate != null">change_rate = #{changeRate},</if>
             <if test="note != null">note = #{note},</if>
             <if test="turnoverRate != null">turnover_rate = #{turnoverRate},</if>
             <if test="turnoverAmount != null">turnover_amount = #{turnoverAmount},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
         where id = #{id}
     </update>

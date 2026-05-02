@@ -2,6 +2,8 @@ package com.manage.stock.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.manage.stock.domain.dto.StockQueryParam;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,10 +41,10 @@ public class StockYearController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('stock:stockyear:list')")
     @GetMapping("/list")
-    public TableDataInfo list(StockYear stockYear)
+    public TableDataInfo list(StockQueryParam queryParam)
     {
         startPage();
-        List<StockYear> list = stockYearService.selectStockYearList(stockYear);
+        List<StockYear> list = stockYearService.selectStockYearList(queryParam);
         return getDataTable(list);
     }
 
@@ -52,9 +54,9 @@ public class StockYearController extends BaseController
     @PreAuthorize("@ss.hasPermi('stock:stockyear:export')")
     @Log(title = "股票年数据", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, StockYear stockYear)
+    public void export(HttpServletResponse response, StockQueryParam queryParam)
     {
-        List<StockYear> list = stockYearService.selectStockYearList(stockYear);
+        List<StockYear> list = stockYearService.selectStockYearList(queryParam);
         ExcelUtil<StockYear> util = new ExcelUtil<StockYear>(StockYear.class);
         util.exportExcel(response, list, "股票年数据数据");
     }

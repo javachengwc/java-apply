@@ -23,38 +23,57 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="dividend"    column="dividend"    />
         <result property="note"    column="note"    />
         <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
     </resultMap>
 
-    <sql id="selectStockYearVo">
-        select id, stock_name, stock_code, stat_year, highlight, min_price, max_price, begin_price, end_price,
-        increase_rate, market_value, pe, pb, gmv, profit,dividend, note, create_time
-        from t_stock_year
+    <sql id="stockYearFieldWithPrefix">
+        ${tableName}.id,
+        ${tableName}.stock_name,
+        ${tableName}.stock_code,
+        ${tableName}.stat_year,
+        ${tableName}.highlight,
+        ${tableName}.min_price,
+        ${tableName}.max_price,
+        ${tableName}.begin_price,
+        ${tableName}.end_price,
+        ${tableName}.increase_rate,
+        ${tableName}.market_value,
+        ${tableName}.pe,
+        ${tableName}.pb,
+        ${tableName}.gmv,
+        ${tableName}.profit,
+        ${tableName}.dividend,
+        ${tableName}.note,
+        ${tableName}.create_time,
+        ${tableName}.update_time
     </sql>
 
-    <select id="selectStockYearList" parameterType="com.manage.stock.domain.StockYear" resultMap="StockYearResult">
-        <include refid="selectStockYearVo"/>
+    <select id="selectStockYearList" parameterType="com.manage.stock.domain.dto.StockQueryParam" resultMap="StockYearResult">
+        select
+        <include refid="stockYearFieldWithPrefix">
+            <property name="tableName" value="y"/>
+        </include>
+        from t_stock_year y
+        <if test="industry != null and industry != '' ">
+            join t_company_stock c on y.stock_code = c.stock_code
+        </if>
         <where>  
-            <if test="stockName != null  and stockName != ''"> and stock_name like concat('%', #{stockName}, '%')</if>
-            <if test="stockCode != null  and stockCode != ''"> and stock_code = #{stockCode}</if>
-            <if test="statYear != null "> and stat_year = #{statYear}</if>
-            <if test="highlight != null "> and highlight = #{highlight}</if>
-            <if test="minPrice != null "> and min_price = #{minPrice}</if>
-            <if test="maxPrice != null "> and max_price = #{maxPrice}</if>
-            <if test="beginPrice != null "> and begin_price = #{beginPrice}</if>
-            <if test="endPrice != null "> and end_price = #{endPrice}</if>
-            <if test="increaseRate != null "> and increase_rate = #{increaseRate}</if>
-            <if test="marketValue != null "> and market_value = #{marketValue}</if>
-            <if test="pe != null "> and pe = #{pe}</if>
-            <if test="pb != null "> and pb = #{pb}</if>
-            <if test="gmv != null "> and gmv = #{gmv}</if>
-            <if test="profit != null "> and profit = #{profit}</if>
-            <if test="note != null  and note != ''"> and note = #{note}</if>
+            <if test="stockName != null  and stockName != ''"> and y.stock_name like concat('%', #{stockName}, '%')</if>
+            <if test="stockCode != null  and stockCode != ''"> and y.stock_code = #{stockCode}</if>
+            <if test="year != null "> and y.stat_year = #{year}</if>
+            <if test="industry != null and industry != '' ">
+                and c.industry = #{industry}
+            </if>
         </where>
     </select>
     
     <select id="selectStockYearById" parameterType="Long" resultMap="StockYearResult">
-        <include refid="selectStockYearVo"/>
-        where id = #{id}
+        select
+        <include refid="stockYearFieldWithPrefix">
+            <property name="tableName" value="y"/>
+        </include>
+        from t_stock_year y
+        where y.id = #{id}
     </select>
 
     <insert id="insertStockYear" parameterType="com.manage.stock.domain.StockYear" useGeneratedKeys="true" keyProperty="id">
@@ -77,6 +96,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="dividend != null">dividend,</if>
             <if test="note != null">note,</if>
             <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="stockName != null">#{stockName},</if>
@@ -96,6 +116,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="dividend != null">#{dividend},</if>
             <if test="note != null">#{note},</if>
             <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
          </trim>
     </insert>
 
@@ -119,6 +140,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="dividend != null">dividend = #{dividend},</if>
             <if test="note != null">note = #{note},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
         where id = #{id}
     </update>

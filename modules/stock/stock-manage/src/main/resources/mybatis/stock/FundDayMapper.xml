@@ -12,12 +12,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="beginPrice"    column="begin_price"    />
         <result property="endPrice"    column="end_price"    />
         <result property="increaseRate"    column="increase_rate"    />
+        <result property="changeRate"    column="change_rate"    />
         <result property="note"    column="note"    />
         <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
     </resultMap>
 
     <sql id="selectFundDayVo">
-        select id, fund_name, fund_code, day_date, begin_price, end_price, increase_rate, note, create_time from t_fund_day
+        select id, fund_name, fund_code, day_date, begin_price, end_price,
+        increase_rate, change_rate, note, create_time, update_time
+        from t_fund_day
     </sql>
 
     <select id="selectFundDayList" parameterType="com.manage.stock.domain.FundDay" resultMap="FundDayResult">
@@ -28,7 +32,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="dayDate != null "> and day_date = #{dayDate}</if>
             <if test="beginPrice != null "> and begin_price = #{beginPrice}</if>
             <if test="endPrice != null "> and end_price = #{endPrice}</if>
-            <if test="increaseRate != null  and increaseRate != ''"> and increase_rate = #{increaseRate}</if>
             <if test="note != null  and note != ''"> and note = #{note}</if>
         </where>
     </select>
@@ -47,8 +50,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="beginPrice != null">begin_price,</if>
             <if test="endPrice != null">end_price,</if>
             <if test="increaseRate != null">increase_rate,</if>
+            <if test="changeRate != null">change_rate,</if>
             <if test="note != null">note,</if>
             <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="fundName != null">#{fundName},</if>
@@ -57,8 +62,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="beginPrice != null">#{beginPrice},</if>
             <if test="endPrice != null">#{endPrice},</if>
             <if test="increaseRate != null">#{increaseRate},</if>
+            <if test="changeRate != null">#{changeRate},</if>
             <if test="note != null">#{note},</if>
             <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
          </trim>
     </insert>
 
@@ -71,8 +78,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="beginPrice != null">begin_price = #{beginPrice},</if>
             <if test="endPrice != null">end_price = #{endPrice},</if>
             <if test="increaseRate != null">increase_rate = #{increaseRate},</if>
+            <if test="changeRate != null">change_rate = #{changeRate},</if>
             <if test="note != null">note = #{note},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
         where id = #{id}
     </update>

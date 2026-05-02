@@ -170,5 +170,3 @@ create table QRTZ_SIMPROP_TRIGGERS (
     primary key (sched_name, trigger_name, trigger_group),
     foreign key (sched_name, trigger_name, trigger_group) references QRTZ_TRIGGERS(sched_name, trigger_name, trigger_group)
 ) engine=innodb comment = '同步机制的行锁表';
-
-commit;

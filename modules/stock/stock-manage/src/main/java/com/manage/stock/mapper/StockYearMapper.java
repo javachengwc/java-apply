@@ -2,6 +2,7 @@ package com.manage.stock.mapper;
 
 import java.util.List;
 import com.manage.stock.domain.StockYear;
+import com.manage.stock.domain.dto.StockQueryParam;
 
 /**
  * 股票年数据Mapper接口
@@ -22,10 +23,10 @@ public interface StockYearMapper
     /**
      * 查询股票年数据列表
      * 
-     * @param stockYear 股票年数据
+     * @param queryParam 股票年查询条件
      * @return 股票年数据集合
      */
-    public List<StockYear> selectStockYearList(StockYear stockYear);
+    public List<StockYear> selectStockYearList(StockQueryParam queryParam);
 
     /**
      * 新增股票年数据

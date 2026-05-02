@@ -4,8 +4,6 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.ToString;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import com.manage.framework.aspectj.lang.annotation.Excel;
 import com.manage.framework.web.domain.BaseEntity;
 
@@ -68,9 +66,5 @@ public class CompanyStock extends BaseEntity
     /** 分红日 */
     @Excel(name = "分红日")
     private String divvyDay;
-
-    /** 修改时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date modifyTime;
 
 }

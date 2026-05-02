@@ -1,5 +1,6 @@
 package com.manage.stock.service.impl;
 
+import java.util.Date;
 import java.util.List;
 import com.manage.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +54,9 @@ public class BourseWeekServiceImpl implements IBourseWeekService
     @Override
     public int insertBourseWeek(BourseWeek bourseWeek)
     {
-        bourseWeek.setCreateTime(DateUtils.getNowDate());
+        Date now = new Date();
+        bourseWeek.setCreateTime(now);
+        bourseWeek.setUpdateTime(now);
         return bourseWeekMapper.insertBourseWeek(bourseWeek);
     }
 
@@ -66,6 +69,7 @@ public class BourseWeekServiceImpl implements IBourseWeekService
     @Override
     public int updateBourseWeek(BourseWeek bourseWeek)
     {
+        bourseWeek.setUpdateTime(new Date());
         return bourseWeekMapper.updateBourseWeek(bourseWeek);
     }
 

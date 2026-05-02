@@ -12,10 +12,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="introduce"    column="introduce"    />
         <result property="note"    column="note"    />
         <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
     </resultMap>
 
     <sql id="selectCompanyVo">
-        select id, company_name, province_name, stock_names, introduce, note, create_time from t_company
+        select id, company_name, province_name, stock_names, introduce, note, create_time, update_time from t_company
     </sql>
 
     <select id="selectCompanyList" parameterType="com.manage.stock.domain.Company" resultMap="CompanyResult">
@@ -41,6 +42,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="introduce != null">introduce,</if>
             <if test="note != null">note,</if>
             <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="companyName != null">#{companyName},</if>
@@ -49,6 +51,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="introduce != null">#{introduce},</if>
             <if test="note != null">#{note},</if>
             <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
          </trim>
     </insert>
 
@@ -60,6 +63,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="stockNames != null">stock_names = #{stockNames},</if>
             <if test="introduce != null">introduce = #{introduce},</if>
             <if test="note != null">note = #{note},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
         where id = #{id}
     </update>

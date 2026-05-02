@@ -18,11 +18,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="recordDay"    column="record_day"    />
         <result property="divvyDay"    column="divvy_day"    />
         <result property="createTime"    column="create_time"    />
-        <result property="modifyTime"    column="modify_time"    />
+        <result property="updateTime"    column="update_time"    />
     </resultMap>
 
     <sql id="selectCompanyStockVo">
-        select id, company_id, stock_name, stock_code, stock_market_code, care_value, industry, have_data, public_time, tags, record_day, divvy_day, create_time, modify_time from t_company_stock
+        select id, company_id, stock_name, stock_code, stock_market_code, care_value, industry,
+        have_data, public_time, tags, record_day, divvy_day, create_time, update_time
+        from t_company_stock
     </sql>
 
     <select id="selectCompanyStockList" parameterType="com.manage.stock.domain.CompanyStock" resultMap="CompanyStockResult">
@@ -37,9 +39,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="haveData != null "> and have_data = #{haveData}</if>
             <if test="publicTime != null "> and public_time = #{publicTime}</if>
             <if test="tags != null  and tags != ''"> and tags = #{tags}</if>
-            <if test="recordDay != null  and recordDay != ''"> and record_day = #{recordDay}</if>
-            <if test="divvyDay != null  and divvyDay != ''"> and divvy_day = #{divvyDay}</if>
-            <if test="modifyTime != null "> and modify_time = #{modifyTime}</if>
         </where>
     </select>
     
@@ -63,7 +62,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="recordDay != null">record_day,</if>
             <if test="divvyDay != null">divvy_day,</if>
             <if test="createTime != null">create_time,</if>
-            <if test="modifyTime != null">modify_time,</if>
+            <if test="updateTime != null">update_time,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="companyId != null">#{companyId},</if>
@@ -78,7 +77,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="recordDay != null">#{recordDay},</if>
             <if test="divvyDay != null">#{divvyDay},</if>
             <if test="createTime != null">#{createTime},</if>
-            <if test="modifyTime != null">#{modifyTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
          </trim>
     </insert>
 
@@ -97,7 +96,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="recordDay != null">record_day = #{recordDay},</if>
             <if test="divvyDay != null">divvy_day = #{divvyDay},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
-            <if test="modifyTime != null">modify_time = #{modifyTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
         where id = #{id}
     </update>

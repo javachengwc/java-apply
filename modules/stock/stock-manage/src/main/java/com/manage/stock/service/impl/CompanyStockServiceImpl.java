@@ -1,5 +1,6 @@
 package com.manage.stock.service.impl;
 
+import java.util.Date;
 import java.util.List;
 import com.manage.common.utils.DateUtils;
 import com.manage.stock.domain.Company;
@@ -71,7 +72,9 @@ public class CompanyStockServiceImpl implements ICompanyStockService
     @Override
     public int insertCompanyStock(CompanyStock companyStock)
     {
-        companyStock.setCreateTime(DateUtils.getNowDate());
+        Date now = new Date();
+        companyStock.setCreateTime(now);
+        companyStock.setUpdateTime(now);
         return companyStockMapper.insertCompanyStock(companyStock);
     }
 
@@ -84,6 +87,7 @@ public class CompanyStockServiceImpl implements ICompanyStockService
     @Override
     public int updateCompanyStock(CompanyStock companyStock)
     {
+        companyStock.setUpdateTime(new Date());
         return companyStockMapper.updateCompanyStock(companyStock);
     }
 

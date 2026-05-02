@@ -2,6 +2,7 @@ package com.manage.stock.service;
 
 import java.util.List;
 import com.manage.stock.domain.StockWeek;
+import com.manage.stock.domain.dto.StockQueryParam;
 
 /**
  * 股票周数据Service接口
@@ -22,10 +23,10 @@ public interface IStockWeekService
     /**
      * 查询股票周数据列表
      * 
-     * @param stockWeek 股票周数据
+     * @param queryParam 股票周查询参数
      * @return 股票周数据集合
      */
-    public List<StockWeek> selectStockWeekList(StockWeek stockWeek);
+    public List<StockWeek> selectStockWeekList(StockQueryParam queryParam);
 
     /**
      * 新增股票周数据

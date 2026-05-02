@@ -1,7 +1,7 @@
 package com.manage.stock.service.impl;
 
+import java.util.Date;
 import java.util.List;
-import com.manage.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.manage.stock.mapper.FundDayMapper;
@@ -53,7 +53,9 @@ public class FundDayServiceImpl implements IFundDayService
     @Override
     public int insertFundDay(FundDay fundDay)
     {
-        fundDay.setCreateTime(DateUtils.getNowDate());
+        Date now = new Date();
+        fundDay.setCreateTime(now);
+        fundDay.setUpdateTime(now);
         return fundDayMapper.insertFundDay(fundDay);
     }
 
@@ -66,6 +68,7 @@ public class FundDayServiceImpl implements IFundDayService
     @Override
     public int updateFundDay(FundDay fundDay)
     {
+        fundDay.setUpdateTime(new Date());
         return fundDayMapper.updateFundDay(fundDay);
     }
 

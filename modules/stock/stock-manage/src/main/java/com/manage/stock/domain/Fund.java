@@ -1,11 +1,7 @@
 package com.manage.stock.domain;
 
-import java.util.Date;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.ToString;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import com.manage.framework.aspectj.lang.annotation.Excel;
 import com.manage.framework.web.domain.BaseEntity;
 
@@ -39,9 +35,5 @@ public class Fund extends BaseEntity
     /** 备注 */
     @Excel(name = "备注")
     private String note;
-
-    /** $column.columnComment */
-    @Excel(name = "${comment}", readConverterExp = "$column.readConverterExp()")
-    private Date modifyTime;
 
 }

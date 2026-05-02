@@ -1,8 +1,8 @@
 package com.manage.stock.service.impl;
 
+import java.util.Date;
 import java.util.List;
-import com.manage.common.utils.DateUtils;
-import com.manage.stock.domain.dto.StockMonthDto;
+import com.manage.stock.domain.dto.StockQueryParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.manage.stock.mapper.StockMonthMapper;
@@ -36,13 +36,13 @@ public class StockMonthServiceImpl implements IStockMonthService
     /**
      * 查询股票月数据列表
      * 
-     * @param stockMonth 股票月数据
+     * @param queryParam 股票月查询参数
      * @return 股票月数据
      */
     @Override
-    public List<StockMonth> selectStockMonthList(StockMonthDto stockMonth)
+    public List<StockMonth> selectStockMonthList(StockQueryParam queryParam)
     {
-        return stockMonthMapper.selectStockMonthList(stockMonth);
+        return stockMonthMapper.selectStockMonthList(queryParam);
     }
 
     /**
@@ -54,7 +54,9 @@ public class StockMonthServiceImpl implements IStockMonthService
     @Override
     public int insertStockMonth(StockMonth stockMonth)
     {
-        stockMonth.setCreateTime(DateUtils.getNowDate());
+        Date now = new Date();
+        stockMonth.setCreateTime(now);
+        stockMonth.setUpdateTime(now);
         return stockMonthMapper.insertStockMonth(stockMonth);
     }
 
@@ -67,6 +69,7 @@ public class StockMonthServiceImpl implements IStockMonthService
     @Override
     public int updateStockMonth(StockMonth stockMonth)
     {
+        stockMonth.setUpdateTime(new Date());
         return stockMonthMapper.updateStockMonth(stockMonth);
     }
 

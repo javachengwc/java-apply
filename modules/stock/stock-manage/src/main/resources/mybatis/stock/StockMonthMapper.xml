@@ -19,30 +19,62 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="note"    column="note"    />
         <result property="turnoverRate"    column="turnover_rate"    />
         <result property="turnoverAmount"    column="turnover_amount"    />
-        <result property="createTime"    column="create_time"    />
+        <result property="marketValue"    column="market_value"    />
         <result property="pe"    column="pe"    />
         <result property="pb"    column="pb"    />
-        <result property="marketValue"    column="market_value"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
     </resultMap>
 
-    <sql id="selectStockMonthVo">
-        select id, hign_flag, stock_name, stock_code, month_date, begin_price, end_price, min_price, max_price, increase_rate, change_rate, note,
-        turnover_rate, turnover_amount, pe, pb, market_value, create_time from t_stock_month
+    <sql id="stockMonthFieldWithPrefix">
+        ${tableName}.id,
+        ${tableName}.hign_flag,
+        ${tableName}.stock_name,
+        ${tableName}.stock_code,
+        ${tableName}.month_date,
+        ${tableName}.begin_price,
+        ${tableName}.end_price,
+        ${tableName}.min_price,
+        ${tableName}.max_price,
+        ${tableName}.increase_rate,
+        ${tableName}.change_rate,
+        ${tableName}.note,
+        ${tableName}.turnover_rate,
+        ${tableName}.turnover_amount,
+        ${tableName}.market_value,
+        ${tableName}.pe,
+        ${tableName}.pb,
+        ${tableName}.create_time,
+        ${tableName}.update_time
     </sql>
 
-    <select id="selectStockMonthList" parameterType="com.manage.stock.domain.dto.StockMonthDto" resultMap="StockMonthResult">
-        <include refid="selectStockMonthVo"/>
+    <select id="selectStockMonthList" parameterType="com.manage.stock.domain.dto.StockQueryParam" resultMap="StockMonthResult">
+        select
+        <include refid="stockMonthFieldWithPrefix">
+            <property name="tableName" value="m"/>
+        </include>
+        from t_stock_month m
+        <if test="industry != null and industry != '' ">
+            join t_company_stock c on m.stock_code = c.stock_code
+        </if>
         <where>
-            <if test="stockName != null  and stockName != ''"> and stock_name like concat('%', #{stockName}, '%')</if>
-            <if test="stockCode != null  and stockCode != ''"> and stock_code = #{stockCode}</if>
-            <if test="monthDateStart != null "> and month_date >= #{monthDateStart}</if>
-            <if test="monthDateEnd != null ">  <![CDATA[ and month_date <= #{monthDateEnd} ]]> </if>
+            <if test="stockName != null  and stockName != ''"> and m.stock_name like concat('%', #{stockName}, '%')</if>
+            <if test="stockCode != null  and stockCode != ''"> and m.stock_code = #{stockCode}</if>
+            <if test="startDate != null "> and m.month_date >= #{startDate}</if>
+            <if test="endDate != null ">  <![CDATA[ and m.month_date <= #{endDate} ]]> </if>
+            <if test="industry != null and industry != '' ">
+                and c.industry = #{industry}
+            </if>
         </where>
     </select>
     
     <select id="selectStockMonthById" parameterType="Long" resultMap="StockMonthResult">
-        <include refid="selectStockMonthVo"/>
-        where id = #{id}
+        select
+        <include refid="stockMonthFieldWithPrefix">
+            <property name="tableName" value="m"/>
+        </include>
+        from t_stock_month m
+        where m.id = #{id}
     </select>
 
     <insert id="insertStockMonth" parameterType="com.manage.stock.domain.StockMonth" useGeneratedKeys="true" keyProperty="id">
@@ -61,10 +93,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="note != null">note,</if>
             <if test="turnoverRate != null">turnover_rate,</if>
             <if test="turnoverAmount != null">turnover_amount,</if>
+            <if test="marketValue != null">market_value,</if>
             <if test="pe != null">pe,</if>
             <if test="pb != null">pb,</if>
-            <if test="marketValue != null">market_value,</if>
             <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="hignFlag != null">#{hignFlag},</if>
@@ -80,10 +113,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="note != null">#{note},</if>
             <if test="turnoverRate != null">#{turnoverRate},</if>
             <if test="turnoverAmount != null">#{turnoverAmount},</if>
+            <if test="marketValue != null">#{marketValue},</if>
             <if test="pe != null">#{pe},</if>
             <if test="pb != null">#{pb},</if>
-            <if test="marketValue != null">#{marketValue},</if>
             <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
          </trim>
     </insert>
 
@@ -103,10 +137,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="note != null">note = #{note},</if>
             <if test="turnoverRate != null">turnover_rate = #{turnoverRate},</if>
             <if test="turnoverAmount != null">turnover_amount = #{turnoverAmount},</if>
+            <if test="marketValue != null">market_value = #{marketValue},</if>
             <if test="pe != null">pe = #{pe},</if>
             <if test="pb != null">pb = #{pb},</if>
-            <if test="marketValue != null">market_value = #{marketValue},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
         where id = #{id}
     </update>

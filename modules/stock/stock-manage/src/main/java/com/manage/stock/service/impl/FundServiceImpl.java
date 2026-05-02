@@ -1,5 +1,6 @@
 package com.manage.stock.service.impl;
 
+import java.util.Date;
 import java.util.List;
 import com.manage.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +54,9 @@ public class FundServiceImpl implements IFundService
     @Override
     public int insertFund(Fund fund)
     {
-        fund.setCreateTime(DateUtils.getNowDate());
+        Date now = new Date();
+        fund.setCreateTime(now);
+        fund.setUpdateTime(now);
         return fundMapper.insertFund(fund);
     }
 
@@ -66,6 +69,7 @@ public class FundServiceImpl implements IFundService
     @Override
     public int updateFund(Fund fund)
     {
+        fund.setUpdateTime(new Date());
         return fundMapper.updateFund(fund);
     }
 

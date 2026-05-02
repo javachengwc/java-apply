@@ -2,6 +2,8 @@ package com.manage.stock.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.manage.stock.domain.dto.StockQueryParam;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,10 +41,10 @@ public class StockWeekController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('stock:stockweek:list')")
     @GetMapping("/list")
-    public TableDataInfo list(StockWeek stockWeek)
+    public TableDataInfo list(StockQueryParam queryParam)
     {
         startPage();
-        List<StockWeek> list = stockWeekService.selectStockWeekList(stockWeek);
+        List<StockWeek> list = stockWeekService.selectStockWeekList(queryParam);
         return getDataTable(list);
     }
 
@@ -52,9 +54,9 @@ public class StockWeekController extends BaseController
     @PreAuthorize("@ss.hasPermi('stock:stockweek:export')")
     @Log(title = "股票周数据", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, StockWeek stockWeek)
+    public void export(HttpServletResponse response, StockQueryParam queryParam)
     {
-        List<StockWeek> list = stockWeekService.selectStockWeekList(stockWeek);
+        List<StockWeek> list = stockWeekService.selectStockWeekList(queryParam);
         ExcelUtil<StockWeek> util = new ExcelUtil<StockWeek>(StockWeek.class);
         util.exportExcel(response, list, "股票周数据数据");
     }
