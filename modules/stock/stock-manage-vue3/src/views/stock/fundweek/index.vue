@@ -64,7 +64,16 @@
       </el-table-column>
       <el-table-column label="开盘价" align="center" prop="beginPrice" />
       <el-table-column label="收盘价" align="center" prop="endPrice" />
-      <el-table-column label="涨幅" align="center" prop="increaseRate" />
+      <el-table-column label="涨幅" align="center" prop="increaseRate" width="80" sortable="custom" :sort-orders="['descending', 'ascending']" >
+        <template #default="scope">
+          <span>{{ scope.row.increaseRate == null ? '' : scope.row.increaseRate + '%' }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="振幅" align="center" prop="changeRate" width="80" sortable="custom" :sort-orders="['descending', 'ascending']" >
+        <template #default="scope">
+          <span>{{ scope.row.changeRate == null ? '' : scope.row.changeRate + '%' }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['stock:fundweek:edit']">修改</el-button>
@@ -103,8 +112,11 @@
         <el-form-item label="收盘价" prop="endPrice">
           <el-input v-model="form.endPrice" placeholder="请输入收盘价" />
         </el-form-item>
-        <el-form-item label="涨幅" prop="increaseRate">
-          <el-input v-model="form.increaseRate" placeholder="请输入涨幅" />
+        <el-form-item label="涨幅" prop="increaseRate" >
+          <el-input v-model="form.increaseRate" placeholder="请输入涨幅" style="width: 100px;" /><span>&nbsp%</span>
+        </el-form-item>
+        <el-form-item label="振幅" prop="changeRate">
+          <el-input v-model="form.changeRate" placeholder="请输入振幅" style="width: 100px;" /><span>&nbsp%</span>
         </el-form-item>
         <el-form-item label="备注" prop="note">
           <el-input v-model="form.note" type="textarea" placeholder="请输入内容" />
@@ -139,14 +151,10 @@ const data = reactive({
   form: {},
   queryParams: {
     pageNum: 1,
-    pageSize: 10,
+    pageSize: 20,
     fundName: null,
     fundCode: null,
-    weekDate: null,
-    beginPrice: null,
-    endPrice: null,
-    increaseRate: null,
-    note: null,
+    weekDate: null
   },
   rules: {
   }
@@ -180,8 +188,8 @@ function reset() {
     beginPrice: null,
     endPrice: null,
     increaseRate: null,
-    note: null,
-    createTime: null
+    changeRate: null,
+    note: null
   };
   proxy.resetForm("fundweekRef");
 }

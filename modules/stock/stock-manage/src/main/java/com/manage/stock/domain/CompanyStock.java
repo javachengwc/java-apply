@@ -19,11 +19,12 @@ public class CompanyStock extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** ID */
+    /** Id */
+    @Excel(name = "Id")
     private Long id;
 
     /** 公司ID */
-    @Excel(name = "${companyId}")
+    @Excel(name = "公司Id")
     private Long companyId;
 
     /** 股票名称 */

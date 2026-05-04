@@ -144,10 +144,10 @@ const data = reactive({
   form: {},
   queryParams: {
     pageNum: 1,
-    pageSize: 10,
+    pageSize: 20,
     companyName: null,
     provinceName: null,
-    stockNames: null,
+    stockNames: null
   },
   rules: {
   }

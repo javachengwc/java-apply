@@ -17,20 +17,28 @@
           @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="月份" prop="monthDateStart">
+      <el-form-item label="月份" prop="monthDate">
         <el-date-picker clearable
-          v-model="queryParams.monthDateStart"
+          v-model="queryParams.startDate"
           type="date"
           value-format="YYYY-MM-DD"
           placeholder="月份从">
         </el-date-picker>
-	<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+	    <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
         <el-date-picker clearable
-          v-model="queryParams.monthDateEnd"
+          v-model="queryParams.endDate"
           type="date"
           value-format="YYYY-MM-DD"
           placeholder="月份到">
         </el-date-picker>
+      </el-form-item>
+      <el-form-item label="行业" prop="industry">
+        <el-input
+          v-model="queryParams.industry"
+          placeholder="请输入行业"
+          clearable
+          @keyup.enter="handleQuery"
+        />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -193,18 +201,13 @@ const data = reactive({
   form: {},
   queryParams: {
     pageNum: 1,
-    pageSize: 10,
+    pageSize: 20,
     hignFlag: null,
     stockName: null,
     stockCode: null,
-    monthDate: null,
-    beginPrice: null,
-    endPrice: null,
-    minPrice: null,
-    maxPrice: null,
-    increaseRate: null,
-    turnoverRate: null,
-    turnoverAmount: null
+    startDate: null,
+    endDate: null,
+    industry: null
   },
   rules: {
   }
@@ -247,8 +250,7 @@ function reset() {
     turnoverAmount: null,
     pe: null,
     pb: null,
-    marketValue: null,
-    createTime: null
+    marketValue: null
   };
   proxy.resetForm("stockmonthRef");
 }

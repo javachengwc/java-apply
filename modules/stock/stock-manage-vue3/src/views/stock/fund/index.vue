@@ -145,12 +145,10 @@ const data = reactive({
   form: {},
   queryParams: {
     pageNum: 1,
-    pageSize: 10,
+    pageSize: 20,
     fundName: null,
     fundCode: null,
-    tradeMode: null,
-    note: null,
-    modifyTime: null
+    tradeMode: null
   },
   rules: {
   }
@@ -181,9 +179,7 @@ function reset() {
     fundName: null,
     fundCode: null,
     tradeMode: null,
-    note: null,
-    createTime: null,
-    modifyTime: null
+    note: null
   };
   proxy.resetForm("fundRef");
 }

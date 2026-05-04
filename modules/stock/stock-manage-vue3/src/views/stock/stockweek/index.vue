@@ -19,11 +19,26 @@
       </el-form-item>
       <el-form-item label="周期" prop="weekDate">
         <el-date-picker clearable
-          v-model="queryParams.weekDate"
+          v-model="queryParams.startDate"
           type="date"
           value-format="YYYY-MM-DD"
-          placeholder="请选择周期">
+          placeholder="周期从">
         </el-date-picker>
+        <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <el-date-picker clearable
+          v-model="queryParams.endDate"
+          type="date"
+          value-format="YYYY-MM-DD"
+          placeholder="周期到">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item label="行业" prop="industry">
+        <el-input
+          v-model="queryParams.industry"
+          placeholder="请输入行业"
+          clearable
+          @keyup.enter="handleQuery"
+        />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -66,8 +81,21 @@
       <el-table-column label="周末股价" align="center" prop="endPrice" />
       <el-table-column label="最低价" align="center" prop="minPrice" />
       <el-table-column label="最高价" align="center" prop="maxPrice" />
-      <el-table-column label="涨幅" align="center" prop="increaseRate" />
-      <el-table-column label="换手率" align="center" prop="turnoverRate" />
+      <el-table-column label="涨幅" align="center" prop="increaseRate" width="80" sortable="custom" :sort-orders="['descending', 'ascending']" >
+        <template #default="scope">
+          <span>{{ scope.row.increaseRate == null ? '' : scope.row.increaseRate + '%' }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="振幅" align="center" prop="changeRate" width="80" sortable="custom" :sort-orders="['descending', 'ascending']" >
+        <template #default="scope">
+          <span>{{ scope.row.changeRate == null ? '' : scope.row.changeRate + '%' }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="换手率" align="center" prop="turnoverRate" width="80" >
+        <template #default="scope">
+          <span>{{ scope.row.turnoverRate == null ? '' : scope.row.turnoverRate + '%' }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="成交额(亿)" align="center" width="100" prop="turnoverAmount" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
@@ -116,14 +144,17 @@
         <el-form-item label="最高价" prop="maxPrice">
           <el-input v-model="form.maxPrice" placeholder="请输入最高价" />
         </el-form-item>
-        <el-form-item label="涨幅" prop="increaseRate">
-          <el-input v-model="form.increaseRate" placeholder="请输入涨幅" />
+        <el-form-item label="涨幅" prop="increaseRate" >
+          <el-input v-model="form.increaseRate" placeholder="请输入涨幅" style="width: 100px;" /><span>&nbsp%</span>
+        </el-form-item>
+        <el-form-item label="振幅" prop="changeRate">
+          <el-input v-model="form.changeRate" placeholder="请输入振幅" style="width: 100px;" /><span>&nbsp%</span>
         </el-form-item>
         <el-form-item label="备注" prop="note">
-          <el-input v-model="form.note" placeholder="请输入备注" />
+          <el-input v-model="form.note" placeholder="请输入备注" style="width: 300px;" />
         </el-form-item>
         <el-form-item label="换手率" prop="turnoverRate">
-          <el-input v-model="form.turnoverRate" placeholder="请输入换手率" />
+          <el-input v-model="form.turnoverRate" placeholder="请输入换手率" style="width: 100px;" /><span>&nbsp%</span>
         </el-form-item>
         <el-form-item label="成交额(亿)" prop="turnoverAmount">
           <el-input v-model="form.turnoverAmount" placeholder="请输入成交额(亿)" />
@@ -158,19 +189,13 @@ const data = reactive({
   form: {},
   queryParams: {
     pageNum: 1,
-    pageSize: 10,
+    pageSize: 20,
     hignFlag: null,
     stockName: null,
     stockCode: null,
-    weekDate: null,
-    beginPrice: null,
-    endPrice: null,
-    minPrice: null,
-    maxPrice: null,
-    increaseRate: null,
-    note: null,
-    turnoverRate: null,
-    turnoverAmount: null,
+    startDate: null,
+    endDate: null,
+    industry: null
   },
   rules: {
   }
@@ -207,10 +232,10 @@ function reset() {
     minPrice: null,
     maxPrice: null,
     increaseRate: null,
+    changeRate: null,
     note: null,
     turnoverRate: null,
-    turnoverAmount: null,
-    createTime: null
+    turnoverAmount: null
   };
   proxy.resetForm("stockweekRef");
 }
@@ -218,6 +243,15 @@ function reset() {
 /** 搜索按钮操作 */
 function handleQuery() {
   queryParams.value.pageNum = 1;
+  queryParams.value.orderByColumn = null;
+  queryParams.value.isAsc = null;
+  getList();
+}
+
+/** 排序触发事件 */
+function handleSortChange(column, prop, order) {
+  queryParams.value.orderByColumn = column.prop;
+  queryParams.value.isAsc = column.order;
   getList();
 }
 

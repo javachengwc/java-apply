@@ -246,7 +246,7 @@ const data = reactive({
   detail:{},
   queryParams: {
     pageNum: 1,
-    pageSize: 10,
+    pageSize: 20,
     companyId: null,
     stockName: null,
     stockCode: null,
@@ -255,10 +255,7 @@ const data = reactive({
     industry: null,
     haveData: null,
     publicTime: null,
-    tags: null,
-    recordDay: null,
-    divvyDay: null,
-    modifyTime: null
+    tags: null
   },
   rules: {
   }
@@ -296,9 +293,7 @@ function reset() {
     publicTime: null,
     tags: null,
     recordDay: null,
-    divvyDay: null,
-    createTime: null,
-    modifyTime: null
+    divvyDay: null
   };
   proxy.resetForm("stockRef");
 }

@@ -128,7 +128,7 @@ CREATE TABLE `t_stock_day` (
   `note` varchar(500) DEFAULT '' COMMENT '备注',
   `turnover_rate` decimal(10,2) DEFAULT NULL COMMENT '换手率',
   `turnover_amount` decimal(20,2) DEFAULT NULL COMMENT '成交额(亿)',
-  `order_rate` varchar(10) DEFAULT '' COMMENT '委比,(委买手数-委卖手数)/(委买手数+委卖手数)×100%',
+  `order_rate` decimal(10,2) DEFAULT NULL COMMENT '委比,(委买手数-委卖手数)/(委买手数+委卖手数)×100%',
   `main_in_amount` decimal(20,2) DEFAULT NULL COMMENT '主力流入资金(亿)',
   `main_trans_amount` decimal(20,2) DEFAULT NULL COMMENT '主力净流入(亿)',
   `create_time` datetime DEFAULT NULL,

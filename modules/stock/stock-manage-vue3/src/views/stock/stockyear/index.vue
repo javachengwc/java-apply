@@ -17,10 +17,18 @@
           @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="年份" prop="statYear">
+      <el-form-item label="年份" prop="year">
         <el-input
-          v-model="queryParams.statYear"
+          v-model="queryParams.year"
           placeholder="请输入年份"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="行业" prop="industry">
+        <el-input
+          v-model="queryParams.industry"
+          placeholder="请输入行业"
           clearable
           @keyup.enter="handleQuery"
         />
@@ -61,6 +69,11 @@
       <el-table-column label="年底股价" align="center" width="80" prop="endPrice" />
       <el-table-column label="最低股价" align="center" width="80" prop="minPrice" />
       <el-table-column label="最高股价" align="center" width="80" prop="maxPrice" />
+      <el-table-column label="涨幅" align="center" prop="increaseRate" width="80" sortable="custom" :sort-orders="['descending', 'ascending']" >
+        <template #default="scope">
+          <span>{{ scope.row.increaseRate == null ? '' : scope.row.increaseRate + '%' }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="营收(亿)" align="center" width="100" prop="gmv" />
       <el-table-column label="利润(亿)" align="center" prop="profit" />
       <el-table-column label="分红(亿)" align="center" prop="dividend" />
@@ -108,6 +121,9 @@
         </el-form-item>
         <el-form-item label="最高股价" prop="maxPrice">
           <el-input v-model="form.maxPrice" placeholder="请输入最高股价" />
+        </el-form-item>
+        <el-form-item label="涨幅" prop="increaseRate" >
+          <el-input v-model="form.increaseRate" placeholder="请输入涨幅" style="width: 100px;" /><span>&nbsp%</span>
         </el-form-item>
         <el-form-item label="市值(亿)" prop="marketValue">
           <el-input v-model="form.marketValue" placeholder="请输入市值(亿)" />
@@ -160,20 +176,11 @@ const data = reactive({
   form: {},
   queryParams: {
     pageNum: 1,
-    pageSize: 10,
+    pageSize: 20,
     stockName: null,
     stockCode: null,
-    statYear: null,
-    highlight: null,
-    minPrice: null,
-    maxPrice: null,
-    beginPrice: null,
-    endPrice: null,
-    marketValue: null,
-    gmv: null,
-    profit: null,
-    dividend: null,
-    note: null
+    year: null,
+    industry: null
   },
   rules: {
   }
@@ -209,14 +216,14 @@ function reset() {
     maxPrice: null,
     beginPrice: null,
     endPrice: null,
+    increaseRate: null,
     marketValue: null,
     pe: null,
     pb: null,
     gmv: null,
     profit: null,
     dividend: null,
-    note: null,
-    createTime: null
+    note: null
   };
   proxy.resetForm("stockyearRef");
 }

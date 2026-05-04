@@ -64,8 +64,21 @@
       </el-table-column>
       <el-table-column label="月初指数" align="center" prop="beginPoint" />
       <el-table-column label="月末指数" align="center" prop="endPoint" />
-      <el-table-column label="变幅百分比" align="center" prop="increaseRate" />
-      <el-table-column label="换手率" align="center" prop="turnoverRate" />
+      <el-table-column label="涨幅" align="center" prop="increaseRate" width="80" sortable="custom" :sort-orders="['descending', 'ascending']" >
+        <template #default="scope">
+          <span>{{ scope.row.increaseRate == null ? '' : scope.row.increaseRate + '%' }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="振幅" align="center" prop="changeRate" width="80" sortable="custom" :sort-orders="['descending', 'ascending']" >
+        <template #default="scope">
+          <span>{{ scope.row.changeRate == null ? '' : scope.row.changeRate + '%' }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="换手率" align="center" prop="turnoverRate" width="80" >
+        <template #default="scope">
+          <span>{{ scope.row.turnoverRate == null ? '' : scope.row.turnoverRate + '%' }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="成交额(万亿)" align="center" width="100" prop="turnoverAmount" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
@@ -108,14 +121,17 @@
         <el-form-item label="月末指数" prop="endPoint">
           <el-input v-model="form.endPoint" placeholder="请输入月末指数" />
         </el-form-item>
-        <el-form-item label="变幅百分比" prop="increaseRate">
-          <el-input v-model="form.increaseRate" placeholder="请输入变幅百分比" />
+        <el-form-item label="涨幅" prop="increaseRate" >
+          <el-input v-model="form.increaseRate" placeholder="请输入涨幅" style="width: 100px;" /><span>&nbsp%</span>
+        </el-form-item>
+        <el-form-item label="振幅" prop="changeRate">
+          <el-input v-model="form.changeRate" placeholder="请输入振幅" style="width: 100px;" /><span>&nbsp%</span>
         </el-form-item>
         <el-form-item label="备注" prop="note">
-          <el-input v-model="form.note" placeholder="请输入备注" />
+          <el-input v-model="form.note" placeholder="请输入备注" style="width: 300px;" />
         </el-form-item>
         <el-form-item label="换手率" prop="turnoverRate">
-          <el-input v-model="form.turnoverRate" placeholder="请输入换手率" />
+          <el-input v-model="form.turnoverRate" placeholder="请输入换手率" style="width: 100px;" /><span>&nbsp%</span>
         </el-form-item>
         <el-form-item label="成交额(万亿)" prop="turnoverAmount">
           <el-input v-model="form.turnoverAmount" placeholder="请输入成交额(万亿)" />
@@ -150,17 +166,11 @@ const data = reactive({
   form: {},
   queryParams: {
     pageNum: 1,
-    pageSize: 10,
+    pageSize: 20,
     hignFlag: null,
     bourseName: null,
     bourseCode: null,
-    monthDate: null,
-    beginPoint: null,
-    endPoint: null,
-    increaseRate: null,
-    note: null,
-    turnoverRate: null,
-    turnoverAmount: null,
+    monthDate: null
   },
   rules: {
   }
@@ -195,10 +205,10 @@ function reset() {
     beginPoint: null,
     endPoint: null,
     increaseRate: null,
+    changeRate: null,
     note: null,
     turnoverRate: null,
-    turnoverAmount: null,
-    createTime: null
+    turnoverAmount: null
   };
   proxy.resetForm("boursemonthRef");
 }
