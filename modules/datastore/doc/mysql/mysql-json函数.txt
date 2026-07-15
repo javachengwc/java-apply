@@ -1,0 +1,43 @@
+----------------------------------------mysql json函数--------------------------------------------
+json_extract(json_col, '$.key') 简写 json_col->'$.key'
+  提取json字段中指定路径的值，结果带双引号
+json_col->>'$.key'
+  提取json字段中指定路径的值并自动去除引号，返回纯字符串
+mysql> select json_extract(json_col, '$.key') a, json_col->>'$.key' as b from aa;
+　　-> "10001867876" 10001867876
+
+json_contains(json_col, '"value"', '$.key')
+  判断数组或对象是否包含某值（注意字符串需加双引号）
+
+json_keys(json_col) 或 json_keys(json_col, '$.path')
+  获取json列中的所有键名（可指定路径）
+mysql> select json_keys(json_col) from aa;
+   -> ["posNo", "currency", "code"]
+
+json_length(json_col) 或 json_length(json_col, '$.path')
+  获取json列或指定路径下的元素个数
+
+json_type(json_col)
+  返回json值的类型（如object、array、string等）
+
+json_depth(json_col)
+  返回json文档的最大嵌套深度
+
+json_valid(json_col)
+  验证字段是否为合法json格式（返回1/0）
+
+json_set(json_col, '$.key', value)
+  若json路径存在则更新，不存在则新增
+mysql> update user_profile set info = json_set(info, '$.age', 18) WHERE id = 10;
+
+json_insert(json_col, '$.key', value)
+  仅在json路径‌不存在‌时插入，不覆盖已有值
+mysql> select json_insert(info, '$.age', 18) from user_profile where id =10;
+
+json_replace(json_col, '$.key', value)
+  仅在json路径‌存在‌时替换，不存在则忽略
+mysql> update user_profile set info = json_replace(info, '$.age', 20) where id = 10;
+
+json_remove(json_col, '$.key')
+  删除json指定路径的键值对或数组元素
+mysql> update user_profile set info = json_remove(info, '$.id_card') WHERE id = 10;

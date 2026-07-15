@@ -1,6 +1,7 @@
 package com.util.base;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -82,10 +83,8 @@ public final class NumberUtil {
             return "";
         }
 
-        double percent = a.doubleValue() /divideValue.doubleValue();
-        BigDecimal bd = new BigDecimal("" + percent);
-        bd = bd.setScale(keep, BigDecimal.ROUND_HALF_UP);
-        String rt= "" + bd;
+        BigDecimal percent = new BigDecimal(a.toString()).divide(new BigDecimal(divideValue.toString()),keep, RoundingMode.HALF_UP);
+        String rt= "" + percent;
         Pattern p = Pattern.compile("\\.0{"+keep+"}");
         Matcher m = p.matcher(rt);
         if(m.find())
@@ -93,6 +92,24 @@ public final class NumberUtil {
             rt =rt.replace(m.group(),"");
         }
         return rt;
+    }
+
+    /**
+     * 去除数字后面末尾的0
+     */
+    public static String removeTrailingZeros(String number) {
+        if (number == null || number.isEmpty()) {
+            return number;
+        }
+        try {
+            // 使用BigDecimal处理，避免浮点数精度问题
+            BigDecimal bd = new BigDecimal(number);
+            // stripTrailingZeros() 去除末尾的0
+            // toPlainString() 避免科学计数法输出
+            return bd.stripTrailingZeros().toPlainString();
+        } catch (NumberFormatException e) {
+            return number;
+        }
     }
 
     public static String getDivide100(Number data){
