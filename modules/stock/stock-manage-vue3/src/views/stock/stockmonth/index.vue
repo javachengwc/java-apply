@@ -70,7 +70,7 @@
 
     <el-table v-loading="loading" :data="stockmonthList" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange" >
       <el-table-column label="股票名称" align="center" prop="stockName" width="80" />
-      <el-table-column label="股票代码" align="center" prop="stockCode" width="80" />
+      <el-table-column label="股票代码" align="center" prop="stockCode" width="100" sortable="custom" :sort-orders="['descending', 'ascending']" />
       <el-table-column label="月份" align="center" prop="monthDate" width="100" sortable="custom" :sort-orders="['descending', 'ascending']" >
         <template #default="scope">
           <span>{{ parseTime(scope.row.monthDate, '{y}-{m}-{d}') }}</span>

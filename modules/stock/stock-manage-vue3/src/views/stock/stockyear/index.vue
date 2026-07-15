@@ -61,9 +61,9 @@
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="stockyearList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="stockyearList" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange" >
       <el-table-column label="股票名称" align="center" prop="stockName" />
-      <el-table-column label="股票代码" align="center" width="80" prop="stockCode" />
+      <el-table-column label="股票代码" align="center" width="100" prop="stockCode" sortable="custom" :sort-orders="['descending', 'ascending']" />
       <el-table-column label="年份" align="center" width="60" prop="statYear" />
       <el-table-column label="年初股价" align="center" width="80" prop="beginPrice" />
       <el-table-column label="年底股价" align="center" width="80" prop="endPrice" />
@@ -171,6 +171,7 @@ const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
+const defaultSort = ref({ prop: "id", order: "ascending" });
 
 const data = reactive({
   form: {},
@@ -231,6 +232,15 @@ function reset() {
 /** 搜索按钮操作 */
 function handleQuery() {
   queryParams.value.pageNum = 1;
+  queryParams.value.orderByColumn = null;
+  queryParams.value.isAsc = null;
+  getList();
+}
+
+/** 排序触发事件 */
+function handleSortChange(column, prop, order) {
+  queryParams.value.orderByColumn = column.prop;
+  queryParams.value.isAsc = column.order;
   getList();
 }
 
