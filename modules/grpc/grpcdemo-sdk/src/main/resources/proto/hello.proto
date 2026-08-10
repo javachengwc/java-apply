@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option java_package = "com.demo.grpc";
+option java_multiple_files = true;
+
+package hello;
+
+// 定义服务
+service HelloService {
+    rpc SayHello (HelloRequest) returns (HelloReply);
+}
+
+// 定义请求消息
+message HelloRequest {
+    string name = 1;
+}
+
+// 定义响应消息
+message HelloReply {
+    string message = 1;
+}

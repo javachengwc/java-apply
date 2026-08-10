@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: grpc-client
+server:
+  port: 8081
+
+log:
+  level: info
+
+grpc:
+  client:
+    target: "localhost:9090"
+    keep-alive-time: 30
+    keep-alive-timeout: 10
+    idle-timeout: 300
+    connect-timeout: 5
+    call-timeout: 30
+    max-inbound-message-size: 65536
+    pool:
+      min-idle: 2
+      max-active: 10
+      max-wait-time: 3000
