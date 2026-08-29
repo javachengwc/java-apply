@@ -9,7 +9,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<elasticsearch.version>6.3.0</elasticsearch.version>
+		<elasticsearch.version>6.8.17</elasticsearch.version>
 	</properties>
 
 	<dependencyManagement>
