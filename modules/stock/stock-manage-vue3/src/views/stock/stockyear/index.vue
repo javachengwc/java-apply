@@ -62,12 +62,12 @@
     </el-row>
 
     <el-table v-loading="loading" :data="stockyearList" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange" >
-      <el-table-column label="股票名称" align="center" prop="stockName" />
+      <el-table-column label="股票名称" align="center" prop="stockName" width="100" sortable="custom" :sort-orders="['descending', 'ascending']"/>
       <el-table-column label="股票代码" align="center" width="100" prop="stockCode" sortable="custom" :sort-orders="['descending', 'ascending']" />
-      <el-table-column label="年份" align="center" width="60" prop="statYear" />
+      <el-table-column label="年份" align="center" width="80" prop="statYear" sortable="custom" :sort-orders="['descending', 'ascending']" />
       <el-table-column label="年初股价" align="center" width="80" prop="beginPrice" />
       <el-table-column label="年底股价" align="center" width="80" prop="endPrice" />
-      <el-table-column label="最低股价" align="center" width="80" prop="minPrice" />
+      <el-table-column label="最低股价" align="center" width="100" prop="minPrice" sortable="custom" :sort-orders="['descending', 'ascending']" />
       <el-table-column label="最高股价" align="center" width="80" prop="maxPrice" />
       <el-table-column label="涨幅" align="center" prop="increaseRate" width="80" sortable="custom" :sort-orders="['descending', 'ascending']" >
         <template #default="scope">
@@ -77,8 +77,8 @@
       <el-table-column label="营收(亿)" align="center" width="100" prop="gmv" />
       <el-table-column label="利润(亿)" align="center" prop="profit" />
       <el-table-column label="分红(亿)" align="center" prop="dividend" />
-      <el-table-column label="市值(亿)" align="center" prop="marketValue" />
-      <el-table-column label="市盈率" align="center" prop="pe" />
+      <el-table-column label="市值(亿)" align="center" prop="marketValue" width="100" sortable="custom" :sort-orders="['descending', 'ascending']" />
+      <el-table-column label="市盈率" align="center" prop="pe" width="100" sortable="custom" :sort-orders="['descending', 'ascending']" />
       <el-table-column label="市净率" align="center" prop="pb" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">

@@ -69,7 +69,7 @@
     </el-row>
 
     <el-table v-loading="loading" :data="stockmonthList" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange" >
-      <el-table-column label="股票名称" align="center" prop="stockName" width="80" />
+      <el-table-column label="股票名称" align="center" prop="stockName" width="100" sortable="custom" :sort-orders="['descending', 'ascending']" />
       <el-table-column label="股票代码" align="center" prop="stockCode" width="100" sortable="custom" :sort-orders="['descending', 'ascending']" />
       <el-table-column label="月份" align="center" prop="monthDate" width="100" sortable="custom" :sort-orders="['descending', 'ascending']" >
         <template #default="scope">
@@ -78,7 +78,7 @@
       </el-table-column>
       <el-table-column label="月初股价" align="center" prop="beginPrice" width="80" />
       <el-table-column label="月末股价" align="center" prop="endPrice" width="80" />
-      <el-table-column label="最低价" align="center" prop="minPrice" width="80" />
+      <el-table-column label="最低价" align="center" prop="minPrice" width="100" sortable="custom" :sort-orders="['descending', 'ascending']" />
       <el-table-column label="最高价" align="center" prop="maxPrice" width="80" />
       <el-table-column label="涨幅" align="center" prop="increaseRate" width="80" sortable="custom" :sort-orders="['descending', 'ascending']" >
         <template #default="scope">
@@ -96,9 +96,9 @@
         </template>
       </el-table-column>
       <el-table-column label="成交额(亿)" align="center" width="90" prop="turnoverAmount" />
-      <el-table-column label="市盈率" align="center" prop="pe" width="80" />
+      <el-table-column label="市盈率" align="center" prop="pe" width="100" sortable="custom" :sort-orders="['descending', 'ascending']" />
       <el-table-column label="市净率" align="center" prop="pb" width="80" />
-      <el-table-column label="市值(亿)" align="center" prop="marketValue" width="80" />
+      <el-table-column label="市值(亿)" align="center" prop="marketValue" width="100" sortable="custom" :sort-orders="['descending', 'ascending']" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['stock:stockmonth:edit']">修改</el-button>

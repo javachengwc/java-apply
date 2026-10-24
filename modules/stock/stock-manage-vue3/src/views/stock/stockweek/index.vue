@@ -69,17 +69,16 @@
     </el-row>
 
     <el-table v-loading="loading" :data="stockweekList" @selection-change="handleSelectionChange">
-      <el-table-column label="ID" align="center" width="60" prop="id" />
-      <el-table-column label="股票名称" align="center" prop="stockName" />
-      <el-table-column label="股票代码" align="center" width="80" prop="stockCode" />
-      <el-table-column label="周日期" align="center" prop="weekDate" width="120">
+      <el-table-column label="股票名称" align="center" prop="stockName" width="100" sortable="custom" :sort-orders="['descending', 'ascending']" />
+      <el-table-column label="股票代码" align="center" width="100" prop="stockCode" sortable="custom" :sort-orders="['descending', 'ascending']" />
+      <el-table-column label="周日期" align="center" prop="weekDate" width="100" sortable="custom" :sort-orders="['descending', 'ascending']" >
         <template #default="scope">
           <span>{{ parseTime(scope.row.weekDate, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="周初股价" align="center" prop="beginPrice" />
       <el-table-column label="周末股价" align="center" prop="endPrice" />
-      <el-table-column label="最低价" align="center" prop="minPrice" />
+      <el-table-column label="最低价" align="center" prop="minPrice" width="100" sortable="custom" :sort-orders="['descending', 'ascending']" />
       <el-table-column label="最高价" align="center" prop="maxPrice" />
       <el-table-column label="涨幅" align="center" prop="increaseRate" width="80" sortable="custom" :sort-orders="['descending', 'ascending']" >
         <template #default="scope">
