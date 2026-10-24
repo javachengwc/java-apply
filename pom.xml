@@ -64,6 +64,7 @@
 		<module>modules/tmp</module>
 		<module>modules/stock</module>
 		<module>modules/webboot3</module>
+		<module>modules/grpc</module>
 		<!--
 		<module>modules/bigdata</module>
 		-->

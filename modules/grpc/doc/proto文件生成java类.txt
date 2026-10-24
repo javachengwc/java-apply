@@ -1,0 +1,50 @@
+proto文件生成java类
+方式1: 手动命令行生成
+protoc --java_out=./output --grpc-java_out=./generated
+       --plugin=protoc-gen-grpc-java=D:/soft/proto/bin/protoc-gen-grpc-java.exe
+       -I=./src/main/resources/proto hello.proto
+protoc --java_out=./output hello.proto      ###只生成java普通类
+-I               ###指定.proto文件搜索路径
+--java_out       ###生成java消息类的输出目录
+--grpc_out       ###生成grpc代码的输出目录
+--plugin         ###指定grpc插件的路径
+
+通过 protoc 命令生成 Java 代码（包括 gRPC 服务代码），需要安装以下几个部分：
+a,protoc‌（Protocol Buffers 编译器）
+  https://github.com/protocolbuffers/protobuf/releases 下载protoc编译器
+  解压到安装目录,系统环境变量PATH加上安装目录下的bin目录
+  protoc --version #验证是否正常
+b,protoc-gen-grpc-java‌（gRPC Java 插件）
+  https://repo1.maven.org/maven2/io/grpc/protoc-gen-grpc-java
+  下载 protoc-gen-grpc-java-x.x.x-windows-x86_64.exe
+  将该exe文件放到protoc‌目录下（和protoc.exe放一起）
+c,JDK
+
+方式2: Maven 插件自动生成
+当你执行 mvn compile 时，protobuf-maven-plugin 会自动调用 protoc,
+生成的文件默认放在：
+target/generated-sources/protobuf/java/
+target/generated-sources/protobuf/grpc-java/
+
+<plugin>
+    <groupId>org.xolstice.maven.plugins</groupId>
+    <artifactId>protobuf-maven-plugin</artifactId>
+    <version>0.6.1</version>
+    <configuration>
+        <!-- 指定 proto 文件位置 -->
+        <protoSourceRoot>${project.basedir}/src/main/proto</protoSourceRoot>
+        <!-- 指定编译插件 -->
+        <pluginId>grpc-java</pluginId>
+        <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.62.2</pluginArtifact>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>compile</goal>       <!-- 生成 Java 代码 -->
+                <goal>compile-custom</goal>  <!-- 生成 gRPC 代码 -->
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+
+

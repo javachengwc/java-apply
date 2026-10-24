@@ -7,7 +7,10 @@ mysql> select json_extract(json_col, '$.key') a, json_col->>'$.key' as b from aa
 　　-> "10001867876" 10001867876
 
 json_contains(json_col, '"value"', '$.key')
-  判断数组或对象是否包含某值（注意字符串需加双引号）
+  判断json对象是否包含某值（注意字符串需加双引号）
+
+json_contains(jsonarrya_col, '{"column": value}', '$')
+  判断json数组column节点是否包含value值
 
 json_keys(json_col) 或 json_keys(json_col, '$.path')
   获取json列中的所有键名（可指定路径）

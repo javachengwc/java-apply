@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: grpc-server
+server:
+  port: 8080
+grpc:
+  server:
+    port: 9090
+
+log:
+  level: info
